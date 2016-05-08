@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row text-center">
+    <div class="col-md-12">
+        <h2>Playbook run for playbook: <span style="font-style: italic;">"{{ playbook }}"</span></h2>
+    </div>
+</div>
+<br>
+<div class="row" style="display: flex; align-items: center;">
+    <div class="col-md-1 text-center">
+        <h2>Stats</h2>
+    </div>
+    <div class="col-md-11">
+        <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
+            <thead>
+                <tr>
+                    <th class="text-center">Host</th>
+                    <th class="text-center ok">Ok</th>
+                    <th class="text-center changed">Changed</th>
+                    <th class="text-center skipped">Skipped</th>
+                    <th class="text-center failed">Failed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in stats_data %}
+                <tr>
+                    <td class="text-center">{{ row.host }}</td>
+                    <td class="text-center">{{ row.ok }}</td>
+                    <td class="text-center">{{ row.changed }}</td>
+                    <td class="text-center">{{ row.skipped }}</td>
+                    <td class="text-center">{{ row.failures }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+  </div>
+</div>
+<div class="row text-center">
+    <div class="col-md-12">
+        <h2>Run information</h2>
+        <small class="text-center" style="font-style: italic">Click on a row to expand verbose output</small>
+    </div>
+</div>
+<div class="row">
+    <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th class="text-center">Status</th>
+                <th>Host</th>
+                <th>Playbook</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in task_data %}
+            <tr class="task">
+                <td id="{{ row.end |datetime }}" style="white-space: nowrap;">
+                    <a href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
+                </td>
+                <td class="text-center">
+                    <label class="label {{ row |pick_status }}">{{ row |pick_status }}</label><br>
+                    {{ row.duration |truncate(5) }}s
+                </td>
+                <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
+                <td style="white-space: nowrap;">
+                    <ul>
+                        <li><a href="/play/{{ row.play }}">{{ row.play }}</a></li>
+                        <ul>
+                            <li><a href="/task/{{ row.task }}">{{ row.task }}</a></li>
+                        </ul>
+                    </ul>
+                </td>
+            </tr>
+            <tr class="results" style="display: none;">
+                <td colspan="4">{{ row.result |to_nice_json }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

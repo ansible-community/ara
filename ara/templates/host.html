@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row text-center">
+    <div class="col-md-12">
+        <h2>Playbook run for host: <span style="font-style: italic;">"{{ host }}"</span></h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 table-responsive">
+        <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th class="text-center">Status</th>
+                    <th>Host</th>
+                    <th>Playbook</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr class="task">
+                    <td id="{{ row.end |datetime }}" style="white-space: nowrap;">
+                        <a href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
+                    </td>
+                    <td class="text-center">
+                        <label class="label {{ row |pick_status }}">{{ row |pick_status }}</label><br>
+                        {{ row.duration |truncate(5) }}s
+                    </td>
+                    <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
+                    <td style="white-space: nowrap;">
+                        <ul>
+                            <li><a href="/play/{{ row.play }}">{{ row.play }}</a></li>
+                            <ul>
+                                <li><a href="/task/{{ row.task }}">{{ row.task }}</a></li>
+                            </ul>
+                        </ul>
+                    </td>
+                </tr>
+                <tr class="results" style="display: none;">
+                    <td colspan="4">{{ row.result |to_nice_json }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

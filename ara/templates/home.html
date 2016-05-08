@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    ARA is meant to make it easy to browse Ansible playbook runs.
+    <br>
+    How to use:
+    <ul>
+      <li>Browse hosts, tasks, plays and playbooks with the top menu</li>
+      <li>When browsing details:</li>
+      <ul>
+        <li>Click on timestamps to generate a link to this specific event</li>
+        <li>Click on a host in the table to go to this host's events</li>
+        <li>Click on a task in the table to see all events for this task</li>
+        <li>Click on a play in the table to see all events for this play</li>
+        <li>Click on a playbook in the table to see all events for this playbook</li>
+      </ul>
+    </ul>
+  </div>
+</div>
+{% endblock %}

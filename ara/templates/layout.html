@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ARA - Ansible run analysis</title>
+
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+
+        <style>
+            .failed {
+                background-color: #a30000;
+            }
+            .skipped {
+                background-color: #047a7b;
+            }
+            .ok {
+                background-color: #3e7b04;
+            }
+            .changed {
+                background-color: #9d8000;
+            }
+            .unreachable {
+                background-color: #9d8000;
+            }
+
+            tr.results {
+                white-space: pre-wrap;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+                word-break: break-word;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" style="border-bottom:1px dashed black;">
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">ARA - Ansible Run Analysis</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        {% if hosts %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hosts <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% for host in hosts %}
+                                <li><a href="/host/{{ host }}">{{ host }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                        {% if tasks %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% for task in tasks %}
+                                <li><a href="/task/{{ task }}">{{ task }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                        {% if plays %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Plays <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% for play in plays %}
+                                <li><a href="/play/{{ play }}">{{ play }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+
+                        {% if playbooks %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Playbooks <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% for playbook in playbooks %}
+                                <li><a href="/playbook/{{ playbook }}">{{ playbook }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+      {% block content %}
+      {% endblock %}
+    <br>
+    </div>
+<br>
+    <div class="container text-center">
+        ARA - Ansible run analysis is an open source project available on <a href="http://github.com/dmsimard/ara">Github</a>.
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $(".task").click(function(){
+                ele = $(this).closest('tr').next('tr');
+                if (ele.css('display') == 'none')
+                    ele.css('display', 'table-row');
+                else
+                    ele.css('display', 'none');
+            });
+            $(".result").click(function(){
+                $(this).css('display', 'none');
+            });
+        });
+    </script>
+  </body>
+</html>
