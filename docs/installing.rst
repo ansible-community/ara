@@ -1,5 +1,7 @@
 Installing and using ARA
 ========================
+.. Note:: ARA is currently tested against Ansible v2.0.1.0.
+
 Clone the source and install it
 -------------------------------
 ::
@@ -8,7 +10,7 @@ Clone the source and install it
     cd ara
     pip install .
 
-*ARA is on `PyPi`_ but is not currently kept up-to-date with the fast paced early development.*
+ARA is on PyPi_ but is not currently kept up-to-date with the fast paced early development.
 
 .. _PyPi: https://pypi.python.org/pypi/ara
 
