@@ -44,12 +44,12 @@ def jinja_to_nice_json(result):
 def jinja_pick_status(row):
     """ Returns the status of a row """
     if row.changed:
-        return 'changed'
+        return 'CHANGED'
     if row.skipped:
-        return 'skipped'
+        return 'SKIPPED'
     if row.failed:
-        return 'failed'
-    return 'ok'
+        return 'FAILED'
+    return 'OK'
 
 
 def default_data():
