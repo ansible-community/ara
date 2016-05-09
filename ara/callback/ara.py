@@ -69,7 +69,8 @@ class CallbackModule(CallbackBase):
             'result':        json.dumps(result._result),
             'changed':       result._result['changed'],
             'skipped':       result._result['skipped'],
-            'failed':        result._result['failed']
+            'failed':        result._result['failed'],
+            'ignore_errors': self.task.ignore_errors or False
         })
         db.session.add(data)
 

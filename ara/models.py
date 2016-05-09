@@ -41,6 +41,7 @@ class Tasks(db.Model):
     changed = db.Column('changed', db.Integer)
     skipped = db.Column('skipped', db.Integer)
     failed = db.Column('failed', db.Integer)
+    ignore_errors = db.Column('ignore_errors', db.Integer)
 
     def __repr__(self):
         return '<Task %r>' % self.task

@@ -54,6 +54,9 @@
                 </td>
                 <td class="text-center">
                     <label class="label {{ row |pick_status }}">{{ row |pick_status }}</label><br>
+                    {% if row.failed and row.ignore_errors %}
+                    <label class="label SKIPPED">IGNORED</label><br>
+                    {% endif %}
                     {{ row.duration |truncate(5) }}s
                 </td>
                 <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
