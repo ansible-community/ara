@@ -26,36 +26,60 @@ def main():
 
 
 @app.route('/host/<host>')
-def host(host):
+@app.route('/host/<host>/<status>')
+def host(host, status=None):
     default_data = utils.default_data()
-    data = models.Tasks.query.filter_by(host=host)
+
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        data = models.Tasks.query.filter_by(host=host, **status_query)
+    else:
+        data = models.Tasks.query.filter_by(host=host)
 
     return render_template('host.html', host=host, data=data, **default_data)
 
 
 @app.route('/task/<task>')
-def task(task):
+@app.route('/task/<task>/<status>')
+def task(task, status=None):
     default_data = utils.default_data()
-    data = models.Tasks.query.filter_by(task=task)
+
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        data = models.Tasks.query.filter_by(task=task, **status_query)
+    else:
+        data = models.Tasks.query.filter_by(task=task)
 
     return render_template('task.html', task=task, data=data, **default_data)
 
 
 @app.route('/play/<play>')
-def play(play):
+@app.route('/play/<play>/<status>')
+def play(play, status=None):
     default_data = utils.default_data()
-    data = models.Tasks.query.filter_by(play=play)
+
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        data = models.Tasks.query.filter_by(play=play, **status_query)
+    else:
+        data = models.Tasks.query.filter_by(play=play)
 
     return render_template('play.html', play=play, data=data, **default_data)
 
 
 @app.route('/playbook/<playbook>')
-def playbook(playbook):
+@app.route('/playbook/<playbook>/<status>')
+def playbook(playbook, status=None):
     default_data = utils.default_data()
     playbook_data = models.Playbooks.query.filter_by(playbook=playbook).first()
     playbook_uuid = playbook_data.id
 
-    task_data = models.Tasks.query.filter_by(playbook_uuid=playbook_uuid)
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        task_data = models.Tasks.query.filter_by(playbook_uuid=playbook_uuid,
+                                                 **status_query)
+    else:
+        task_data = models.Tasks.query.filter_by(playbook_uuid=playbook_uuid)
     stats_data = models.Stats.query.filter_by(playbook_uuid=playbook_uuid)
 
     return render_template('playbook.html', playbook=playbook,

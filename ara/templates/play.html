@@ -5,8 +5,21 @@
         <h2>Playbook run for play: <span style="font-style: italic;">"{{ play }}"</span></h2>
     </div>
 </div>
+<div class="row" style="display: flex; align-items: center;">
+    <div class="col-md-6">
+        <h2>Run information</h2>
+    </div>
+    <div class="col-md-6 text-right">
+        <h3>Filter by status</h3>
+        <a href="/play/{{ play }}/ok"><label class="label status-filter OK" style="margin-right: 5px;">OK</label></a>
+        <a href="/play/{{ play }}/changed"><label class="label status-filter CHANGED" style="margin-right: 5px;">CHANGED</label></a>
+        <a href="/play/{{ play }}/skipped"><label class="label status-filter SKIPPED" style="margin-right: 5px;">SKIPPED</label></a>
+        <a href="/play/{{ play }}/failed"><label class="label status-filter FAILED" style="margin-right: 5px;">FAILED</label></a>
+        <a href="/play/{{ play }}/ignored"><label class="label status-filter SKIPPED" >IGNORED</label></a>
+    </div>
+</div>
+<br>
 <div class="row">
-    <h2 class="text-center">Run information</h2>
     <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
         <thead>
             <tr>
@@ -23,7 +36,10 @@
                     <a href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
                 </td>
                 <td class="text-center">
-                    <label class="label {{ row |pick_status }}">{{ row |pick_status }}</label><br>
+                    <a href="/play/{{ play }}/{{ row |pick_status |lower }}"><label class="label {{ row |pick_status }}">{{ row |pick_status }}</label></a><br>
+                    {% if row.failed and row.ignore_errors %}
+                    <a href="/play/{{ play }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
+                    {% endif %}
                     {{ row.duration |truncate(5) }}s
                 </td>
                 <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>

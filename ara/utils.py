@@ -53,6 +53,9 @@ def jinja_pick_status(row):
 
 
 def default_data():
+    """
+    Fetches a default set of data (mostly for displaying the top nav bar)
+    """
     data = {
         'hosts': [],
         'tasks': [],
@@ -75,3 +78,25 @@ def default_data():
             data['playbooks'].append(row.playbook)
 
     return data
+
+def status_to_query(status=None):
+    """
+    Returns a dict based on status
+    """
+    if status is not None:
+        return {
+            'ok': {
+                'changed': 0,
+                'failed': 0,
+                'skipped': 0
+            },
+            'changed': {'changed': 1},
+            'ignored': {
+                'failed': 1,
+                'ignore_errors': 1
+            },
+            'failed': {'failed': 1},
+            'skipped': {'skipped': 1},
+        }[status]
+    else:
+        return None
