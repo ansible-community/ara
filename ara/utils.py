@@ -79,6 +79,7 @@ def default_data():
 
     return data
 
+
 def status_to_query(status=None):
     """
     Returns a dict based on status
@@ -100,3 +101,25 @@ def status_to_query(status=None):
         }[status]
     else:
         return None
+
+
+def get_tasks_for_playbooks(playbook_uuids, **kwargs):
+    """
+    Returns a dict containing all the tasks for a list of playbook uuids
+    """
+    data = {}
+    for uuid in playbook_uuids:
+        data[uuid] = models.Tasks.query.filter_by(playbook_uuid=uuid, **kwargs)
+
+    return data
+
+
+def get_stats_for_playbooks(playbook_uuids, **kwargs):
+    """
+    Returns a dict containing all the stats for a list of playbook uuids
+    """
+    data = {}
+    for uuid in playbook_uuids:
+        data[uuid] = models.Stats.query.filter_by(playbook_uuid=uuid, **kwargs)
+
+    return data

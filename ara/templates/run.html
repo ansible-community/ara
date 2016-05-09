@@ -3,7 +3,34 @@
 <div class="row text-center">
     <div class="col-md-12">
         <h2>Specific run for playbook: <span style="font-style: italic;">"{{ playbook }}"</span></h2>
-        <small>UUID: {{ id }}</small>
+    </div>
+</div>
+<br>
+<div class="row" style="display: flex; align-items: center;">
+    <div class="col-md-1 text-center">
+        <h2>Info</h2>
+    </div>
+    <div class="col-md-11">
+        <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
+            <thead>
+                <tr>
+                    <th class="text-center">Playbook</th>
+                    <th class="text-center">UUID</th>
+                    <th class="text-center">Start</th>
+                    <th class="text-center">End</th>
+                    <th class="text-center">Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center"><a href="/playbook/{{ playbook_data.playbook }}">{{ playbook_data.playbook }}</a></td>
+                    <td class="text-center"><a href="/run/{{ playbook_data.id }}">{{ playbook_data.id }}</a></td>
+                    <td class="text-center">{{ playbook_data.start |datetime(format='%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="text-center">{{ playbook_data.end |datetime(format='%Y-%m-%d %H:%M:%S') }}</td>
+                    <td class="text-center">{{ playbook_data.duration |truncate(6) }}s</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <br>
@@ -40,10 +67,7 @@
 <hr>
 <br>
 <div class="row" style="display: flex; align-items: center;">
-    <div class="col-md-6">
-        <h2>Run information</h2>
-    </div>
-    <div class="col-md-6 text-right">
+    <div class="col-md-offset-6 col-md-6 text-right">
         <h3>Filter by status</h3>
         <a href="/run/{{ id }}/ok"><label class="label status-filter OK" style="margin-right: 5px;">OK</label></a>
         <a href="/run/{{ id }}/changed"><label class="label status-filter CHANGED" style="margin-right: 5px;">CHANGED</label></a>

@@ -16,44 +16,46 @@ from ara import db
 
 
 class Playbooks(db.Model):
-    id = db.Column('id', db.String, primary_key=True, nullable=False)
-    playbook = db.Column('playbook', db.String)
-    start = db.Column('start', db.String)
-    end = db.Column('end', db.String)
-    duration = db.Column('duration', db.String)
+    id = db.Column(db.String, primary_key=True, nullable=False)
+    playbook = db.Column(db.String)
+    start = db.Column(db.String)
+    end = db.Column(db.String)
+    duration = db.Column(db.String)
+    tasks = db.relationship('Tasks', backref='playbooks', lazy='dynamic')
+    stats = db.relationship('Stats', backref='playbooks', lazy='dynamic')
 
     def __repr__(self):
         return '<Playbook %r>' % self.playbook
 
 
 class Tasks(db.Model):
-    id = db.Column('id', db.String, primary_key=True, nullable=False)
-    playbook_uuid = db.Column('playbook_uuid', db.String)
-    host = db.Column('host', db.String)
-    play = db.Column('play', db.String)
-    task = db.Column('task', db.String)
-    module = db.Column('module', db.String)
-    start = db.Column('start', db.String)
-    end = db.Column('end', db.String)
-    duration = db.Column('duration', db.String)
-    result = db.Column('result', db.Text)
-    changed = db.Column('changed', db.Integer)
-    skipped = db.Column('skipped', db.Integer)
-    failed = db.Column('failed', db.Integer)
-    ignore_errors = db.Column('ignore_errors', db.Integer)
+    id = db.Column(db.String, primary_key=True, nullable=False)
+    playbook_uuid = db.Column(db.String, db.ForeignKey('playbooks.id'))
+    host = db.Column(db.String)
+    play = db.Column(db.String)
+    task = db.Column(db.String)
+    module = db.Column(db.String)
+    start = db.Column(db.String)
+    end = db.Column(db.String)
+    duration = db.Column(db.String)
+    result = db.Column(db.Text)
+    changed = db.Column(db.Integer)
+    skipped = db.Column(db.Integer)
+    failed = db.Column(db.Integer)
+    ignore_errors = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Task %r>' % self.task
 
 
 class Stats(db.Model):
-    id = db.Column('id', db.String, primary_key=True, nullable=False)
-    playbook_uuid = db.Column('playbook_uuid', db.String)
-    host = db.Column('host', db.String)
-    changed = db.Column('changed', db.Integer)
-    failures = db.Column('failures', db.Integer)
-    ok = db.Column('ok', db.Integer)
-    skipped = db.Column('skipped', db.Integer)
+    id = db.Column(db.String, primary_key=True, nullable=False)
+    playbook_uuid = db.Column(db.String, db.ForeignKey('playbooks.id'))
+    host = db.Column(db.String)
+    changed = db.Column(db.Integer)
+    failures = db.Column(db.Integer)
+    ok = db.Column(db.Integer)
+    skipped = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Stats %r>' % self.host
