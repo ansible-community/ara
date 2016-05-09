@@ -37,7 +37,7 @@
     <body>
         <div class="container" style="border-bottom:1px dashed black;">
         <nav class="navbar navbar-inverse">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="sr-only">Toggle navigation</span>
@@ -45,7 +45,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">ARA - Ansible Run Analysis</a>
+                    <a class="navbar-brand" href="/"><strong>ARA</strong> - Ansible Run Analysis</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -93,6 +93,9 @@
                         </li>
                         {% endif %}
                     </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/">About</a></li>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -102,7 +105,7 @@
     </div>
 <br>
     <div class="container text-center">
-        ARA - Ansible run analysis is an open source project available on <a href="http://github.com/dmsimard/ara">Github</a>.
+        <strong>ARA</strong> - Ansible Run Analysis is an open source project available on <a href="http://github.com/dmsimard/ara" target="_blank">Github</a>.
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>

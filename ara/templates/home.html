@@ -1,19 +1,39 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="row text-center">
+    <h3>
+        <a href="https://github.com/dmsimard/ara" target="_blank">ARA</a> is
+        an attempt to make Ansible runs easier to visualize, understand and
+        troubleshoot.<br>
+        <br>
+    </h3>
+    <h4>
+        It provides an
+        <a href="https://www.ansible.com/" target="_blank">Ansible</a> callback
+        to record playbook run data in a database and a web interface built
+        with <a href="http://flask.pocoo.org/" target="_blank">Flask</a>
+        to browse that data.
+    </h4>
+</div>
+<br>
 <div class="row">
-  <div class="col-md-12">
-    ARA is meant to make it easy to browse Ansible playbook runs.
-    <br>
-    How to use:
+    <div class="col-md-12">
+        <h1>Documentation</h1>
+        Documentation is available on <a href="http://ara.readthedocs.io/en/latest/" target="_blank">readthedocs.io</a>.
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h1>Browsing tips</h1>
+    </div>
+</div>
     <ul>
       <li>Browse hosts, tasks, plays and playbooks with the top menu</li>
       <li>When browsing details:</li>
       <ul>
         <li>Click on timestamps to generate a link to this specific event</li>
-        <li>Click on a host in the table to go to this host's events</li>
-        <li>Click on a task in the table to see all events for this task</li>
-        <li>Click on a play in the table to see all events for this play</li>
-        <li>Click on a playbook in the table to see all events for this playbook</li>
+        <li>Click anywhere on a row to expand verbose output</li>
+        <li>Click on a host, play or task to see events specific to them</li>
       </ul>
     </ul>
   </div>
