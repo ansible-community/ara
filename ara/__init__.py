@@ -26,6 +26,7 @@ if not os.path.exists(os.path.dirname(DATABASE)):
 app = Flask(__name__)
 app.config['DATABASE'] = DATABASE
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{0}".format(DATABASE)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from ara import views, models
