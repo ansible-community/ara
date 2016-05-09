@@ -27,8 +27,7 @@ class Playbooks(db.Model):
 
 
 class Tasks(db.Model):
-    id = db.Column('id', db.Integer, primary_key=True, nullable=False,
-                   autoincrement=True)
+    id = db.Column('id', db.String, primary_key=True, nullable=False)
     playbook_uuid = db.Column('playbook_uuid', db.String)
     host = db.Column('host', db.String)
     play = db.Column('play', db.String)
@@ -48,8 +47,7 @@ class Tasks(db.Model):
 
 
 class Stats(db.Model):
-    id = db.Column('id', db.Integer, primary_key=True, nullable=False,
-                   autoincrement=True)
+    id = db.Column('id', db.String, primary_key=True, nullable=False)
     playbook_uuid = db.Column('playbook_uuid', db.String)
     host = db.Column('host', db.String)
     changed = db.Column('changed', db.Integer)

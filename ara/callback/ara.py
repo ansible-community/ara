@@ -58,18 +58,19 @@ class CallbackModule(CallbackBase):
     def log_task(self, result):
         duration = (result.task_end - result.task_start).total_seconds()
         data = models.Tasks(**{
+            'id': str(uuid.uuid4()),
             'playbook_uuid': self.playbook_uuid,
-            'host':          result._host.name,
-            'play':          self.play.name,
-            'task':          self.task.name,
-            'module':        self.task.action,
-            'start':         str(result.task_start),
-            'end':           str(result.task_end),
-            'duration':      duration,
-            'result':        json.dumps(result._result),
-            'changed':       result._result['changed'],
-            'skipped':       result._result['skipped'],
-            'failed':        result._result['failed'],
+            'host': result._host.name,
+            'play': self.play.name,
+            'task': self.task.name,
+            'module': self.task.action,
+            'start': str(result.task_start),
+            'end': str(result.task_end),
+            'duration': duration,
+            'result': json.dumps(result._result),
+            'changed': result._result['changed'],
+            'skipped': result._result['skipped'],
+            'failed': result._result['failed'],
             'ignore_errors': self.task.ignore_errors or False
         })
         db.session.add(data)
@@ -79,12 +80,13 @@ class CallbackModule(CallbackBase):
         for host in hosts:
             host_stats = stats.summarize(host)
             data = models.Stats(**{
+                'id': str(uuid.uuid4()),
                 'playbook_uuid': self.playbook_uuid,
-                'host':          host,
-                'changed':       host_stats['changed'],
-                'failures':      host_stats['failures'],
-                'ok':            host_stats['ok'],
-                'skipped':       host_stats['skipped']
+                'host': host,
+                'changed': host_stats['changed'],
+                'failures': host_stats['failures'],
+                'ok': host_stats['ok'],
+                'skipped': host_stats['skipped']
             })
             db.session.add(data)
 
