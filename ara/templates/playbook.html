@@ -64,9 +64,17 @@
                 <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
                 <td style="white-space: nowrap;">
                     <ul>
-                        <li><a href="/play/{{ row.play }}">{{ row.play }}</a></li>
+                        {% if row.play %}
+                        <li><strong>Play:</strong> <a href="/play/{{ row.play }}">{{ row.play }}</a></li>
+                        {% else %}
+                        <li><strong>Play:</strong> <span style="font-style: italic">No name provided</span></li>
+                        {% endif %}
                         <ul>
-                            <li><a href="/task/{{ row.task }}">{{ row.task }}</a></li>
+                            {% if row.task %}
+                            <li><strong>Task:</strong> <a href="/task/{{ row.task }}">{{ row.task }}</a></li>
+                            {% else %}
+                            <li><strong>Task:</strong> <span style="font-style: italic">No name provided</span></li>
+                            {% endif %}
                         </ul>
                     </ul>
                 </td>
