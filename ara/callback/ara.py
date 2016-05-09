@@ -62,6 +62,7 @@ class CallbackModule(CallbackBase):
             'host':          result._host.name,
             'play':          self.play.name,
             'task':          self.task.name,
+            'module':        self.task.action,
             'start':         str(result.task_start),
             'end':           str(result.task_end),
             'duration':      duration,

@@ -33,6 +33,7 @@ class Tasks(db.Model):
     host = db.Column('host', db.String)
     play = db.Column('play', db.String)
     task = db.Column('task', db.String)
+    module = db.Column('module', db.String)
     start = db.Column('start', db.String)
     end = db.Column('end', db.String)
     duration = db.Column('duration', db.String)
