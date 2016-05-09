@@ -85,3 +85,23 @@ def playbook(playbook, status=None):
     return render_template('playbook.html', playbook=playbook,
                            playbook_data=playbook_data, task_data=task_data,
                            stats_data=stats_data, **default_data)
+
+
+@app.route('/run/<id>')
+@app.route('/run/<id>/<status>')
+def run(id, status=None):
+    default_data = utils.default_data()
+    playbook_data = models.Playbooks.query.filter_by(id=id).first()
+    playbook = playbook_data.playbook
+
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        task_data = models.Tasks.query.filter_by(playbook_uuid=id,
+                                                 **status_query)
+    else:
+        task_data = models.Tasks.query.filter_by(playbook_uuid=id)
+    stats_data = models.Stats.query.filter_by(playbook_uuid=id)
+
+    return render_template('run.html', playbook=playbook, id=id,
+                           playbook_data=playbook_data, task_data=task_data,
+                           stats_data=stats_data, **default_data)
