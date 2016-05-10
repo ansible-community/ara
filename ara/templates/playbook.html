@@ -55,7 +55,7 @@
             <tbody>
                 {% for row in stats %}
                 <tr>
-                    <td class="text-center">{{ row.host }}</td>
+                    <td class="text-center"><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
                     <td class="text-center">{{ row.ok }}</td>
                     <td class="text-center">{{ row.changed }}</td>
                     <td class="text-center">{{ row.skipped }}</td>
