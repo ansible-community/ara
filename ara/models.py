@@ -40,8 +40,9 @@ class Tasks(db.Model):
     duration = db.Column(db.String)
     result = db.Column(db.Text)
     changed = db.Column(db.Integer)
-    skipped = db.Column(db.Integer)
     failed = db.Column(db.Integer)
+    skipped = db.Column(db.Integer)
+    unreachable = db.Column(db.Integer)
     ignore_errors = db.Column(db.Integer)
 
     def __repr__(self):
@@ -56,6 +57,7 @@ class Stats(db.Model):
     failures = db.Column(db.Integer)
     ok = db.Column(db.Integer)
     skipped = db.Column(db.Integer)
+    unreachable = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Stats %r>' % self.host

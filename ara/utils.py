@@ -49,6 +49,8 @@ def jinja_pick_status(row):
         return 'SKIPPED'
     if row.failed:
         return 'FAILED'
+    if row.unreachable:
+        return 'UNREACHABLE'
     return 'OK'
 
 
@@ -92,6 +94,7 @@ def status_to_query(status=None):
             },
             'failed': {'failed': 1},
             'skipped': {'skipped': 1},
+            'unreachable': {'unreachable': 1}
         }[status]
     else:
         return None

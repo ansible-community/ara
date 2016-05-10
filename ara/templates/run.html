@@ -44,9 +44,10 @@
                 <tr>
                     <th class="text-center">Host</th>
                     <th class="text-center"><a href="/run/{{ id }}/ok"><label class="label OK">OK</label></a></th>
-                    <th class="text-center"><a href="/run/{{ id }}/changed"><label class="label CHANGED">CHANGED</label></th>
-                    <th class="text-center"><a href="/run/{{ id }}/skipped"><label class="label SKIPPED">SKIPPED</label></th>
-                    <th class="text-center"><a href="/run/{{ id }}/failed"><label class="label FAILED">FAILED</label></th>
+                    <th class="text-center"><a href="/run/{{ id }}/changed"><label class="label CHANGED">CHANGED</label></a></th>
+                    <th class="text-center"><a href="/run/{{ id }}/skipped"><label class="label SKIPPED">SKIPPED</label></a></th>
+                    <th class="text-center"><a href="/run/{{ id }}/failed"><label class="label FAILED">FAILED</label></a></th>
+                    <th class="text-center"><a href="/run/{{ id }}/unreachable"><label class="label UNREACHABLE">UNREACHABLE</label></a></th>
                 </tr>
             </thead>
             <tbody>
@@ -57,6 +58,7 @@
                     <td class="text-center">{{ row.changed }}</td>
                     <td class="text-center">{{ row.skipped }}</td>
                     <td class="text-center">{{ row.failures }}</td>
+                    <td class="text-center">{{ row.unreachable }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -65,12 +67,13 @@
 </div>
 <hr>
 <div class="row" style="display: flex; align-items: center;">
-    <div class="col-md-offset-6 col-md-6 text-right">
+    <div class="col-md-12 text-right">
         <h3>Filter by status</h3>
         <a href="/run/{{ id }}/ok"><label class="label status-filter OK" style="margin-right: 5px;">OK</label></a>
         <a href="/run/{{ id }}/changed"><label class="label status-filter CHANGED" style="margin-right: 5px;">CHANGED</label></a>
         <a href="/run/{{ id }}/skipped"><label class="label status-filter SKIPPED" style="margin-right: 5px;">SKIPPED</label></a>
         <a href="/run/{{ id }}/failed"><label class="label status-filter FAILED" style="margin-right: 5px;">FAILED</label></a>
+        <a href="/run/{{ id }}/unreachable"><label class="label status-filter UNREACHABLE" style="margin-right: 5px;">UNREACHABLE</label></a>
         <a href="/run/{{ id }}/ignored"><label class="label status-filter SKIPPED" >IGNORED</label></a>
         <a href="/run/{{ id }}"><label class="label status-filter label-default" >ALL</label></a>
     </div>

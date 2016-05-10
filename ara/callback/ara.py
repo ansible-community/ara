@@ -73,8 +73,9 @@ class CallbackModule(CallbackBase):
             'duration': duration,
             'result': json.dumps(result._result),
             'changed': result._result['changed'],
-            'skipped': result._result['skipped'],
             'failed': result._result['failed'],
+            'skipped': result._result['skipped'],
+            'unreachable': result._result['unreachable'],
             'ignore_errors': self.task.ignore_errors or False
         })
         db.session.add(data)
@@ -89,6 +90,7 @@ class CallbackModule(CallbackBase):
                 'playbook_uuid': self.playbook_uuid,
                 'host': host,
                 'changed': host_stats['changed'],
+                'unreachable': host_stats['unreachable'],
                 'failures': host_stats['failures'],
                 'ok': host_stats['ok'],
                 'skipped': host_stats['skipped']
@@ -113,7 +115,7 @@ class CallbackModule(CallbackBase):
         result.task_start = self.task_start
         result.task_end = datetime.datetime.now()
 
-        status_keys = ['changed', 'failed', 'skipped']
+        status_keys = ['changed', 'failed', 'skipped', 'unreachable']
         for status in status_keys:
             if status not in result._result:
                 result._result[status] = False
