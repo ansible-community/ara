@@ -16,7 +16,8 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-DATABASE = os.path.expanduser('~/.ara/ansible.sqlite')
+DEFAULT_DATABASE = os.path.expanduser('~/.ara/ansible.sqlite')
+DATABASE = os.getenv('ARA_DATABASE', DEFAULT_DATABASE)
 
 # TODO (dmsimard): Figure out the best place and way to initialize the
 #                  database if it hasn't been created yet.

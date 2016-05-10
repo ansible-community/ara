@@ -32,7 +32,8 @@ directory, for example::
 *That's it!*
 
 The next time you run Ansible, ARA will generate a sqlite database at the
-default path in ``~/.ara/ansible.sqlite``.
+default path in ``~/.ara/ansible.sqlite`` unless the ``ARA_DATABASE``
+environment variable is set to something else.
 
 This is the database that the web application will use.
 
