@@ -19,4 +19,4 @@ from ara import app, db
 #                  database if it hasn't been created yet.
 db.create_all()
 
-app.run()
+app.run(debug=True)
