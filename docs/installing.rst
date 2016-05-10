@@ -1,5 +1,5 @@
-Installing and using ARA
-========================
+Installing, configuring and using ARA
+=====================================
 .. Note:: ARA is currently tested against Ansible v2.0.1.0.
 
 Clone the source and install it
@@ -14,8 +14,8 @@ ARA is on PyPi_ but is not currently kept up-to-date with the fast paced early d
 
 .. _PyPi: https://pypi.python.org/pypi/ara
 
-Set up the callback
--------------------
+Setting up the callback
+-----------------------
 To use ARA, you'll first need to set up Ansible to use the ARA callback_.
 
 The callback is provided when installing ARA but you need to let Ansible know
@@ -31,20 +31,42 @@ directory, for example::
 
 *That's it!*
 
-The next time you run Ansible, ARA will generate a sqlite database at the
-default path in ``~/.ara/ansible.sqlite`` unless the ``ARA_DATABASE``
-environment variable is set to something else.
+Configuring ARA
+---------------
+ARA uses the same mechanism and configuration files as Ansible to retrieve it's
+configuration.
 
-This is the database that the web application will use.
+The order of priority is the following:
 
-To modify the path at which the database is stored and read, modify the
-configuration in ``site-packages/ara/__init__.py``.
+1. Environment variables
+2. ``./ansible.cfg`` (*In the current working directory*)
+3. ``~/.ansible.cfg`` (*In the home directory*)
+4. ``/etc/ansible/ansible.cfg``
 
-**Note**: *The configuration of the database path will be made less awkward eventually.*
+Database location
+~~~~~~~~~~~~~~~~~
+ARA records Ansible data in a sqlite database.
+Both the callback and the web application needs to know where that database
+is located.
 
-Set up the web application
---------------------------
-Set this up like `any other Flask application`_, it's nothing special (yet).
+By default, the path to the database is set to ``~/.ara/ansible.sqlite``.
+You can change this path in the same way that you define your Ansible settings.
+
+You can use an environment variable::
+
+    export ARA_DATABASE=/tmp/ara.sqlite
+
+You can also use the ``ansible.cfg`` file::
+
+    [ara]
+    database = /tmp/ara.sqlite
+
+The next time you run Ansible, ARA will ensure the directory and the database
+exists and then start using it.
+
+Setting up the web application
+------------------------------
+Set this up like `any other Flask application`_, it's nothing special (*yet*).
 To run the development webserver, you can run::
 
     python ara/run.py

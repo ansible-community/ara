@@ -42,8 +42,12 @@ class CallbackModule(CallbackBase):
 
         # TODO (dmsimard): Figure out the best place and way to initialize the
         #                  database if it hasn't been created yet.
-        if not os.path.exists(os.path.dirname(self.DATABASE)):
-            os.makedirs(os.path.dirname(self.DATABASE))
+        try:
+            if not os.path.exists(os.path.dirname(self.DATABASE)):
+                os.makedirs(os.path.dirname(self.DATABASE))
+        except Exception as e:
+            raise IOError(
+                "Unable to ensure database directory exists. " + str(e))
         db.create_all()
 
         self.task = None

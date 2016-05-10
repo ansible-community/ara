@@ -12,17 +12,24 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+from ansible.constants import get_config, load_config_file
 import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 DEFAULT_DATABASE = os.path.expanduser('~/.ara/ansible.sqlite')
-DATABASE = os.getenv('ARA_DATABASE', DEFAULT_DATABASE)
+config, file = load_config_file()
+DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
+                      DEFAULT_DATABASE)
 
 # TODO (dmsimard): Figure out the best place and way to initialize the
 #                  database if it hasn't been created yet.
-if not os.path.exists(os.path.dirname(DATABASE)):
-    os.makedirs(os.path.dirname(DATABASE))
+try:
+    if not os.path.exists(os.path.dirname(DATABASE)):
+        os.makedirs(os.path.dirname(DATABASE))
+except Exception as e:
+    raise IOError("Unable to ensure database directory exists. " + str(e))
 
 app = Flask(__name__)
 app.config['DATABASE'] = DATABASE
