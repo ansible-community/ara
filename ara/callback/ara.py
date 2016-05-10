@@ -74,6 +74,7 @@ class CallbackModule(CallbackBase):
             'ignore_errors': self.task.ignore_errors or False
         })
         db.session.add(data)
+        db.session.commit()
 
     def log_stats(self, stats):
         hosts = sorted(stats.processed.keys())
@@ -89,6 +90,7 @@ class CallbackModule(CallbackBase):
                 'skipped': host_stats['skipped']
             })
             db.session.add(data)
+            db.session.commit()
 
     def log_playbook(self):
         duration = (self.playbook_end - self.playbook_start).total_seconds()
@@ -100,6 +102,7 @@ class CallbackModule(CallbackBase):
             'duration': duration
         })
         db.session.add(data)
+        db.session.commit()
 
     def v2_runner_on_ok(self, result, **kwargs):
         self.task = result._task
@@ -132,4 +135,4 @@ class CallbackModule(CallbackBase):
         self.playbook_end = datetime.datetime.now()
         self.log_stats(stats)
         self.log_playbook()
-        db.session.commit()
+        db.session.close()
