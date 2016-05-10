@@ -108,13 +108,13 @@
                 <td style="white-space: nowrap;">
                     <ul>
                         {% if row.play %}
-                        <li><strong>Play:</strong> <a href="/play/{{ row.play }}">{{ row.play }}</a></li>
+                        <li><strong>Play:</strong> {{ row.play }}</li>
                         {% else %}
                         <li><strong>Play:</strong> <span style="font-style: italic">No name provided</span></li>
                         {% endif %}
                         <ul>
                             {% if row.task %}
-                            <li><strong>Task:</strong> <a href="/task/{{ row.task }}">{{ row.task }}</a></li>
+                            <li><strong>Task:</strong> <a href="/task/{{ row.id }}">{{ row.task }}</a></li>
                             {% else %}
                             <li><strong>Task:</strong> <span style="font-style: italic">No name provided</span></li>
                             {% endif %}

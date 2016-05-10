@@ -58,8 +58,6 @@ def default_data():
     """
     data = {
         'hosts': [],
-        'tasks': [],
-        'plays': [],
         'playbooks': []
     }
 
@@ -67,10 +65,6 @@ def default_data():
     for row in task_data:
         if row.host not in data['hosts']:
             data['hosts'].append(row.host)
-        if row.task not in data['tasks']:
-            data['tasks'].append(row.task)
-        if row.play not in data['plays']:
-            data['plays'].append(row.play)
 
     playbook_data = models.Playbooks.query.all()
     for row in playbook_data:

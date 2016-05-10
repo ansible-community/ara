@@ -74,28 +74,6 @@
                         </li>
                         {% endif %}
 
-                        {% if tasks %}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                {% for task in tasks %}
-                                <li><a href="/task/{{ task }}">{{ task }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% endif %}
-
-                        {% if plays %}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Plays <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                {% for play in plays %}
-                                <li><a href="/play/{{ play }}">{{ play }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% endif %}
-
                         {% if playbooks %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Playbooks <span class="caret"></span></a>
