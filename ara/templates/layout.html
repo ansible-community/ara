@@ -103,6 +103,9 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script>
         $(document).ready(function(){
+            $('.detail-link').click(function(e) {
+              e.stopPropagation();
+            });
             $(".task").click(function(){
                 ele = $(this).closest('tr').next('tr');
                 if (ele.css('display') == 'none')

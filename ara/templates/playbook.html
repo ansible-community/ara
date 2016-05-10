@@ -94,16 +94,16 @@
             {% for row in tasks %}
             <tr class="task">
                 <td id="{{ row.end |datetime }}" style="white-space: nowrap;">
-                    <a href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
+                    <a class="detail-link" href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
                 </td>
                 <td class="text-center">
-                    <a href="/playbook/{{ playbook }}/{{ row |pick_status |lower }}"><label class="label {{ row |pick_status }}">{{ row |pick_status }}</label></a><br>
+                    <a class="detail-link" href="/playbook/{{ playbook }}/{{ row |pick_status |lower }}"><label class="label {{ row |pick_status }}">{{ row |pick_status }}</label></a><br>
                     {% if row.failed and row.ignore_errors %}
-                    <a href="/playbook/{{ playbook }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
+                    <a class="detail-link" href="/playbook/{{ playbook }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
                     {% endif %}
                     {{ row.duration |seconds_to_duration }}
                 </td>
-                <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
+                <td><a class="detail-link" href="/host/{{ row.host }}">{{ row.host }}</a></td>
                 <td style="white-space: nowrap;">
                     <ul>
                         {% if row.play %}
@@ -113,7 +113,7 @@
                         {% endif %}
                         <ul>
                             {% if row.task %}
-                            <li><strong>Task:</strong> <a href="/task/{{ row.id }}">{{ row.task }}</a></li>
+                            <li><strong>Task:</strong> <a class="detail-link" href="/task/{{ row.id }}">{{ row.task }}</a></li>
                             {% else %}
                             <li><strong>Task:</strong> <span style="font-style: italic">No name provided</span></li>
                             {% endif %}
