@@ -41,7 +41,7 @@
                     {% if row.failed and row.ignore_errors %}
                     <a href="/task/{{ task }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
                     {% endif %}
-                    {{ row.duration |truncate(5) }}s
+                    {{ row.duration |seconds_to_duration }}
                 </td>
                 <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
                 <td style="white-space: nowrap;">

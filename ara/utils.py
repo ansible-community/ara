@@ -27,10 +27,10 @@ def jinja_date_formatter(timestamp, format='%Y-%m-%d-%H:%M:%S.%f'):
     return timestamp.strftime(format)[:-3]
 
 
-@app.template_filter('truncate')
-def jinja_truncate_string(string, length=40):
-    """ Truncates a string to max length """
-    return string[:length]
+@app.template_filter('seconds_to_duration')
+def jinja_seconds_to_duration(seconds):
+    """ Reformats an amount of seconds for friendly output"""
+    return str(datetime.timedelta(seconds=float(seconds)))[:-3]
 
 
 @app.template_filter('to_nice_json')

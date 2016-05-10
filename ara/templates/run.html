@@ -27,7 +27,7 @@
                     <td class="text-center"><a href="/run/{{ playbook_data.id }}">{{ playbook_data.id }}</a></td>
                     <td class="text-center">{{ playbook_data.start |datetime(format='%Y-%m-%d %H:%M:%S') }}</td>
                     <td class="text-center">{{ playbook_data.end |datetime(format='%Y-%m-%d %H:%M:%S') }}</td>
-                    <td class="text-center">{{ playbook_data.duration |truncate(6) }}s</td>
+                    <td class="text-center">{{ playbook_data.duration |seconds_to_duration }}</td>
                 </tr>
             </tbody>
         </table>
@@ -99,7 +99,7 @@
                     {% if row.failed and row.ignore_errors %}
                     <a href="/run/{{ id }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
                     {% endif %}
-                    {{ row.duration |truncate(5) }}s
+                    {{ row.duration |seconds_to_duration }}
                 </td>
                 <td><a href="/host/{{ row.host }}">{{ row.host }}</a></td>
                 <td style="white-space: nowrap;">
