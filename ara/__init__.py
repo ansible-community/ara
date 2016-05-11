@@ -14,27 +14,42 @@
 
 from ansible.constants import get_config, load_config_file
 import os
+import logging
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from ara.defaults import *  # NOQA
 
-DEFAULT_DATABASE = os.path.expanduser('~/.ara/ansible.sqlite')
-config, file = load_config_file()
-DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                      DEFAULT_DATABASE)
+# We always create ARA_DIR.  If people want to put a sqlite database
+# somewhere else, it's their job to create the necessary directory.
+if not os.path.isdir(ARA_DIR):
+    os.makedirs(ARA_DIR, mode=0700)
 
-# TODO (dmsimard): Figure out the best place and way to initialize the
-#                  database if it hasn't been created yet.
-try:
-    if not os.path.exists(os.path.dirname(DATABASE)):
-        os.makedirs(os.path.dirname(DATABASE))
-except Exception as e:
-    raise IOError("Unable to ensure database directory exists. " + str(e))
+config, path = load_config_file()
+DATABASE_URI = get_config(config, 'ara', 'database', 'ARA_DATABASE',
+                          DEFAULT_DATABASE)
+ARA_LOG = get_config(config, 'ara', 'logfile', 'ARA_LOG', None)
+ARA_LOG_LEVEL = get_config(config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
+                           DEFAULT_ARA_LOG_LEVEL)
+ARA_LOG_FORMAT = get_config(config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
+                            DEFAULT_ARA_LOG_FORMAT)
+
+LOG = logging.getLogger(__name__)
+if ARA_LOG is not None:
+    _fmt = logging.Formatter(ARA_LOG_FORMAT)
+    _fh = logging.FileHandler(ARA_LOG)
+    _fh.setFormatter(_fmt)
+
+    LOG.setLevel(ARA_LOG_LEVEL)
+    LOG.addHandler(_fh)
+
 
 app = Flask(__name__)
-app.config['DATABASE'] = DATABASE
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{0}".format(DATABASE)
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 from ara import views, models
+
+LOG.debug('creating database tables')
+db.create_all()
