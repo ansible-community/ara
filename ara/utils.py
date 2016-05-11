@@ -15,7 +15,7 @@
 import datetime
 import json
 
-from ara import app, models
+from ara import app, models, db
 
 
 # Jinja filters
@@ -59,19 +59,9 @@ def default_data():
     Fetches a default set of data (mostly for displaying the top nav bar)
     """
     data = {
-        'hosts': [],
-        'playbooks': []
+        'hosts': (r for (r,) in db.session.query(models.Host.name)),
+        'playbooks': (r for (r,) in db.session.query(models.Playbook.path).distinct()),
     }
-
-    task_data = models.Tasks.query.all()
-    for row in task_data:
-        if row.host not in data['hosts']:
-            data['hosts'].append(row.host)
-
-    playbook_data = models.Playbooks.query.all()
-    for row in playbook_data:
-        if row.playbook not in data['playbooks']:
-            data['playbooks'].append(row.playbook)
 
     return data
 

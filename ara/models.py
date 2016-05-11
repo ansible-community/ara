@@ -12,47 +12,127 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+from datetime import datetime
+import uuid
 from ara import db
 
+# This makes all the exceptions available as "models.<exception_name>".
+from sqlalchemy.orm.exc import *  # NOQA
 
-class Playbooks(db.Model):
-    id = db.Column(db.String, primary_key=True, nullable=False)
-    playbook = db.Column(db.String)
-    start = db.Column(db.String)
-    end = db.Column(db.String)
-    duration = db.Column(db.String)
-    tasks = db.relationship('Tasks', backref='playbooks', lazy='dynamic')
-    stats = db.relationship('Stats', backref='playbooks', lazy='dynamic')
+
+def mkuuid():
+    return str(uuid.uuid4())
+
+
+class TimedEntity(object):
+    @property
+    def duration(self):
+        return self.time_end - self.time_start
+
+    def start(self):
+        self.time_start = datetime.now()
+
+    def stop(self):
+        self.time_end = datetime.now()
+
+
+class Playbook(db.Model, TimedEntity):
+    __tablename__ = 'playbooks'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    path = db.Column(db.Text)
+    plays = db.relationship('Play', backref='playbook', lazy='dynamic')
+    tasks = db.relationship('Task', backref='playbook', lazy='dynamic')
+    stats = db.relationship('Stats', backref='playbook', lazy='dynamic')
+
+    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_end = db.Column(db.DateTime)
 
     def __repr__(self):
-        return '<Playbook %r>' % self.playbook
+        return '<Playbook %r>' % self.path
 
 
-class Tasks(db.Model):
-    id = db.Column(db.String, primary_key=True, nullable=False)
-    playbook_uuid = db.Column(db.String, db.ForeignKey('playbooks.id'))
-    host = db.Column(db.String)
-    play = db.Column(db.String)
-    task = db.Column(db.String)
-    module = db.Column(db.String)
-    start = db.Column(db.String)
-    end = db.Column(db.String)
-    duration = db.Column(db.String)
+class Play(db.Model, TimedEntity):
+    __tablename__ = 'plays'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
+    name = db.Column(db.Text)
+    tasks = db.relationship('Task', backref='play', lazy='dynamic')
+
+    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_end = db.Column(db.DateTime)
+
+
+class Task(db.Model, TimedEntity):
+    __tablename__ = 'tasks'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
+    play_id = db.Column(db.String(36), db.ForeignKey('plays.id'))
+
+    name = db.Column(db.Text)
+    action = db.Column(db.Text)
+    path = db.Column(db.Text)
+    lineno = db.Column(db.Integer)
+    is_handler = db.Column(db.Boolean)
+
+    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_end = db.Column(db.DateTime)
+
+    task_results = db.relationship('TaskResult', backref='task',
+                                   lazy='dynamic')
+
+    def __repr__(self):
+        return '<Task %r>' % self.name
+
+
+class TaskResult(db.Model, TimedEntity):
+    __tablename__ = 'task_results'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    task_id = db.Column(db.String(36), db.ForeignKey('tasks.id'))
+    host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
+
+    changed = db.Column(db.Boolean)
+    failed = db.Column(db.Boolean)
+    skipped = db.Column(db.Boolean)
+    unreachable = db.Column(db.Boolean)
+    ignore_errors = db.Column(db.Boolean)
     result = db.Column(db.Text)
-    changed = db.Column(db.Integer)
-    failed = db.Column(db.Integer)
-    skipped = db.Column(db.Integer)
-    unreachable = db.Column(db.Integer)
-    ignore_errors = db.Column(db.Integer)
+
+    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_end = db.Column(db.DateTime)
 
     def __repr__(self):
-        return '<Task %r>' % self.task
+        return '<TaskResult %r>' % self.host
+
+
+class Host(db.Model):
+    __tablename__ = 'hosts'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    name = db.Column(db.Text)
+
+    task_results = db.relationship('TaskResult', backref='host',
+                                   lazy='dynamic')
+    stats = db.relationship('Stats', backref='host',
+                                   lazy='dynamic')
 
 
 class Stats(db.Model):
-    id = db.Column(db.String, primary_key=True, nullable=False)
-    playbook_uuid = db.Column(db.String, db.ForeignKey('playbooks.id'))
-    host = db.Column(db.String)
+    __tablename__ = 'stats'
+
+    id = db.Column(db.String(36), primary_key=True, nullable=False,
+                   default=mkuuid)
+    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
+    host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
+
     changed = db.Column(db.Integer)
     failures = db.Column(db.Integer)
     ok = db.Column(db.Integer)
