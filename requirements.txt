@@ -2,3 +2,4 @@ Flask
 Flask-SQLAlchemy
 pbr>=1.6
 decorator
+cliff
