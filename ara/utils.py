@@ -110,3 +110,19 @@ def get_stats_for_playbooks(playbook_uuids, **kwargs):
         data[uuid] = models.Stats.query.filter_by(playbook_uuid=uuid, **kwargs)
 
     return data
+
+
+def get_object_properties(item, fields):
+    """Return a tuple containing the item properties.
+    :param item: a single object resource
+    :param fields: tuple of strings with the desired field names
+    :param formatters: dictionary mapping field names to callables
+       to format the values
+    """
+    row = []
+
+    for field in fields:
+        field_name = field.lower().replace(' ', '_')
+        data = getattr(item, field_name) if hasattr(item, field_name) else ''
+        row.append(data)
+    return tuple(row)

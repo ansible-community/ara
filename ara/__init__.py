@@ -16,9 +16,16 @@ from ansible.constants import get_config, load_config_file
 import os
 import logging
 
+import pbr.version
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from ara.defaults import *  # NOQA
+
+version_info = pbr.version.VersionInfo('ara')
+try:
+    __version__ = version_info.version_string()
+except AttributeError:
+    __version__ = None
 
 # We always create ARA_DIR.  If people want to put a sqlite database
 # somewhere else, it's their job to create the necessary directory.
