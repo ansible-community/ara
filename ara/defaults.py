@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #   Copyright 2016 Red Hat, Inc. All Rights Reserved.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -14,6 +13,11 @@
 #   under the License.
 
 import os
-from ara import app, db
-from ara.defaults import *  # NOQA
-app.run(debug=True, port=int(os.environ.get('ARA_PORT', DEFAULT_PORT)))
+
+ARA_DIR = os.environ.get('ARA_DIR', os.path.expanduser('~/.ara'))
+
+DEFAULT_ARA_LOG_LEVEL = os.environ.get('ARA_LOG_LEVEL', 'DEBUG')
+DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+DEFAULT_DATABASE_PATH = os.path.join(ARA_DIR, 'ansible.sqlite')
+DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
+DEFAULT_PORT = 5000

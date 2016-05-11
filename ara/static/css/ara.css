@@ -1,0 +1,34 @@
+.FAILED {
+    background-color: #a30000;
+}
+.SKIPPED {
+    background-color: #047a7b;
+}
+.OK {
+    background-color: #3e7b04;
+}
+.CHANGED {
+    background-color: #9d8000;
+}
+.UNREACHABLE {
+    background-color: #a30000;
+}
+
+tr.results {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+th {
+    font-size: 120%;
+}
+
+.label {
+    font-size: 90%;
+}
+
+.label.status-filter {
+    font-size: 110%;
+}
