@@ -16,11 +16,11 @@ ARA is two things:
 
 What does it look like ?
 ------------------------
-.. image:: images/preview.png
-
-A video is also available YouTube_.
-
+A video is available on YouTube_ and the following is a screenshot of the
+web interface:
 .. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
+
+.. image:: docs/images/preview.png
 
 Documentation
 -------------
