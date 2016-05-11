@@ -46,7 +46,7 @@ Contributors and special thanks
 See contributors on GitHub_.
 
 Special thanks to `Lars Kellogg-Stedman`_ for the early feedback on the
-early feedback on the project, ideas and code contributions.
+project, ideas and code contributions.
 
 .. _GitHub: https://github.com/dmsimard/ara/graphs/contributors
 .. _Lars Kellogg-Stedman: http://blog.oddbit.com/
