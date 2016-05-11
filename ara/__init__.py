@@ -54,6 +54,8 @@ if ARA_LOG is not None:
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = (
+    os.environ.get('ARA_SQL_DEBUG', 'false').lower() in ['1', 'true', 'yes'])
 db = SQLAlchemy(app)
 
 from ara import views, models

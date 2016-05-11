@@ -111,18 +111,25 @@ class TaskResult(db.Model, TimedEntity):
     def __repr__(self):
         return '<TaskResult %r>' % self.host
 
+host_playbook = db.Table(
+    'host_playbook',
+    db.Column('host_id', db.String(36), db.ForeignKey('hosts.id')),
+    db.Column('playbook_id', db.String(36), db.ForeignKey('playbooks.id')))
+
 
 class Host(db.Model):
     __tablename__ = 'hosts'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
                    default=mkuuid)
-    name = db.Column(db.Text)
+    name = db.Column(db.String(255), unique=True, index=True)
 
     task_results = db.relationship('TaskResult', backref='host',
                                    lazy='dynamic')
     stats = db.relationship('Stats', backref='host',
-                                   lazy='dynamic')
+                            lazy='dynamic')
+    playbooks = db.relationship('Playbook', secondary=host_playbook,
+                                backref='hosts', lazy='dynamic')
 
 
 class Stats(db.Model):
@@ -134,7 +141,7 @@ class Stats(db.Model):
     host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
 
     changed = db.Column(db.Integer)
-    failures = db.Column(db.Integer)
+    failed = db.Column(db.Integer)
     ok = db.Column(db.Integer)
     skipped = db.Column(db.Integer)
     unreachable = db.Column(db.Integer)

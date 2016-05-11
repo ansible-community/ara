@@ -32,3 +32,20 @@ th {
 .label.status-filter {
     font-size: 110%;
 }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    padding: 1ex;
+}
+
+th {
+    border-bottom: thin solid black;
+}
+
+th:not(:first-child) {
+    border-left: thin solid black;
+}
