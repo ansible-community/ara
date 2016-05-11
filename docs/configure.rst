@@ -1,25 +1,12 @@
-Installing, configuring and using ARA
-=====================================
-.. Note:: ARA is currently tested against Ansible v2.0.1.0.
-
-Clone the source and install it
--------------------------------
-::
-
-    git clone https://github.com/dmsimard/ara
-    cd ara
-    pip install .
-
-ARA is on PyPi_ but is not currently kept up-to-date with the fast paced early development.
-
-.. _PyPi: https://pypi.python.org/pypi/ara
-
-Setting up the callback
------------------------
+Configuring ARA
+===============
+Set up Ansible to use ARA
+-------------------------
 To use ARA, you'll first need to set up Ansible to use the ARA callback_.
 
-The callback is provided when installing ARA but you need to let Ansible know
-where to look for.
+The callback comes provided when installing ARA but you need to let Ansible
+know where it is located.
+
 Set up your `ansible.cfg`_ file to seek that callback in the appropriate
 directory, for example::
 
@@ -31,8 +18,8 @@ directory, for example::
 
 *That's it!*
 
-Configuring ARA
----------------
+ARA specific settings
+---------------------
 ARA uses the same mechanism and configuration files as Ansible to retrieve it's
 configuration.
 
@@ -64,12 +51,23 @@ You can also use the ``ansible.cfg`` file::
 The next time you run Ansible, ARA will ensure the directory and the database
 exists and then start using it.
 
-Setting up the web application
-------------------------------
-Set this up like `any other Flask application`_, it's nothing special (*yet*).
+The web application
+-------------------
+The ARA frontend does not necessarily need to run on the same machine that
+Ansible is executed from but it does need a database and know it's location.
+
+You could, for example, transfer databases from remote locations (and
+aggregate them) so that you could browse playbook runs from a single interface.
+
+The frontend that ARA provides is a simple Flask application.
+As such, you can configure it to run like `any other Flask application`_.
+
 To run the development webserver, you can run::
 
-    python ara/run.py
+    $ ara-dev-server
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+     * Restarting with stat
+     * Debugger is active!
+     * Debugger pin code: 605-724-687
 
 .. _any other Flask application: http://flask.pocoo.org/docs/0.10/deploying/uwsgi/

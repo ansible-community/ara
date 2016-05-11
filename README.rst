@@ -1,40 +1,40 @@
 ARA: Ansible Run Analysis
 =========================
-Important note
---------------
-ARA is in very early development !
-The documentation is definitely not thorough.
-
-Please feel free to ask questions, provide feedback, comments, bugs, ideas,
-suggestions or contributions !
-
 tl;dr
 -----
 ARA_ is an attempt to make Ansible_ runs easier to visualize, understand and
 troubleshoot.
 
-It provides an Ansible callback to record playbook run data in a database and
-a web interface built with Flask_ to browse that data.
+ARA is two things:
+
+1. An Ansible callback plugin to record playbook runs into an sqlite database
+2. A Flask_ web interface to visualize that sqlite database
 
 .. _ARA: https://github.com/dmsimard/ara
 .. _Ansible: https://www.ansible.com/
 .. _Flask: http://flask.pocoo.org/
 
-What it looks like
-------------------
-.. image:: docs/images/preview.png
+What does it look like ?
+------------------------
+.. image:: images/preview.png
+
+A video is also available YouTube_.
+
+.. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
 
 Documentation
 -------------
-There is (limited) documentation available on `readthedocs.io`_.
+Documentation is available on `readthedocs.io`_.
 
 .. _readthedocs.io: http://ara.readthedocs.io/en/latest/
 
 Installing and Using ARA
 ------------------------
-See the documentation_.
+Please refer to the documentation to install_, configure_ and use_ ARA.
 
-.. _documentation: http://ara.readthedocs.io/en/latest/installing.html
+.. _install: http://ara.readthedocs.io/en/latest/install.html
+.. _configure: http://ara.readthedocs.io/en/latest/configure.html
+.. _use: http://ara.readthedocs.io/en/latest/use.html
 
 Author
 ======
@@ -44,9 +44,11 @@ Contributors and special thanks
 ===============================
 See contributors on GitHub_.
 
-Special thanks to those who provided early feedback on the project.
+Special thanks to `Lars Kellogg-Stedman`_ for the early feedback on the
+early feedback on the project, ideas and code contributions.
 
 .. _GitHub: https://github.com/dmsimard/ara/graphs/contributors
+.. _Lars Kellogg-Stedman: http://blog.oddbit.com/
 
 Copyright
 =========
