@@ -21,22 +21,46 @@ from sqlalchemy.orm.exc import *  # NOQA
 
 
 def mkuuid():
+    '''This used to generate primary keys in the database tables.  We were
+    simply passing `default=uuid.uuid4` to `db.Column`, but it turns out
+    that while some database drivers seem to implicitly call `str()`,
+    others may be calling `repr()` which resulted in SQLIte trying to
+    use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.'''
+
     return str(uuid.uuid4())
 
 
 class TimedEntity(object):
     @property
     def duration(self):
+        '''Calculate `(time_end-time_start)` and return the resulting
+        `datetime.timedelta` object.'''
+
         return self.time_end - self.time_start
 
     def start(self):
+        '''Explicitly set `self.time_start`.'''
         self.time_start = datetime.now()
 
     def stop(self):
+        '''Explicitly set `self.time_end`.'''
         self.time_end = datetime.now()
 
 
 class Playbook(db.Model, TimedEntity):
+    '''The `Playbook` class represents a single run of
+    `ansible-playbook`.
+
+    `Playbook` entities have the following relationships:
+
+    - `plays` -- a list of plays encountered in this playbook run.
+    - `tasks` -- a list of tasks encountered in this playbook run.
+    - `stats` -- a list of  statistic records, one for each host
+      involved in this playbook.
+    - `hosts` -- a list of hosts involved in this plabook (via the
+      `playbooks` relationship defined by `Host` table).
+    '''
+
     __tablename__ = 'playbooks'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
@@ -54,6 +78,15 @@ class Playbook(db.Model, TimedEntity):
 
 
 class Play(db.Model, TimedEntity):
+    '''The `Play` class represents a play in an ansible playbook.
+
+    `Play` entities have the following relationships:
+
+    - `tasks` -- a list of tasks in this play
+    - `task_results` -- a list of task results in this play (via the
+      `tasks` relationship defined by `TaskResult`).
+    '''
+
     __tablename__ = 'plays'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
@@ -67,6 +100,19 @@ class Play(db.Model, TimedEntity):
 
 
 class Task(db.Model, TimedEntity):
+    '''The `Task` class represents a single task defined in an Ansible
+    playbook.
+
+    `Task` entities have the following relationships:
+
+    - `playbook` -- the playbook containing thist ask (via the `tasks`
+      relationship defined by `Playbook`)
+    - `play` -- the play containing this task (via the `tasks`
+       relationship defined by `Play`)
+    - `task_results` -- a list of results for each host targeted by
+      this task.
+    '''
+
     __tablename__ = 'tasks'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
@@ -91,6 +137,17 @@ class Task(db.Model, TimedEntity):
 
 
 class TaskResult(db.Model, TimedEntity):
+    '''The `TaskResult` class represents the result of running a
+    single task on a single host.
+
+    A `TaskResult` entity has the following relationships:
+
+    - `task` -- the task for which this is a result (via the
+      `task_results` relationship defined by `Task`).
+    - `host` -- the host associated with this result (via the
+      `task_results` relationship defined by `Host`)
+    '''
+
     __tablename__ = 'task_results'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
@@ -118,6 +175,19 @@ host_playbook = db.Table(
 
 
 class Host(db.Model):
+    '''The `Host` object represents a host reference by an Ansible
+    inventory.
+
+    A `Host` entity has the following relationships:
+
+    - `task_results` -- a list of `TaskResult` objects associated with
+      this host.
+    - `stats` -- a list of `Stats` objects resulting from playbook
+      runs against this host.
+    - `playbooks` -- a list of `Playbook` runs that have included this
+      host.
+    '''
+
     __tablename__ = 'hosts'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
@@ -133,6 +203,17 @@ class Host(db.Model):
 
 
 class Stats(db.Model):
+    '''A `Stats` object contains statistics for a single host from a
+    single Ansible playbook run.
+
+    A `Stats` entity has the following relationships:
+
+    - `playbook` -- the playbook associated with these statistics (via
+      the `stats` relationship defined in `Playbook`)
+    - `host` -- The host associated with these statistics (via the
+      `stats` relationship defined in `Host`)
+    '''
+
     __tablename__ = 'stats'
 
     id = db.Column(db.String(36), primary_key=True, nullable=False,
