@@ -30,6 +30,7 @@ __metaclass__ = type
 
 LOG = logging.getLogger('ara.callback')
 
+
 def commit(*attrs):
     '''This will commit the given attributes of `self` after the
     wrapped function exists.  For example, if you write:

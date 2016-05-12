@@ -31,8 +31,7 @@ class AraCli(App):
             description='A CLI client to query ARA databases',
             version=__version__,
             command_manager=CommandManager('ara.cli'),
-            deferred_help=True,
-            )
+            deferred_help=True)
 
     def build_option_parser(self, description, version):
         parser = super(AraCli, self).build_option_parser(description, version)
