@@ -30,13 +30,27 @@ class TaskList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        tasks = models.Task.query.all()
+        tasks = (models.Task.query
+                        .join(models.Play)
+                        .join(models.Playbook)
+                        .filter(models.Task.play_id == models.Play.id)
+                        .filter(models.Task.playbook_id == models.Playbook.id))
 
-        columns = ('id', 'playbook id', 'play id', 'name', 'action', 'path',
-                   'lineno', 'is handler', 'time start', 'time end')
-        return (columns,
-                (utils.get_object_properties(task, columns)
-                 for task in tasks))
+        fields = (
+            ('ID',),
+            ('Name',),
+            ('Path',),
+            ('Playbook', 'playbook.path'),
+            ('Play', 'play.name'),
+            ('Action',),
+            ('Line', 'lineno',),
+            ('Time Start',),
+            ('Time End',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(task, field)
+                  for field in fields] for task in tasks])
 
 
 class TaskShow(ShowOne):
@@ -55,7 +69,18 @@ class TaskShow(ShowOne):
     def take_action(self, parsed_args):
         task = models.Task.query.get(parsed_args.task_id)
 
-        if hasattr(task, '_sa_instance_state'):
-            delattr(task, '_sa_instance_state')
+        playbook = "{0} ({1})".format(task.playbook.path, task.playbook_id)
+        play = "{0} ({1})".format(task.play.name, task.play_id)
+        data = {
+            'ID': task.id,
+            'Name': task.name,
+            'Path': task.path,
+            'Playbook': playbook,
+            'Play': play,
+            'Action': task.action,
+            'Line': task.lineno,
+            'Time Start': task.time_start,
+            'Time End': task.time_end
+        }
 
-        return zip(*sorted(six.iteritems(task.__dict__)))
+        return zip(*sorted(six.iteritems(data)))

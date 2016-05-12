@@ -32,10 +32,16 @@ class PlaybookList(Lister):
     def take_action(self, parsed_args):
         playbooks = models.Playbook.query.all()
 
-        columns = ('id', 'path', 'time start', 'time end')
-        return (columns,
-                (utils.get_object_properties(playbook, columns)
-                 for playbook in playbooks))
+        fields = (
+            ('ID',),
+            ('Path',),
+            ('Time Start',),
+            ('Time End',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(playbook, field)
+                  for field in fields] for playbook in playbooks])
 
 
 class PlaybookShow(ShowOne):
@@ -54,7 +60,11 @@ class PlaybookShow(ShowOne):
     def take_action(self, parsed_args):
         playbook = models.Playbook.query.get(parsed_args.playbook_id)
 
-        if hasattr(playbook, '_sa_instance_state'):
-            delattr(playbook, '_sa_instance_state')
+        data = {
+            'ID': playbook.id,
+            'Path': playbook.path,
+            'Time Start': playbook.time_start,
+            'Time End': playbook.time_end
+        }
 
-        return zip(*sorted(six.iteritems(playbook.__dict__)))
+        return zip(*sorted(six.iteritems(data)))

@@ -32,10 +32,14 @@ class HostList(Lister):
     def take_action(self, parsed_args):
         hosts = models.Host.query.all()
 
-        columns = ('id', 'name')
-        return (columns,
-                (utils.get_object_properties(host, columns)
-                 for host in hosts))
+        fields = (
+            ('ID',),
+            ('Name',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(host, field)
+                  for field in fields] for host in hosts])
 
 
 class HostShow(ShowOne):
@@ -54,7 +58,9 @@ class HostShow(ShowOne):
     def take_action(self, parsed_args):
         host = models.Host.query.get(parsed_args.host_id)
 
-        if hasattr(host, '_sa_instance_state'):
-            delattr(host, '_sa_instance_state')
+        data = {
+            'ID': host.id,
+            'Name': host.name
+        }
 
-        return zip(*sorted(six.iteritems(host.__dict__)))
+        return zip(*sorted(six.iteritems(data)))

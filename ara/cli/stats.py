@@ -30,13 +30,26 @@ class StatsList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        stats = models.Stats.query.all()
+        stats = (models.Stats.query
+                 .join(models.Playbook)
+                 .join(models.Host)
+                 .filter(models.Stats.playbook_id == models.Playbook.id)
+                 .filter(models.Stats.host_id == models.Host.id))
 
-        columns = ('id', 'playbook id', 'host id', 'changed', 'failed', 'ok',
-                   'skipped', 'unreachable')
-        return (columns,
-                (utils.get_object_properties(stat, columns)
-                 for stat in stats))
+        fields = (
+            ('ID',),
+            ('Host', 'host.name'),
+            ('Playbook', 'playbook.path'),
+            ('Changed',),
+            ('Failed',),
+            ('Ok',),
+            ('Skipped',),
+            ('Unreachable',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(stat, field)
+                  for field in fields] for stat in stats])
 
 
 class StatsShow(ShowOne):
@@ -55,7 +68,17 @@ class StatsShow(ShowOne):
     def take_action(self, parsed_args):
         stats = models.Stats.query.get(parsed_args.stats_id)
 
-        if hasattr(stats, '_sa_instance_state'):
-            delattr(stats, '_sa_instance_state')
+        host = "{0} ({1})".format(stats.host.name, stats.host_id)
+        playbook = "{0} ({1})".format(stats.playbook.path, stats.playbook_id)
+        data = {
+            'ID': stats.id,
+            'Host': host,
+            'Playbook': playbook,
+            'Changed': stats.changed,
+            'Failed': stats.failed,
+            'Ok': stats.ok,
+            'Skipped': stats.skipped,
+            'Unreachable': stats.unreachable
+        }
 
-        return zip(*sorted(six.iteritems(stats.__dict__)))
+        return zip(*sorted(six.iteritems(data)))

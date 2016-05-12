@@ -144,17 +144,10 @@ def get_stats_for_playbooks(playbook_uuids, **kwargs):
     return data
 
 
-def get_object_properties(item, fields):
-    """Return a tuple containing the item properties.
-    :param item: a single object resource
-    :param fields: tuple of strings with the desired field names
-    :param formatters: dictionary mapping field names to callables
-       to format the values
-    """
-    row = []
+def get_field_attr(obj, field):
+    if len(field) > 1:
+        attribute = field[1]
+    else:
+        attribute = field[0].lower().replace(' ', '_')
 
-    for field in fields:
-        field_name = field.lower().replace(' ', '_')
-        data = getattr(item, field_name) if hasattr(item, field_name) else ''
-        row.append(data)
-    return tuple(row)
+    return reduce(getattr, attribute.split('.'), obj)

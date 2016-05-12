@@ -30,12 +30,21 @@ class PlayList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        plays = models.Play.query.all()
+        plays = (models.Play.query
+                 .join(models.Playbook)
+                 .filter(models.Play.playbook_id == models.Playbook.id))
 
-        columns = ('id', 'name', 'time start', 'time end')
-        return (columns,
-                (utils.get_object_properties(play, columns)
-                 for play in plays))
+        fields = (
+            ('ID',),
+            ('Name',),
+            ('Playbook', 'playbook.path'),
+            ('Time Start',),
+            ('Time End',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(play, field)
+                  for field in fields] for play in plays])
 
 
 class PlayShow(ShowOne):
@@ -54,7 +63,13 @@ class PlayShow(ShowOne):
     def take_action(self, parsed_args):
         play = models.Play.query.get(parsed_args.play_id)
 
-        if hasattr(play, '_sa_instance_state'):
-            delattr(play, '_sa_instance_state')
+        playbook = "{0} ({1})".format(play.playbook.path, play.playbook_id)
+        data = {
+            'ID': play.id,
+            'Name': play.name,
+            'Playbook': playbook,
+            'Time Start': play.time_start,
+            'Time End': play.time_end
+        }
 
-        return zip(*sorted(six.iteritems(play.__dict__)))
+        return zip(*sorted(six.iteritems(data)))

@@ -30,13 +30,28 @@ class ResultList(Lister):
         return parser
 
     def take_action(self, parsed_args):
-        results = models.TaskResult.query.all()
+        results = (models.TaskResult.query
+                   .join(models.Task)
+                   .join(models.Host)
+                   .filter(models.TaskResult.task_id == models.Task.id)
+                   .filter(models.TaskResult.host_id == models.Host.id))
 
-        columns = ('id', 'task id', 'host id', 'changed', 'failed', 'skipped',
-                   'unreachable', 'ignore errors', 'time start', 'time end')
-        return (columns,
-                (utils.get_object_properties(result, columns)
-                 for result in results))
+        fields = (
+            ('ID',),
+            ('Host', 'host.name'),
+            ('Task', 'task.name'),
+            ('Changed',),
+            ('Failed',),
+            ('Skipped',),
+            ('Unreachable',),
+            ('Ignore Errors',),
+            ('Time Start',),
+            ('Time End',),
+        )
+
+        return ([field[0] for field in fields],
+                [[utils.get_field_attr(result, field)
+                  for field in fields] for result in results])
 
 
 class ResultShow(ShowOne):
@@ -55,7 +70,20 @@ class ResultShow(ShowOne):
     def take_action(self, parsed_args):
         result = models.TaskResult.query.get(parsed_args.result_id)
 
-        if hasattr(result, '_sa_instance_state'):
-            delattr(result, '_sa_instance_state')
+        host = "{0} ({1})".format(result.host.name, result.host_id)
+        task = "{0} ({1})".format(result.task.name, result.task_id)
+        data = {
+            'ID': result.id,
+            'Host': host,
+            'Task': task,
+            'Changed': result.changed,
+            'Failed': result.failed,
+            'Skipped': result.skipped,
+            'Unreachable': result.unreachable,
+            'Ignore Errors': result.ignore_errors,
+            'Time Start': result.time_start,
+            'Time End': result.time_end,
+            'Result': result.result
+        }
 
-        return zip(*sorted(six.iteritems(result.__dict__)))
+        return zip(*sorted(six.iteritems(data)))
