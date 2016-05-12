@@ -32,8 +32,8 @@ class StatsList(Lister):
     def take_action(self, parsed_args):
         stats = models.Stats.query.all()
 
-        columns = ('id', 'playbook id', 'host id', 'changed', 'failures',
-                   'ok', 'skipped', 'unreachable')
+        columns = ('id', 'playbook id', 'host id', 'changed', 'failed', 'ok',
+                   'skipped', 'unreachable')
         return (columns,
                 (utils.get_object_properties(stat, columns)
                  for stat in stats))
