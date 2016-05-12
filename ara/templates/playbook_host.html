@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Host {{host.name}} in playbook 
+  {% if playbook.name %}"{{ playbook.name }}"
+  {% else %}{{playbook.id}}{% endif %}</h2>
+
+  <ul>
+    <li>{{make_link('playbook', 'playbook',
+      playbook=playbook.id)}}</li>
+  </ul>
+
+  <h2>Results</h2>
+
+  <table class="taskresult">
+    <tr>
+      <th>Start</th>
+      <th>End</th>
+      <th>Duration</th>
+      <th>Host</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+    {% for result in task_results.order_by('time_start') %}
+    <tr>
+      <td>{{result.time_start}}</td>
+      <td>{{result.time_end}}</td>
+      <td>{{result.duration}}</td>
+      <td>{{make_link('host', result.host.name, host=result.host.name)}}</td>
+      <td>{{result|pick_status}}</td>
+      <td>{{make_link('taskresult', 'details',
+        taskresult=result.id)}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}

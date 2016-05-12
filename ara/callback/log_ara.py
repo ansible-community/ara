@@ -99,6 +99,7 @@ class CallbackModule(CallbackBase):
                 result._result[status] = False
 
         host = self.get_or_create_host(result._host.name)
+        host.playbooks.append(self.playbook)
 
         self.taskresult = models.TaskResult(
             task=self.task,
@@ -126,7 +127,7 @@ class CallbackModule(CallbackBase):
                 host=host,
                 changed=host_stats['changed'],
                 unreachable=host_stats['unreachable'],
-                failures=host_stats['failures'],
+                failed=host_stats['failures'],
                 ok=host_stats['ok'],
                 skipped=host_stats['skipped']
             )

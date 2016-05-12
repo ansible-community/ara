@@ -14,8 +14,10 @@
 
 import datetime
 import json
+import itertools
 
 from ara import app, models, db
+from flask import url_for, Markup
 
 
 # Jinja filters
@@ -54,13 +56,37 @@ def jinja_pick_status(row):
     return 'OK'
 
 
+def make_link(view, label, **kwargs):
+    return Markup('<a href="{}">{}</a>'.format(
+        url_for(view, **kwargs),
+        label))
+
+
+@app.context_processor
+def add_markup_to_context():
+    return dict(make_link=make_link)
+
+
+@app.context_processor
+def add_hosts():
+    return dict(hosts=models.Host.query.order_by(models.Host.name))
+
+
+@app.context_processor
+def add_playbooks():
+    return dict(playbooks=itertools.islice(models.Playbook.query.order_by(
+        models.Playbook.time_start.desc()), 10))
+
+
 def default_data():
     """
     Fetches a default set of data (mostly for displaying the top nav bar)
     """
     data = {
-        'hosts': (r for (r,) in db.session.query(models.Host.name)),
-        'playbooks': (r for (r,) in db.session.query(models.Playbook.path).distinct()),
+        'hosts': (
+            r for (r,) in db.session.query(models.Host.name)),
+        'playbooks': (
+            r for (r,) in db.session.query(models.Playbook.path).distinct()),
     }
 
     return data

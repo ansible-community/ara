@@ -1,84 +1,11 @@
 {% extends "layout.html" %}
+
 {% block content %}
-<div class="row text-center">
-    <div class="col-md-12">
-        <h2>Playbook run for host: <span style="font-style: italic;">"{{ host }}"</span></h2>
-    </div>
-</div>
-<div class="row" style="display: flex; align-items: center;">
-    <div class="col-md-6">
-        <h2>Run information</h2>
-    </div>
-    <div class="col-md-12 text-right">
-        <h3>Filter by status</h3>
-        <a href="/host/{{ host }}/ok"><label class="label status-filter OK" style="margin-right: 5px;">OK</label></a>
-        <a href="/host/{{ host }}/changed"><label class="label status-filter CHANGED" style="margin-right: 5px;">CHANGED</label></a>
-        <a href="/host/{{ host }}/skipped"><label class="label status-filter SKIPPED" style="margin-right: 5px;">SKIPPED</label></a>
-        <a href="/host/{{ host }}/failed"><label class="label status-filter FAILED" style="margin-right: 5px;">FAILED</label></a>
-        <a href="/host/{{ host }}/unreachable"><label class="label status-filter UNREACHABLE" style="margin-right: 5px;">UNREACHABLE</label></a>
-        <a href="/host/{{ host }}/ignored"><label class="label status-filter SKIPPED" >IGNORED</label></a>
-        <a href="/host/{{ host }}"><label class="label status-filter label-default" >ALL</label></a>
-    </div>
-</div>
-<br>
-{% if data.count() %}
-<div class="row">
-    <table class="table table-striped table-hover table-condensed table-bordered" style="margin: 0 auto !important; float;">
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th class="text-center">Status</th>
-                <th>Host</th>
-                <th>Play > Task > Module</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            <tr class="task">
-                <td id="{{ row.end |datetime }}" style="white-space: nowrap;">
-                    <a class="detail-link" href="#{{ row.end |datetime }}">{{ row.end |datetime }}</a>
-                </td>
-                <td class="text-center">
-                    <a class="detail-link" href="/host/{{ host }}/{{ row |pick_status |lower }}"><label class="label {{ row |pick_status }}">{{ row |pick_status }}</label></a><br>
-                    {% if row.failed and row.ignore_errors %}
-                    <a class="detail-link" href="/host/{{ host }}/ignored"><label class="label SKIPPED">IGNORED</label></a><br>
-                    {% endif %}
-                    {{ row.duration |seconds_to_duration }}
-                </td>
-                <td><a class="detail-link" href="/host/{{ row.host }}">{{ row.host }}</a></td>
-                <td style="white-space: nowrap;">
-                    <ul>
-                        {% if row.play %}
-                        <li><strong>Play:</strong> {{ row.play }}</li>
-                        {% else %}
-                        <li><strong>Play:</strong> <span style="font-style: italic">No name provided</span></li>
-                        {% endif %}
-                        <ul>
-                            {% if row.task %}
-                            <li><strong>Task:</strong> <a class="detail-link" href="/task/{{ row.id }}">{{ row.task }}</a></li>
-                            {% else %}
-                            <li><strong>Task:</strong> <span style="font-style: italic">No name provided</span></li>
-                            {% endif %}
-                            <ul>
-                                <li><strong>Module:</strong> {{ row.module }}</li>
-                            </ul>
-                        </ul>
-                    </ul>
-                </td>
-            </tr>
-            <tr class="results" style="display: none;">
-                <td colspan="4">{{ row.result |to_nice_json }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<div class="row text-center">
-    <div class="alert alert-info col-md-6 col-md-offset-3" role="alert">
-        <strong>No tasks found for this query.</strong><br>
-        [ <a href="/host/{{ host }}">Clear filter</a> ]
-    </div>
-</div>
-{% endif %}
+<h2>Host "{{host.name}}"</h2>
+
+<ul>
+{% for playbook in host.playbooks %}
+<li>{{make_link('playbook', playbook.path, playbook=playbook.id)}} @ {{playbook.time_start}}</li>
+{% endfor %}
+</ul>
 {% endblock %}

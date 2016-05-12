@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Play{% if play.name %} "{{play.name}}"{% endif %}</h2>
+
+<ul>
+  <li>{{make_link('playbook', 'playbook',
+    playbook=play.playbook.id)}}</li>
+</ul>
+
+<table>
+  <tr>
+    <th>Start</th>
+    <th>End</th>
+    <th>Duration</th>
+    <th></td>
+  </tr>
+
+  <tr>
+    <td>{{play.time_start}}</td>
+    <td>{{play.time_end}}</td>
+    <td>{{play.duration}}</td>
+  </tr>
+</table>
+
+<h2>Tasks</h2>
+<table>
+  <tr>
+    <th>Start</th>
+    <th>End</th>
+    <th>Duration</th>
+    <th>Action</th>
+    <th>File</th>
+    <th>Line</th>
+    <th></th>
+  </tr>
+
+  {% for task in play.tasks.order_by('time_start') %}
+  <tr>
+    <td>{{task.time_start}}</td>
+    <td>{{task.time_end}}</td>
+    <td>{{task.duration}}</td>
+    <td>{{task.action}}</td>
+    <td>{{task.path}}</td>
+    <td>{{task.lineno}}</td>
+    <td>
+      {{make_link('task', 'details',
+      task=task.id)}}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+</table>
+{% endblock %}
