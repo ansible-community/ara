@@ -5,7 +5,7 @@
 
 <ul>
 {% for playbook in host.playbooks %}
-<li>{{make_link('playbook', playbook.path, playbook=playbook.id)}} @ {{playbook.time_start}}</li>
+<li>{{make_link('playbook_host', playbook.path, host=host.name, playbook=playbook.id)}} @ {{playbook.time_start}}</li>
 {% endfor %}
 </ul>
 {% endblock %}

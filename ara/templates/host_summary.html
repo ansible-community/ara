@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>All Hosts</h2>
+
+<ul>
+  {% for host in hosts %}
+  <li>{{make_link('host', host.name, host=host.name)}}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

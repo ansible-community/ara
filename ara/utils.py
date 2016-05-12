@@ -14,7 +14,6 @@
 
 import datetime
 import json
-import itertools
 
 from ara import app, models, db
 from flask import url_for, Markup
@@ -73,14 +72,16 @@ def add_markup_to_context():
 
 
 @app.context_processor
-def add_hosts():
-    return dict(hosts=models.Host.query.order_by(models.Host.name))
+def add_nav_data():
+    playbook_item_limit = app.config.get('NAV_MENU_MAX_PLAYBOOKS', 10)
+    host_item_limit = app.config.get('NAV_MENU_MAX_HOSTS', 10)
 
-
-@app.context_processor
-def add_playbooks():
-    return dict(playbooks=itertools.islice(models.Playbook.query.order_by(
-        models.Playbook.time_start.desc()), 10))
+    return dict(hosts=models.Host.query
+                .order_by(models.Host.name)
+                .limit(host_item_limit),
+                playbooks=models.Playbook.query
+                .order_by(models.Playbook.time_start.desc())
+                .limit(playbook_item_limit))
 
 
 def default_data():

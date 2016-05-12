@@ -4,7 +4,7 @@
 <h2>All Playbooks</h2>
 
 <ul>
-  {% for playbook in playbooks %}
+  {% for playbook in playbooks.order_by('time_start') %}
   <li>{{make_link('playbook', '%s @ %s' % (playbook.path,
     playbook.time_start),
     playbook=playbook.id)}}</li>

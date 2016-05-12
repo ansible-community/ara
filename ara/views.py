@@ -23,6 +23,14 @@ def main():
     return render_template('home.html')
 
 
+@app.route('/host')
+def host_summary():
+    hosts = models.Host.query.order_by(models.Host.name)
+
+    return render_template('host_summary.html',
+                           hosts=hosts)
+
+
 @app.route('/host/<host>')
 def host(host):
     host = models.Host.query.filter_by(name=host).one()
