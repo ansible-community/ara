@@ -12,12 +12,14 @@
 
   <h2>Results</h2>
 
-  <table class="taskresult">
+  <table>
     <tr>
       <th>Start</th>
       <th>End</th>
       <th>Duration</th>
       <th>Host</th>
+      <th>Task</th>
+      <th>Action</th>
       <th>Status</th>
       <th></th>
     </tr>
@@ -27,9 +29,11 @@
       <td>{{result.time_end}}</td>
       <td>{{result.duration}}</td>
       <td>{{make_link('host', result.host.name, host=result.host.name)}}</td>
+      <td>{{result.task.name}}</td>
+      <td>{{result.task.action}}</td>
       <td>{{result|pick_status}}</td>
-      <td>{{make_link('taskresult', 'details',
-        taskresult=result.id)}}</td>
+      <td>{{make_link('task_result', 'details',
+        task_result=result.id)}}</td>
     </tr>
     {% endfor %}
   </table>
