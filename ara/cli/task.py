@@ -31,10 +31,10 @@ class TaskList(Lister):
 
     def take_action(self, parsed_args):
         tasks = (models.Task.query
-                        .join(models.Play)
-                        .join(models.Playbook)
-                        .filter(models.Task.play_id == models.Play.id)
-                        .filter(models.Task.playbook_id == models.Playbook.id))
+                 .join(models.Play)
+                 .join(models.Playbook)
+                 .filter(models.Task.play_id == models.Play.id)
+                 .filter(models.Task.playbook_id == models.Playbook.id))
 
         fields = (
             ('ID',),
