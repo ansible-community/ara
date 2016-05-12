@@ -48,7 +48,11 @@ def commit(*attrs):
     def _commit(f, self, *args, **kwargs):
         rval = f(self, *args, **kwargs)
         for attr in attrs:
-            db.session.add(getattr(self, attr))
+            actual = getattr(self, attr)
+            if actual is None:
+                LOG.error('delcining to track null attribute %s', attr)
+                continue
+            db.session.add(actual)
 
         db.session.commit()
         return rval
@@ -114,7 +118,7 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get('ignore_errors', False),
         )
 
-    @commit('stats')
+    @commit()
     def log_stats(self, stats):
         '''Logs playbook statistics to the database.'''
         LOG.debug('logging stats')
@@ -122,7 +126,7 @@ class CallbackModule(CallbackBase):
         for hostname in hosts:
             host = self.get_or_create_host(hostname)
             host_stats = stats.summarize(hostname)
-            self.stats = models.Stats(
+            db.session.add(models.Stats(
                 playbook=self.playbook,
                 host=host,
                 changed=host_stats['changed'],
@@ -130,7 +134,7 @@ class CallbackModule(CallbackBase):
                 failed=host_stats['failures'],
                 ok=host_stats['ok'],
                 skipped=host_stats['skipped']
-            )
+            ))
 
     def close_task(self):
         '''Marks the completion time of the currently active task.'''
