@@ -35,9 +35,10 @@ def task(task):
     return render_template('task.html', task=task)
 
 
-@app.route('/taskresult/<taskresult>')
-def taskresult(taskresult):
-    pass
+@app.route('/task_result/<task_result>')
+def task_result(task_result):
+    task_result = models.TaskResult.query.get(task_result)
+    return render_template('task_result.html', task_result=task_result)
 
 
 @app.route('/play/<play>')
@@ -53,6 +54,7 @@ def playbook_summary():
 
     return render_template('playbook_summary.html',
                            playbooks=playbooks)
+
 
 @app.route('/playbook/<playbook>')
 def playbook(playbook):

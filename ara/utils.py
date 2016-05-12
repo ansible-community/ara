@@ -38,8 +38,13 @@ def jinja_seconds_to_duration(seconds):
 @app.template_filter('to_nice_json')
 def jinja_to_nice_json(result):
     """ Formats a result """
-    result = json.loads(result)
-    return json.dumps(result, indent=4, sort_keys=True)
+    return json.dumps(result, indent=4, sort_keys=True,
+                      default=str)
+
+
+@app.template_filter('from_json')
+def jinja2_from_json(val):
+    return json.loads(val)
 
 
 @app.template_filter('pick_status')

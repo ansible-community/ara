@@ -47,8 +47,8 @@
     <td>{{result.duration}}</td>
     <td>{{make_link('host', result.host.name, host=result.host.name)}}</td>
     <td>{{result|pick_status}}</td>
-    <td>{{make_link('taskresult', 'details',
-      taskresult=result.id)}}</td>
+    <td>{{make_link('task_result', 'details',
+      task_result=result.id)}}</td>
   </tr>
   {% endfor %}
 </table>

@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Results for host {{task_result.host.name}}</h2>
+
+<ul>
+  <li>{{make_link('task', 'task', task=task_result.task.id)}}</li>
+  <li>{{make_link('play', 'play', play=task_result.task.play.id)}}</li>
+  <li>{{make_link('playbook', 'playbook',
+    playbook=task_result.task.playbook.id)}}</li>
+</ul>
+
+<h2>Task</h2>
+
+<table>
+  <tr>
+    <th>Start</th>
+    <th>End</th>
+    <th>Duration</th>
+    <th>Action</th>
+    <th>File</th>
+    <th>Line</th>
+  </tr>
+
+  <tr>
+    <td>{{task_result.time_start}}</td>
+    <td>{{task_result.time_end}}</td>
+    <td>{{task_result.duration}}</td>
+    <td>{{task_result.task.action}}</td>
+    <td>{{task_result.task.path}}</td>
+    <td>{{task_result.task.lineno}}</td>
+  </tr>
+</table>
+
+{% set result = task_result.result|from_json %}
+
+{% for attr in ['msg', 'cmd', 'stdout', 'stderr'] %}
+{% if result.get(attr)|default(False) %}
+<h2>{{attr|title}}</h2>
+
+{% if result[attr] is string %}
+<pre>{{result[attr]}}</pre>
+{% else %}
+<pre>{{result[attr]|join(' ')}}</pre>
+{% endif %}
+{% endif %}
+{% endfor %}
+
+<h2>Full Result</h2>
+
+<pre>{{result|to_nice_json}}</pre>
+
+{% endblock %}
