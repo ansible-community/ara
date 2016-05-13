@@ -33,10 +33,9 @@ if not os.path.isdir(ARA_DIR):
     os.makedirs(ARA_DIR, mode=0700)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE
+app.config['SQLALCHEMY_DATABASE_URI'] = ARA_DATABASE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-if ARA_LOG_LEVEL == 'DEBUG':
-    app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = ARA_SQL_DEBUG
 db = SQLAlchemy(app)
 
 LOG = logging.getLogger(__name__)

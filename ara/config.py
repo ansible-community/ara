@@ -22,16 +22,19 @@ DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
 DEFAULT_ARA_LOGFILE = os.path.join(DEFAULT_ARA_DIR, 'ara.log')
 DEFAULT_ARA_LOG_LEVEL = 'INFO'
 DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+DEFAULT_ARA_SQL_DEBUG = False
 DEFAULT_PORT = 5000
 
 config, path = load_config_file()
 ARA_DIR = get_config(config, 'ara', 'dir', 'ARA_DIR', DEFAULT_ARA_DIR)
-DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                      DEFAULT_DATABASE)
+ARA_DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
+                          DEFAULT_DATABASE)
 ARA_LOG = get_config(config, 'ara', 'logfile', 'ARA_LOGFILE',
                      DEFAULT_ARA_LOGFILE)
 ARA_LOG_LEVEL = get_config(config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
                            DEFAULT_ARA_LOG_LEVEL)
 ARA_LOG_FORMAT = get_config(config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
                             DEFAULT_ARA_LOG_FORMAT)
+ARA_SQL_DEBUG = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
+                           DEFAULT_ARA_SQL_DEBUG)
 ARA_PORT = get_config(config, 'ara', 'port', 'ARA_PORT', DEFAULT_PORT)
