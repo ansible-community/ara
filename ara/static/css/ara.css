@@ -38,6 +38,11 @@ ol.breadcrumb {
     font-size: 120%;
 }
 
+td a {
+    width:100%;
+    display:block;
+}
+
 .summary table, .summary th, .summary td {
     text-align: center;
 }
