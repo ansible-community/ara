@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Host "{{ host.name }}"</h2>
+<ol class="breadcrumb">
+  <li class="active"><strong>Host</strong>: {{ host.name }}</li>
+</ol>
+
 <table class="list table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
