@@ -20,6 +20,17 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Host', 'host.name'),
+    ('Playbook',),
+    ('Changed',),
+    ('Failed',),
+    ('Ok',),
+    ('Skipped',),
+    ('Unreachable',),
+)
+
 
 class StatsList(Lister):
     """Returns a list of statistics"""
@@ -36,20 +47,11 @@ class StatsList(Lister):
                  .filter(models.Stats.playbook_id == models.Playbook.id)
                  .filter(models.Stats.host_id == models.Host.id))
 
-        fields = (
-            ('ID',),
-            ('Host', 'host.name'),
-            ('Playbook', 'playbook.path'),
-            ('Changed',),
-            ('Failed',),
-            ('Ok',),
-            ('Skipped',),
-            ('Unreachable',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(stat, field)
-                  for field in fields] for stat in stats])
+        return utils.fields_from_iter(
+            FIELDS, stats,
+            xforms={
+                'Playbook': lambda p: p.path,
+            })
 
 
 class StatsShow(ShowOne):
@@ -67,18 +69,8 @@ class StatsShow(ShowOne):
 
     def take_action(self, parsed_args):
         stats = models.Stats.query.get(parsed_args.stats_id)
-
-        host = "{0} ({1})".format(stats.host.name, stats.host_id)
-        playbook = "{0} ({1})".format(stats.playbook.path, stats.playbook_id)
-        data = {
-            'ID': stats.id,
-            'Host': host,
-            'Playbook': playbook,
-            'Changed': stats.changed,
-            'Failed': stats.failed,
-            'Ok': stats.ok,
-            'Skipped': stats.skipped,
-            'Unreachable': stats.unreachable
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        return utils.fields_from_object(
+            FIELDS, stats,
+            xforms={
+                'Playbook': (lambda p: '{0} ({1})'.format(p.path, p.id)),
+            })
