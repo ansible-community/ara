@@ -34,14 +34,14 @@ def jinja_from_json(val):
 def jinja_pick_status(row):
     """ Returns the status of a row """
     if row.changed:
-        return 'CHANGED'
+        return 'changed'
     if row.skipped:
-        return 'SKIPPED'
+        return 'skipped'
     if row.failed:
-        return 'FAILED'
+        return 'failed'
     if row.unreachable:
-        return 'UNREACHABLE'
-    return 'OK'
+        return 'unreachable'
+    return 'ok'
 
 
 def make_link(view, label, **kwargs):
@@ -139,42 +139,34 @@ def status_to_query(status=None):
     if status is not None:
         return {
             'ok': {
-                'changed': 0,
-                'failed': 0,
-                'skipped': 0
+                'changed': False,
+                'failed': False,
+                'skipped': False
             },
-            'changed': {'changed': 1},
+            'changed': {'changed': True},
             'ignored': {
-                'failed': 1,
-                'ignore_errors': 1
+                'failed': True,
+                'ignore_errors': True
             },
-            'failed': {'failed': 1},
-            'skipped': {'skipped': 1},
-            'unreachable': {'unreachable': 1}
+            'failed': {'failed': True},
+            'skipped': {'skipped': True},
+            'unreachable': {'unreachable': True}
         }[status]
     else:
         return None
 
 
-def get_tasks_for_playbooks(playbook_uuids, **kwargs):
-    """
-    Returns a dict containing all the tasks for a list of playbook uuids
-    """
+def get_summary_stats(items, attr):
     data = {}
-    for uuid in playbook_uuids:
-        data[uuid] = models.Tasks.query.filter_by(playbook_uuid=uuid, **kwargs)
-
-    return data
-
-
-def get_stats_for_playbooks(playbook_uuids, **kwargs):
-    """
-    Returns a dict containing all the stats for a list of playbook uuids
-    """
-    data = {}
-    for uuid in playbook_uuids:
-        data[uuid] = models.Stats.query.filter_by(playbook_uuid=uuid, **kwargs)
-
+    for item in items:
+        stats = models.Stats.query.filter_by(**{attr: item.id})
+        data[item.id] = {
+            'ok': sum([int(stat.ok) for stat in stats]),
+            'changed': sum([int(stat.changed) for stat in stats]),
+            'failed': sum([int(stat.failed) for stat in stats]),
+            'skipped': sum([int(stat.skipped) for stat in stats]),
+            'unreachable': sum([int(stat.unreachable) for stat in stats])
+        }
     return data
 
 

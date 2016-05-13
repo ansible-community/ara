@@ -26,9 +26,11 @@ def main():
 @app.route('/host')
 def host_summary():
     hosts = models.Host.query.order_by(models.Host.name)
+    stats = utils.get_summary_stats(hosts, 'host_id')
 
     return render_template('host_summary.html',
-                           hosts=hosts)
+                           hosts=hosts,
+                           stats=stats)
 
 
 @app.route('/host/<host>')
@@ -57,11 +59,12 @@ def play(play):
 
 @app.route('/playbook')
 def playbook_summary():
-    playbooks = models.Playbook.query.order_by(
-        models.Playbook.time_start)
+    playbooks = models.Playbook.query.order_by(models.Playbook.time_start)
+    stats = utils.get_summary_stats(playbooks, 'playbook_id')
 
     return render_template('playbook_summary.html',
-                           playbooks=playbooks)
+                           playbooks=playbooks,
+                           stats=stats)
 
 
 @app.route('/playbook/<playbook>')
