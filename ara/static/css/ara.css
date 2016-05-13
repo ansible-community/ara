@@ -1,51 +1,26 @@
-.FAILED {
+.failed {
     background-color: #a30000;
 }
-.SKIPPED {
+.skipped {
     background-color: #047a7b;
 }
-.OK {
+.ok {
     background-color: #3e7b04;
 }
-.CHANGED {
+.changed {
     background-color: #9d8000;
 }
-.UNREACHABLE {
+.unreachable {
     background-color: #a30000;
 }
 
-tr.results {
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
+ol.breadcrumb {
+    font-size: 125%;
+    margin-bottom: 10px;
+    font-family: monospace;
 }
 
-th {
-    font-size: 120%;
-}
-
-.label {
-    font-size: 90%;
-}
-
-.label.status-filter {
-    font-size: 110%;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-    padding: 1ex;
-}
-
-th {
-    border-bottom: thin solid black;
-}
-
-th:not(:first-child) {
-    border-left: thin solid black;
+.breadcrumb > li + li:before {
+    content: "> ";
+    padding: 0 2px;
 }

@@ -1,11 +1,32 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Host "{{host.name}}"</h2>
-
-<ul>
-{% for playbook in host.playbooks %}
-<li>{{make_link('playbook_host', playbook.path, host=host.name, playbook=playbook.id)}} @ {{playbook.time_start}}</li>
-{% endfor %}
-</ul>
+<h2>Host "{{ host.name }}"</h2>
+<table class="table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Playbook</th>
+      <th>Executed</th>
+      <th>Ok</th>
+      <th>Changed</th>
+      <th>Failed</th>
+      <th>Skipped</th>
+      <th>Unreachable</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for playbook in host.playbooks %}
+      {% set stats = host.stats.filter_by(playbook_id=playbook.id).one() %}
+      <tr>
+        <td>{{ make_link('playbook_host', playbook.path, host=host.name, playbook=playbook.id) }}</td>
+        <td>{{ playbook.time_start }}</td>
+        <td>{{ stats.ok }}</td>
+        <td>{{ stats.changed }}</td>
+        <td>{{ stats.failed }}</td>
+        <td>{{ stats.skipped }}</td>
+        <td>{{ stats.unreachable }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
