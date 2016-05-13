@@ -38,12 +38,12 @@
   <tbody>
     {% for stat in playbook.stats %}
     <tr>
-      <td>{{ make_link('playbook_host', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
-      <td>{{ stat.ok }}</td>
-      <td>{{ stat.changed }}</td>
-      <td>{{ stat.failed }}</td>
-      <td>{{ stat.skipped }}</td>
-      <td>{{ stat.unreachable }}</td>
+      <td>{{ macros.make_link('playbook_host', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
+        {{ macros.statslink(stat, 'ok', playbook, stat.host) }}
+        {{ macros.statslink(stat, 'changed', playbook, stat.host) }}
+        {{ macros.statslink(stat, 'failed', playbook, stat.host) }}
+        {{ macros.statslink(stat, 'skipped', playbook, stat.host) }}
+        {{ macros.statslink(stat, 'unreachable', playbook, stat.host) }}
     </tr>
     {% endfor %}
   </tbody>
@@ -66,7 +66,7 @@
       <td>{{ playbook.time_start |datetime }}</td>
       <td>{{ playbook.time_end |datetime }}</td>
       <td>{{ playbook.duration }}</td>
-      <td>{{ make_link('play', 'details', play=play.id) }}</td>
+      <td>{{ macros.make_link('play', 'details', play=play.id) }}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -95,7 +95,7 @@
       <td>{{ task.action }}</td>
       <td>{{ task.path }}</td>
       <td>{{ task.lineno }}</td>
-      <td>{{ make_link('task', 'details', task=task.id) }}
+      <td>{{ macros.make_link('task', 'details', task=task.id) }}
       </td>
     </tr>
     {% endfor %}

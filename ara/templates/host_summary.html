@@ -16,12 +16,12 @@
   <tbody>
       {% for host in hosts %}
       <tr>
-        <td>{{ make_link('host', host.name, host=host.name) }}</td>
-        <td>{{ stats[host.id]['ok'] }}</td>
-        <td>{{ stats[host.id]['changed'] }}</td>
-        <td>{{ stats[host.id]['failed'] }}</td>
-        <td>{{ stats[host.id]['skipped'] }}</td>
-        <td>{{ stats[host.id]['unreachable'] }}</td>
+        <td>{{ macros.make_link('host', host.name, host=host.name) }}</td>
+        <td>{{ stats[host.id].ok }}</td>
+        <td>{{ stats[host.id].changed }}</td>
+        <td>{{ stats[host.id].failed }}</td>
+        <td>{{ stats[host.id].skipped }}</td>
+        <td>{{ stats[host.id].unreachable }}</td>
       </tr>
     {% endfor %}
   </tbody>

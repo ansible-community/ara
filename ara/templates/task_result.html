@@ -2,9 +2,9 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li>{{ make_link('playbook', 'Playbook', playbook=task_result.task.playbook.id) }}</li>
-  <li>{{ make_link('play', 'Play', play=task_result.task.play.id) }}</li>
-  <li>{{ make_link('task', 'Task', task=task_result.task.id) }}</li>
+  <li>{{ macros.make_link('playbook', 'Playbook', playbook=task_result.task.playbook.id) }}</li>
+  <li>{{ macros.make_link('play', 'Play', play=task_result.task.play.id) }}</li>
+  <li>{{ macros.make_link('task', 'Task', task=task_result.task.id) }}</li>
   <li class="active"><strong>Host</strong>: {{ task_result.host.name }}</li>
 </ol>
 

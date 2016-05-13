@@ -16,7 +16,6 @@ from flask import render_template
 from ara import app, models, utils
 
 
-# Routes
 @app.route('/')
 def main():
     """ Returns the home page """
@@ -74,10 +73,18 @@ def playbook(playbook):
 
 
 @app.route('/playbook/<playbook>/host/<host>')
-def playbook_host(playbook, host):
+@app.route('/playbook/<playbook>/host/<host>/status/<status>')
+def playbook_host(playbook, host, status=None):
     host = models.Host.query.filter_by(name=host).one()
     playbook = models.Playbook.query.get(playbook)
-    task_results = (models.TaskResult.query
+
+    task_results = models.TaskResult.query
+
+    if status is not None:
+        status_query = utils.status_to_query(status)
+        task_results = task_results.filter_by(**status_query)
+
+    task_results = (task_results
                     .join(models.Task)
                     .join(models.Host)
                     .join(models.Playbook)
@@ -87,4 +94,5 @@ def playbook_host(playbook, host):
     return render_template('playbook_host.html',
                            playbook=playbook,
                            host=host,
-                           task_results=task_results)
+                           task_results=task_results,
+                           status=status)

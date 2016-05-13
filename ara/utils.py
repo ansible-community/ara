@@ -51,19 +51,6 @@ def jinja_pick_status(row):
     return 'ok'
 
 
-def make_link(view, label, **kwargs):
-    return Markup('<a href="{}">{}</a>'.format(
-        url_for(view, **kwargs),
-        label))
-
-
-@app.context_processor
-def ctx_add_utility_functions():
-    '''Adds some utility functions to the template context.'''
-
-    return dict(make_link=make_link)
-
-
 @app.context_processor
 def ctx_add_nav_data():
     '''Makes some standard data from the database available in the
@@ -139,28 +126,26 @@ def fields_from_object(fields, obj, xforms=None):
                for field in fields]]])
 
 
-def status_to_query(status=None):
+def status_to_query(status):
     """
-    Returns a dict based on status
+    Returns a dict to be used as filter kwargs based on status
     """
-    if status is not None:
-        return {
-            'ok': {
-                'changed': False,
-                'failed': False,
-                'skipped': False
-            },
-            'changed': {'changed': True},
-            'ignored': {
-                'failed': True,
-                'ignore_errors': True
-            },
-            'failed': {'failed': True},
-            'skipped': {'skipped': True},
-            'unreachable': {'unreachable': True}
-        }[status]
-    else:
-        return None
+    return {
+        'ok': {
+            'changed': False,
+            'failed': False,
+            'skipped': False,
+            'unreachable': False
+        },
+        'changed': {'changed': True},
+        'ignored': {
+            'failed': True,
+            'ignore_errors': True
+        },
+        'failed': {'failed': True},
+        'skipped': {'skipped': True},
+        'unreachable': {'unreachable': True}
+    }[status]
 
 
 def get_summary_stats(items, attr):
