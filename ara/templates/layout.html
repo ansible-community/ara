@@ -4,27 +4,41 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ARA - Ansible Run Analysis</title>
 
+    {% block stylesheets %}
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
+    {% endblock %}
+
+    <title>{% block title %}ARA - Ansible Run Analysis{% endblock %}</title>
   </head>
   <body>
     <div class="container" style="border-bottom:1px dashed black;">
-      {% include "navbar.html" %}
+      <div class="header">
+        {% block header %}
+        {% include "navbar.html" %}
+        {% endblock %}
+      </div>
 
-      {% block content %}
-      {% endblock %}
-      <br>
-    </div>
-    <br>
-    <div class="container text-center">
-      <strong>ARA</strong> - Ansible Run Analysis is an open source project available on <a href="http://github.com/dmsimard/ara" target="_blank">Github</a>.
+      <div class="content">
+        {% block content %}
+        {% endblock %}
+      </div>
+
+      <div class="footer">
+        {% block footer %}
+        <div class="container text-center">
+          <strong>ARA</strong> - Ansible Run Analysis is an open source project available on <a href="http://github.com/dmsimard/ara" target="_blank">Github</a>.
+        </div>
+        {% endblock %}
+      </div>
     </div>
 
+    {% block scripts %}
     <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
+    {% endblock %}
   </body>
 </html>
