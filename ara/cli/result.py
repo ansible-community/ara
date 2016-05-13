@@ -59,6 +59,11 @@ class ResultShow(ShowOne):
     def get_parser(self, prog_name):
         parser = super(ResultShow, self).get_parser(prog_name)
         parser.add_argument(
+            '--long', '-l',
+            action='store_true',
+            help='Show full JSON result',
+        )
+        parser.add_argument(
             'result_id',
             metavar='<result-id>',
             help='Result to show',
@@ -66,9 +71,15 @@ class ResultShow(ShowOne):
         return parser
 
     def take_action(self, parsed_args):
+        _fields = list(FIELDS)
+        if parsed_args.long:
+            _fields.append(('Result',))
+
         result = models.TaskResult.query.get(parsed_args.result_id)
         return utils.fields_from_object(
-            FIELDS, result,
+            _fields, result,
             xforms={
                 'Task': lambda t: '{0} ({1})'.format(t.name, t.id),
+                'Result': lambda r: utils.jinja_to_nice_json(
+                    utils.jinja_from_json(r)),
             })
