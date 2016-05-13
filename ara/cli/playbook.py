@@ -14,11 +14,10 @@
 #
 
 import logging
-import six
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import app, db, models, utils
+from ara import models, utils
 
 FIELDS = (
     ('ID',),

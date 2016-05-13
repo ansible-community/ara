@@ -12,9 +12,9 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from ansible.constants import get_config, load_config_file
 import os
 import logging
+from ansible.constants import get_config, load_config_file
 
 import pbr.version
 from flask import Flask

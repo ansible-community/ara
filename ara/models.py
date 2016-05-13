@@ -12,12 +12,12 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from datetime import datetime
 import uuid
-from ara import db
-
+from datetime import datetime
 # This makes all the exceptions available as "models.<exception_name>".
 from sqlalchemy.orm.exc import *  # NOQA
+
+from ara import db
 
 
 def mkuuid():

@@ -14,12 +14,12 @@
 #
 
 import sys
-import os
+
+from cliff.app import App
+from cliff.commandmanager import CommandManager
 
 from ara import __version__
 from ara.defaults import *  # NOQA
-from cliff.app import App
-from cliff.commandmanager import CommandManager
 
 
 class AraCli(App):

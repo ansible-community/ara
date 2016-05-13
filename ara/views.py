@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, request
+from flask import render_template
 from ara import app, models, utils
 
 

@@ -12,11 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import datetime
 import json
 
-from ara import app, models, db
 from flask import url_for, Markup
+from ara import app, models, db
 
 
 @app.template_filter('to_nice_json')
