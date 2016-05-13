@@ -15,5 +15,9 @@
 
 import os
 from ara import app, db
-from ara.defaults import *  # NOQA
-app.run(debug=True, port=int(os.environ.get('ARA_PORT', DEFAULT_PORT)))
+from ara.config import *  # NOQA
+
+if ARA_LOG_LEVEL == 'DEBUG':
+    app.run(debug=True, port=int(ARA_PORT))
+else:
+    app.run(port=int(ARA_PORT))
