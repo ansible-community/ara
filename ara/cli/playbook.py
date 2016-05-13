@@ -20,28 +20,21 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Path',),
+    ('Time Start',),
+    ('Time End',),
+)
+
 
 class PlaybookList(Lister):
     """Returns a list of playbooks"""
     log = logging.getLogger(__name__)
 
-    def get_parser(self, prog_name):
-        parser = super(PlaybookList, self).get_parser(prog_name)
-        return parser
-
     def take_action(self, parsed_args):
         playbooks = models.Playbook.query.all()
-
-        fields = (
-            ('ID',),
-            ('Path',),
-            ('Time Start',),
-            ('Time End',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(playbook, field)
-                  for field in fields] for playbook in playbooks])
+        return utils.fields_from_iter(FIELDS, playbooks)
 
 
 class PlaybookShow(ShowOne):
@@ -59,12 +52,4 @@ class PlaybookShow(ShowOne):
 
     def take_action(self, parsed_args):
         playbook = models.Playbook.query.get(parsed_args.playbook_id)
-
-        data = {
-            'ID': playbook.id,
-            'Path': playbook.path,
-            'Time Start': playbook.time_start,
-            'Time End': playbook.time_end
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        return utils.fields_from_object(FIELDS, playbook)

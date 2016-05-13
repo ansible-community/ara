@@ -20,26 +20,19 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Name',),
+)
+
 
 class HostList(Lister):
     """Returns a list of hosts"""
     log = logging.getLogger(__name__)
 
-    def get_parser(self, prog_name):
-        parser = super(HostList, self).get_parser(prog_name)
-        return parser
-
     def take_action(self, parsed_args):
         hosts = models.Host.query.all()
-
-        fields = (
-            ('ID',),
-            ('Name',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(host, field)
-                  for field in fields] for host in hosts])
+        return utils.fields_from_iter(FIELDS, hosts)
 
 
 class HostShow(ShowOne):
@@ -49,18 +42,14 @@ class HostShow(ShowOne):
     def get_parser(self, prog_name):
         parser = super(HostShow, self).get_parser(prog_name)
         parser.add_argument(
-            'host_id',
-            metavar='<host-id>',
-            help='Host to show',
+            'host',
+            metavar='<host>',
+            help='Host name or id to show',
         )
         return parser
 
     def take_action(self, parsed_args):
-        host = models.Host.query.get(parsed_args.host_id)
-
-        data = {
-            'ID': host.id,
-            'Name': host.name
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        host = (models.Host.query
+                .filter((models.Host.id == parsed_args.host) |
+                        (models.Host.name == parsed_args.host)).one())
+        return utils.fields_from_object(FIELDS, host)

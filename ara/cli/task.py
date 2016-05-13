@@ -20,14 +20,22 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Name',),
+    ('Path',),
+    ('Playbook',),
+    ('Play',),
+    ('Action',),
+    ('Line', 'lineno',),
+    ('Time Start',),
+    ('Time End',),
+)
+
 
 class TaskList(Lister):
     """Returns a list of tasks"""
     log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(TaskList, self).get_parser(prog_name)
-        return parser
 
     def take_action(self, parsed_args):
         tasks = (models.Task.query
@@ -36,21 +44,12 @@ class TaskList(Lister):
                  .filter(models.Task.play_id == models.Play.id)
                  .filter(models.Task.playbook_id == models.Playbook.id))
 
-        fields = (
-            ('ID',),
-            ('Name',),
-            ('Path',),
-            ('Playbook', 'playbook.path'),
-            ('Play', 'play.name'),
-            ('Action',),
-            ('Line', 'lineno',),
-            ('Time Start',),
-            ('Time End',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(task, field)
-                  for field in fields] for task in tasks])
+        return utils.fields_from_iter(
+            FIELDS, tasks,
+            xforms={
+                'Playbook': lambda p: p.path,
+                'Play': lambda p: p.name,
+            })
 
 
 class TaskShow(ShowOne):
@@ -69,18 +68,9 @@ class TaskShow(ShowOne):
     def take_action(self, parsed_args):
         task = models.Task.query.get(parsed_args.task_id)
 
-        playbook = "{0} ({1})".format(task.playbook.path, task.playbook_id)
-        play = "{0} ({1})".format(task.play.name, task.play_id)
-        data = {
-            'ID': task.id,
-            'Name': task.name,
-            'Path': task.path,
-            'Playbook': playbook,
-            'Play': play,
-            'Action': task.action,
-            'Line': task.lineno,
-            'Time Start': task.time_start,
-            'Time End': task.time_end
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        return utils.fields_from_object(
+            FIELDS, task,
+            xforms={
+                'Playbook': lambda p: '{0} ({1})'.format(p.path, p.id),
+                'Play': lambda p: '{0} ({1})'.format(p.name, p.id),
+            })

@@ -20,14 +20,23 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Host', 'host.name'),
+    ('Task',),
+    ('Changed',),
+    ('Failed',),
+    ('Skipped',),
+    ('Unreachable',),
+    ('Ignore Errors',),
+    ('Time Start',),
+    ('Time End',),
+)
+
 
 class ResultList(Lister):
     """Returns a list of results"""
     log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(ResultList, self).get_parser(prog_name)
-        return parser
 
     def take_action(self, parsed_args):
         results = (models.TaskResult.query
@@ -36,22 +45,11 @@ class ResultList(Lister):
                    .filter(models.TaskResult.task_id == models.Task.id)
                    .filter(models.TaskResult.host_id == models.Host.id))
 
-        fields = (
-            ('ID',),
-            ('Host', 'host.name'),
-            ('Task', 'task.name'),
-            ('Changed',),
-            ('Failed',),
-            ('Skipped',),
-            ('Unreachable',),
-            ('Ignore Errors',),
-            ('Time Start',),
-            ('Time End',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(result, field)
-                  for field in fields] for result in results])
+        return utils.fields_from_iter(
+            FIELDS, results,
+            xforms={
+                'Task': lambda t: t.name,
+            })
 
 
 class ResultShow(ShowOne):
@@ -69,21 +67,8 @@ class ResultShow(ShowOne):
 
     def take_action(self, parsed_args):
         result = models.TaskResult.query.get(parsed_args.result_id)
-
-        host = "{0} ({1})".format(result.host.name, result.host_id)
-        task = "{0} ({1})".format(result.task.name, result.task_id)
-        data = {
-            'ID': result.id,
-            'Host': host,
-            'Task': task,
-            'Changed': result.changed,
-            'Failed': result.failed,
-            'Skipped': result.skipped,
-            'Unreachable': result.unreachable,
-            'Ignore Errors': result.ignore_errors,
-            'Time Start': result.time_start,
-            'Time End': result.time_end,
-            'Result': result.result
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        return utils.fields_from_object(
+            FIELDS, result,
+            xforms={
+                'Task': lambda t: '{0} ({1})'.format(t.name, t.id),
+            })

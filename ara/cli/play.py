@@ -20,31 +20,29 @@ from cliff.lister import Lister
 from cliff.show import ShowOne
 from ara import app, db, models, utils
 
+FIELDS = (
+    ('ID',),
+    ('Name',),
+    ('Playbook',),
+    ('Time Start',),
+    ('Time End',),
+)
+
 
 class PlayList(Lister):
     """Returns a list of plays"""
     log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(PlayList, self).get_parser(prog_name)
-        return parser
 
     def take_action(self, parsed_args):
         plays = (models.Play.query
                  .join(models.Playbook)
                  .filter(models.Play.playbook_id == models.Playbook.id))
 
-        fields = (
-            ('ID',),
-            ('Name',),
-            ('Playbook', 'playbook.path'),
-            ('Time Start',),
-            ('Time End',),
-        )
-
-        return ([field[0] for field in fields],
-                [[utils.get_field_attr(play, field)
-                  for field in fields] for play in plays])
+        return utils.fields_from_iter(
+            FIELDS, plays,
+            xforms={
+                'Playbook': lambda p: p.path,
+            })
 
 
 class PlayShow(ShowOne):
@@ -62,14 +60,8 @@ class PlayShow(ShowOne):
 
     def take_action(self, parsed_args):
         play = models.Play.query.get(parsed_args.play_id)
-
-        playbook = "{0} ({1})".format(play.playbook.path, play.playbook_id)
-        data = {
-            'ID': play.id,
-            'Name': play.name,
-            'Playbook': playbook,
-            'Time Start': play.time_start,
-            'Time End': play.time_end
-        }
-
-        return zip(*sorted(six.iteritems(data)))
+        return utils.fields_from_object(
+            FIELDS, play,
+            xforms={
+                'Playbook': (lambda p: '{0} ({1})'.format(p.path, p.id)),
+            })
