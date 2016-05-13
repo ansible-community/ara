@@ -26,7 +26,7 @@ def jinja_to_nice_json(result):
 
 
 @app.template_filter('from_json')
-def jinja2_from_json(val):
+def jinja_from_json(val):
     return json.loads(val)
 
 
