@@ -34,6 +34,10 @@ ol.breadcrumb {
 }
 
 /* Table styling */
+.table th {
+    font-size: 120%;
+}
+
 .summary table, .summary th, .summary td {
     text-align: center;
 }
