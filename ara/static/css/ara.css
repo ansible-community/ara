@@ -1,3 +1,10 @@
+.footer {
+    padding-top: 15px;
+    margin-top: 25px;
+    border-top: 1px dashed black;
+}
+
+/* Status background colors */
 .failed {
     background-color: #a30000;
 }
@@ -14,6 +21,7 @@
     background-color: #a30000;
 }
 
+/* Breadcrumb styling */
 ol.breadcrumb {
     font-size: 125%;
     margin-bottom: 10px;
