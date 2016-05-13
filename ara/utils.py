@@ -157,6 +157,17 @@ def status_to_query(status=None):
 
 
 def get_summary_stats(items, attr):
+    '''Returns a dictionary of aggregated statistics for `items` filtered by
+    `attr`. For example, it will aggregate statistics for a host across all
+    the playbook runs it has been a member of, with the following structure:
+
+        data[host.id] = {
+            'ok': 4
+            'changed': 4
+            ...
+        }
+    '''
+
     data = {}
     for item in items:
         stats = models.Stats.query.filter_by(**{attr: item.id})
