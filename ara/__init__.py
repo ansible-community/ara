@@ -12,15 +12,15 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import os
 import logging
-from ansible.constants import get_config, load_config_file
-
+import os
 import pbr.version
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from ara.defaults import *  # NOQA
+from ara.config import *  # NOQA
 
+# Setup version
 version_info = pbr.version.VersionInfo('ara')
 try:
     __version__ = version_info.version_string()
@@ -32,14 +32,12 @@ except AttributeError:
 if not os.path.isdir(ARA_DIR):
     os.makedirs(ARA_DIR, mode=0700)
 
-config, path = load_config_file()
-DATABASE_URI = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                          DEFAULT_DATABASE)
-ARA_LOG = get_config(config, 'ara', 'logfile', 'ARA_LOG', None)
-ARA_LOG_LEVEL = get_config(config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
-                           DEFAULT_ARA_LOG_LEVEL)
-ARA_LOG_FORMAT = get_config(config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
-                            DEFAULT_ARA_LOG_FORMAT)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+if ARA_LOG_LEVEL == 'DEBUG':
+    app.config['SQLALCHEMY_ECHO'] = True
+db = SQLAlchemy(app)
 
 LOG = logging.getLogger(__name__)
 if ARA_LOG is not None:
@@ -50,15 +48,7 @@ if ARA_LOG is not None:
     LOG.setLevel(ARA_LOG_LEVEL)
     LOG.addHandler(_fh)
 
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = (
-    os.environ.get('ARA_SQL_DEBUG', 'false').lower() in ['1', 'true', 'yes'])
-db = SQLAlchemy(app)
-
 from ara import views, models
 
-LOG.debug('creating database tables')
+LOG.debug('Making sure database tables are created...')
 db.create_all()

@@ -19,7 +19,7 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from ara import __version__
-from ara.defaults import *  # NOQA
+from ara.config import *  # NOQA
 
 
 class AraCli(App):
