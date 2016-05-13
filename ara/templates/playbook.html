@@ -6,7 +6,7 @@
 </ol>
 
 <h2>Playbook information</h2>
-<table class="table table-striped table-bordered table-hover table-condensed">
+<table class="summary table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
       <th>Start</th>
@@ -24,7 +24,7 @@
 </table>
 
 <h2>Statistics</h2>
-<table class="table table-striped table-bordered table-hover table-condensed">
+<table class="stats table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
       <th>Host</th>
@@ -50,7 +50,7 @@
 </table>
 
 <h2>Plays</h2>
-<table class="table table-striped table-bordered table-hover table-condensed">
+<table class="plays table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
       <th>Start</th>
@@ -63,8 +63,8 @@
   <tbody>
     {% for play in playbook.plays.order_by('time_start') %}
     <tr>
-      <td>{{ playbook.time_start }}</td>
-      <td>{{ playbook.time_end }}</td>
+      <td>{{ playbook.time_start |datetime }}</td>
+      <td>{{ playbook.time_end |datetime }}</td>
       <td>{{ playbook.duration }}</td>
       <td>{{ make_link('play', 'details', play=play.id) }}</td>
     </tr>
@@ -73,7 +73,7 @@
 </table>
 
 <h2>Tasks</h2>
-<table class="table table-striped table-bordered table-hover table-condensed">
+<table class="tasks table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
       <th>Start</th>
@@ -89,8 +89,8 @@
   <tbody>
     {% for task in playbook.tasks.order_by('time_start') %}
     <tr>
-      <td>{{ task.time_start }}</td>
-      <td>{{ task.time_end }}</td>
+      <td>{{ task.time_start |datetime }}</td>
+      <td>{{ task.time_end |datetime }}</td>
       <td>{{ task.duration }}</td>
       <td>{{ task.action }}</td>
       <td>{{ task.path }}</td>
