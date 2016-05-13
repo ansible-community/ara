@@ -26,7 +26,7 @@
           <ul class="dropdown-menu">
             {% for playbook in playbooks %}
             <li><a href="/playbook/{{ playbook.id
-            }}">{{ playbook.path }} @ {{playbook.time_start}}</a></li>
+            }}">{{ playbook.path }} @ {{ playbook.time_start |datetime }}</a></li>
             {% endfor %}
             <li><a href="/playbook">All playbooks...</a></li>
           </ul>
