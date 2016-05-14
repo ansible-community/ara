@@ -1,0 +1,7 @@
+- name: Test playbook
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Integration test
+      debug:
+        msg: "Integration test"
