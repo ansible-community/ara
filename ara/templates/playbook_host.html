@@ -2,8 +2,13 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li>{{ make_link('playbook', 'Playbook', playbook=playbook.id) }}</li>
+  <li>{{ macros.make_link('playbook', 'Playbook', playbook=playbook.id) }}</li>
+  {% if status %}
+  <li>{{ macros.make_link('host', host.name, host=host.name) }}</li>
+  <li class="active"><strong>Status</strong>: {{ status }}</li>
+  {% else %}
   <li class="active"><strong>Host</strong>: {{ host.name }}</li>
+  {% endif %}
 </ol>
 
 <h2>Tasks in playbook {% if playbook.path %}"{{ playbook.path }}"
@@ -29,11 +34,11 @@
         <td>{{ result.time_start |datetime }}</td>
         <td>{{ result.time_end |datetime }}</td>
         <td>{{ result.duration }}</td>
-        <td>{{ make_link('host', result.host.name, host=result.host.name) }}</td>
+        <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
         <td>{{ result.task.name }}</td>
         <td>{{ result.task.action }}</td>
         <td>{{ result|pick_status }}</td>
-        <td>{{ make_link('task_result', 'details', task_result=result.id) }}</td>
+        <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>
       </tr>
       {% endfor %}
     </tbody>

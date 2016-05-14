@@ -40,6 +40,7 @@ ol.breadcrumb {
 td a {
     width:100%;
     display:block;
+    font-weight: bold;
 }
 
 .summary table, .summary th, .summary td {

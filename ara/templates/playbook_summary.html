@@ -17,13 +17,13 @@
   <tbody>
       {% for playbook in playbooks.order_by('time_start') %}
       <tr>
-        <td>{{ make_link('playbook', '%s' % playbook.path, playbook=playbook.id) }}</td>
+        <td>{{ macros.make_link('playbook', '%s' % playbook.path, playbook=playbook.id) }}</td>
         <td>{{ playbook.time_start |datetime }}</td>
-        <td>{{ stats[playbook.id]['ok'] }}</td>
-        <td>{{ stats[playbook.id]['changed'] }}</td>
-        <td>{{ stats[playbook.id]['failed'] }}</td>
-        <td>{{ stats[playbook.id]['skipped'] }}</td>
-        <td>{{ stats[playbook.id]['unreachable'] }}</td>
+        <td>{{ stats[playbook.id].ok }}</td>
+        <td>{{ stats[playbook.id].changed }}</td>
+        <td>{{ stats[playbook.id].failed }}</td>
+        <td>{{ stats[playbook.id].skipped }}</td>
+        <td>{{ stats[playbook.id].unreachable }}</td>
       </tr>
     {% endfor %}
   </tbody>

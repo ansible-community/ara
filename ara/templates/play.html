@@ -2,7 +2,7 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li>{{ make_link('playbook', 'Playbook', playbook=play.playbook.id) }}</li>
+  <li>{{ macros.make_link('playbook', 'Playbook', playbook=play.playbook.id) }}</li>
   <li class="active"><strong>Play</strong>{% if play.name %}: "{{play.name}}"{% endif %}</li>
 </ol>
 
@@ -48,7 +48,7 @@
     <td>{{ task.action }}</td>
     <td>{{ task.path }}</td>
     <td>{{ task.lineno }}</td>
-    <td>{{ make_link('task', 'details', task=task.id) }}</td>
+    <td>{{ macros.make_link('task', 'details', task=task.id) }}</td>
   </tr>
   {% endfor %}
   </tbody>
