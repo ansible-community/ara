@@ -18,6 +18,6 @@ from ara import app, db
 from ara.config import *  # NOQA
 
 if ARA_LOG_LEVEL == 'DEBUG':
-    app.run(debug=True, port=int(ARA_PORT))
+    app.run(debug=True, host=ARA_HOST, port=int(ARA_PORT))
 else:
-    app.run(port=int(ARA_PORT))
+    app.run(host=ARA_HOST, port=int(ARA_PORT))

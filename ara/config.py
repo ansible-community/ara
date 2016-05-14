@@ -23,6 +23,7 @@ DEFAULT_ARA_LOGFILE = os.path.join(DEFAULT_ARA_DIR, 'ara.log')
 DEFAULT_ARA_LOG_LEVEL = 'INFO'
 DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
+DEFAULT_HOST = '127.0.0.1'
 DEFAULT_PORT = 5000
 
 config, path = load_config_file()
@@ -37,4 +38,5 @@ ARA_LOG_FORMAT = get_config(config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
                             DEFAULT_ARA_LOG_FORMAT)
 ARA_SQL_DEBUG = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
                            DEFAULT_ARA_SQL_DEBUG)
+ARA_HOST = get_config(config, 'ara', 'host', 'ARA_HOST', DEFAULT_HOST)
 ARA_PORT = get_config(config, 'ara', 'port', 'ARA_PORT', DEFAULT_PORT)
