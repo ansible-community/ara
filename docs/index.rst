@@ -8,6 +8,6 @@ Table of Contents
     :maxdepth: 2
 
     Frequently asked questions <faq>
-    Installing ARA <install>
-    Configuring ARA <configure>
-    Using and running ARA <use>
+    Installation <installation>
+    Configuration <configuration>
+    Usage <usage>

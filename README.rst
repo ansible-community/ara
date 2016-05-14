@@ -5,17 +5,20 @@ tl;dr
 ARA_ is an attempt to make Ansible_ runs easier to visualize, understand and
 troubleshoot.
 
-ARA is two things:
+ARA is three things:
 
-1. An Ansible callback plugin to record playbook runs into an sqlite database
-2. A Flask_ web interface to visualize that sqlite database
+1. An `Ansible callback plugin`_ to record playbook runs into a database
+2. A `CLI client`_ to query the database
+3. A `web interface`_ to visualize the database
 
 .. _ARA: https://github.com/dmsimard/ara
 .. _Ansible: https://www.ansible.com/
-.. _Flask: http://flask.pocoo.org/
+.. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
+.. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
+.. _web interface: https://ara.readthedocs.io/en/latest/usage.html#browsing-the-web-interface
 
-What does it look like ?
-------------------------
+What does the web interface look like ?
+---------------------------------------
 A video is available on YouTube_ and the following is a screenshot of the
 web interface:
 
@@ -27,15 +30,15 @@ Documentation
 -------------
 Documentation is available on `readthedocs.io`_.
 
-.. _readthedocs.io: http://ara.readthedocs.io/en/latest/
+.. _readthedocs.io: https://ara.readthedocs.io/en/latest/
 
 Installing and Using ARA
 ------------------------
 Please refer to the documentation to install_, configure_ and use_ ARA.
 
-.. _install: http://ara.readthedocs.io/en/latest/install.html
-.. _configure: http://ara.readthedocs.io/en/latest/configure.html
-.. _use: http://ara.readthedocs.io/en/latest/use.html
+.. _install: https://ara.readthedocs.io/en/latest/installation.html
+.. _configure: https://ara.readthedocs.io/en/latest/configuration.html
+.. _use: https://ara.readthedocs.io/en/latest/usage.html
 
 Author
 ======
