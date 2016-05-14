@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li>{{ macros.make_link('playbook', 'Playbook', playbook=task_result.task.playbook.id) }}</li>
+  <li>{{ macros.make_link('play', 'Play', play=task_result.task.play.id) }}</li>
+  <li>{{ macros.make_link('task', 'Task', task=task_result.task.id) }}</li>
+  <li class="active"><strong>Host</strong>: {{ task_result.host.name }}</li>
+</ol>
+
+<h2>Task result information</h2>
+<table class="summary table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Start</th>
+      <th>End</th>
+      <th>Duration</th>
+      <th>Action</th>
+      <th>File</th>
+      <th>Line</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>{{ task_result.time_start |datetime }}</td>
+      <td>{{ task_result.time_end |datetime }}</td>
+      <td>{{ task_result.duration }}</td>
+      <td>{{ task_result.task.action }}</td>
+      <td>{{ task_result.task.path }}</td>
+      <td>{{ task_result.task.lineno }}</td>
+    </tr>
+  </tbody>
+</table>
+
+{% set result = task_result.result|from_json %}
+
+{% for attr in ['msg', 'cmd', 'stdout', 'stderr'] %}
+{% if result.get(attr)|default(False) %}
+<h2>{{attr|title}}</h2>
+
+{% if result[attr] is string %}
+<pre>{{result[attr]}}</pre>
+{% else %}
+<pre>{{result[attr]|join(' ')}}</pre>
+{% endif %}
+{% endif %}
+{% endfor %}
+
+<h2>Full Result</h2>
+
+<pre>{{result|to_nice_json}}</pre>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+.footer {
+    padding-top: 15px;
+    margin-top: 25px;
+    border-top: 1px dashed black;
+}
+
+/* Status background colors */
+.failed {
+    background-color: #a30000;
+}
+.skipped {
+    background-color: #047a7b;
+}
+.ok {
+    background-color: #3e7b04;
+}
+.changed {
+    background-color: #9d8000;
+}
+.unreachable {
+    background-color: #a30000;
+}
+
+/* Breadcrumb styling */
+ol.breadcrumb {
+    font-size: 125%;
+    font-family: monospace;
+}
+
+.breadcrumb > li + li:before {
+    content: "> ";
+    padding: 0 2px;
+}
+
+/* Table styling */
+.table th {
+    font-size: 120%;
+}
+
+td a {
+    width:100%;
+    display:block;
+    font-weight: bold;
+}
+
+.summary table, .summary th, .summary td {
+    text-align: center;
+}
+
+.stats table, .stats th, .stats td {
+    text-align: center;
+}
+
+.plays table, .plays th, .plays td {
+    text-align: center;
+}
+
+.tasks table, .tasks th, .tasks td {
+    text-align: center;
+}
+
+.results table, .results th, .results td {
+    text-align: center;
+}
+
+.list table, .list th, .list td {
+    text-align: center;
+}

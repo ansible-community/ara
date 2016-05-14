@@ -1,0 +1,17 @@
+<div id="macros">
+{% macro make_link(view, label) %}
+<a href="{{ url_for(view, **kwargs) }}">{{label}}</a>
+{% endmacro %}
+
+
+{% macro statslink(stats, stat, playbook, host) %}
+<td>
+{% if stats[stat] >= 1 -%}
+{{ make_link('playbook_host', stats[stat],
+   playbook=playbook.id, host=host.name, status=stat) }}
+{% else -%}
+0
+{% endif %}
+</td>
+{% endmacro %}
+</div>

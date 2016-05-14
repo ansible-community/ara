@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li>{{ macros.make_link('playbook', 'Playbook', playbook=playbook.id) }}</li>
+  {% if status %}
+  <li>{{ macros.make_link('host', host.name, host=host.name) }}</li>
+  <li class="active"><strong>Status</strong>: {{ status }}</li>
+  {% else %}
+  <li class="active"><strong>Host</strong>: {{ host.name }}</li>
+  {% endif %}
+</ol>
+
+<h2>Tasks in playbook {% if playbook.path %}"{{ playbook.path }}"
+  {% else %}{{playbook.id}}{% endif %} for {{ host.name }}</h2>
+
+  <h3>Results</h3>
+  <table class="results table table-striped table-bordered table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>Start</th>
+        <th>End</th>
+        <th>Duration</th>
+        <th>Host</th>
+        <th>Task</th>
+        <th>Action</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in task_results.order_by('time_start') %}
+      <tr>
+        <td>{{ result.time_start |datetime }}</td>
+        <td>{{ result.time_end |datetime }}</td>
+        <td>{{ result.duration }}</td>
+        <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
+        <td>{{ result.task.name }}</td>
+        <td>{{ result.task.action }}</td>
+        <td>{{ result|pick_status }}</td>
+        <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

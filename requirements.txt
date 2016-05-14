@@ -1,3 +1,8 @@
 Flask
 Flask-SQLAlchemy
 pbr>=1.6
+decorator
+cliff
+setuptools>=11.3
+ansible==2.0.1.0
+pymysql

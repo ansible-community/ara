@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>All Hosts</h2>
+<table class="list table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th>Ok</th>
+      <th>Changed</th>
+      <th>Failed</th>
+      <th>Skipped</th>
+      <th>Unreachable</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for host in hosts %}
+      <tr>
+        <td>{{ macros.make_link('host', host.name, host=host.name) }}</td>
+        <td>{{ stats[host.id].ok }}</td>
+        <td>{{ stats[host.id].changed }}</td>
+        <td>{{ stats[host.id].failed }}</td>
+        <td>{{ stats[host.id].skipped }}</td>
+        <td>{{ stats[host.id].unreachable }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -12,29 +12,42 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from ansible.constants import get_config, load_config_file
+import logging
 import os
+import pbr.version
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from ara.config import *  # NOQA
 
-DEFAULT_DATABASE = os.path.expanduser('~/.ara/ansible.sqlite')
-config, file = load_config_file()
-DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                      DEFAULT_DATABASE)
-
-# TODO (dmsimard): Figure out the best place and way to initialize the
-#                  database if it hasn't been created yet.
+# Setup version
+version_info = pbr.version.VersionInfo('ara')
 try:
-    if not os.path.exists(os.path.dirname(DATABASE)):
-        os.makedirs(os.path.dirname(DATABASE))
-except Exception as e:
-    raise IOError("Unable to ensure database directory exists. " + str(e))
+    __version__ = version_info.version_string()
+except AttributeError:
+    __version__ = None
+
+# We always create ARA_DIR.  If people want to put a sqlite database
+# somewhere else, it's their job to create the necessary directory.
+if not os.path.isdir(ARA_DIR):
+    os.makedirs(ARA_DIR, mode=0700)
 
 app = Flask(__name__)
-app.config['DATABASE'] = DATABASE
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///{0}".format(DATABASE)
+app.config['SQLALCHEMY_DATABASE_URI'] = ARA_DATABASE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = ARA_SQL_DEBUG
 db = SQLAlchemy(app)
 
+LOG = logging.getLogger(__name__)
+if ARA_LOG is not None:
+    _fmt = logging.Formatter(ARA_LOG_FORMAT)
+    _fh = logging.FileHandler(ARA_LOG)
+    _fh.setFormatter(_fmt)
+
+    LOG.setLevel(ARA_LOG_LEVEL)
+    LOG.addHandler(_fh)
+
 from ara import views, models
+
+LOG.debug('Making sure database tables are created...')
+db.create_all()

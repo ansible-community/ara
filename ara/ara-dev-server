@@ -13,10 +13,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import os
 from ara import app, db
+from ara.config import *  # NOQA
 
-# TODO (dmsimard): Figure out the best place and way to initialize the
-#                  database if it hasn't been created yet.
-db.create_all()
-
-app.run(debug=True)
+if ARA_LOG_LEVEL == 'DEBUG':
+    app.run(debug=True, host=ARA_HOST, port=int(ARA_PORT))
+else:
+    app.run(host=ARA_HOST, port=int(ARA_PORT))
