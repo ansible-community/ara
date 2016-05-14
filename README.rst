@@ -17,6 +17,36 @@ ARA is three things:
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
 .. _web interface: https://ara.readthedocs.io/en/latest/usage.html#browsing-the-web-interface
 
+Installing
+==========
+Packaged dependencies
+---------------------
+RHEL, CentOS, Fedora
+~~~~~~~~~~~~~~~~~~~~
+::
+
+    yum -y install gcc python-devel libffi-devel openssl-devel
+
+Ubuntu, Debian
+~~~~~~~~~~~~~~
+::
+
+    apt-get -y install gcc python-dev libffi-dev libssl-dev
+
+From source
+-----------
+::
+
+    git clone https://github.com/dmsimard/ara
+    cd ara
+    pip install .
+
+From pip
+--------
+::
+
+    pip install ara
+
 What does the web interface look like ?
 ---------------------------------------
 A video is available on YouTube_ and the following is a screenshot of the
@@ -31,14 +61,6 @@ Documentation
 Documentation is available on `readthedocs.io`_.
 
 .. _readthedocs.io: https://ara.readthedocs.io/en/latest/
-
-Installing and Using ARA
-------------------------
-Please refer to the documentation to install_, configure_ and use_ ARA.
-
-.. _install: https://ara.readthedocs.io/en/latest/installation.html
-.. _configure: https://ara.readthedocs.io/en/latest/configuration.html
-.. _use: https://ara.readthedocs.io/en/latest/usage.html
 
 Author
 ======
