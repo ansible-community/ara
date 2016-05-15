@@ -4,6 +4,15 @@
     border-top: 1px dashed black;
 }
 
+/* Wrap pre tags so they don't print endlessly horizontally */
+pre {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
 /* Status background colors */
 .failed {
     background-color: #a30000;
