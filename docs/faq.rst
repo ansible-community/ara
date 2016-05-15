@@ -69,3 +69,11 @@ ARA is currently being developed and tested against Ansible v2.0.1.0.
 
 There were some regressions in the v2.0.2.0 release and we're currently staying
 clear of that one.
+
+Can I use ARA outside the context of OpenStack ?
+------------------------------------------------
+Of course, you can.
+
+ARA is completely generic and does not require OpenStack in any way.
+ARA was developed out of necessity to make troubleshoot OpenStack continuous
+integration jobs faster and easier but you can use it for what you want.
