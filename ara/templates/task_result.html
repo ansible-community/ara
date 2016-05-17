@@ -55,7 +55,7 @@
       <td>{{ task_result.time_end |datetime }}</td>
       <td>{{ task_result.duration }}</td>
       <td>{{ task_result.task.action }}</td>
-      <td>{{ task_result.task.path }}</td>
+      <td>{{ task_result.task.path|pathtruncate }}</td>
       <td>{{ task_result.task.lineno }}</td>
     </tr>
   </tbody>

@@ -46,7 +46,7 @@
     <td>{{ task.time_end |datetime }}</td>
     <td>{{ task.duration }}</td>
     <td>{{ task.action }}</td>
-    <td>{{ task.path }}</td>
+    <td>{{ task.path|pathtruncate }}</td>
     <td>{{ task.lineno }}</td>
     <td>{{ macros.make_link('task', 'details', task=task.id) }}</td>
   </tr>

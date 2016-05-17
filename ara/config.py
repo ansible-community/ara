@@ -25,6 +25,7 @@ DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
 DEFAULT_HOST = '127.0.0.1'
 DEFAULT_PORT = 5000
+DEFAULT_ARA_PATH_MAX = 30
 
 config, path = load_config_file()
 ARA_DIR = get_config(config, 'ara', 'dir', 'ARA_DIR', DEFAULT_ARA_DIR)
@@ -40,3 +41,5 @@ ARA_SQL_DEBUG = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
                            DEFAULT_ARA_SQL_DEBUG)
 ARA_HOST = get_config(config, 'ara', 'host', 'ARA_HOST', DEFAULT_HOST)
 ARA_PORT = get_config(config, 'ara', 'port', 'ARA_PORT', DEFAULT_PORT)
+ARA_PATH_MAX = get_config(config, 'ara', 'path_max',
+                          'ARA_PATH_MAX', DEFAULT_ARA_PATH_MAX)
