@@ -61,6 +61,14 @@ def commit(*attrs):
     return decorator(_commit)
 
 
+class IncludeResult(object):
+    '''This is used by the v2_playbook_on_include callback to synthesize
+    a task result for calling log_task.'''
+    def __init__(self, host, path):
+        self._host = host
+        self._result = {'included_file': path}
+
+
 class CallbackModule(CallbackBase):
     '''
     Saves data from an Ansible run into an sqlite database
@@ -233,3 +241,8 @@ class CallbackModule(CallbackBase):
 
         LOG.debug('closing database')
         db.session.close()
+
+    def v2_playbook_on_include(self, included_file):
+        for host in included_file._hosts:
+            LOG.debug('log include file for host %s', host)
+            self.log_task(IncludeResult(host, included_file._filename))
