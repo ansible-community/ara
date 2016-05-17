@@ -1,31 +1,28 @@
 {% extends "layout.html" %}
 
 {% macro display_result(result, hdr) %}
+  {% if result is mapping %}
+    {% if 'item' in result %}
+      <{{hdr}}>Item</{{hdr}}>
+      <pre>{{result.item|to_nice_json}}</pre>
+    {% endif %}
 
-{% if result is mapping %}
-{% if 'item' in result %}
-<{{hdr}}>Item</{{hdr}}>
-<pre>{{result.item|to_nice_json}}</pre>
-{% endif %}
-
-{% for attr in result.keys()|sort
-  if attr not in ['item', 'changed', 'stdout_lines'] %}
-{% if result[attr]|default(False) %}
-<{{hdr}}>{{attr|title}}</{{hdr}}>
-
-{% if result[attr] is string %}
-<pre>{{result[attr]}}</pre>
-{% elif result[attr] is mapping or result[attr] is iterable%}
-<pre>{{result[attr]|to_nice_json}}</pre>
-{% else %}
-<pre>{{result}}</pre>
-{% endif %}
-{% endif %}
-{% endfor %}
-
-{% else %}
-<pre>{{result|to_nice_json}}</pre>
-{% endif %}
+    {% for attr in result.keys()|sort
+      if attr not in ['item', 'changed', 'stdout_lines'] %}
+      {% if result[attr]|default(False) %}
+        <{{hdr}}>{{attr|title}}</{{hdr}}>
+        {% if result[attr] is string %}
+          <pre>{{result[attr]}}</pre>
+        {% elif result[attr] is mapping or result[attr] is iterable%}
+          <pre>{{result[attr]|to_nice_json}}</pre>
+        {% else %}
+          <pre>{{result}}</pre>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <pre>{{result|to_nice_json}}</pre>
+  {% endif %}
 {% endmacro %}
 
 {% block content %}
@@ -64,13 +61,13 @@
 {% set result = task_result.result|from_json %}
 
 {% if 'results' in result %}
-{% for item in result.results %}
-<h2>Result {{loop.index}}</h2>
+  {% for item in result.results %}
+    <h2>Result {{loop.index}}</h2>
 
-{{ display_result(item, 'h3') }}
-{% endfor %}
+    {{ display_result(item, 'h3') }}
+  {% endfor %}
 {% else %}
-{{ display_result(result, 'h2') }}
+  {{ display_result(result, 'h2') }}
 {% endif %}
 
 {% endblock %}
