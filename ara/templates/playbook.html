@@ -2,7 +2,8 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li class="active"><strong>Playbook</strong>{% if playbook.path %}: "{{playbook.path}}"{% endif %}</li>
+  <li class="active"><strong>Playbook</strong>{% if playbook.path %}:
+    "{{playbook.path}}"{% endif %}</li>
 </ol>
 
 <h2>Playbook information</h2>
@@ -93,7 +94,7 @@
       <td>{{ task.time_end |datetime }}</td>
       <td>{{ task.duration }}</td>
       <td>{{ task.action }}</td>
-      <td>{{ task.path }}</td>
+      <td>{{ task.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>
       <td>{{ macros.make_link('task', 'details', task=task.id) }}
       </td>

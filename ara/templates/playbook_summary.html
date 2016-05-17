@@ -17,7 +17,8 @@
   <tbody>
       {% for playbook in playbooks.order_by('time_start') %}
       <tr>
-        <td>{{ macros.make_link('playbook', '%s' % playbook.path, playbook=playbook.id) }}</td>
+        <td>{{ macros.make_link('playbook', playbook.path|pathtruncate,
+          playbook=playbook.id) }}</td>
         <td>{{ playbook.time_start |datetime }}</td>
         <td>{{ stats[playbook.id].ok }}</td>
         <td>{{ stats[playbook.id].changed }}</td>

@@ -26,7 +26,7 @@
       <td>{{ task.time_end |datetime }}</td>
       <td>{{ task.duration }}</td>
       <td>{{ task.action }}</td>
-      <td>{{ task.path }}</td>
+      <td>{{ task.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>
     </tr>
   </tbody>

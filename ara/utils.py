@@ -12,11 +12,13 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import os
 import datetime
 import json
 
 from flask import url_for, Markup
 from ara import app, models, db
+from ara.config import ARA_PATH_MAX
 
 
 @app.template_filter('datetime')
@@ -49,6 +51,32 @@ def jinja_pick_status(row):
     if row.unreachable:
         return 'unreachable'
     return 'ok'
+
+
+@app.template_filter('pathtruncate')
+def jinja_pathtruncate(path):
+    '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
+    are truncated on path separators.  We prepend an ellipsis when we
+    return a truncated path.'''
+
+    if path is None:
+        return
+
+    if len(path) < ARA_PATH_MAX:
+        return path
+
+    # always include the basename
+    head, tail = os.path.split(path)
+    newpath = tail
+
+    while tail:
+        if len(newpath) + len(tail) > ARA_PATH_MAX:
+            break
+        newpath = os.path.join(tail, newpath)
+        head, tail = os.path.split(head)
+
+    prefix = '...' if len(newpath) < len(path) else ''
+    return os.path.join(prefix, newpath)
 
 
 @app.context_processor

@@ -21,7 +21,8 @@
       {% for playbook in host.playbooks %}
       {% set stats = host.stats.filter_by(playbook_id=playbook.id).one() %}
       <tr>
-        <td>{{ macros.make_link('playbook_host', playbook.path, host=host.name, playbook=playbook.id) }}</td>
+        <td>{{ macros.make_link('playbook_host',
+          playbook.path|pathtruncate, host=host.name, playbook=playbook.id) }}</td>
         <td>{{ playbook.time_start |datetime }}</td>
         {{ macros.statslink(stats, 'ok', playbook, host) }}
         {{ macros.statslink(stats, 'changed', playbook, host) }}

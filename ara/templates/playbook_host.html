@@ -11,7 +11,8 @@
   {% endif %}
 </ol>
 
-<h2>Tasks in playbook {% if playbook.path %}"{{ playbook.path }}"
+<h2>Tasks in playbook {% if playbook.path %}"{{
+  playbook.path|pathtruncate }}"
   {% else %}{{playbook.id}}{% endif %} for {{ host.name }}</h2>
 
   <h3>Results</h3>
