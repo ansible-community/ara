@@ -94,6 +94,7 @@ class Play(db.Model, TimedEntity):
                    default=mkuuid)
     playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
     name = db.Column(db.Text)
+    sortkey = db.Column(db.Integer)
     tasks = db.relationship('Task', backref='play', lazy='dynamic')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
@@ -125,6 +126,7 @@ class Task(db.Model, TimedEntity):
     play_id = db.Column(db.String(36), db.ForeignKey('plays.id'))
 
     name = db.Column(db.Text)
+    sortkey = db.Column(db.Integer)
     action = db.Column(db.Text)
     path = db.Column(db.Text)
     lineno = db.Column(db.Integer)

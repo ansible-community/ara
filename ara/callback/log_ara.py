@@ -16,6 +16,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import logging
 import os
+import itertools
 from datetime import datetime
 from decorator import decorator
 
@@ -85,6 +86,9 @@ class CallbackModule(CallbackBase):
         self.play = None
         self.playbook = None
         self.stats = None
+
+        self.play_counter = itertools.count()
+        self.task_counter = itertools.count()
 
     def get_or_create_host(self, hostname):
         try:
@@ -197,6 +201,7 @@ class CallbackModule(CallbackBase):
 
         self.task = models.Task(
             name=task.name,
+            sortkey=next(self.task_counter),
             action=task.action,
             play=self.play,
             playbook=self.playbook,
@@ -229,6 +234,7 @@ class CallbackModule(CallbackBase):
 
         self.play = models.Play(
             name=play.name,
+            sortkey=next(self.play_counter),
             playbook=self.playbook
         )
 
