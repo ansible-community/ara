@@ -17,7 +17,7 @@ import datetime
 import json
 
 from flask import url_for, Markup
-from ara import app, models, db
+from ara import app, models, db, LOG
 from ara.config import ARA_PATH_MAX
 
 
@@ -36,7 +36,11 @@ def jinja_to_nice_json(result):
 
 @app.template_filter('from_json')
 def jinja_from_json(val):
-    return json.loads(val)
+    try:
+        return json.loads(val)
+    except Exception as e:
+        LOG.error('Unable to load json: %s' % str(e))
+        return val
 
 
 @app.template_filter('pick_status')

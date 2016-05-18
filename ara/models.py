@@ -163,7 +163,7 @@ class TaskResult(db.Model, TimedEntity):
     skipped = db.Column(db.Boolean)
     unreachable = db.Column(db.Boolean)
     ignore_errors = db.Column(db.Boolean)
-    result = db.Column(db.Text)
+    result = db.Column(db.Text(16777215))
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
