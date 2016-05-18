@@ -89,7 +89,8 @@ def playbook_host(playbook, host, status=None):
                     .join(models.Host)
                     .join(models.Playbook)
                     .filter(models.Playbook.id == playbook.id)
-                    .filter(models.Host.name == host.name))
+                    .filter(models.Host.name == host.name)
+                    .order_by(models.TaskResult.time_start))
 
     return render_template('playbook_host.html',
                            playbook=playbook,
