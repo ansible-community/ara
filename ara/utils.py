@@ -43,20 +43,6 @@ def jinja_from_json(val):
         return val
 
 
-@app.template_filter('pick_status')
-def jinja_pick_status(row):
-    """ Returns the status of a row """
-    if row.changed:
-        return 'changed'
-    if row.skipped:
-        return 'skipped'
-    if row.failed:
-        return 'failed'
-    if row.unreachable:
-        return 'unreachable'
-    return 'ok'
-
-
 @app.template_filter('pathtruncate')
 def jinja_pathtruncate(path):
     '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
@@ -97,20 +83,6 @@ def ctx_add_nav_data():
                 playbooks=models.Playbook.query
                 .order_by(models.Playbook.time_start.desc())
                 .limit(playbook_item_limit))
-
-
-def default_data():
-    """
-    Fetches a default set of data (mostly for displaying the top nav bar)
-    """
-    data = {
-        'hosts': (
-            r for (r,) in db.session.query(models.Host.name)),
-        'playbooks': (
-            r for (r,) in db.session.query(models.Playbook.path).distinct()),
-    }
-
-    return data
 
 
 def fields_from_iter(fields, items, xforms=None):
@@ -162,22 +134,15 @@ def status_to_query(status):
     """
     Returns a dict to be used as filter kwargs based on status
     """
-    return {
-        'ok': {
-            'changed': False,
-            'failed': False,
-            'skipped': False,
-            'unreachable': False
-        },
-        'changed': {'changed': True},
-        'ignored': {
-            'failed': True,
-            'ignore_errors': True
-        },
-        'failed': {'failed': True},
-        'skipped': {'skipped': True},
-        'unreachable': {'unreachable': True}
-    }[status]
+    if status == 'changed':
+        return {
+            'status': 'ok',
+            'changed': True,
+        }
+    else:
+        return {
+            'status': status,
+        }
 
 
 def get_summary_stats(items, attr):

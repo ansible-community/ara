@@ -14,6 +14,7 @@
 
 import uuid
 from datetime import datetime
+
 # This makes all the exceptions available as "models.<exception_name>".
 from sqlalchemy.orm.exc import *  # NOQA
 
@@ -93,6 +94,7 @@ class Play(db.Model, TimedEntity):
                    default=mkuuid)
     playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
     name = db.Column(db.Text)
+    sortkey = db.Column(db.Integer)
     tasks = db.relationship('Task', backref='play', lazy='dynamic')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
@@ -124,6 +126,7 @@ class Task(db.Model, TimedEntity):
     play_id = db.Column(db.String(36), db.ForeignKey('plays.id'))
 
     name = db.Column(db.Text)
+    sortkey = db.Column(db.Integer)
     action = db.Column(db.Text)
     path = db.Column(db.Text)
     lineno = db.Column(db.Integer)
@@ -158,15 +161,21 @@ class TaskResult(db.Model, TimedEntity):
     task_id = db.Column(db.String(36), db.ForeignKey('tasks.id'))
     host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
 
-    changed = db.Column(db.Boolean)
-    failed = db.Column(db.Boolean)
-    skipped = db.Column(db.Boolean)
-    unreachable = db.Column(db.Boolean)
-    ignore_errors = db.Column(db.Boolean)
+    status = db.Column(db.Enum('ok', 'failed', 'skipped', 'unreachable'))
+    changed = db.Column(db.Boolean, default=False)
+    failed = db.Column(db.Boolean, default=False)
+    skipped = db.Column(db.Boolean, default=False)
+    unreachable = db.Column(db.Boolean, default=False)
+    ignore_errors = db.Column(db.Boolean, default=False)
     result = db.Column(db.Text(16777215))
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
+
+    @property
+    def derived_status(self):
+        return ('changed' if self.status == 'ok' and self.changed
+                else self.status)
 
     def __repr__(self):
         return '<TaskResult %s>' % self.host.name

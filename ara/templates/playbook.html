@@ -62,7 +62,7 @@
   </thead>
 
   <tbody>
-    {% for play in playbook.plays.order_by('time_start') %}
+    {% for play in playbook.plays.order_by('sortkey') %}
     <tr>
       <td>{{ playbook.time_start |datetime }}</td>
       <td>{{ playbook.time_end |datetime }}</td>
@@ -88,7 +88,7 @@
   </thead>
 
   <tbody>
-    {% for task in playbook.tasks.order_by('time_start') %}
+    {% for task in playbook.tasks.order_by('sortkey') %}
     <tr>
       <td>{{ task.time_start |datetime }}</td>
       <td>{{ task.time_end |datetime }}</td>

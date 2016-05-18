@@ -40,7 +40,7 @@
   </thead>
 
   <tbody>
-  {% for task in play.tasks.order_by('time_start') %}
+  {% for task in play.tasks.order_by('sortkey') %}
   <tr>
     <td>{{ task.time_start |datetime }}</td>
     <td>{{ task.time_end |datetime }}</td>
