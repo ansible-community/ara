@@ -15,7 +15,7 @@
     </tr>
   </thead>
   <tbody>
-      {% for playbook in playbooks.order_by('time_start') %}
+      {% for playbook in playbooks %}
       <tr>
         <td>{{ macros.make_link('playbook', playbook.path|pathtruncate,
           playbook=playbook.id) }}</td>

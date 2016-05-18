@@ -30,7 +30,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for result in task_results.order_by('time_start') %}
+      {% for result in task_results %}
       <tr>
         <td>{{ result.time_start |datetime }}</td>
         <td>{{ result.time_end |datetime }}</td>
