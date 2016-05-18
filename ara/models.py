@@ -14,6 +14,7 @@
 
 import uuid
 from datetime import datetime
+
 # This makes all the exceptions available as "models.<exception_name>".
 from sqlalchemy.orm.exc import *  # NOQA
 
@@ -158,15 +159,21 @@ class TaskResult(db.Model, TimedEntity):
     task_id = db.Column(db.String(36), db.ForeignKey('tasks.id'))
     host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
 
-    changed = db.Column(db.Boolean)
-    failed = db.Column(db.Boolean)
-    skipped = db.Column(db.Boolean)
-    unreachable = db.Column(db.Boolean)
-    ignore_errors = db.Column(db.Boolean)
+    status = db.Column(db.Enum('ok', 'failed', 'skipped', 'unreachable'))
+    changed = db.Column(db.Boolean, default=False)
+    failed = db.Column(db.Boolean, default=False)
+    skipped = db.Column(db.Boolean, default=False)
+    unreachable = db.Column(db.Boolean, default=False)
+    ignore_errors = db.Column(db.Boolean, default=False)
     result = db.Column(db.Text(16777215))
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
+
+    @property
+    def derived_status(self):
+        return ('changed' if self.status == 'ok' and self.changed
+                else self.status)
 
     def __repr__(self):
         return '<TaskResult %s>' % self.host.name

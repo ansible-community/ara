@@ -96,7 +96,7 @@ class CallbackModule(CallbackBase):
         return host
 
     @commit('taskresult')
-    def log_task(self, result, **kwargs):
+    def log_task(self, result, status, **kwargs):
         '''`log_task` is called when an individual task instance on a single
         host completes. It is responsible for logging a single
         `TaskResult` record to the database.'''
@@ -105,12 +105,6 @@ class CallbackModule(CallbackBase):
 
         result.task_start = self.task.time_start
         result.task_end = datetime.now()
-
-        status_keys = ['changed', 'failed', 'skipped', 'unreachable']
-        for status in status_keys:
-            if status not in result._result:
-                result._result[status] = False
-
         host = self.get_or_create_host(result._host.name)
         host.playbooks.append(self.playbook)
 
@@ -120,10 +114,11 @@ class CallbackModule(CallbackBase):
             time_start=result.task_start,
             time_end=result.task_end,
             result=json.dumps(result._result),
-            changed=result._result['changed'],
-            failed=result._result['failed'],
-            skipped=result._result['skipped'],
-            unreachable=result._result['unreachable'],
+            status=status,
+            changed=result._result.get('changed', False),
+            failed=result._result.get('failed', False),
+            skipped=result._result.get('skipped', False),
+            unreachable=result._result.get('unreachable', False),
             ignore_errors=kwargs.get('ignore_errors', False),
         )
 
@@ -173,10 +168,17 @@ class CallbackModule(CallbackBase):
             db.session.add(self.playbook)
             db.session.commit()
 
-    v2_runner_on_ok = log_task
-    v2_runner_on_unreachable = log_task
-    v2_runner_on_failed = log_task
-    v2_runner_on_skipped = log_task
+    def v2_runner_on_ok(self, result, **kwargs):
+        self.log_task(result, 'ok', **kwargs)
+
+    def v2_runner_on_unreachable(self, result, **kwargs):
+        self.log_task(result, 'unreachable', **kwargs)
+
+    def v2_runner_on_failed(self, result, **kwargs):
+        self.log_task(result, 'failed', **kwargs)
+
+    def v2_runner_on_skipped(self, result, **kwargs):
+        self.log_task(result, 'skipped', **kwargs)
 
     @commit('task')
     def v2_playbook_on_task_start(self, task, is_conditional,
@@ -245,4 +247,4 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_include(self, included_file):
         for host in included_file._hosts:
             LOG.debug('log include file for host %s', host)
-            self.log_task(IncludeResult(host, included_file._filename))
+            self.log_task(IncludeResult(host, included_file._filename), 'ok')

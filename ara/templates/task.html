@@ -52,7 +52,7 @@
       <td>{{ result.time_end |datetime }}</td>
       <td>{{ result.duration }}</td>
       <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
-      <td>{{ result|pick_status }}</td>
+      <td>{{ result.derived_status }}</td>
       <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>
     </tr>
     {% endfor %}
