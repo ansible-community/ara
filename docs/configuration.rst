@@ -57,10 +57,6 @@ Parameters and their defaults
 +----------------------+----------------------+-------------------------------------------+
 | ARA_SQL_DEBUG_       | sqldebug             | False                                     |
 +----------------------+----------------------+-------------------------------------------+
-| ARA_HOST_            | host                 | 127.0.0.1                                 |
-+----------------------+----------------------+-------------------------------------------+
-| ARA_PORT_            | port                 | 5000                                      |
-+----------------------+----------------------+-------------------------------------------+
 
 ARA_DIR
 ~~~~~~~
@@ -106,14 +102,6 @@ The log format of the logs.
 ARA_SQL_DEBUG
 ~~~~~~~~~~~~~
 Enables the SQLAlchemy echo verbose mode.
-
-ARA_HOST
-~~~~~~~~
-The address the development web server will bind to.
-
-ARA_PORT
-~~~~~~~~
-The port the development web server will listen on.
 
 The CLI client and the web application
 --------------------------------------
