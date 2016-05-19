@@ -174,8 +174,12 @@ class TaskResult(db.Model, TimedEntity):
 
     @property
     def derived_status(self):
-        return ('changed' if self.status == 'ok' and self.changed
-                else self.status)
+        if self.status == 'ok' and self.changed:
+            return 'changed'
+        elif self.status == 'failed' and self.ignore_errors:
+            return 'ignored'
+        else:
+            return self.status
 
     def __repr__(self):
         return '<TaskResult %s>' % self.host.name

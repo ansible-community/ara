@@ -13,11 +13,20 @@ pre {
     word-wrap: break-word;
 }
 
-/* Status background colors */
-.failed {
+/* Status styling */
+.status-label {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 90%;
+    font-family: monospace;
+    display: inline-block;
+    width: 7.5em;
+}
+
+.failed, .unreachable {
     background-color: #a30000;
 }
-.skipped {
+.skipped, .ignored {
     background-color: #047a7b;
 }
 .ok {
@@ -25,9 +34,6 @@ pre {
 }
 .changed {
     background-color: #9d8000;
-}
-.unreachable {
-    background-color: #a30000;
 }
 
 /* Breadcrumb styling */
