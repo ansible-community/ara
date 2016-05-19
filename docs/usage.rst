@@ -137,14 +137,39 @@ The frontend is a visualization of the data recorded in the database.
 The interface provided by ARA provides is a simple Flask application.
 As such, you can configure it to run like `any other Flask application`_.
 
-To run the development webserver, you can run the ``ara-dev-server`` script
+To run the development webserver, you can use the ``ara-manage`` script
 bundled with ARA::
 
-    $ ara-dev-server
-     * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-     * Restarting with stat
-     * Debugger is active!
-     * Debugger pin code: 605-724-687
+    $ ara-manage runserver --help
+    usage: ara-manage runserver [-?] [-h HOST] [-p PORT] [--threaded]
+                                [--processes PROCESSES] [--passthrough-errors]
+                                [-d] [-D] [-r] [-R]
+
+    Runs the Flask development server i.e. app.run()
+
+    optional arguments:
+      -?, --help            show this help message and exit
+      -h HOST, --host HOST
+      -p PORT, --port PORT
+      --threaded
+      --processes PROCESSES
+      --passthrough-errors
+      -d, --debug           enable the Werkzeug debugger (DO NOT use in production
+                            code)
+      -D, --no-debug        disable the Werkzeug debugger
+      -r, --reload          monitor Python files for changes (not 100{'const':
+                            True, 'help': 'monitor Python files for changes (not
+                            100% safe for production use)', 'option_strings':
+                            ['-r', '--reload'], 'dest': 'use_reloader',
+                            'required': False, 'nargs': 0, 'choices': None,
+                            'default': None, 'prog': 'ara-manage runserver',
+                            'container': <argparse._ArgumentGroup object at
+                            0x7f6825596310>, 'type': None, 'metavar': None}afe for
+                            production use)
+      -R, --no-reload       do not monitor Python files for changes
+
+    $ ara-manage runserver -h 0.0.0.0 -p 8080
+     * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
 
 You can see a recorded overview of the interface features on Youtube_.
 
