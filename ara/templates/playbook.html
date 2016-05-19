@@ -17,8 +17,8 @@
   </thead>
   <tbody>
     <tr>
-      <td>{{ playbook.time_start }}</td>
-      <td>{{ playbook.time_end }}</td>
+      <td>{{ playbook.time_start |datetime }}</td>
+      <td>{{ playbook.time_end |datetime }}</td>
       <td>{{ playbook.duration }}</td>
     </tr>
   </tbody>
