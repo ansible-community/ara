@@ -6,7 +6,9 @@
     "{{playbook.path}}"{% endif %}</li>
 </ol>
 
-<h2>Playbook information</h2>
+<h2>Playbook {% if playbook.path %}"{{
+  playbook.path|pathtruncate }}"
+  {% else %}{{playbook.id}}{% endif %}</h2>
 <table class="summary table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
@@ -17,9 +19,9 @@
   </thead>
   <tbody>
     <tr>
-      <td>{{ playbook.time_start |datetime }}</td>
-      <td>{{ playbook.time_end |datetime }}</td>
-      <td>{{ playbook.duration }}</td>
+      <td>{{ playbook.time_start |datefmt }}</td>
+      <td>{{ playbook.time_end |datefmt }}</td>
+      <td>{{ playbook.duration |timefmt }}</td>
     </tr>
   </tbody>
 </table>
@@ -64,9 +66,9 @@
   <tbody>
     {% for play in playbook.plays.order_by('sortkey') %}
     <tr>
-      <td>{{ playbook.time_start |datetime }}</td>
-      <td>{{ playbook.time_end |datetime }}</td>
-      <td>{{ playbook.duration }}</td>
+      <td>{{ playbook.time_start |datefmt }}</td>
+      <td>{{ playbook.time_end |datefmt }}</td>
+      <td>{{ playbook.duration |timefmt }}</td>
       <td>{{ macros.make_link('play', 'details', play=play.id) }}</td>
     </tr>
     {% endfor %}
@@ -77,8 +79,7 @@
 <table class="tasks table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
-      <th>Start</th>
-      <th>End</th>
+      <th>Offset from Playbook</th>
       <th>Duration</th>
       <th>Action</th>
       <th>File</th>
@@ -90,9 +91,8 @@
   <tbody>
     {% for task in playbook.tasks.order_by('sortkey') %}
     <tr>
-      <td>{{ task.time_start |datetime }}</td>
-      <td>{{ task.time_end |datetime }}</td>
-      <td>{{ task.duration }}</td>
+      <td>{{ task.offset_from_playbook |timefmt }}</td>
+      <td>{{ task.duration |timefmt }}</td>
       <td>{{ task.action }}</td>
       <td>{{ task.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>

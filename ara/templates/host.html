@@ -23,7 +23,7 @@
       <tr>
         <td>{{ macros.make_link('playbook_host',
           playbook.path|pathtruncate, host=host.name, playbook=playbook.id) }}</td>
-        <td>{{ playbook.time_start |datetime }}</td>
+        <td>{{ playbook.time_start |datefmt }}</td>
         {{ macros.statslink(stats, 'ok', playbook, host) }}
         {{ macros.statslink(stats, 'changed', playbook, host) }}
         {{ macros.statslink(stats, 'failed', playbook, host) }}

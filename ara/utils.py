@@ -21,10 +21,17 @@ from ara import app, models, db, LOG
 from ara.config import ARA_PATH_MAX
 
 
-@app.template_filter('datetime')
+@app.template_filter('datefmt')
 def jinja_date_formatter(timestamp, format='%Y-%m-%d %H:%M:%S'):
     """ Reformats a datetime timestamp from str(datetime.datetime)"""
     return datetime.datetime.strftime(timestamp, format)
+
+
+@app.template_filter('timefmt')
+def jinja_time_formatter(timestamp):
+    """ Reformats a datetime timedelta """
+    d = datetime.timedelta(seconds=int(timestamp.total_seconds()))
+    return str(d)
 
 
 @app.template_filter('to_nice_json')

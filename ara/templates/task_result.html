@@ -48,9 +48,9 @@
 
   <tbody>
     <tr>
-      <td>{{ task_result.time_start |datetime }}</td>
-      <td>{{ task_result.time_end |datetime }}</td>
-      <td>{{ task_result.duration }}</td>
+      <td>{{ task_result.time_start |datefmt }}</td>
+      <td>{{ task_result.time_end |datefmt }}</td>
+      <td>{{ task_result.duration |timefmt }}</td>
       <td>{{ task_result.task.action }}</td>
       <td>{{ task_result.task.path|pathtruncate }}</td>
       <td>{{ task_result.task.lineno }}</td>
