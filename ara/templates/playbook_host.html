@@ -31,6 +31,7 @@
     </thead>
     <tbody>
       {% for result in task_results %}
+      {% set status = result.derived_status %}
       <tr>
         <td>{{ result.time_start |datetime }}</td>
         <td>{{ result.time_end |datetime }}</td>
@@ -38,7 +39,7 @@
         <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
         <td>{{ result.task.name }}</td>
         <td>{{ result.task.action }}</td>
-        <td>{{ result.derived_status }}</td>
+        <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
         <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>
       </tr>
       {% endfor %}

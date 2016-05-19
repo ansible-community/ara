@@ -13,7 +13,16 @@ pre {
     word-wrap: break-word;
 }
 
-/* Status background colors */
+/* Status styling */
+.status-label {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 90%;
+    font-family: monospace;
+    display: inline-block;
+    width: 7.5em;
+}
+
 .failed {
     background-color: #a30000;
 }
