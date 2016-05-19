@@ -23,10 +23,10 @@ pre {
     width: 7.5em;
 }
 
-.failed {
+.failed, .unreachable {
     background-color: #a30000;
 }
-.skipped {
+.skipped, .ignored {
     background-color: #047a7b;
 }
 .ok {
@@ -34,9 +34,6 @@ pre {
 }
 .changed {
     background-color: #9d8000;
-}
-.unreachable {
-    background-color: #a30000;
 }
 
 /* Breadcrumb styling */
