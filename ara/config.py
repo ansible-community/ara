@@ -26,16 +26,34 @@ DEFAULT_ARA_SQL_DEBUG = False
 DEFAULT_ARA_PATH_MAX = 30
 
 config, path = load_config_file()
-ARA_DIR = get_config(config, 'ara', 'dir', 'ARA_DIR', DEFAULT_ARA_DIR)
-ARA_DATABASE = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                          DEFAULT_DATABASE)
-ARA_LOG = get_config(config, 'ara', 'logfile', 'ARA_LOGFILE',
-                     DEFAULT_ARA_LOGFILE)
-ARA_LOG_LEVEL = get_config(config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
-                           DEFAULT_ARA_LOG_LEVEL)
-ARA_LOG_FORMAT = get_config(config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
-                            DEFAULT_ARA_LOG_FORMAT)
-ARA_SQL_DEBUG = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
-                           DEFAULT_ARA_SQL_DEBUG)
-ARA_PATH_MAX = get_config(config, 'ara', 'path_max',
-                          'ARA_PATH_MAX', DEFAULT_ARA_PATH_MAX)
+
+ARA_DIR = get_config(
+    config, 'ara', 'dir', 'ARA_DIR',
+    DEFAULT_ARA_DIR)
+ARA_LOG_FILE = get_config(
+    config, 'ara', 'logfile', 'ARA_LOG_FILE',
+    DEFAULT_ARA_LOGFILE)
+ARA_LOG_LEVEL = get_config(
+    config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
+    DEFAULT_ARA_LOG_LEVEL).upper()
+ARA_LOG_FORMAT = get_config(
+    config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
+    DEFAULT_ARA_LOG_FORMAT)
+ARA_PATH_MAX = get_config(
+    config, 'ara', 'path_max', 'ARA_PATH_MAX',
+    DEFAULT_ARA_PATH_MAX)
+ARA_ENABLE_DEBUG_VIEW = get_config(
+    config, 'ara', 'enable_debug_view', 'ARA_ENABLE_DEBUG_VIEW',
+    False)
+ARA_AUTOCREATE_DATABASE = get_config(
+    config, 'ara', 'autocreate_database', 'ARA_AUTOCREATE_DATABASE',
+    True)
+
+
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_DATABASE_URI        = get_config(config, 'ara', 'database',
+                                            'ARA_DATABASE',
+                                            DEFAULT_DATABASE)
+SQLALCHEMY_ECHO                = get_config(config, 'ara', 'sqldebug',
+                                            'ARA_SQL_DEBUG',
+                                            DEFAULT_ARA_SQL_DEBUG)

@@ -16,9 +16,10 @@ import uuid
 from datetime import datetime
 
 # This makes all the exceptions available as "models.<exception_name>".
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import *  # NOQA
 
-from ara import db
+db = SQLAlchemy()
 
 
 def mkuuid():

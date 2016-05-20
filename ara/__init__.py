@@ -12,13 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import logging
-import os
 import pbr.version
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from ara.config import *  # NOQA
+from ara.webapp import create_app
 
 # Setup version
 version_info = pbr.version.VersionInfo('ara')
@@ -27,27 +22,5 @@ try:
 except AttributeError:
     __version__ = None
 
-# We always create ARA_DIR.  If people want to put a sqlite database
-# somewhere else, it's their job to create the necessary directory.
-if not os.path.isdir(ARA_DIR):
-    os.makedirs(ARA_DIR, mode=0700)
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = ARA_DATABASE
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = ARA_SQL_DEBUG
-db = SQLAlchemy(app)
-
-LOG = logging.getLogger(__name__)
-if ARA_LOG is not None:
-    _fmt = logging.Formatter(ARA_LOG_FORMAT)
-    _fh = logging.FileHandler(ARA_LOG)
-    _fh.setFormatter(_fmt)
-
-    LOG.setLevel(ARA_LOG_LEVEL)
-    LOG.addHandler(_fh)
-
-from ara import views, models
-
-LOG.debug('Making sure database tables are created...')
-db.create_all()
+app = create_app()

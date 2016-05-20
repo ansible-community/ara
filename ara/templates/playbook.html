@@ -41,7 +41,7 @@
   <tbody>
     {% for stat in playbook.stats %}
     <tr>
-      <td>{{ macros.make_link('playbook_host', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
+      <td>{{ macros.make_link('playbook.playbook_results', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
         {{ macros.statslink(stat, 'ok', playbook, stat.host) }}
         {{ macros.statslink(stat, 'changed', playbook, stat.host) }}
         {{ macros.statslink(stat, 'failed', playbook, stat.host) }}
@@ -64,12 +64,12 @@
   </thead>
 
   <tbody>
-    {% for play in playbook.plays.order_by('sortkey') %}
+    {% for play in plays %}
     <tr>
       <td>{{ playbook.time_start |datefmt }}</td>
       <td>{{ playbook.time_end |datefmt }}</td>
       <td>{{ playbook.duration |timefmt }}</td>
-      <td>{{ macros.make_link('play', 'details', play=play.id) }}</td>
+      <td>{{ macros.make_link('play.show_play', 'details', play=play.id) }}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -89,14 +89,14 @@
   </thead>
 
   <tbody>
-    {% for task in playbook.tasks.order_by('sortkey') %}
+    {% for task in tasks %}
     <tr>
       <td>{{ task.offset_from_playbook |timefmt }}</td>
       <td>{{ task.duration |timefmt }}</td>
       <td>{{ task.action }}</td>
       <td>{{ task.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>
-      <td>{{ macros.make_link('task', 'details', task=task.id) }}
+      <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}
       </td>
     </tr>
     {% endfor %}

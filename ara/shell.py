@@ -15,11 +15,12 @@
 
 import sys
 
+import flask
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from ara import __version__
-from ara.config import *  # NOQA
+from ara import app
 
 
 class AraCli(App):
@@ -43,6 +44,9 @@ class AraCli(App):
 
     def initialize_app(self, argv):
         self.LOG.debug('initialize_app')
+        if not flask.current_app:
+            ctx = app.app_context()
+            ctx.push()
 
     def prepare_to_run_command(self, cmd):
         self.LOG.debug('prepare_to_run_command %s', cmd.__class__.__name__)
