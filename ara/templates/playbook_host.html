@@ -11,7 +11,27 @@
   {% endif %}
 </ol>
 
-<h2>Tasks in playbook {% if playbook.path %}"{{
+<h2>Playbook {% if playbook.path %}"{{
+  playbook.path|pathtruncate }}"
+  {% else %}{{playbook.id}}{% endif %}</h2>
+<table class="summary table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Start</th>
+      <th>End</th>
+      <th>Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ playbook.time_start |datefmt }}</td>
+      <td>{{ playbook.time_end |datefmt }}</td>
+      <td>{{ playbook.duration |timefmt}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Tasks results in playbook {% if playbook.path %}"{{
   playbook.path|pathtruncate }}"
   {% else %}{{playbook.id}}{% endif %} for {{ host.name }}</h2>
 
@@ -19,8 +39,7 @@
   <table class="results table table-striped table-bordered table-hover table-condensed">
     <thead>
       <tr>
-        <th>Start</th>
-        <th>End</th>
+        <th>Offset from playbook</th>
         <th>Duration</th>
         <th>Host</th>
         <th>Task</th>
@@ -33,9 +52,8 @@
       {% for result in task_results %}
       {% set status = result.derived_status %}
       <tr>
-        <td>{{ result.time_start |datetime }}</td>
-        <td>{{ result.time_end |datetime }}</td>
-        <td>{{ result.duration }}</td>
+        <td>{{ result.task.offset_from_playbook|timefmt }}</td>
+        <td>{{ result.duration |timefmt }}</td>
         <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
         <td>{{ result.task.name }}</td>
         <td>{{ result.task.action }}</td>

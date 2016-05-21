@@ -22,9 +22,9 @@
 
   <tbody>
     <tr>
-      <td>{{ task.time_start |datetime }}</td>
-      <td>{{ task.time_end |datetime }}</td>
-      <td>{{ task.duration }}</td>
+      <td>{{ task.time_start |datefmt }}</td>
+      <td>{{ task.time_end |datefmt }}</td>
+      <td>{{ task.duration |timefmt }}</td>
       <td>{{ task.action }}</td>
       <td>{{ task.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>
@@ -49,9 +49,9 @@
     {% for result in task.task_results.order_by('time_start') %}
     {% set status = result.derived_status %}
     <tr>
-      <td>{{ result.time_start |datetime }}</td>
-      <td>{{ result.time_end |datetime }}</td>
-      <td>{{ result.duration }}</td>
+      <td>{{ result.time_start |datefmt }}</td>
+      <td>{{ result.time_end |datefmt }}</td>
+      <td>{{ result.duration |timefmt }}</td>
       <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
       <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
       <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>

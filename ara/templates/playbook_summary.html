@@ -19,7 +19,7 @@
       <tr>
         <td>{{ macros.make_link('playbook', playbook.path|pathtruncate,
           playbook=playbook.id) }}</td>
-        <td>{{ playbook.time_start |datetime }}</td>
+        <td>{{ playbook.time_start |datefmt }}</td>
         <td>{{ stats[playbook.id].ok }}</td>
         <td>{{ stats[playbook.id].changed }}</td>
         <td>{{ stats[playbook.id].failed }}</td>

@@ -18,9 +18,9 @@
 
   <tbody>
     <tr>
-      <td>{{ play.time_start |datetime }}</td>
-      <td>{{ play.time_end |datetime }}</td>
-      <td>{{ play.duration }}</td>
+      <td>{{ play.time_start |datefmt }}</td>
+      <td>{{ play.time_end |datefmt }}</td>
+      <td>{{ play.duration |timefmt }}</td>
     </tr>
   </tbody>
 </table>
@@ -29,8 +29,7 @@
 <table class="tasks table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
-      <th>Start</th>
-      <th>End</th>
+      <th>Offset from play</th>
       <th>Duration</th>
       <th>Action</th>
       <th>File</th>
@@ -42,9 +41,8 @@
   <tbody>
   {% for task in play.tasks.order_by('sortkey') %}
   <tr>
-    <td>{{ task.time_start |datetime }}</td>
-    <td>{{ task.time_end |datetime }}</td>
-    <td>{{ task.duration }}</td>
+    <td>{{ task.offset_from_play |timefmt }}</td>
+    <td>{{ task.duration |timefmt }}</td>
     <td>{{ task.action }}</td>
     <td>{{ task.path|pathtruncate }}</td>
     <td>{{ task.lineno }}</td>

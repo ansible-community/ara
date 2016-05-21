@@ -103,6 +103,10 @@ class Play(db.Model, TimedEntity):
     def __repr__(self):
         return '<Play %s>' % (self.name or self.id)
 
+    @property
+    def offset_from_playbook(self):
+        return self.time_start - self.playbook.time_start
+
 
 class Task(db.Model, TimedEntity):
     '''The `Task` class represents a single task defined in an Ansible
@@ -140,6 +144,14 @@ class Task(db.Model, TimedEntity):
 
     def __repr__(self):
         return '<Task %s>' % (self.name or self.id)
+
+    @property
+    def offset_from_playbook(self):
+        return self.time_start - self.playbook.time_start
+
+    @property
+    def offset_from_play(self):
+        return self.time_start - self.play.time_start
 
 
 class TaskResult(db.Model, TimedEntity):
