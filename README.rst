@@ -7,7 +7,7 @@ troubleshoot.
 
 ARA is three things:
 
-1. An `Ansible callback plugin`_ to record playbook runs into a database
+1. An `Ansible callback plugin`_ to record playbook runs into a local or remote database
 2. A `CLI client`_ to query the database
 3. A `web interface`_ to visualize the database
 
