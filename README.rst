@@ -17,6 +17,27 @@ ARA is three things:
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
 .. _web interface: https://ara.readthedocs.io/en/latest/usage.html#browsing-the-web-interface
 
+Overview
+--------
+ARA organizes recorded playbook data in a way to make it intuitive for you to
+search and find what you're interested for as fast and as easily as possible.
+
+It provides summaries of task results per host or per playbook.
+
+It allows you to filter task results by playbook, play, host, task or by the
+status of the task.
+
+With ARA, you're able to easily drill down from the summary view for the results
+you're interested in whether you're interested in a particular host or if you
+only want to see the failed tasks.
+
+Beyond browsing a single ansible-playbook run, ARA supports recording and
+viewing multiple runs recorded in the same database.
+
+This allows you to, for example, recognize patterns (ex: this particular host
+is always failing this particular task) since you have access to data from
+multiple runs.
+
 Installing
 ==========
 Packaged dependencies
