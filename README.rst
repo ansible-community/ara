@@ -28,11 +28,10 @@ It allows you to filter task results by playbook, play, host, task or by the
 status of the task.
 
 With ARA, you're able to easily drill down from the summary view for the results
-you're interested in whether you're interested in a particular host or if you
-only want to see the failed tasks.
+you're interested in, whether it's a particular host or a specific task.
 
 Beyond browsing a single ansible-playbook run, ARA supports recording and
-viewing multiple runs recorded in the same database.
+viewing multiple runs in the same database.
 
 This allows you to, for example, recognize patterns (ex: this particular host
 is always failing this particular task) since you have access to data from
