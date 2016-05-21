@@ -78,3 +78,12 @@ Of course, you can.
 ARA is completely generic and does not require OpenStack in any way.
 ARA was developed out of necessity to make troubleshoot OpenStack continuous
 integration jobs faster and easier but you can use it for what you want.
+
+What's an Ansible callback ?
+----------------------------
+`Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
+send an event and you can react to it with a callback.
+You could use a callback to do things like print additional details or, in the
+case of ARA, record the playbook run data in a database.
+
+.. _Ansible Callbacks: http://docs.ansible.com/ansible/developing_plugins.html
