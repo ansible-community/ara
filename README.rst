@@ -83,6 +83,11 @@ Documentation is available on `readthedocs.io`_.
 
 .. _readthedocs.io: https://ara.readthedocs.io/en/latest/
 
+Discussing ARA
+--------------
+We hang out in **##ara** on freenode IRC. (Yes, that's two "#"'s while we
+negociate #ara with freenode staff).
+
 Author
 ======
 David Moreau Simard
