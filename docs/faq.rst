@@ -25,7 +25,7 @@ web interface:
 .. image:: images/preview1.png
 .. image:: images/preview2.png
 
-.. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
+.. _YouTube: https://www.youtube.com/watch?v=k3qtgSFzAHI
 
 Why is ARA being developed ?
 ----------------------------

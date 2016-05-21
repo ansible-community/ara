@@ -171,7 +171,4 @@ bundled with ARA::
     $ ara-manage runserver -h 0.0.0.0 -p 8080
      * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
 
-You can see a recorded overview of the interface features on Youtube_.
-
 .. _any other Flask application: http://flask.pocoo.org/docs/0.10/deploying/uwsgi/
-.. _Youtube: https://www.youtube.com/watch?v=K3jTqgm2YuY

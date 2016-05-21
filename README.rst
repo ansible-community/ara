@@ -75,7 +75,7 @@ web interface:
 .. image:: docs/images/preview1.png
 .. image:: docs/images/preview2.png
 
-.. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
+.. _YouTube: https://www.youtube.com/watch?v=k3qtgSFzAHI
 
 Documentation
 -------------
