@@ -19,10 +19,11 @@ ARA is three things:
 
 What does the web interface look like ?
 ---------------------------------------
-A video is available on YouTube_ and the following is a screenshot of the
+A video is available on YouTube_ and the following are screenshots of the
 web interface:
 
-.. image:: images/preview.png
+.. image:: images/preview1.png
+.. image:: images/preview2.png
 
 .. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
 

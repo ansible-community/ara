@@ -49,10 +49,11 @@ From pip
 
 What does the web interface look like ?
 ---------------------------------------
-A video is available on YouTube_ and the following is a screenshot of the
+A video is available on YouTube_ and the following are screenshots of the
 web interface:
 
-.. image:: docs/images/preview.png
+.. image:: docs/images/preview1.png
+.. image:: docs/images/preview2.png
 
 .. _YouTube: https://www.youtube.com/watch?v=K3jTqgm2YuY
 
