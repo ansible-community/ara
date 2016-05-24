@@ -1,5 +1,5 @@
 - name: Test playbook
-  hosts: all
+  hosts: localhost
   gather_facts: no
   tasks:
     - name: Integration test
