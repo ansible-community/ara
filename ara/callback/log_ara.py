@@ -15,51 +15,37 @@
 from __future__ import (absolute_import, division, print_function)
 
 import logging
-import os
 import itertools
+import decorator
 from datetime import datetime
-from decorator import decorator
+import flask
 
-from ara import app, db, models
+from ara import app, models
+from ara.models import db
+
 from ansible.plugins.callback import CallbackBase
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import json
 
 __metaclass__ = type
 
 LOG = logging.getLogger('ara.callback')
 
 
-def commit(*attrs):
-    '''This will commit the given attributes of `self` after the
-    wrapped function exists.  For example, if you write:
+class CommitAfter(type):
+    def __new__(kls, name, bases, attrs):
+        def commit_after(func):
+            def _commit_after(func, *args, **kwargs):
+                rval = func(*args, **kwargs)
+                db.session.commit()
+                return rval
 
-        @commit('task', 'play')
-        def myfunc(self):
-          ...code goes here...
+            return decorator.decorate(func, _commit_after)
 
-    Then after `myfunc` exits, this decorator would run the equivalent of:
-
-        db.session.add(self.task)
-        db.sessiona.add(self.play)
-        db.commit()
-    '''
-
-    def _commit(f, self, *args, **kwargs):
-        rval = f(self, *args, **kwargs)
-        for attr in attrs:
-            actual = getattr(self, attr)
-            if actual is None:
-                LOG.error('delcining to track null attribute %s', attr)
-                continue
-            db.session.add(actual)
-
-        db.session.commit()
-        return rval
-
-    return decorator(_commit)
+        for k, v in attrs.items():
+            if callable(v) and not k.startswith('_'):
+                attrs[k] = commit_after(v)
+        return super(CommitAfter, kls).__new__(
+            kls, name, bases, attrs)
 
 
 class IncludeResult(object):
@@ -74,12 +60,19 @@ class CallbackModule(CallbackBase):
     '''
     Saves data from an Ansible run into an sqlite database
     '''
+
+    __metaclass__ = CommitAfter
+
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'ara'
 
     def __init__(self):
         super(CallbackModule, self).__init__()
+
+        if not flask.current_app:
+            ctx = app.app_context()
+            ctx.push()
 
         self.taskresult = None
         self.task = None
@@ -99,7 +92,6 @@ class CallbackModule(CallbackBase):
 
         return host
 
-    @commit('taskresult')
     def log_task(self, result, status, **kwargs):
         '''`log_task` is called when an individual task instance on a single
         host completes. It is responsible for logging a single
@@ -126,7 +118,8 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get('ignore_errors', False),
         )
 
-    @commit()
+        db.session.add(self.taskresult)
+
     def log_stats(self, stats):
         '''Logs playbook statistics to the database.'''
         LOG.debug('logging stats')
@@ -150,7 +143,6 @@ class CallbackModule(CallbackBase):
             LOG.debug('closing task %s (%s)', self.task.name, self.task.id)
             self.task.stop()
             db.session.add(self.task)
-            db.session.commit()
 
             self.task = None
 
@@ -160,7 +152,6 @@ class CallbackModule(CallbackBase):
             LOG.debug('closing play %s (%s)', self.play.name, self.play.id)
             self.play.stop()
             db.session.add(self.play)
-            db.session.commit()
 
             self.play = None
 
@@ -170,7 +161,6 @@ class CallbackModule(CallbackBase):
             LOG.debug('closing playbook %s', self.playbook.path)
             self.playbook.stop()
             db.session.add(self.playbook)
-            db.session.commit()
 
     def v2_runner_on_ok(self, result, **kwargs):
         self.log_task(result, 'ok', **kwargs)
@@ -184,7 +174,6 @@ class CallbackModule(CallbackBase):
     def v2_runner_on_skipped(self, result, **kwargs):
         self.log_task(result, 'skipped', **kwargs)
 
-    @commit('task')
     def v2_playbook_on_task_start(self, task, is_conditional,
                                   is_handler=False):
         self.close_task()
@@ -210,20 +199,22 @@ class CallbackModule(CallbackBase):
             is_handler=is_handler)
 
         self.task.start()
+        db.session.add(self.task)
 
     def v2_playbook_on_handler_task_start(self, task):
         self.v2_playbook_on_task_start(task, False, is_handler=True)
 
-    @commit('playbook')
     def v2_playbook_on_start(self, playbook):
-        LOG.debug('starting playbook %s', playbook._file_name)
+        playbook_path = playbook._file_name
+
+        LOG.debug('starting playbook %s', playbook_path)
         self.playbook = models.Playbook(
-            path=playbook._file_name,
+            path=playbook_path
         )
 
         self.playbook.start()
+        db.session.add(self.playbook)
 
-    @commit('play')
     def v2_playbook_on_play_start(self, play):
         self.close_task()
         self.close_play()
@@ -239,6 +230,7 @@ class CallbackModule(CallbackBase):
         )
 
         self.play.start()
+        db.session.add(self.play)
 
     def v2_playbook_on_stats(self, stats):
         self.close_task()

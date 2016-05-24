@@ -12,84 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import os
-import datetime
 import json
-
-from flask import url_for, Markup
-from ara import app, models, db, LOG
-from ara.config import ARA_PATH_MAX
-
-
-@app.template_filter('datefmt')
-def jinja_date_formatter(timestamp, format='%Y-%m-%d %H:%M:%S'):
-    """ Reformats a datetime timestamp from str(datetime.datetime)"""
-    return datetime.datetime.strftime(timestamp, format)
-
-
-@app.template_filter('timefmt')
-def jinja_time_formatter(timestamp):
-    """ Reformats a datetime timedelta """
-    d = datetime.timedelta(seconds=int(timestamp.total_seconds()))
-    return str(d)
-
-
-@app.template_filter('to_nice_json')
-def jinja_to_nice_json(result):
-    """ Formats a result """
-    return json.dumps(result, indent=4, sort_keys=True,
-                      default=str)
-
-
-@app.template_filter('from_json')
-def jinja_from_json(val):
-    try:
-        return json.loads(val)
-    except Exception as e:
-        LOG.error('Unable to load json: %s' % str(e))
-        return val
-
-
-@app.template_filter('pathtruncate')
-def jinja_pathtruncate(path):
-    '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
-    are truncated on path separators.  We prepend an ellipsis when we
-    return a truncated path.'''
-
-    if path is None:
-        return
-
-    if len(path) < ARA_PATH_MAX:
-        return path
-
-    # always include the basename
-    head, tail = os.path.split(path)
-    newpath = tail
-
-    while tail:
-        if len(newpath) + len(tail) > ARA_PATH_MAX:
-            break
-        newpath = os.path.join(tail, newpath)
-        head, tail = os.path.split(head)
-
-    prefix = '...' if len(newpath) < len(path) else ''
-    return os.path.join(prefix, newpath)
-
-
-@app.context_processor
-def ctx_add_nav_data():
-    '''Makes some standard data from the database available in the
-    template context.'''
-
-    playbook_item_limit = app.config.get('NAV_MENU_MAX_PLAYBOOKS', 10)
-    host_item_limit = app.config.get('NAV_MENU_MAX_HOSTS', 10)
-
-    return dict(hosts=models.Host.query
-                .order_by(models.Host.name)
-                .limit(host_item_limit),
-                playbooks=models.Playbook.query
-                .order_by(models.Playbook.time_start.desc())
-                .limit(playbook_item_limit))
+from ara import models
 
 
 def fields_from_iter(fields, items, xforms=None):
@@ -196,3 +120,13 @@ def get_field_attr(obj, field):
 
     path = field[-1].lower().replace(' ', '_').split('.')
     return reduce(getattr, path, obj)
+
+
+def format_json(val):
+    try:
+        return json.dumps(json.loads(val),
+                          indent=4,
+                          sort_keys=True,
+                          default=str)
+    except Exception:
+        return val

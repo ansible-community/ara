@@ -76,6 +76,5 @@ class ResultShow(ShowOne):
             _fields, result,
             xforms={
                 'Task': lambda t: '{0} ({1})'.format(t.name, t.id),
-                'Result': lambda r: utils.jinja_to_nice_json(
-                    utils.jinja_from_json(r)),
+                'Result': lambda r: utils.format_json(r),
             })

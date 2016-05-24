@@ -2,7 +2,7 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook', 'Playbook', playbook=play.playbook.id) }}</li>
+  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=play.playbook.id) }}</li>
   <li class="active"><strong>Play</strong>{% if play.name %}: "{{play.name}}"{% endif %}</li>
 </ol>
 
@@ -39,14 +39,14 @@
   </thead>
 
   <tbody>
-  {% for task in play.tasks.order_by('sortkey') %}
+  {% for task in tasks %}
   <tr>
     <td>{{ task.offset_from_play |timefmt }}</td>
     <td>{{ task.duration |timefmt }}</td>
     <td>{{ task.action }}</td>
     <td>{{ task.path|pathtruncate }}</td>
     <td>{{ task.lineno }}</td>
-    <td>{{ macros.make_link('task', 'details', task=task.id) }}</td>
+    <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}</td>
   </tr>
   {% endfor %}
   </tbody>

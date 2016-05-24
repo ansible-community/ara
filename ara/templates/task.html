@@ -2,8 +2,8 @@
 
 {% block content %}
 <ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook', 'Playbook', playbook=task.playbook.id) }}</li>
-  <li>{{ macros.make_link('play', 'Play', play=task.play.id) }}</li>
+  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=task.playbook.id) }}</li>
+  <li>{{ macros.make_link('play.show_play', 'Play', play=task.play.id) }}</li>
   <li class="active"><strong>Task</strong>{% if task.name %}: "{{task.name}}"{% endif %}</li>
 </ol>
 
@@ -46,15 +46,15 @@
   </thead>
 
   <tbody>
-    {% for result in task.task_results.order_by('time_start') %}
+    {% for result in task_results %}
     {% set status = result.derived_status %}
     <tr>
       <td>{{ result.time_start |datefmt }}</td>
       <td>{{ result.time_end |datefmt }}</td>
       <td>{{ result.duration |timefmt }}</td>
-      <td>{{ macros.make_link('host', result.host.name, host=result.host.name) }}</td>
+      <td>{{ macros.make_link('host.show_host', result.host.name, host=result.host.name) }}</td>
       <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
-      <td>{{ macros.make_link('task_result', 'details', task_result=result.id) }}</td>
+      <td>{{ macros.make_link('result.show_result', 'details', task_result=result.id) }}</td>
     </tr>
     {% endfor %}
   </tbody>
