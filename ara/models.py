@@ -13,7 +13,7 @@
 #   under the License.
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
@@ -38,7 +38,10 @@ class TimedEntity(object):
         '''Calculate `(time_end-time_start)` and return the resulting
         `datetime.timedelta` object.'''
 
-        return self.time_end - self.time_start
+        if self.time_end is None or self.time_start is None:
+            return timedelta(seconds=0)
+        else:
+            return self.time_end - self.time_start
 
     def start(self):
         '''Explicitly set `self.time_start`.'''
