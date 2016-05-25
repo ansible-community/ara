@@ -43,22 +43,17 @@ def configure_template_filters(app):
         '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
         are truncated on path separators.  We prepend an ellipsis when we
         return a truncated path.'''
-
         if path is None:
             return
-
         if len(path) < app.config['ARA_PATH_MAX']:
             return path
 
-        # always include the basename
-        head, tail = os.path.split(path)
-        newpath = tail
-
-        while tail:
-            if len(newpath) + len(tail) > app.config['ARA_PATH_MAX']:
+        dirname, basename = os.path.split(path)
+        while dirname:
+            if len(dirname) + len(basename) < app.config['ARA_PATH_MAX']:
                 break
-            newpath = os.path.join(tail, newpath)
-            head, tail = os.path.split(head)
+            dirlist = dirname.split('/')
+            dirlist.pop(0)
+            dirname = "/".join(dirlist)
 
-        prefix = '...' if len(newpath) < len(path) else ''
-        return os.path.join(prefix, newpath)
+        return "..." + os.path.join(dirname, basename)
