@@ -85,8 +85,7 @@ Documentation is available on `readthedocs.io`_.
 
 Discussing ARA
 --------------
-We hang out in **##ara** on freenode IRC. (Yes, that's two "#"'s while we
-negociate #ara with freenode staff).
+We hang out in **#ara** on freenode IRC. Come chat with us !
 
 Author
 ======
