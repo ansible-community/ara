@@ -254,11 +254,11 @@ class Stats(db.Model):
     playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
     host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
 
-    changed = db.Column(db.Integer)
-    failed = db.Column(db.Integer)
-    ok = db.Column(db.Integer)
-    skipped = db.Column(db.Integer)
-    unreachable = db.Column(db.Integer)
+    changed = db.Column(db.Integer, default=0)
+    failed = db.Column(db.Integer, default=0)
+    ok = db.Column(db.Integer, default=0)
+    skipped = db.Column(db.Integer, default=0)
+    unreachable = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<Stats for %s>' % self.host.name
