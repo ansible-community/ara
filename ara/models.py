@@ -13,7 +13,7 @@
 #   under the License.
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
@@ -38,7 +38,10 @@ class TimedEntity(object):
         '''Calculate `(time_end-time_start)` and return the resulting
         `datetime.timedelta` object.'''
 
-        return self.time_end - self.time_start
+        if self.time_end is None or self.time_start is None:
+            return timedelta(seconds=0)
+        else:
+            return self.time_end - self.time_start
 
     def start(self):
         '''Explicitly set `self.time_start`.'''
@@ -254,11 +257,11 @@ class Stats(db.Model):
     playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
     host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
 
-    changed = db.Column(db.Integer)
-    failed = db.Column(db.Integer)
-    ok = db.Column(db.Integer)
-    skipped = db.Column(db.Integer)
-    unreachable = db.Column(db.Integer)
+    changed = db.Column(db.Integer, default=0)
+    failed = db.Column(db.Integer, default=0)
+    ok = db.Column(db.Integer, default=0)
+    skipped = db.Column(db.Integer, default=0)
+    unreachable = db.Column(db.Integer, default=0)
 
     def __repr__(self):
         return '<Stats for %s>' % self.host.name
