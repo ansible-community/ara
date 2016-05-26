@@ -45,8 +45,9 @@
     state: absent
   when: file_exists_result.stat.exists == True
 
-# Test for issue https://github.com/ansible/ansible/issues/16125
+# Note: https://github.com/ansible/ansible/issues/16125
+# |to_nice_json avoids a horrible error
 - name: Output hostvars to file
   copy:
-    content: "{{ hostvars[inventory_hostname] }}"
+    content: "{{ hostvars[inventory_hostname] |to_nice_json }}"
     dest: "{{ tmpfile }}"
