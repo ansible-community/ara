@@ -1,17 +1,14 @@
 from flask.ext.testing import TestCase
-from collections import defaultdict
-import random
 import pytest
 
 import ara.webapp as w
 import ara.models as m
-import ara.utils as u
 from ara.models import db
-
-from mock import Mock
 
 
 class TestApp(TestCase):
+    '''Tests for the ARA web interface'''
+
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     TESTING = True
 
@@ -28,11 +25,24 @@ class TestApp(TestCase):
         m.db.drop_all()
 
     def ansible_run(self, complete=True):
+        '''Simulate a simple Ansible run by creating the
+        expected database objects.  This roughly approximates the
+        following playbook:
+
+            - hosts: localhost
+              tasks:
+                - test-action:
+
+        Set the `complete` parameter to `False` to simulate an
+        aborted Ansible run.
+        '''
+
         playbook = m.Playbook(path='testing.yml')
         play = m.Play(playbook=playbook, name='test play')
         task = m.Task(play=play, playbook=playbook,
                       action='test-action')
         host = m.Host(name='localhost')
+        host.playbooks.append(playbook)
         result = m.TaskResult(task=task, status='ok', host=host,
                               result='this is a test')
 
@@ -47,6 +57,8 @@ class TestApp(TestCase):
             if hasattr(obj, 'start'):
                 obj.start()
             db.session.add(obj)
+
+        db.session.commit()
 
         if complete:
             stats = m.Stats(playbook=playbook, host=host)
@@ -124,14 +136,14 @@ class TestApp(TestCase):
     def test_show_host(self):
         self.ansible_run()
         res = self.client.get('/host/{}'.format(
-            self.ctx['host'].id))
+            self.ctx['host'].name))
         self.assertEqual(res.status_code, 200)
 
     @pytest.mark.incomplete
     def test_show_host_incomplete(self):
         self.ansible_run(complete=False)
         res = self.client.get('/host/{}'.format(
-            self.ctx['host'].id))
+            self.ctx['host'].name))
         self.assertEqual(res.status_code, 200)
 
     @pytest.mark.complete

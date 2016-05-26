@@ -2,10 +2,11 @@ from flask.ext.testing import TestCase
 import ara.webapp as w
 import ara.models as m
 import datetime
-import pytest
 
 
-class TestApp(TestCase):
+class TestFilters(TestCase):
+    '''Tests for our Jinja2 filters'''
+
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     TESTING = True
 

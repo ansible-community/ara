@@ -5,6 +5,8 @@ import ara.models as m
 
 
 class TestModels(TestCase):
+    '''Basic tests for database models'''
+
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     TESTING = True
 

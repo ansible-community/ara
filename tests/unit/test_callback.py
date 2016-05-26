@@ -62,6 +62,8 @@ class Stats(object):
 
 
 class TestCallback(TestCase):
+    '''Tests for the Ansible callback module'''
+
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     TESTING = True
 
@@ -73,13 +75,17 @@ class TestCallback(TestCase):
         self.cb = l.CallbackModule()
         self.tag = '%04d' % random.randint(0, 9999)
 
-        self._fake_ansible_run()
+        self.ansible_run()
 
     def tearDown(self):
         m.db.session.remove()
         m.db.drop_all()
 
-    def _fake_ansible_run(self):
+    def ansible_run(self):
+        '''Simulates an ansible run by creating stub versions of the
+        information that Ansible passes to the callback, and then
+        calling the various callback methods.'''
+
         self.playbook = self._test_playbook()
         self.play = self._test_play()
         self.task = self._test_task(self.playbook)
