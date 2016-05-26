@@ -13,6 +13,7 @@
 #   under the License.
 
 import json
+from collections import defaultdict
 from ara import models
 
 
@@ -74,6 +75,25 @@ def status_to_query(status):
         return {
             'status': status,
         }
+
+
+def get_host_playbook_stats(host_obj):
+    '''Returns a dictionary that contains statistics for each playbook
+    where the host in host_obj is involved. If there are no statistics for
+    the playbook for that host (i.e, interrupted playbook run), we return 'n/a'
+    as statistics.
+    '''
+
+    data = {}
+    playbooks = host_obj.playbooks
+    stats = host_obj.stats
+    for playbook in playbooks:
+        data[playbook.id] = defaultdict(lambda: 'n/a')
+        try:
+            data[playbook.id] = stats.filter_by(playbook_id=playbook.id).one()
+        except models.NoResultFound:
+            pass
+    return data
 
 
 def get_summary_stats(items, attr):
