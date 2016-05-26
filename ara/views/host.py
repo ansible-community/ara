@@ -20,4 +20,7 @@ def show_host(host):
         host = models.Host.query.filter_by(name=host).one()
     except models.NoResultFound:
         abort(404)
-    return render_template('host.html', host=host)
+
+    stats = utils.get_host_playbook_stats(host)
+
+    return render_template('host.html', host=host, stats=stats)
