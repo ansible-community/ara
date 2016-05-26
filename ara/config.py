@@ -57,3 +57,6 @@ SQLALCHEMY_DATABASE_URI        = get_config(config, 'ara', 'database',
 SQLALCHEMY_ECHO                = get_config(config, 'ara', 'sqldebug',
                                             'ARA_SQL_DEBUG',
                                             DEFAULT_ARA_SQL_DEBUG)
+# Static generation
+FREEZER_RELATIVE_URLS = True
+FREEZER_DEFAULT_MIMETYPE = 'text/html'
