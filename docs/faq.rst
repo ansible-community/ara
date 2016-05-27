@@ -41,43 +41,55 @@ integration or continuous delivery.
 ARA aims to do one thing and do it well: Record Ansible runs and provide means
 to visualize these records to help you be more efficient.
 
-Why don't you use Ansible Tower ?
----------------------------------
+Why don't you use Ansible Tower, Rundeck or Semaphore ?
+-------------------------------------------------------
 `Ansible Tower`_ is currently a product from Ansible and has not been open
 sourced (*yet*). We do not know when it will be made freely available and it's
 source opened.
 
-Ansible Tower works in a fairly centralized way where you can trigger runs from
-the web interface and it will record that run in it's database so you can see
-the results in it's web interface.
+Ansible Tower, Semaphore_ and Rundeck_ all have something in common.
+They are tools that controls (or wants to control) the whole workflow
+from end-to-end and they do so in a fairly "centralized" fashion where
+everything runs from the place where the software is hosted.
+Inventory management, ACLs, playbook execution, editing features and so on.
 
-ARA does not aim to be able to do things like control host inventory, control
-the execution of playbooks and other nice features of Tower.
+Since they are the ones actually running Ansible, it makes sense that they can
+record and display the data in an organized way.
+
+ARA is decentralized and self-contained: ``pip install ara``, configure the
+callback in ``ansible.cfg``, run a playbook and it'll be recorded, wherever it
+is. ARA doesn't want to do things like inventory management, provide editing
+features or control the workflow. It just wants to record data and provide an
+intuitive interface for it.
 
 When using ARA, you can store and browse your data locally and this is in fact
 the default behavior. You are not required to use a central server or upload
 your data elsewhere.
 
-ARA does provide you with the means to aggregate your Ansible run data into a
-single database, whether this is by aggregating sqlite databases or by using
-a central database server such as MySQL.
+While the features provided by Tower and other products are definitely nice,
+the scope of ARA is kept narrow on purpose.
+By doing so, ARA remains a relatively simple application that is very easy to
+install and configure. It does not require any changes to your setup or
+workflow, it adds itself in transparently and seemlessly.
 
 .. _Ansible Tower: https://www.ansible.com/tower
-
-What versions of Ansible are supported ?
-----------------------------------------
-ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
-contained multiple regressions.
+.. _Semaphore: https://github.com/ansible-semaphore/semaphore
+.. _Rundeck: http://rundeck.org/plugins/ansible/2016/03/11/ansible-plugin.html
 
 Can ARA be used outside the context of OpenStack or continuous integration ?
 ----------------------------------------------------------------------------
 Of course, you can.
 
-ARA has no dependencies or relationships with OpenStack or Jenkins for CI.
+ARA has no dependencies or requirements with OpenStack or Jenkins for CI.
+You can use ARA with Ansible for any playbook in any context.
 
-ARA is completely generic and was developed out of necessity to make
-troubleshooting OpenStack continuous integration jobs faster and easier but you
-can use it for what you want.
+ARA is completely generic but was developed out of necessity to make
+troubleshooting OpenStack continuous integration jobs faster and easier.
+
+What versions of Ansible are supported ?
+----------------------------------------
+ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
+contained multiple regressions.
 
 What's an Ansible callback ?
 ----------------------------
