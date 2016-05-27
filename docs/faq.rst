@@ -69,13 +69,15 @@ What versions of Ansible are supported ?
 ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
 contained multiple regressions.
 
-Can I use ARA outside the context of OpenStack ?
-------------------------------------------------
+Can ARA be used outside the context of OpenStack or continuous integration ?
+----------------------------------------------------------------------------
 Of course, you can.
 
-ARA is completely generic and does not require OpenStack in any way.
-ARA was developed out of necessity to make troubleshoot OpenStack continuous
-integration jobs faster and easier but you can use it for what you want.
+ARA has no dependencies or relationships with OpenStack or Jenkins for CI.
+
+ARA is completely generic and was developed out of necessity to make
+troubleshooting OpenStack continuous integration jobs faster and easier but you
+can use it for what you want.
 
 What's an Ansible callback ?
 ----------------------------
