@@ -1,6 +1,7 @@
 Flask
 Flask-SQLAlchemy
 Flask-Script
+Frozen-Flask
 pbr>=1.6
 decorator
 cliff

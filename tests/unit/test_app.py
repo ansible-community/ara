@@ -93,14 +93,14 @@ class TestApp(TestCase):
     @pytest.mark.complete
     def test_show_playbook(self):
         self.ansible_run()
-        res = self.client.get('/playbook/{}'.format(
+        res = self.client.get('/playbook/{}/'.format(
             self.ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
 
     @pytest.mark.incomplete
     def test_show_playbook_incomplete(self):
         self.ansible_run(complete=False)
-        res = self.client.get('/playbook/{}'.format(
+        res = self.client.get('/playbook/{}/'.format(
             self.ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
 

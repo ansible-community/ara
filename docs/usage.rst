@@ -172,3 +172,70 @@ bundled with ARA::
      * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
 
 .. _any other Flask application: http://flask.pocoo.org/docs/0.10/deploying/uwsgi/
+
+Generating a static version of the web application
+--------------------------------------------------
+ARA is able to generate a static html version of it's dynamic, database-driven
+web application.
+
+This can be useful if you need to browse the results of playbook runs without
+having to rely on the database backend configured.
+
+For example, in the context of continuous integration, you could run an Ansible
+job with ARA, generate a static version and then recover the resulting build as
+artifacts of the jobs, allowing you to browse the results in-place.
+
+The ARA CLI client provides a command to generate a static version::
+
+    $ ara help generate
+    usage: ara generate [-h] --path <path>
+
+    Generates a static tree of the web application
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --path <path>, -p <path>
+                            Path where the static files will be built in
+
+    $ ara generate --path /tmp/build/
+    Generating static files at /tmp/build/...
+    Done.
+    $ tree /tmp/build/
+    /tmp/build/
+    ├── host
+    │   ├── anotherhost
+    │   ├── index.html
+    │   └── localhost
+    ├── index.html
+    ├── play
+    │   └── play
+    │       └── 6ec9ef1d-dd73-4378-8347-1242f6be8f1e
+    ├── playbook
+    │   ├── bf81a7db-b549-49d9-b10e-19918225ec60
+    │   │   ├── index.html
+    │   │   └── results
+    │   │       ├── anotherhost
+    │   │       │   ├── index.html
+    │   │       │   └── ok
+    │   │       └── localhost
+    │   │           ├── index.html
+    │   │           └── ok
+    │   └── index.html
+    ├── result
+    │   ├── 136100f7-fba7-44ba-83fc-1194509ad2dd
+    │   ├── 37532523-b2ec-4931-bb73-3c7e5c6fa7bf
+    │   ├── 3cef2a10-8f41-4f01-bc49-12bed179d7e9
+    │   └── e3b7e172-c6e4-4ee4-b4bc-9a51ff84decb
+    ├── static
+    │   ├── css
+    │   │   ├── ara.css
+    │   │   ├── bootstrap.min.css
+    │   │   └── bootstrap-theme.min.css
+    │   └── js
+    │       ├── bootstrap.min.js
+    │       └── jquery-2.2.3.min.js
+    └── task
+        ├── 570fe763-69bb-4141-80d4-578189c5938b
+        └── 946e1bc6-28b9-4f2f-ad4f-75b3c6c9032d
+
+    13 directories, 22 files

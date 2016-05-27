@@ -7,7 +7,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/"><strong>ARA</strong> - Ansible Run Analysis</a>
+      <a class="navbar-brand" href="{{ url_for('home.main') }}"><strong>ARA</strong> - Ansible Run Analysis</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -15,9 +15,9 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hosts <span class="caret"></span></a>
           <ul class="dropdown-menu">
             {% for host in hosts %}
-            <li><a href="/host/{{ host.name }}">{{ host.name }}</a></li>
+            <li><a href="{{ url_for('host.show_host', host=host.name) }}">{{ host.name }}</a></li>
             {% endfor %}
-            <li><a href="/host">All hosts...</a></li>
+            <li><a href="{{ url_for('host.host_summary') }}">All hosts...</a></li>
           </ul>
         </li>
 
@@ -25,10 +25,9 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Playbooks <span class="caret"></span></a>
           <ul class="dropdown-menu">
             {% for playbook in playbooks %}
-            <li><a href="/playbook/{{ playbook.id
-            }}">{{ playbook.path|pathtruncate }} @ {{ playbook.time_start |datefmt }}</a></li>
+            <li><a href="{{ url_for('playbook.show_playbook', playbook=playbook.id) }}">{{ playbook.path|pathtruncate }} @ {{ playbook.time_start |datefmt }}</a></li>
             {% endfor %}
-            <li><a href="/playbook">All playbooks...</a></li>
+            <li><a href="{{ url_for('playbook.playbook_summary') }}">All playbooks...</a></li>
           </ul>
         </li>
       </ul>

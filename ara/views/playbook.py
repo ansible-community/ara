@@ -14,7 +14,7 @@ def playbook_summary():
                            stats=stats)
 
 
-@playbook.route('/<playbook>')
+@playbook.route('/<playbook>/')
 def show_playbook(playbook):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
@@ -34,8 +34,10 @@ def show_playbook(playbook):
                            tasks=tasks)
 
 
-@playbook.route('/<playbook>/results')
-def playbook_results(playbook):
+@playbook.route('/<playbook>/results/')
+@playbook.route('/<playbook>/results/<host>/')
+@playbook.route('/<playbook>/results/<host>/<status>')
+def playbook_results(playbook, host=None, status=None):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
         abort(404)
@@ -47,15 +49,17 @@ def playbook_results(playbook):
                     .filter(models.Playbook.id == playbook.id)
                     .order_by(models.TaskResult.time_start))
 
-    if request.args.get('host'):
-        hosts = [str(host) for host in request.args.get('host').split(',')]
+    host = host or request.args.get('host')
+    if host is not None:
+        hosts = [str(h) for h in host.split(',')]
         task_results = (task_results
                         .filter(models.Host.name.in_(hosts)))
 
     # LKS: We're filtering this with Python rather than SQL.  This
     # may become relevant if we implement result paging.
-    if request.args.get('status'):
-        status = request.args.get('status').split(',')
+    status = status or request.args.get('status')
+    if status is not None:
+        status = status.split(',')
         task_results = (res for res in task_results
                         if res.derived_status in status)
 
