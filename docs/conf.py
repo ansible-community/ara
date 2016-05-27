@@ -40,7 +40,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'ara'
 copyright = u'2016, Red Hat'
-author = 'David Moreau Simard'
+author = 'RDO Community'
 
 # The short X.Y version.
 version = version_info.version_string()

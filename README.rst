@@ -87,19 +87,11 @@ Discussing ARA
 --------------
 We hang out in **#ara** on freenode IRC. Come chat with us !
 
-Author
-======
-David Moreau Simard
-
-Contributors and special thanks
-===============================
+Contributors
+============
 See contributors on GitHub_.
 
-Special thanks to `Lars Kellogg-Stedman`_ for the early feedback on the
-project, ideas and code contributions.
-
 .. _GitHub: https://github.com/dmsimard/ara/graphs/contributors
-.. _Lars Kellogg-Stedman: http://blog.oddbit.com/
 
 Copyright
 =========
