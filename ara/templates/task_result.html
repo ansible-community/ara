@@ -3,25 +3,25 @@
 {% macro display_result(result, hdr) %}
   {% if result is mapping %}
     {% if 'item' in result %}
-      <{{hdr}}>Item</{{hdr}}>
-      <pre>{{result.item|to_nice_json}}</pre>
+      <{{ hdr }}>Item</{{ hdr }}>
+      <pre>{{ result.item |to_nice_json |safe }}</pre>
     {% endif %}
 
     {% for attr in result.keys()|sort
       if attr not in ['item', 'changed', 'stdout_lines'] %}
       {% if result[attr]|default(False) %}
-        <{{hdr}}>{{attr|title}}</{{hdr}}>
+        <{{ hdr }}>{{ attr|title }}</{{ hdr }}>
         {% if result[attr] is string %}
-          <pre>{{result[attr]}}</pre>
+          <pre>{{ result[attr] }}</pre>
         {% elif result[attr] is mapping or result[attr] is iterable%}
-          <pre>{{result[attr]|to_nice_json}}</pre>
+          <pre>{{ result[attr] |to_nice_json |safe }}</pre>
         {% else %}
-          <pre>{{result}}</pre>
+          <pre>{{ result |to_nice_json |safe }}</pre>
         {% endif %}
       {% endif %}
     {% endfor %}
   {% else %}
-    <pre>{{result|to_nice_json}}</pre>
+    <pre>{{ result |to_nice_json |safe }}</pre>
   {% endif %}
 {% endmacro %}
 
