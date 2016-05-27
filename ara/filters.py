@@ -26,9 +26,15 @@ def configure_template_filters(app):
 
     @app.template_filter('to_nice_json')
     def jinja_to_nice_json(result):
-        """ Formats a result """
-        return json.dumps(result, indent=4, sort_keys=True,
-                          default=str)
+        """ Tries to format a result as a pretty printed JSON. """
+        try:
+            return json.dumps(json.loads(result), indent=4, sort_keys=True)
+        except (ValueError, TypeError):
+            try:
+                return json.dumps(result, indent=4, sort_keys=True)
+            except Exception as err:
+                log.error('failed to dump json: %s', err)
+                return result
 
     @app.template_filter('from_json')
     def jinja_from_json(val):

@@ -3,7 +3,6 @@ import ara.webapp as w
 import ara.models as m
 import datetime
 
-
 class TestFilters(TestCase):
     '''Tests for our Jinja2 filters'''
 
@@ -70,3 +69,21 @@ class TestFilters(TestCase):
 
         self.assertEqual(res,
                          u'{\n    "key": "value"\n}')
+
+    def test_to_json_from_string(self):
+        data = '{"key": "value"}'
+        t = self.env.from_string('{{ data | to_nice_json }}')
+        res = t.render(data=data)
+
+        self.assertEqual(res,
+                         u'{\n    "key": "value"\n}')
+
+
+    def test_to_json_from_invalid_string(self):
+        # json.dumps does not raise exception on a non-json string,
+        # it just returns an unicode string
+        data = "definitely not json"
+        t = self.env.from_string('{{ data |to_nice_json }}')
+        res = t.render(data=data)
+
+        self.assertEqual(res, u'"definitely not json"')
