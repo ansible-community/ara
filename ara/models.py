@@ -13,6 +13,7 @@
 #   under the License.
 
 import uuid
+import functools
 from datetime import datetime, timedelta
 
 # This makes all the exceptions available as "models.<exception_name>".
@@ -30,6 +31,31 @@ def mkuuid():
     use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.'''
 
     return str(uuid.uuid4())
+
+# Primary key columns are of these type.
+pkey_type = db.String(36)
+
+# This defines the standard primary key column used in our tables.
+std_pkey = functools.partial(
+    db.Column, pkey_type, primary_key=True,
+    nullable=False, default=mkuuid)
+
+# Common options for one-to-many relationships in our database.
+one_to_many = functools.partial(
+    db.relationship, passive_deletes=False,
+    cascade='all, delete-orphan', lazy='dynamic')
+
+# Common options for many-to-many relationships in our database.
+many_to_many = functools.partial(
+    db.relationship, passive_deletes=False,
+    cascade='all, delete',
+    lazy='dynamic')
+
+
+# Common options for foreign key relationships.
+def std_fkey(col):
+    return db.Column(pkey_type,
+                     db.ForeignKey(col, ondelete='RESTRICT'))
 
 
 class TimedEntity(object):
@@ -68,15 +94,16 @@ class Playbook(db.Model, TimedEntity):
 
     __tablename__ = 'playbooks'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
+    id = std_pkey()
     path = db.Column(db.Text)
-    plays = db.relationship('Play', backref='playbook', lazy='dynamic')
-    tasks = db.relationship('Task', backref='playbook', lazy='dynamic')
-    stats = db.relationship('Stats', backref='playbook', lazy='dynamic')
+    plays = one_to_many('Play', backref='playbook')
+    tasks = one_to_many('Task', backref='playbook')
+    stats = one_to_many('Stats', backref='playbook')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
+
+    complete = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Playbook %s>' % self.path
@@ -94,12 +121,11 @@ class Play(db.Model, TimedEntity):
 
     __tablename__ = 'plays'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
-    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
+    id = std_pkey()
+    playbook_id = std_fkey('playbooks.id')
     name = db.Column(db.Text)
     sortkey = db.Column(db.Integer)
-    tasks = db.relationship('Task', backref='play', lazy='dynamic')
+    tasks = one_to_many('Task', backref='play')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
@@ -128,10 +154,9 @@ class Task(db.Model, TimedEntity):
 
     __tablename__ = 'tasks'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
-    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
-    play_id = db.Column(db.String(36), db.ForeignKey('plays.id'))
+    id = std_pkey()
+    playbook_id = std_fkey('playbooks.id')
+    play_id = std_fkey('plays.id')
 
     name = db.Column(db.Text)
     sortkey = db.Column(db.Integer)
@@ -143,8 +168,7 @@ class Task(db.Model, TimedEntity):
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
 
-    task_results = db.relationship('TaskResult', backref='task',
-                                   lazy='dynamic')
+    task_results = one_to_many('TaskResult', backref='task')
 
     def __repr__(self):
         return '<Task %s>' % (self.name or self.id)
@@ -172,10 +196,9 @@ class TaskResult(db.Model, TimedEntity):
 
     __tablename__ = 'task_results'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
-    task_id = db.Column(db.String(36), db.ForeignKey('tasks.id'))
-    host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
+    id = std_pkey()
+    task_id = std_fkey('tasks.id')
+    host_id = std_fkey('hosts.id')
 
     status = db.Column(db.Enum('ok', 'failed', 'skipped', 'unreachable'))
     changed = db.Column(db.Boolean, default=False)
@@ -201,10 +224,12 @@ class TaskResult(db.Model, TimedEntity):
         return '<TaskResult %s>' % self.host.name
 
 
-host_playbook = db.Table(
-    'host_playbook',
-    db.Column('host_id', db.String(36), db.ForeignKey('hosts.id')),
-    db.Column('playbook_id', db.String(36), db.ForeignKey('playbooks.id')))
+class HostPlaybook(db.Model):
+    __tablename__ = 'host_playbook'
+    __table_args__ = (db.PrimaryKeyConstraint('host_id', 'playbook_id'),)
+
+    host_id = std_fkey('hosts.id')
+    playbook_id = std_fkey('playbooks.id')
 
 
 class Host(db.Model):
@@ -223,16 +248,13 @@ class Host(db.Model):
 
     __tablename__ = 'hosts'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
+    id = std_pkey()
     name = db.Column(db.String(255), unique=True, index=True)
 
-    task_results = db.relationship('TaskResult', backref='host',
-                                   lazy='dynamic')
-    stats = db.relationship('Stats', backref='host',
-                            lazy='dynamic')
-    playbooks = db.relationship('Playbook', secondary=host_playbook,
-                                backref='hosts', lazy='dynamic')
+    task_results = one_to_many('TaskResult', backref='host')
+    stats = one_to_many('Stats', backref='host')
+    playbooks = many_to_many('Playbook', backref='hosts',
+                             secondary='host_playbook')
 
     def __repr__(self):
         return '<Host %s>' % self.name
@@ -252,10 +274,9 @@ class Stats(db.Model):
 
     __tablename__ = 'stats'
 
-    id = db.Column(db.String(36), primary_key=True, nullable=False,
-                   default=mkuuid)
-    playbook_id = db.Column(db.String(36), db.ForeignKey('playbooks.id'))
-    host_id = db.Column(db.String(36), db.ForeignKey('hosts.id'))
+    id = std_pkey()
+    playbook_id = std_fkey('playbooks.id')
+    host_id = std_fkey('hosts.id')
 
     changed = db.Column(db.Integer, default=0)
     failed = db.Column(db.Integer, default=0)
