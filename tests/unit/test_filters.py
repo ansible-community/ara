@@ -57,14 +57,14 @@ class TestFilters(TestCase):
 
     def test_from_json(self):
         data = '{"key": "value"}'
-        t = self.env.from_string('{{ data | from_json }}')
+        t = self.env.from_string('{{ data | from_json | safe }}')
         res = t.render(data=data)
 
         self.assertEqual(res, u"{u'key': u'value'}")
 
     def test_to_json(self):
         data = {'key': 'value'}
-        t = self.env.from_string('{{ data | to_nice_json }}')
+        t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
         self.assertEqual(res,
@@ -72,7 +72,7 @@ class TestFilters(TestCase):
 
     def test_to_json_from_string(self):
         data = '{"key": "value"}'
-        t = self.env.from_string('{{ data | to_nice_json }}')
+        t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
         self.assertEqual(res,
@@ -83,7 +83,7 @@ class TestFilters(TestCase):
         # json.dumps does not raise exception on a non-json string,
         # it just returns an unicode string
         data = "definitely not json"
-        t = self.env.from_string('{{ data |to_nice_json }}')
+        t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
         self.assertEqual(res, u'"definitely not json"')
