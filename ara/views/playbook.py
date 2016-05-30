@@ -6,7 +6,8 @@ playbook = Blueprint('playbook', __name__)
 
 @playbook.route('/')
 def playbook_summary():
-    playbooks = models.Playbook.query.order_by(models.Playbook.time_start)
+    playbooks = (models.Playbook.query
+                 .order_by(models.Playbook.time_start.desc()))
     stats = utils.get_summary_stats(playbooks, 'playbook_id')
 
     return render_template('playbook_summary.html',
