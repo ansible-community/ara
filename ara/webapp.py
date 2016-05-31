@@ -16,6 +16,7 @@ import os
 import logging
 
 from flask import Flask
+from flask import logging as flask_logging
 
 from ara.models import db
 from ara.filters import configure_template_filters
@@ -89,9 +90,10 @@ def configure_db(app):
 def configure_logging(app):
     if app.config['ARA_LOG_FILE']:
         handler = logging.FileHandler(app.config['ARA_LOG_FILE'])
+        # Set the ARA log format or fall back to the flask debugging format
         handler.setFormatter(
             logging.Formatter(app.config.get(
-                'ARA_LOG_FORMAT', app.debug_log_format)))
+                'ARA_LOG_FORMAT', flask_logging.DEBUG_LOG_FORMAT)))
         logger = logging.getLogger(app.logger_name)
         logger.setLevel(app.config['ARA_LOG_LEVEL'])
         del logger.handlers[:]

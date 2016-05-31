@@ -1,4 +1,4 @@
-Flask==0.10
+Flask==0.11
 Flask-SQLAlchemy
 Flask-Script
 Frozen-Flask
