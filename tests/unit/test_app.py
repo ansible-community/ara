@@ -1,9 +1,11 @@
+import random
 from flask.ext.testing import TestCase
 import pytest
 
 import ara.webapp as w
 import ara.models as m
-from ara.models import db
+
+from common import ansible_run
 
 
 class TestApp(TestCase):
@@ -17,145 +19,161 @@ class TestApp(TestCase):
 
     def setUp(self):
         m.db.create_all()
-
         self.client = self.app.test_client()
 
     def tearDown(self):
         m.db.session.remove()
         m.db.drop_all()
 
-    def ansible_run(self, complete=True):
-        '''Simulate a simple Ansible run by creating the
-        expected database objects.  This roughly approximates the
-        following playbook:
-
-            - hosts: localhost
-              tasks:
-                - test-action:
-
-        Set the `complete` parameter to `False` to simulate an
-        aborted Ansible run.
-        '''
-
-        playbook = m.Playbook(path='testing.yml')
-        play = m.Play(playbook=playbook, name='test play')
-        task = m.Task(play=play, playbook=playbook,
-                      action='test-action')
-        host = m.Host(name='localhost')
-        host.playbooks.append(playbook)
-        result = m.TaskResult(task=task, status='ok', host=host,
-                              result='this is a test')
-
-        self.ctx = dict(
-            playbook=playbook,
-            play=play,
-            task=task,
-            host=host,
-            result=result)
-
-        for obj in self.ctx.values():
-            if hasattr(obj, 'start'):
-                obj.start()
-            db.session.add(obj)
-
-        db.session.commit()
-
-        if complete:
-            stats = m.Stats(playbook=playbook, host=host)
-            self.ctx['stats'] = stats
-            db.session.add(stats)
-
-            for obj in self.ctx.values():
-                if hasattr(obj, 'stop'):
-                    obj.stop()
-
-        db.session.commit()
-
     def test_overview(self):
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
 
     def test_list_host(self):
-        self.ansible_run()
+        ansible_run()
         res = self.client.get('/host/')
         self.assertEqual(res.status_code, 200)
 
     def test_list_playbook(self):
-        self.ansible_run()
+        ansible_run()
         res = self.client.get('/playbook/')
         self.assertEqual(res.status_code, 200)
 
     def test_list_playbook_incomplete(self):
-        self.ansible_run(complete=False)
+        ansible_run(complete=False)
         res = self.client.get('/playbook/')
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.complete
     def test_show_playbook(self):
-        self.ansible_run()
-        res = self.client.get('/playbook/{}/'.format(
-            self.ctx['playbook'].id))
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}'.format(
+            ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
+
+    def test_show_playbook_missing(self):
+        ansible_run()
+        res = self.client.get('/playbook/foo')
+        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_playbook_incomplete(self):
-        self.ansible_run(complete=False)
-        res = self.client.get('/playbook/{}/'.format(
-            self.ctx['playbook'].id))
+        ctx = ansible_run(complete=False)
+        res = self.client.get('/playbook/{}'.format(
+            ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.complete
-    def test_show_play(self):
-        self.ansible_run()
-        res = self.client.get('/play/{}'.format(
-            self.ctx['play'].id))
+    def test_show_playbook_results(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}/results'.format(
+            ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
+
+    def test_show_playbook_results_host(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}/results/{}'.format(
+            ctx['playbook'].id,
+            ctx['host'].name))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_playbook_results_host_status(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}/results/{}/ok'.format(
+            ctx['playbook'].id,
+            ctx['host'].name))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_playbook_results_missing(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/foo/results'.format(
+            ctx['playbook'].id))
+        self.assertEqual(res.status_code, 404)
+
+    def test_show_play(self):
+        ctx = ansible_run()
+        res = self.client.get('/play/{}'.format(
+            ctx['play'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_play_missing(self):
+        ctx = ansible_run()
+        res = self.client.get('/play/foo'.format(
+            ctx['play'].id))
+        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_play_incomplete(self):
-        self.ansible_run(complete=False)
+        ctx = ansible_run(complete=False)
         res = self.client.get('/play/{}'.format(
-            self.ctx['play'].id))
+            ctx['play'].id))
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.complete
     def test_show_task(self):
-        self.ansible_run()
+        ctx = ansible_run()
         res = self.client.get('/task/{}'.format(
-            self.ctx['task'].id))
+            ctx['task'].id))
         self.assertEqual(res.status_code, 200)
+
+    def test_show_task_host(self):
+        ctx = ansible_run()
+        res = self.client.get('/task/{}?host={}'.format(
+            ctx['task'].id,
+            ctx['host'].name))
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('<td>\n<a href="/host/{host}">{host}</a>\n</td>'.format(
+            host=ctx['host'].name), res.get_data())
+
+    def test_show_task_status(self):
+        ctx = ansible_run()
+        res = self.client.get('/task/{}?status=ok'.format(
+            ctx['task'].id))
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('<td>\n<a href="/host/{host}">{host}</a>\n</td>'.format(
+            host=ctx['host'].name), res.get_data())
+
+    def test_show_task_missing(self):
+        ansible_run()
+        res = self.client.get('/task/foo')
+        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_task_incomplete(self):
-        self.ansible_run(complete=False)
+        ctx = ansible_run(complete=False)
         res = self.client.get('/task/{}'.format(
-            self.ctx['task'].id))
+            ctx['task'].id))
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.complete
     def test_show_host(self):
-        self.ansible_run()
+        ctx = ansible_run()
         res = self.client.get('/host/{}'.format(
-            self.ctx['host'].name))
+            ctx['host'].name))
         self.assertEqual(res.status_code, 200)
+
+    def test_show_host_missing(self):
+        ansible_run()
+        res = self.client.get('/host/foo')
+        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_host_incomplete(self):
-        self.ansible_run(complete=False)
+        ctx = ansible_run(complete=False)
         res = self.client.get('/host/{}'.format(
-            self.ctx['host'].name))
+            ctx['host'].name))
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.complete
     def test_show_result(self):
-        self.ansible_run()
+        ctx = ansible_run()
         res = self.client.get('/result/{}'.format(
-            self.ctx['result'].id))
+            ctx['result'].id))
         self.assertEqual(res.status_code, 200)
+
+    def test_show_result_missing(self):
+        ansible_run()
+        res = self.client.get('/result/foo')
+        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_result_incomplete(self):
-        self.ansible_run(complete=False)
+        ctx = ansible_run(complete=False)
         res = self.client.get('/result/{}'.format(
-            self.ctx['result'].id))
+            ctx['result'].id))
         self.assertEqual(res.status_code, 200)
