@@ -14,7 +14,7 @@ def host_summary():
                            stats=stats)
 
 
-@host.route('/<host>')
+@host.route('/<host>/')
 def show_host(host):
     try:
         host = models.Host.query.filter_by(name=host).one()

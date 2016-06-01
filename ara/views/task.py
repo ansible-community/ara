@@ -4,7 +4,7 @@ from ara import models
 task = Blueprint('task', __name__)
 
 
-@task.route('/<task>')
+@task.route('/<task>/')
 def show_task(task):
     task = models.Task.query.get(task)
     if task is None:

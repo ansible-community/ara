@@ -4,7 +4,7 @@ from ara import models
 result = Blueprint('result', __name__)
 
 
-@result.route('/<task_result>')
+@result.route('/<task_result>/')
 def show_result(task_result):
     task_result = models.TaskResult.query.get(task_result)
     if task_result is None:
