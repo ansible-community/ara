@@ -4,7 +4,7 @@ from ara import models
 play = Blueprint('play', __name__)
 
 
-@play.route('/play/<play>')
+@play.route('/<play>')
 def show_play(play):
     play = models.Play.query.get(play)
     if play is None:

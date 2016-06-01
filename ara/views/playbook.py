@@ -15,7 +15,7 @@ def playbook_summary():
                            stats=stats)
 
 
-@playbook.route('/<playbook>/')
+@playbook.route('/<playbook>')
 def show_playbook(playbook):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
@@ -35,8 +35,8 @@ def show_playbook(playbook):
                            tasks=tasks)
 
 
-@playbook.route('/<playbook>/results/')
-@playbook.route('/<playbook>/results/<host>/')
+@playbook.route('/<playbook>/results')
+@playbook.route('/<playbook>/results/<host>')
 @playbook.route('/<playbook>/results/<host>/<status>')
 def playbook_results(playbook, host=None, status=None):
     playbook = models.Playbook.query.get(playbook)

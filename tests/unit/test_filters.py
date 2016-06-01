@@ -3,6 +3,7 @@ import ara.webapp as w
 import ara.models as m
 import datetime
 
+
 class TestFilters(TestCase):
     '''Tests for our Jinja2 filters'''
 
@@ -48,12 +49,24 @@ class TestFilters(TestCase):
 
         self.assertEqual(res, datestr)
 
+    def test_datefmt_none(self):
+        t = self.env.from_string('{{ date | datefmt }}')
+        res = t.render(date=None)
+
+        self.assertEqual(res, 'n/a')
+
     def test_timefmt(self):
         time = datetime.timedelta(seconds=90061)
         t = self.env.from_string('{{ time | timefmt }}')
         res = t.render(time=time)
 
         self.assertEqual(res, '1 day, 1:01:01')
+
+    def test_timefmt_none(self):
+        t = self.env.from_string('{{ time | timefmt }}')
+        res = t.render(time=None)
+
+        self.assertEqual(res, 'n/a')
 
     def test_from_json(self):
         data = '{"key": "value"}'
@@ -70,6 +83,13 @@ class TestFilters(TestCase):
         self.assertEqual(res,
                          u'{\n    "key": "value"\n}')
 
+    def test_to_json_fails(self):
+        data = datetime.datetime.now()
+        t = self.env.from_string('{{ data | to_nice_json }}')
+        res = t.render(data=data)
+
+        self.assertEqual(res, str(data))
+
     def test_to_json_from_string(self):
         data = '{"key": "value"}'
         t = self.env.from_string('{{ data | to_nice_json | safe }}')
@@ -77,7 +97,6 @@ class TestFilters(TestCase):
 
         self.assertEqual(res,
                          u'{\n    "key": "value"\n}')
-
 
     def test_to_json_from_invalid_string(self):
         # json.dumps does not raise exception on a non-json string,
