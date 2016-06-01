@@ -14,9 +14,10 @@
 #
 
 import logging
+import os
 
 from cliff.command import Command
-from ara import app, static
+from ara import app, freezer
 
 
 class Generate(Command):
@@ -26,22 +27,16 @@ class Generate(Command):
     def get_parser(self, prog_name):
         parser = super(Generate, self).get_parser(prog_name)
         parser.add_argument(
-            '--path', '-p',
+            'path',
             metavar='<path>',
-            required=True,
             help='Path where the static files will be built in',
         )
         return parser
 
-    def take_action(self, parsed_args):
-        app.config['FREEZER_DESTINATION'] = parsed_args.path
-        try:
-            print('Generating static files at {}...'.format(parsed_args.path))
-            static.freezer.freeze()
-        except Exception as e:
-            # TODO: (dmsimard) do some proper exception handling
-            print('Could not successfully generate files: {}'.format(str(e)))
-            return False
+    def take_action(self, args):
+        app.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
+        self.log.warn('Generating static files at %s...',
+                      args.path)
+        freezer.freezer.freeze()
 
         print('Done.')
-        return True
