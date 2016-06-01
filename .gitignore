@@ -11,3 +11,5 @@ build
 eggs
 .tox/
 .cache/
+.coverage
+htmlcov/
