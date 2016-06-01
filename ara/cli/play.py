@@ -32,10 +32,28 @@ class PlayList(Lister):
     """Returns a list of plays"""
     log = logging.getLogger(__name__)
 
-    def take_action(self, parsed_args):
+    def get_parser(self, prog_name):
+        parser = super(PlayList, self).get_parser(prog_name)
+        g = parser.add_mutually_exclusive_group(required=True)
+        g.add_argument(
+            '--playbook', '-b',
+            metavar='<playbook-id>',
+            help='Show plays from specified playbook',
+        )
+        g.add_argument(
+            '--all', '-a',
+            action='store_true',
+            help='Show all plays in database')
+        return parser
+
+    def take_action(self, args):
         plays = (models.Play.query
                  .join(models.Playbook)
                  .filter(models.Play.playbook_id == models.Playbook.id))
+
+        if args.playbook:
+            plays = (plays
+                     .filter(models.Play.playbook_id == args.playbook))
 
         return utils.fields_from_iter(
             FIELDS, plays,

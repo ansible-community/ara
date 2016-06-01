@@ -36,12 +36,36 @@ class TaskList(Lister):
     """Returns a list of tasks"""
     log = logging.getLogger(__name__)
 
-    def take_action(self, parsed_args):
+    def get_parser(self, prog_name):
+        parser = super(TaskList, self).get_parser(prog_name)
+        g = parser.add_mutually_exclusive_group(required=True)
+        g.add_argument(
+            '--playbook', '-b',
+            metavar='<playbook-id>',
+            help='Playbook from which to list tasks',)
+        g.add_argument(
+            '--play', '-p',
+            metavar='<play-id>',
+            help='Play from which to list tasks',)
+        g.add_argument(
+            '--all', '-a',
+            action='store_true',
+            help='List all tasks in the database',)
+        return parser
+
+    def take_action(self, args):
         tasks = (models.Task.query
                  .join(models.Play)
                  .join(models.Playbook)
                  .filter(models.Task.play_id == models.Play.id)
                  .filter(models.Task.playbook_id == models.Playbook.id))
+
+        if args.play:
+            tasks = (tasks
+                     .filter(models.Task.play_id == args.play))
+        elif args.playbook:
+            tasks = (tasks
+                     .filter(models.Task.playbook_id == args.playbook))
 
         return utils.fields_from_iter(
             FIELDS, tasks,

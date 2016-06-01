@@ -34,12 +34,44 @@ class ResultList(Lister):
     """Returns a list of results"""
     log = logging.getLogger(__name__)
 
-    def take_action(self, parsed_args):
+    def get_parser(self, prog_name):
+        parser = super(ResultList, self).get_parser(prog_name)
+
+        g = parser.add_mutually_exclusive_group(required=True)
+        g.add_argument(
+            '--playbook', '-b',
+            metavar='<playbook-id>',
+            help='Playbook from which to list results',)
+        g.add_argument(
+            '--play', '-p',
+            metavar='<play-id>',
+            help='Play from which to list results',)
+        g.add_argument(
+            '--task', '-t',
+            metavar='<task-id>',
+            help='Task from which to list results',)
+        g.add_argument(
+            '--all', '-a',
+            action='store_true',
+            help='List all results in the database',)
+        return parser
+
+    def take_action(self, args):
         results = (models.TaskResult.query
                    .join(models.Task)
                    .join(models.Host)
                    .filter(models.TaskResult.task_id == models.Task.id)
                    .filter(models.TaskResult.host_id == models.Host.id))
+
+        if args.playbook:
+            results = (results
+                       .filter(models.Task.playbook_id == args.playbook))
+        elif args.play:
+            results = (results
+                       .filter(models.Task.play_id == args.play))
+        elif args.task:
+            results = (results
+                       .filter(models.TaskResult.task_id == args.task))
 
         return utils.fields_from_iter(
             FIELDS, results,

@@ -102,7 +102,8 @@ class CallbackModule(CallbackBase):
         result.task_start = self.task.time_start
         result.task_end = datetime.now()
         host = self.get_or_create_host(result._host.name)
-        host.playbooks.append(self.playbook)
+        if self.playbook not in host.playbooks:
+            host.playbooks.append(self.playbook)
 
         self.taskresult = models.TaskResult(
             task=self.task,
@@ -160,6 +161,7 @@ class CallbackModule(CallbackBase):
         if self.playbook is not None:
             LOG.debug('closing playbook %s', self.playbook.path)
             self.playbook.stop()
+            self.playbook.complete = True
             db.session.add(self.playbook)
 
     def v2_runner_on_ok(self, result, **kwargs):
@@ -233,11 +235,11 @@ class CallbackModule(CallbackBase):
         db.session.add(self.play)
 
     def v2_playbook_on_stats(self, stats):
+        self.log_stats(stats)
+
         self.close_task()
         self.close_play()
         self.close_playbook()
-
-        self.log_stats(stats)
 
         LOG.debug('closing database')
         db.session.close()

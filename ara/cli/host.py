@@ -29,8 +29,25 @@ class HostList(Lister):
     """Returns a list of hosts"""
     log = logging.getLogger(__name__)
 
-    def take_action(self, parsed_args):
-        hosts = models.Host.query.all()
+    def get_parser(self, prog_name):
+        parser = super(HostList, self).get_parser(prog_name)
+        parser.add_argument(
+            '--playbook', '-b',
+            metavar='<playbook-id>',
+            help='Show hosts associated with a specified playbook',
+        )
+        return parser
+
+    def take_action(self, args):
+        hosts = (models.Host.query
+                 .order_by(models.Host.name))
+
+        if args.playbook:
+            hosts = (hosts
+                     .join(models.HostPlaybook)
+                     .join(models.Playbook)
+                     .filter(models.Playbook.id == args.playbook))
+
         return utils.fields_from_iter(FIELDS, hosts)
 
 
@@ -48,7 +65,8 @@ class HostShow(ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        host = (models.Host.query
-                .filter((models.Host.id == parsed_args.host) |
-                        (models.Host.name == parsed_args.host)).one())
-        return utils.fields_from_object(FIELDS, host)
+        hosts = (models.Host.query
+                 .filter((models.Host.id == parsed_args.host) |
+                         (models.Host.name == parsed_args.host)).one())
+
+        return utils.fields_from_object(FIELDS, hosts)
