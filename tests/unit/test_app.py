@@ -153,6 +153,23 @@ class TestApp(TestCase):
         res = self.client.get('/host/foo/')
         self.assertEqual(res.status_code, 404)
 
+    def test_show_host_facts(self):
+        ctx = ansible_run()
+        res = self.client.get('/host/{}/facts/'.format(
+            ctx['host'].name))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_host_exists_facts_missing(self):
+        ctx = ansible_run(gather_facts=False)
+        res = self.client.get('/host/{}/facts/'.format(
+            ctx['host'].name))
+        self.assertEqual(res.status_code, 404)
+
+    def test_show_host_missing_facts_missing(self):
+        ansible_run()
+        res = self.client.get('/host/foo/facts/')
+        self.assertEqual(res.status_code, 404)
+
     @pytest.mark.incomplete
     def test_show_host_incomplete(self):
         ctx = ansible_run(complete=False)

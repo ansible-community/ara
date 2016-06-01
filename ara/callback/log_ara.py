@@ -92,6 +92,24 @@ class CallbackModule(CallbackBase):
 
         return host
 
+    def create_or_update_facts(self, host, values):
+        # Create a HostFacts record for this host or update it if there is
+        # already a record.
+        try:
+            facts = models.HostFacts.query.filter_by(host=host).one()
+            facts.timestamp = datetime.now()
+            facts.values = values
+            LOG.debug('updated host facts for %s provided by task %s (%s)',
+                      host, self.task.name, self.task.id)
+        except models.NoResultFound:
+            facts = models.HostFacts(
+                host=host,
+                values=values
+            )
+            db.session.add(facts)
+            LOG.debug('created host facts for %s provided by task %s (%s)',
+                      host, self.task.name, self.task.id)
+
     def log_task(self, result, status, **kwargs):
         '''`log_task` is called when an individual task instance on a single
         host completes. It is responsible for logging a single
@@ -120,6 +138,10 @@ class CallbackModule(CallbackBase):
         )
 
         db.session.add(self.taskresult)
+
+        if self.task.action == 'setup':
+            values = json.dumps(result._result['ansible_facts'])
+            self.create_or_update_facts(host, values)
 
     def log_stats(self, stats):
         '''Logs playbook statistics to the database.'''

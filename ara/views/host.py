@@ -1,3 +1,5 @@
+import json
+
 from flask import render_template, abort, Blueprint
 from ara import models, utils
 
@@ -24,3 +26,18 @@ def show_host(host):
     stats = utils.get_host_playbook_stats(host)
 
     return render_template('host.html', host=host, stats=stats)
+
+
+@host.route('/<host>/facts/')
+def show_facts(host):
+    try:
+        host = models.Host.query.filter_by(name=host).one()
+    except models.NoResultFound:
+        abort(404)
+
+    if not host.facts:
+        abort(404)
+    else:
+        facts = json.loads(host.facts.values).iteritems()
+
+    return render_template('host_facts.html', host=host, facts=facts)

@@ -13,7 +13,9 @@
 #   under the License.
 #
 
+import json
 import logging
+import six
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
@@ -65,8 +67,30 @@ class HostShow(ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        hosts = (models.Host.query
-                 .filter((models.Host.id == parsed_args.host) |
-                         (models.Host.name == parsed_args.host)).one())
+        host = (models.Host.query
+                .filter((models.Host.id == parsed_args.host) |
+                        (models.Host.name == parsed_args.host)).one())
 
-        return utils.fields_from_object(FIELDS, hosts)
+        return utils.fields_from_object(FIELDS, host)
+
+
+class HostFacts(ShowOne):
+    """Show facts for a host"""
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(HostFacts, self).get_parser(prog_name)
+        parser.add_argument(
+            'host',
+            metavar='<host>',
+            help='Host name or id to show facts for',
+        )
+        return parser
+
+    def take_action(self, parsed_args):
+        host = (models.Host.query
+                .filter((models.Host.id == parsed_args.host) |
+                        (models.Host.name == parsed_args.host)).one())
+
+        facts = json.loads(host.facts.values)
+        return zip(*sorted(six.iteritems(facts)))

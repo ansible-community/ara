@@ -40,6 +40,11 @@ std_pkey = functools.partial(
     db.Column, pkey_type, primary_key=True,
     nullable=False, default=mkuuid)
 
+# Common options for one-to-one relationships in our database.
+one_to_one = functools.partial(
+    db.relationship, passive_deletes=False,
+    cascade='all, delete-orphan', uselist=False)
+
 # Common options for one-to-many relationships in our database.
 one_to_many = functools.partial(
     db.relationship, passive_deletes=False,
@@ -251,6 +256,7 @@ class Host(db.Model):
     id = std_pkey()
     name = db.Column(db.String(255), unique=True, index=True)
 
+    facts = one_to_one('HostFacts', backref='host')
     task_results = one_to_many('TaskResult', backref='host')
     stats = one_to_many('Stats', backref='host')
     playbooks = many_to_many('Playbook', backref='hosts',
@@ -258,6 +264,26 @@ class Host(db.Model):
 
     def __repr__(self):
         return '<Host %s>' % self.name
+
+
+class HostFacts(db.Model):
+    '''The `HostFacts` object represents a host reference by an Ansible
+    inventory. It is meant to record facts when a setup task is run for a host.
+
+    A `HostFacts` entity has the following relationship:
+
+    - `hosts` -- the host owner of the facts
+    '''
+
+    __tablename__ = 'host_facts'
+
+    id = std_pkey()
+    host_id = std_fkey('hosts.id')
+    timestamp = db.Column(db.DateTime, default=datetime.now)
+    values = db.Column(db.Text(16777215))
+
+    def __repr__(self):
+        return '<HostFacts %s>' % self.host.name
 
 
 class Stats(db.Model):

@@ -1,11 +1,14 @@
+import json
+import six
+
 from flask.ext.testing import TestCase
 
 import ara.webapp as w
 import ara.models as m
 import ara.cli.playbook
+import ara.cli.host
 
 from common import ansible_run
-
 
 class TestCLI(TestCase):
     '''Tests for the ARA web interface'''
@@ -44,3 +47,14 @@ class TestCLI(TestCase):
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['playbook'].id)
+
+    def test_host_fact(self):
+        ctx = ansible_run()
+
+        cmd = ara.cli.host.HostFacts(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([ctx['host'].id])
+        res = cmd.take_action(args)
+
+        facts = json.loads(ctx['facts'].values)
+        self.assertEqual(res, zip(*sorted(six.iteritems(facts))))

@@ -1,6 +1,6 @@
 - name: Test playbook
   hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   tasks:
     - name: Integration test
       debug:

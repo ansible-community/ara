@@ -1,3 +1,5 @@
+import json
+
 from flask.ext.testing import TestCase
 
 import ara.webapp as w
@@ -31,6 +33,11 @@ class TestModels(TestCase):
 
         self.host = m.Host(
             name='localhost',
+        )
+
+        self.host_facts = m.HostFacts(
+            host=self.host,
+            values=json.dumps('{"fact": "value"}')
         )
 
         self.task_result = m.TaskResult(
@@ -82,6 +89,13 @@ class TestModels(TestCase):
 
         self.assertEqual(host1, self.host)
         self.assertEqual(host2, self.host)
+
+    def test_host_facts(self):
+        host = m.Host.query.filter_by(name='localhost').one()
+        facts = m.HostFacts.query.filter_by(host_id=host.id).one()
+        facts_from_host = host.facts
+
+        self.assertEqual(facts.values, facts_from_host.values)
 
     def test_duplicate_host(self):
         host = m.Host(
