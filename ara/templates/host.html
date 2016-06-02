@@ -3,6 +3,11 @@
 {% block content %}
 <ol class="breadcrumb">
   <li class="active"><strong>Host</strong>: {{ host.name }}</li>
+  {% if host.facts %}
+  <li>[ {{ macros.make_link('host.show_facts', 'Facts', host=host.name) }} ]</li>
+  {% else %}
+    <li>[ No facts available ]</li>
+  {% endif %}
 </ol>
 
 <table class="list table table-striped table-bordered table-hover table-condensed">

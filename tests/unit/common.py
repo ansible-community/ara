@@ -1,15 +1,17 @@
+import json
 import random
 
 import ara.models as m
 from ara.models import db
 
 
-def ansible_run(complete=True):
+def ansible_run(complete=True, gather_facts=True):
     '''Simulate a simple Ansible run by creating the
     expected database objects.  This roughly approximates the
     following playbook:
 
         - hosts: host-<int>
+          gather_facts: true
           tasks:
             - test-action:
 
@@ -18,6 +20,8 @@ def ansible_run(complete=True):
 
     Set the `complete` parameter to `False` to simulate an
     aborted Ansible run.
+    Set the `gathered_facts` parameter to `False` to simulate a run with no
+    facts gathered.
     '''
 
     playbook = m.Playbook(path='testing.yml')
@@ -35,6 +39,10 @@ def ansible_run(complete=True):
         task=task,
         host=host,
         result=result)
+
+    if gather_facts:
+        facts = m.HostFacts(host=host, values='{"fact": "value"}')
+        ctx['facts'] = facts
 
     for obj in ctx.values():
         if hasattr(obj, 'start'):

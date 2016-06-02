@@ -11,6 +11,7 @@ pre {
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
+    text-align: left;
 }
 
 /* Status styling */
@@ -79,5 +80,9 @@ td a {
 }
 
 .list table, .list th, .list td {
+    text-align: center;
+}
+
+.facts table, .facts th, .facts td {
     text-align: center;
 }

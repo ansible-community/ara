@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><strong>Host</strong>: {{ macros.make_link('host.show_host', host.name, host=host.name) }}</li>
+  <li class="active"><strong>Facts</strong></li>
+</ol>
+
+<h2>Last updated at {{ host.facts.timestamp |datefmt }}</h2>
+<table class="facts table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Fact</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for fact, value in facts %}
+      <tr>
+        <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
+        <td><pre>{{ value | to_nice_json }}</pre></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

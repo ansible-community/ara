@@ -121,6 +121,13 @@ class CallbackModule(CallbackBase):
 
         db.session.add(self.taskresult)
 
+        if self.task.action == 'setup' and 'ansible_facts' in result._result:
+            values = json.dumps(result._result['ansible_facts'])
+            facts = models.HostFacts(values=values)
+            host.facts = facts
+
+            db.session.add(facts)
+
     def log_stats(self, stats):
         '''Logs playbook statistics to the database.'''
         LOG.debug('logging stats')
