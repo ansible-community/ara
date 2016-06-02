@@ -32,7 +32,7 @@ def configure_template_filters(app):
         except (ValueError, TypeError):
             try:
                 return json.dumps(result, indent=4, sort_keys=True)
-            except Exception as err:
+            except TypeError as err:
                 log.error('failed to dump json: %s', err)
                 return result
 
@@ -40,7 +40,7 @@ def configure_template_filters(app):
     def jinja_from_json(val):
         try:
             return json.loads(val)
-        except Exception as err:
+        except ValueError as err:
             log.error('failed to load json: %s', err)
             return val
 
