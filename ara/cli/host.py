@@ -66,10 +66,10 @@ class HostShow(ShowOne):
         )
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, args):
         host = (models.Host.query
-                .filter((models.Host.id == parsed_args.host) |
-                        (models.Host.name == parsed_args.host)).one())
+                .filter((models.Host.id == args.host) |
+                        (models.Host.name == args.host)).one())
 
         return utils.fields_from_object(FIELDS, host)
 
@@ -85,12 +85,21 @@ class HostFacts(ShowOne):
             metavar='<host>',
             help='Host name or id to show facts for',
         )
+        parser.add_argument(
+            'fact',
+            nargs='*',
+            metavar='<fact>',
+            help='Show only named fact(s)',
+        )
         return parser
 
-    def take_action(self, parsed_args):
+    def take_action(self, args):
         host = (models.Host.query
-                .filter((models.Host.id == parsed_args.host) |
-                        (models.Host.name == parsed_args.host)).one())
+                .filter((models.Host.id == args.host) |
+                        (models.Host.name == args.host)).one())
 
-        facts = json.loads(host.facts.values)
-        return zip(*sorted(six.iteritems(facts)))
+        facts = ((k, v) for k, v in
+                 six.iteritems(json.loads(host.facts.values))
+                 if not args.fact or k in args.fact
+                 )
+        return zip(*sorted(facts))
