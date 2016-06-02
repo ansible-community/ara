@@ -75,8 +75,12 @@ class PlayShow(ShowOne):
         )
         return parser
 
-    def take_action(self, parsed_args):
-        play = models.Play.query.get(parsed_args.play_id)
+    def take_action(self, args):
+        play = models.Play.query.get(args.play_id)
+        if play is None:
+            raise RuntimeError('Play %s could not be found' %
+                               args.play_id)
+
         return utils.fields_from_object(
             FIELDS, play,
             xforms={

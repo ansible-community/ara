@@ -88,8 +88,11 @@ class TaskShow(ShowOne):
         )
         return parser
 
-    def take_action(self, parsed_args):
-        task = models.Task.query.get(parsed_args.task_id)
+    def take_action(self, args):
+        task = models.Task.query.get(args.task_id)
+        if task is None:
+            raise RuntimeError('Task %s could not be found' %
+                               args.task_id)
 
         return utils.fields_from_object(
             FIELDS, task,

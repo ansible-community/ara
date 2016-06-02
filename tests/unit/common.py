@@ -55,6 +55,7 @@ def ansible_run(complete=True, gather_facts=True):
         stats = m.Stats(playbook=playbook, host=host)
         ctx['stats'] = stats
         db.session.add(stats)
+        ctx['playbook'].complete = True
 
         for obj in ctx.values():
             if hasattr(obj, 'stop'):
