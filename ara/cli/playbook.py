@@ -117,17 +117,13 @@ class PlaybookDelete(Command):
         else:
             pids = []
             for pid in args.playbook_id:
-                try:
-                    res = models.Playbook.query.get(pid)
-                    if res is None:
-                        raise ValueError('playbook does not exist')
-                except Exception as err:
+                res = models.Playbook.query.get(pid)
+                if res is None:
                     if args.ignore_errors:
-                        self.log.warning('unable to delete playbook %s '
-                                         '(skipping): %s', pid, err)
+                        self.log.warning('Playbook %s does not exist '
+                                         '(ignoring)' % pid)
                     else:
-                        raise RuntimeError('unable to delete playbook '
-                                           'id %s: %s' % (pid, err))
+                        raise RuntimeError('Playbook %s does not exist' % pid)
                 else:
                     pids.append(pid)
 

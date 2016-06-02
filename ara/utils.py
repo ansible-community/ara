@@ -148,5 +148,5 @@ def format_json(val):
                           indent=4,
                           sort_keys=True,
                           default=str)
-    except Exception:
+    except (TypeError, ValueError):
         return val
