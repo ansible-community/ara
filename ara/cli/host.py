@@ -94,9 +94,15 @@ class HostFacts(ShowOne):
         return parser
 
     def take_action(self, args):
-        host = (models.Host.query
-                .filter((models.Host.id == args.host) |
-                        (models.Host.name == args.host)).one())
+        try:
+            host = (models.Host.query
+                    .filter((models.Host.id == args.host) |
+                            (models.Host.name == args.host)).one())
+        except models.NoResultFound:
+            raise RuntimeError('Host %s could not be found' % args.host)
+
+        if not host.facts:
+            raise RuntimeError('No facts available for host %s' % args.host)
 
         facts = ((k, v) for k, v in
                  six.iteritems(json.loads(host.facts.values))
