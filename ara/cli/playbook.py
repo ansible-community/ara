@@ -73,6 +73,10 @@ class PlaybookShow(ShowOne):
 
     def take_action(self, args):
         playbook = models.Playbook.query.get(args.playbook_id)
+        if playbook is None:
+            raise RuntimeError('Playbook %s could not be found' %
+                               args.playbook_id)
+
         return utils.fields_from_object(FIELDS, playbook)
 
 
