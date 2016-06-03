@@ -61,7 +61,8 @@ class ResultList(Lister):
                    .join(models.Task)
                    .join(models.Host)
                    .filter(models.TaskResult.task_id == models.Task.id)
-                   .filter(models.TaskResult.host_id == models.Host.id))
+                   .filter(models.TaskResult.host_id == models.Host.id)
+                   .order_by(models.Task.time_start, models.Task.sortkey))
 
         if args.playbook:
             results = (results

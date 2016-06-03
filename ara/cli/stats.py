@@ -44,7 +44,8 @@ class StatsList(Lister):
                  .join(models.Playbook)
                  .join(models.Host)
                  .filter(models.Stats.playbook_id == models.Playbook.id)
-                 .filter(models.Stats.host_id == models.Host.id))
+                 .filter(models.Stats.host_id == models.Host.id)
+                 .order_by(models.Playbook.time_start, models.Host.name))
 
         return utils.fields_from_iter(
             FIELDS, stats,

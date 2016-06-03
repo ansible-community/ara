@@ -49,7 +49,8 @@ class PlayList(Lister):
     def take_action(self, args):
         plays = (models.Play.query
                  .join(models.Playbook)
-                 .filter(models.Play.playbook_id == models.Playbook.id))
+                 .filter(models.Play.playbook_id == models.Playbook.id)
+                 .order_by(models.Play.time_start, models.Play.sortkey))
 
         if args.playbook:
             plays = (plays
