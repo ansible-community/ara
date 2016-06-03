@@ -88,8 +88,10 @@ troubleshooting OpenStack continuous integration jobs faster and easier.
 
 What versions of Ansible are supported ?
 ----------------------------------------
-ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
-contained multiple regressions.
+ARA is currently being developed and tested against Ansible v2.0.1.0.
+
+There were some regressions in the v2.0.2.0 release and we're currently staying
+clear of that one.
 
 What's an Ansible callback ?
 ----------------------------

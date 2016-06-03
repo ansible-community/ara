@@ -6,5 +6,5 @@ pbr>=1.6
 decorator>=4.0.0
 cliff
 setuptools>=11.3
-ansible!=2.0.2.0,>=2.0.1.0
+ansible==2.0.1.0
 pymysql
