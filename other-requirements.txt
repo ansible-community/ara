@@ -1,8 +1,16 @@
-gcc [platform:rpm]
+gcc
+python-virtualenv
+git
+tree
+hg [platform:rpm]
 libffi-devel [platform:rpm]
 openssl-devel [platform:rpm]
 python-devel [platform:rpm]
-gcc [platform:dpkg]
+rubygems [platform:rpm]
+svn [platform:rpm]
 libffi-dev [platform:dpkg]
 libssl-dev [platform:dpkg]
 python-dev [platform:dpkg]
+subversion [platform:dpkg]
+mercurial [platform:dpkg]
+ruby [platform:dpkg]
