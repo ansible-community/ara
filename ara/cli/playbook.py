@@ -49,7 +49,9 @@ class PlaybookList(Lister):
         return parser
 
     def take_action(self, args):
-        playbooks = models.Playbook.query
+        playbooks = (models.Playbook.query
+                     .order_by(models.Playbook.time_start))
+
         if args.incomplete:
             playbooks = playbooks.filter_by(complete=False)
         if args.complete:
