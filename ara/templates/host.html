@@ -2,19 +2,15 @@
 
 {% block content %}
 <ol class="breadcrumb">
+  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook',
+    playbook=host.playbook.id) }}</li>
   <li class="active"><strong>Host</strong>: {{ host.name }}</li>
-  {% if host.facts %}
-  <li>[ {{ macros.make_link('host.show_facts', 'Facts', host=host.name) }} ]</li>
-  {% else %}
-    <li>[ No facts available ]</li>
-  {% endif %}
 </ol>
 
+<h2>Stats</h2>
 <table class="list table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
-      <th>Playbook</th>
-      <th>Executed</th>
       <th><span class="ok label status-label">OK</span></th>
       <th><span class="changed label status-label">CHANGED</span></th>
       <th><span class="failed label status-label">FAILED</span></th>
@@ -23,16 +19,30 @@
     </tr>
   </thead>
   <tbody>
-      {% for playbook in host.playbooks %}
       <tr>
-        <td>{{ macros.make_link('playbook.playbook_results',
-          playbook.path|pathtruncate, host=host.name, playbook=playbook.id) }}</td>
-        <td>{{ playbook.time_start |datefmt }}</td>
-        {{ macros.statslink(stats[playbook.id], 'ok', playbook, host) }}
-        {{ macros.statslink(stats[playbook.id], 'changed', playbook, host) }}
-        {{ macros.statslink(stats[playbook.id], 'failed', playbook, host) }}
-        {{ macros.statslink(stats[playbook.id], 'skipped', playbook, host) }}
-        {{ macros.statslink(stats[playbook.id], 'unreachable', playbook, host) }}
+        {{ macros.statslink(host.stats, 'ok', host.playbook, host) }}
+        {{ macros.statslink(host.stats, 'changed', host.playbook, host) }}
+        {{ macros.statslink(host.stats, 'failed', host.playbook, host) }}
+        {{ macros.statslink(host.stats, 'skipped', host.playbook, host) }}
+        {{ macros.statslink(host.stats, 'unreachable', host.playbook, host) }}
+      </tr>
+  </tbody>
+</table>
+
+<h2>Facts</h2>
+<p>Last updated at {{ host.facts.timestamp |datefmt }}</p>
+<table class="facts table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Fact</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for fact, value in facts %}
+      <tr>
+        <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
+        <td><pre>{{ value | to_nice_json }}</pre></td>
       </tr>
     {% endfor %}
   </tbody>

@@ -17,14 +17,25 @@ import logging
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import models, utils
+from ara import models
+from ara.fields import Field
 
-FIELDS = (
-    ('ID',),
-    ('Name',),
-    ('Playbook',),
-    ('Time Start',),
-    ('Time End',),
+LIST_FIELDS = (
+    Field('ID'),
+    Field('Name'),
+    Field('Playbook', 'playbook.path'),
+    Field('Time Start'),
+    Field('Duration'),
+)
+
+SHOW_FIELDS = (
+    Field('ID'),
+    Field('Name'),
+    Field('Playbook ID', 'playbook.id'),
+    Field('Playbook Path', 'playbook.path'),
+    Field('Time Start'),
+    Field('Time End'),
+    Field('Duration'),
 )
 
 
@@ -56,11 +67,9 @@ class PlayList(Lister):
             plays = (plays
                      .filter(models.Play.playbook_id == args.playbook))
 
-        return utils.fields_from_iter(
-            FIELDS, plays,
-            xforms={
-                'Playbook': lambda p: p.path,
-            })
+        return [[field.name for field in LIST_FIELDS],
+                [[field(play) for field in LIST_FIELDS]
+                 for play in plays]]
 
 
 class PlayShow(ShowOne):
@@ -82,8 +91,5 @@ class PlayShow(ShowOne):
             raise RuntimeError('Play %s could not be found' %
                                args.play_id)
 
-        return utils.fields_from_object(
-            FIELDS, play,
-            xforms={
-                'Playbook': (lambda p: '{0} ({1})'.format(p.path, p.id)),
-            })
+        return [[field.name for field in SHOW_FIELDS],
+                [field(play) for field in SHOW_FIELDS]]

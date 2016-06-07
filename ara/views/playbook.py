@@ -16,7 +16,8 @@ def playbook_summary():
 
 
 @playbook.route('/<playbook>/')
-def show_playbook(playbook):
+@playbook.route('/<playbook>/file/<file_>/')
+def show_playbook(playbook, file_=None):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
         abort(404)
@@ -29,10 +30,34 @@ def show_playbook(playbook):
              .filter(models.Task.playbook_id == playbook.id)
              .order_by(models.Task.sortkey))
 
+    if file_:
+        file_ = (models.File.query.get(file_))
+        if file_ is None:
+            abort(404)
+
+        tasks = (tasks
+                 .join(models.File)
+                 .filter(models.File.id == file_.id))
+
     return render_template('playbook.html',
                            playbook=playbook,
                            plays=plays,
-                           tasks=tasks)
+                           tasks=tasks,
+                           file_=file_)
+
+
+@playbook.route('/<playbook>/file/')
+def show_playbook_files(playbook):
+    playbook = models.Playbook.query.get(playbook)
+    if playbook is None:
+        abort(404)
+
+    # This places the main playbook (is_playbook=True) on top.
+    files = playbook.files.order_by(models.File.is_playbook.desc())
+
+    return render_template('playbook_file_summary.html',
+                           playbook=playbook,
+                           files=files)
 
 
 @playbook.route('/<playbook>/results/')

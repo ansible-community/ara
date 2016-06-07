@@ -41,7 +41,7 @@ class TestCLI(TestCase):
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([])
+        args = parser.parse_args(['-a'])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['host'].id)
@@ -57,7 +57,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['host'].id)
 
     def test_host_list_for_non_existing_playbook(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
@@ -81,13 +81,14 @@ class TestCLI(TestCase):
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['host'].name])
+        args = parser.parse_args([
+            '-b', ctx['host'].playbook.id, ctx['host'].name])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['host'].id)
 
     def test_host_show_for_non_existing_host(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
@@ -112,7 +113,8 @@ class TestCLI(TestCase):
 
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['host'].name])
+        args = parser.parse_args([
+            '-b', ctx['host'].playbook.id, ctx['host'].name])
         res = cmd.take_action(args)
 
         facts = json.loads(ctx['facts'].values)
@@ -328,7 +330,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['result'].id)
 
     def test_result_list_non_existing_task(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
@@ -348,7 +350,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['result'].id)
 
     def test_result_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
@@ -366,10 +368,10 @@ class TestCLI(TestCase):
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
-        self.assertEqual(res[1][7], ctx['result'].result)
+        self.assertEqual(res[1][-1], json.dumps(ctx['result'].result))
 
     def test_result_show_long_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')

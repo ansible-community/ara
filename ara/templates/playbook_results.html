@@ -48,7 +48,8 @@
       <tr>
         <td>{{ result.task.offset_from_playbook|timefmt }}</td>
         <td>{{ result.duration |timefmt }}</td>
-        <td>{{ macros.make_link('host.show_host', result.host.name, host=result.host.name) }}</td>
+        <td>{{ macros.make_link('host.show_host', result.host.name,
+          id=result.host.id) }}</td>
         <td>{{ result.task.name }}</td>
         <td>{{ result.task.action }}</td>
         <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>

@@ -112,7 +112,7 @@ class TestCallback(TestCase):
         return result
 
     def _test_playbook(self):
-        path = 'test-playbook-%s.yml' % self.tag
+        path = '/test-playbook-%s.yml' % self.tag
         playbook = Playbook(path)
         self.cb.v2_playbook_on_start(playbook)
         return playbook

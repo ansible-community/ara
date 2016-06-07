@@ -17,18 +17,32 @@ import logging
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import models, utils
+from ara import models
+from ara.fields import Field
 
-FIELDS = (
-    ('ID',),
-    ('Name',),
-    ('Path',),
-    ('Playbook',),
-    ('Play',),
-    ('Action',),
-    ('Line', 'lineno',),
-    ('Time Start',),
-    ('Time End',),
+LIST_FIELDS = (
+    Field('ID'),
+    Field('Name'),
+    Field('Path'),
+    Field('Line', 'lineno'),
+    Field('Action'),
+    Field('Time Start'),
+    Field('Duration'),
+)
+
+SHOW_FIELDS = (
+    Field('ID'),
+    Field('Name'),
+    Field('Playbook ID', 'playbook.id'),
+    Field('Playbook Path', 'playbook.path'),
+    Field('Play ID', 'play.id'),
+    Field('Play Name', 'play.name'),
+    Field('Path'),
+    Field('Line', 'lineno'),
+    Field('Action'),
+    Field('Time Start'),
+    Field('Time End'),
+    Field('Duration'),
 )
 
 
@@ -42,15 +56,15 @@ class TaskList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
-            help='Playbook from which to list tasks',)
+            help='Playbook from which to list tasks')
         g.add_argument(
             '--play', '-p',
             metavar='<play-id>',
-            help='Play from which to list tasks',)
+            help='Play from which to list tasks')
         g.add_argument(
             '--all', '-a',
             action='store_true',
-            help='List all tasks in the database',)
+            help='List all tasks in the database')
         return parser
 
     def take_action(self, args):
@@ -68,12 +82,9 @@ class TaskList(Lister):
             tasks = (tasks
                      .filter(models.Task.playbook_id == args.playbook))
 
-        return utils.fields_from_iter(
-            FIELDS, tasks,
-            xforms={
-                'Playbook': lambda p: p.path,
-                'Play': lambda p: p.name,
-            })
+        return [[field.name for field in LIST_FIELDS],
+                [[field(task) for field in LIST_FIELDS]
+                 for task in tasks]]
 
 
 class TaskShow(ShowOne):
@@ -95,9 +106,5 @@ class TaskShow(ShowOne):
             raise RuntimeError('Task %s could not be found' %
                                args.task_id)
 
-        return utils.fields_from_object(
-            FIELDS, task,
-            xforms={
-                'Playbook': lambda p: '{0} ({1})'.format(p.path, p.id),
-                'Play': lambda p: '{0} ({1})'.format(p.name, p.id),
-            })
+        return [[field.name for field in SHOW_FIELDS],
+                [field(task) for field in SHOW_FIELDS]]

@@ -20,11 +20,16 @@ rm -rf $BUILD_DIR
 ansible-playbook -vv ${SCRIPT_CWD}/playbook.yml
 
 # Run test commands
-ara host show $(ara host list -c ID -f value |head -n1)
-ara host facts $(ara host list -c ID -f value |head -n1)
+pbid=$(ara playbook list -c ID -f value |head -n1)
+
+ara playbook show $pbid
+ara host list -b $pbid
+ara host show -b $pbid localhost
+ara host facts -b $pbid localhost
 ara play show $(ara play list -a -c ID -f value |head -n1)
-ara playbook show $(ara playbook list -c ID -f value |head -n1)
 ara result show $(ara result list -a -c ID -f value |tail -n1) --long
 ara stats show $(ara stats list -c ID -f value |head -n1)
 ara task show $(ara task list -a -c ID -f value |head -n1)
+ara file list -b $pbid
+ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ara generate ${BUILD_DIR} && tree ${BUILD_DIR}

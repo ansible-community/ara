@@ -56,6 +56,7 @@
 <table class="plays table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
+      <th>Name</th>
       <th>Start</th>
       <th>End</th>
       <th>Duration</th>
@@ -66,9 +67,10 @@
   <tbody>
     {% for play in plays %}
     <tr>
-      <td>{{ playbook.time_start |datefmt }}</td>
-      <td>{{ playbook.time_end |datefmt }}</td>
-      <td>{{ playbook.duration |timefmt }}</td>
+      <td>{{ play.name }}</td>
+      <td>{{ play.time_start |datefmt }}</td>
+      <td>{{ play.time_end |datefmt }}</td>
+      <td>{{ play.duration |timefmt }}</td>
       <td>{{ macros.make_link('play.show_play', 'details', play=play.id) }}</td>
     </tr>
     {% endfor %}
@@ -76,11 +78,22 @@
 </table>
 
 <h2>Tasks</h2>
+{% if not file_ %}
+<p>This is a list of all tasks encounted in the Ansible run.  You may
+limit this to a list of tasks contained in a particular file by going
+to {{ macros.make_link('playbook.show_playbook_files', 'the list of files',
+playbook=playbook.id) }}.</p>
+{% else %}
+<p>This is a list of tasks in <code>{{ file_.path }}</code>.  You may
+also see {{ macros.make_link('playbook.show_playbook',
+'the complete list of tasks', playbook=playbook.id) }}.</p>
+{% endif %}
 <table class="tasks table table-striped table-bordered table-hover table-condensed">
   <thead>
     <tr>
       <th>Offset from Playbook</th>
       <th>Duration</th>
+      <th>Name</th>
       <th>Action</th>
       <th>File</th>
       <th>Line</th>
@@ -93,8 +106,9 @@
     <tr>
       <td>{{ task.offset_from_playbook |timefmt }}</td>
       <td>{{ task.duration |timefmt }}</td>
+      <td>{{ task.name }}</td>
       <td>{{ task.action }}</td>
-      <td>{{ task.path|pathtruncate }}</td>
+      <td>{{ task.file.path|pathtruncate }}</td>
       <td>{{ task.lineno }}</td>
       <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}
       </td>

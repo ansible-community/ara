@@ -7,6 +7,7 @@
     <tr>
       <th>Playbook</th>
       <th>Executed</th>
+      <th>Hosts</th>
       <th><span class="ok label status-label">OK</span></th>
       <th><span class="changed label status-label">CHANGED</span></th>
       <th><span class="failed label status-label">FAILED</span></th>
@@ -20,6 +21,7 @@
         <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate,
           playbook=playbook.id) }}</td>
         <td>{{ playbook.time_start |datefmt }}</td>
+        <td>{{ playbook.hosts|list|length }}</td>
         <td>{{ stats[playbook.id].ok }}</td>
         <td>{{ stats[playbook.id].changed }}</td>
         <td>{{ stats[playbook.id].failed }}</td>

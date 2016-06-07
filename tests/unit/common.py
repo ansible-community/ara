@@ -28,8 +28,8 @@ def ansible_run(complete=True, gather_facts=True):
     play = m.Play(playbook=playbook, name='test play')
     task = m.Task(play=play, playbook=playbook,
                   action='test-action')
-    host = m.Host(name='host-%04d' % random.randint(0, 9999))
-    host.playbooks.append(playbook)
+    host = m.Host(name='host-%04d' % random.randint(0, 9999),
+                  playbook=playbook)
     result = m.TaskResult(task=task, status='ok', host=host,
                           result='this is a test')
 

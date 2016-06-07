@@ -17,18 +17,29 @@ import logging
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import models, utils
+from ara import models
+from ara.fields import Field
 
-FIELDS = (
-    ('ID',),
-    ('Host', 'host.name'),
-    ('Playbook',),
-    ('Changed',),
-    ('Failed',),
-    ('Ok',),
-    ('Skipped',),
-    ('Unreachable',),
+COMMON_FIELDS = (
+    Field('Changed'),
+    Field('Failed'),
+    Field('Ok'),
+    Field('Skipped'),
+    Field('Unreachable'),
 )
+
+LIST_FIELDS = (
+    Field('ID'),
+    Field('Host', 'host.name'),
+    Field('Playbook', 'playbook.path'),
+) + COMMON_FIELDS
+
+SHOW_FIELDS = (
+    Field('ID'),
+    Field('Host', 'host.name'),
+    Field('Playbook ID', 'playbook.id'),
+    Field('Playbook Path', 'playbook.path'),
+) + COMMON_FIELDS
 
 
 class StatsList(Lister):
@@ -47,11 +58,9 @@ class StatsList(Lister):
                  .filter(models.Stats.host_id == models.Host.id)
                  .order_by(models.Playbook.time_start, models.Host.name))
 
-        return utils.fields_from_iter(
-            FIELDS, stats,
-            xforms={
-                'Playbook': lambda p: p.path,
-            })
+        return [[field.name for field in LIST_FIELDS],
+                [[field(stat) for field in LIST_FIELDS]
+                 for stat in stats]]
 
 
 class StatsShow(ShowOne):
@@ -73,8 +82,5 @@ class StatsShow(ShowOne):
             raise RuntimeError('Stats %s could not be found' %
                                args.stats_id)
 
-        return utils.fields_from_object(
-            FIELDS, stats,
-            xforms={
-                'Playbook': (lambda p: '{0} ({1})'.format(p.path, p.id)),
-            })
+        return [[field.name for field in SHOW_FIELDS],
+                [field(stats) for field in SHOW_FIELDS]]

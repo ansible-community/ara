@@ -14,11 +14,13 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import logging
-import itertools
 import decorator
-from datetime import datetime
 import flask
+import hashlib
+import itertools
+import logging
+import os
+from datetime import datetime
 
 from ara import app, models
 from ara.models import db
@@ -85,12 +87,40 @@ class CallbackModule(CallbackBase):
 
     def get_or_create_host(self, hostname):
         try:
-            host = models.Host.query.filter_by(name=hostname).one()
+            host = (models.Host.query
+                    .filter_by(name=hostname)
+                    .filter_by(playbook_id=self.playbook.id)
+                    .one())
         except models.NoResultFound:
-            host = models.Host(name=hostname)
+            host = models.Host(name=hostname, playbook=self.playbook)
             db.session.add(host)
 
         return host
+
+    def get_or_create_file(self, path):
+        try:
+            file_ = (models.File.query
+                     .filter_by(path=path)
+                     .filter_by(playbook_id=self.playbook.id)
+                     .one())
+        except models.NoResultFound:
+            file_ = models.File(path=path, playbook=self.playbook)
+            db.session.add(file_)
+
+            try:
+                with open(path, 'r') as fd:
+                    sha1 = hashlib.sha1(fd.read()).hexdigest()
+                    content = models.FileContent.query.get(sha1)
+                    if not content:
+                        fd.seek(0)
+                        data = fd.read()
+                        content = models.FileContent(content=data)
+
+                file_.content = content
+            except IOError:
+                LOG.warn('failed to open %s for reading', path)
+
+        return file_
 
     def log_task(self, result, status, **kwargs):
         '''`log_task` is called when an individual task instance on a single
@@ -102,8 +132,6 @@ class CallbackModule(CallbackBase):
         result.task_start = self.task.time_start
         result.task_end = datetime.now()
         host = self.get_or_create_host(result._host.name)
-        if self.playbook not in host.playbooks:
-            host.playbooks.append(self.playbook)
 
         self.taskresult = models.TaskResult(
             task=self.task,
@@ -193,9 +221,11 @@ class CallbackModule(CallbackBase):
         if pathspec:
             path, lineno = pathspec.split(':', 1)
             lineno = int(lineno)
+            file_ = self.get_or_create_file(path)
         else:
             path = None
             lineno = None
+            file_ = None
 
         self.task = models.Task(
             name=task.name,
@@ -203,7 +233,7 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play,
             playbook=self.playbook,
-            path=path,
+            file=file_,
             lineno=lineno,
             is_handler=is_handler)
 
@@ -214,15 +244,19 @@ class CallbackModule(CallbackBase):
         self.v2_playbook_on_task_start(task, False, is_handler=True)
 
     def v2_playbook_on_start(self, playbook):
-        playbook_path = playbook._file_name
+        path = os.path.abspath(playbook._file_name)
 
-        LOG.debug('starting playbook %s', playbook_path)
+        LOG.debug('starting playbook %s', path)
         self.playbook = models.Playbook(
-            path=playbook_path
+            path=path
         )
 
         self.playbook.start()
         db.session.add(self.playbook)
+
+        file_ = models.File(
+            path=path, is_playbook=True, playbook=self.playbook)
+        db.session.add(file_)
 
     def v2_playbook_on_play_start(self, play):
         self.close_task()

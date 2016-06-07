@@ -13,12 +13,15 @@
 #   under the License.
 
 import uuid
+import zlib
+import hashlib
 import functools
 from datetime import datetime, timedelta
 
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import *  # NOQA
+import sqlalchemy.types as types
 
 db = SQLAlchemy()
 
@@ -31,6 +34,13 @@ def mkuuid():
     use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.'''
 
     return str(uuid.uuid4())
+
+
+def content_sha1(context):
+    '''Used by the FileContent class to automatically compute the sha1
+    hash of content before storing it to the database.'''
+    return hashlib.sha1(context.current_parameters['content']).hexdigest()
+
 
 # Primary key columns are of these type.
 pkey_type = db.String(36)
@@ -45,10 +55,16 @@ one_to_one = functools.partial(
     db.relationship, passive_deletes=False,
     cascade='all, delete-orphan', uselist=False)
 
-# Common options for one-to-many relationships in our database.
+# common options for one-to-many relationships in our database.
 one_to_many = functools.partial(
     db.relationship, passive_deletes=False,
     cascade='all, delete-orphan', lazy='dynamic')
+
+# common options for many-to-one relationships in our database.
+many_to_one = functools.partial(
+    db.relationship, passive_deletes=False,
+    cascade='all, delete-orphan',
+    single_parent=True)
 
 # Common options for many-to-many relationships in our database.
 many_to_many = functools.partial(
@@ -83,6 +99,25 @@ class TimedEntity(object):
         self.time_end = datetime.now()
 
 
+class CompressedText(types.TypeDecorator):
+    '''Implements a new sqlalchemy column type that automatically
+    compresses data when writing it to the database and decompresses
+    the data when reading it.
+
+    http://docs.sqlalchemy.org/en/latest/core/custom_types.html'''
+
+    impl = types.Binary
+
+    def process_bind_param(self, value, dialect):
+        return zlib.compress(value if value else '')
+
+    def process_result_value(self, value, dialect):
+        return zlib.decompress(value)
+
+    def copy(self, **kwargs):
+        return CompressedText(self.impl.length)
+
+
 class Playbook(db.Model, TimedEntity):
     '''The `Playbook` class represents a single run of
     `ansible-playbook`.
@@ -93,17 +128,20 @@ class Playbook(db.Model, TimedEntity):
     - `tasks` -- a list of tasks encountered in this playbook run.
     - `stats` -- a list of  statistic records, one for each host
       involved in this playbook.
-    - `hosts` -- a list of hosts involved in this plabook (via the
-      `playbooks` relationship defined by `Host` table).
+    - `hosts` -- a list of hosts involved in this playbook
+    - `files` -- a list of files encountered by this playbook
+      (via include or role directives).
     '''
 
     __tablename__ = 'playbooks'
 
     id = std_pkey()
     path = db.Column(db.Text)
+    files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')
     tasks = one_to_many('Task', backref='playbook')
     stats = one_to_many('Stats', backref='playbook')
+    hosts = one_to_many('Host', backref='playbook')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
@@ -112,6 +150,47 @@ class Playbook(db.Model, TimedEntity):
 
     def __repr__(self):
         return '<Playbook %s>' % self.path
+
+
+class File(db.Model):
+    '''Represents a task list (role or playbook or included file)
+    referenced by an Ansible run.'''
+
+    __tablename__ = 'files'
+    __table_args__ = (
+        db.UniqueConstraint('playbook_id', 'path'),
+    )
+
+    id = std_pkey()
+    playbook_id = std_fkey('playbooks.id')
+
+    # This has to be a String intead of Text because of
+    # http://stackoverflow.com/questions/1827063/
+    # and it must have a max length smaller than PATH_MAX because MySQL is
+    # limited to a maximum key length of 3072 bytes.  This
+    # restrictions stems from the fact that we are using this column in
+    # a UNIQUE constraint.
+    path = db.Column(db.String(3000))
+    content = many_to_one('FileContent', backref='files')
+    content_id = db.Column(db.String(40),
+                           db.ForeignKey('file_contents.id'))
+
+    # is_playbook is true for playbooks referenced directly on the
+    # ansible-playbook command line.
+    is_playbook = db.Column(db.Boolean, default=False)
+
+
+class FileContent(db.Model):
+    '''Stores content of Ansible task lists encountered during an
+    Ansible run.  We store content keyed by the its sha1 hash, so if a
+    file doesn't change the content will only be stored once in the
+    database.  The hash is calculated automatically when the object is
+    written to the database.'''
+
+    __tablename__ = 'file_contents'
+
+    id = db.Column(db.String(40), primary_key=True, default=content_sha1)
+    content = db.Column(CompressedText((2**32) - 1))
 
 
 class Play(db.Model, TimedEntity):
@@ -166,9 +245,11 @@ class Task(db.Model, TimedEntity):
     name = db.Column(db.Text)
     sortkey = db.Column(db.Integer)
     action = db.Column(db.Text)
-    path = db.Column(db.Text)
-    lineno = db.Column(db.Integer)
     is_handler = db.Column(db.Boolean)
+
+    file = many_to_one('File', backref='tasks')
+    file_id = std_fkey('files.id')
+    lineno = db.Column(db.Integer)
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
@@ -211,7 +292,7 @@ class TaskResult(db.Model, TimedEntity):
     skipped = db.Column(db.Boolean, default=False)
     unreachable = db.Column(db.Boolean, default=False)
     ignore_errors = db.Column(db.Boolean, default=False)
-    result = db.Column(db.Text(16777215))
+    result = db.Column(CompressedText((2**32) - 1))
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
@@ -229,14 +310,6 @@ class TaskResult(db.Model, TimedEntity):
         return '<TaskResult %s>' % self.host.name
 
 
-class HostPlaybook(db.Model):
-    __tablename__ = 'host_playbook'
-    __table_args__ = (db.PrimaryKeyConstraint('host_id', 'playbook_id'),)
-
-    host_id = std_fkey('hosts.id')
-    playbook_id = std_fkey('playbooks.id')
-
-
 class Host(db.Model):
     '''The `Host` object represents a host reference by an Ansible
     inventory.
@@ -252,15 +325,17 @@ class Host(db.Model):
     '''
 
     __tablename__ = 'hosts'
+    __table_args__ = (
+        db.UniqueConstraint('playbook_id', 'name'),
+    )
 
     id = std_pkey()
-    name = db.Column(db.String(255), unique=True, index=True)
+    playbook_id = std_fkey('playbooks.id')
+    name = db.Column(db.String(255), index=True)
 
     facts = one_to_one('HostFacts', backref='host')
     task_results = one_to_many('TaskResult', backref='host')
-    stats = one_to_many('Stats', backref='host')
-    playbooks = many_to_many('Playbook', backref='hosts',
-                             secondary='host_playbook')
+    stats = one_to_one('Stats', backref='host')
 
     def __repr__(self):
         return '<Host %s>' % self.name

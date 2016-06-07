@@ -33,6 +33,7 @@ class TestModels(TestCase):
 
         self.host = m.Host(
             name='localhost',
+            playbook=self.playbook,
         )
 
         self.host_facts = m.HostFacts(
@@ -99,7 +100,9 @@ class TestModels(TestCase):
 
     def test_duplicate_host(self):
         host = m.Host(
-            name='localhost')
+            name='localhost',
+            playbook=self.playbook,
+        )
         m.db.session.add(host)
 
         with self.assertRaises(Exception):

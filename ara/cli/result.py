@@ -17,16 +17,43 @@ import logging
 
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from ara import models, utils
+from ara import models
+from ara.fields import Field
 
-FIELDS = (
-    ('ID',),
-    ('Host', 'host.name'),
-    ('Task',),
-    ('Status', 'derived_status'),
-    ('Ignore Errors',),
-    ('Time Start',),
-    ('Time End',),
+LIST_FIELDS = (
+    Field('ID'),
+    Field('Host', 'host.name'),
+    Field('Action', 'task.action'),
+    Field('Status', 'derived_status'),
+    Field('Ignore Errors'),
+    Field('Time Start'),
+    Field('Duration'),
+)
+
+SHOW_FIELDS = (
+    Field('ID'),
+    Field('Playbook ID', 'task.playbook.id'),
+    Field('Playbook Path', 'task.playbook.path'),
+    Field('Play ID', 'task.play.id'),
+    Field('Play Name', 'task.play.name'),
+    Field('Task ID', 'task.id'),
+    Field('Task Name', 'task.name'),
+    Field('Host', 'host.name'),
+    Field('Action', 'task.action'),
+    Field('Status', 'derived_status'),
+    Field('Ignore Errors'),
+    Field('Time Start'),
+    Field('Time End'),
+    Field('Duration'),
+)
+
+SHOW_FIELDS_LONG = SHOW_FIELDS + (
+    Field('Result', 'result|from_json',
+          template='{{value|to_nice_json|safe}}'),
+)
+
+SHOW_FIELDS_RAW = SHOW_FIELDS + (
+    Field('Result', 'result|from_json'),
 )
 
 
@@ -41,19 +68,19 @@ class ResultList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
-            help='Playbook from which to list results',)
+            help='Playbook from which to list results')
         g.add_argument(
             '--play', '-p',
             metavar='<play-id>',
-            help='Play from which to list results',)
+            help='Play from which to list results')
         g.add_argument(
             '--task', '-t',
             metavar='<task-id>',
-            help='Task from which to list results',)
+            help='Task from which to list results')
         g.add_argument(
             '--all', '-a',
             action='store_true',
-            help='List all results in the database',)
+            help='List all results in the database')
         return parser
 
     def take_action(self, args):
@@ -74,11 +101,9 @@ class ResultList(Lister):
             results = (results
                        .filter(models.TaskResult.task_id == args.task))
 
-        return utils.fields_from_iter(
-            FIELDS, results,
-            xforms={
-                'Task': lambda t: t.name,
-            })
+        return [[field.name for field in LIST_FIELDS],
+                [[field(result) for field in LIST_FIELDS]
+                 for result in results]]
 
 
 class ResultShow(ShowOne):
@@ -87,10 +112,29 @@ class ResultShow(ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ResultShow, self).get_parser(prog_name)
-        parser.add_argument(
+        g = parser.add_mutually_exclusive_group()
+        g.add_argument(
             '--long', '-l',
-            action='store_true',
-            help='Show full JSON result',
+            dest='format',
+            action='store_const',
+            const='long',
+            help='Show full result (serialized to json)',
+        )
+
+        # To understand why we have both --long and --raw, compare the
+        # output of:
+        #
+        #  ara result show ... -l -c Result -f json
+        #
+        # With:
+        #
+        #  ara result show ... -r -c Result -f json
+        g.add_argument(
+            '--raw', '-r',
+            dest='format',
+            action='store_const',
+            const='raw',
+            help='Show full result (raw result object)',
         )
         parser.add_argument(
             'result_id',
@@ -100,18 +144,17 @@ class ResultShow(ShowOne):
         return parser
 
     def take_action(self, args):
-        _fields = list(FIELDS)
-        if args.long:
-            _fields.append(('Result',))
-
         result = models.TaskResult.query.get(args.result_id)
         if result is None:
             raise RuntimeError('Result %s could not be found' %
                                args.result_id)
 
-        return utils.fields_from_object(
-            _fields, result,
-            xforms={
-                'Task': lambda t: '{0} ({1})'.format(t.name, t.id),
-                'Result': lambda r: utils.format_json(r),
-            })
+        if args.format == 'long':
+            fields = SHOW_FIELDS_LONG
+        elif args.format == 'raw':
+            fields = SHOW_FIELDS_RAW
+        else:
+            fields = SHOW_FIELDS
+
+        return [[field.name for field in fields],
+                [field(result) for field in fields]]

@@ -17,51 +17,6 @@ from collections import defaultdict
 from ara import models
 
 
-def fields_from_iter(fields, items, xforms=None):
-    '''Returns column headers and data for use by
-    `cliff.lister.Lister`.  In this function and in
-    `fields_from_object`, fields are specified as a list of
-    `(column_name, object_path)` tuples.  The `object_path` can be
-    omitted if it can be inferred from the column name by converting
-    the name to lowercase and converting ' ' to '_'.  For example:
-
-        fields = (
-            ('ID',),
-            ('Name',),
-            ('Playbook',),
-        )
-
-    The `xforms` parameter is a dictionary maps column names to
-    callables that will be used to format the corresponding value.
-    For example:
-
-        xforms = {
-            'Playbook': lambda p: p.name,
-        }
-    '''
-
-    xforms = xforms or {}
-
-    return (zip(*fields)[0], [
-        [xform(v) for v, xform in
-         [(get_field_attr(item, f[0]), f[1]) for f in
-          [(field, xforms.get(field[0], lambda x: x)) for field in fields]]]
-        for item in items])
-
-
-def fields_from_object(fields, obj, xforms=None):
-    '''Returns labels and values for use by `cliff.show.ShowOne`.  See
-    the documentation for `fields_from_iter` for details.'''
-
-    xforms = xforms or {}
-
-    return (zip(*fields)[0],
-            [xform(v) for v, xform in
-             [(get_field_attr(obj, f[0]), f[1]) for f in
-              [(field, xforms.get(field[0], lambda x: x))
-               for field in fields]]])
-
-
 def status_to_query(status):
     """
     Returns a dict to be used as filter kwargs based on status
@@ -119,27 +74,6 @@ def get_summary_stats(items, attr):
             'unreachable': sum([int(stat.unreachable) for stat in stats])
         }
     return data
-
-
-def get_field_attr(obj, field):
-    '''Returns the value of an attribute path applied to an object.
-    The attribute path is either made available explicitly as
-    `field[1]` or implicitly by converting `field[0]` to lower case
-    and converting ' ' to '_'.  In other words, given:
-
-        field = ('Name',)
-
-    `get_field_attribute(obj, field)` would return the value of the
-    `name` attribute of `obj`.  On other hand, given:
-
-        field = ('Name', 'playbook.name')
-
-    `get_field_attribute(obj, field)` would return the value of the
-    `name` attribute of the `playbook` attribute of `obj`.
-    '''
-
-    path = field[-1].lower().replace(' ', '_').split('.')
-    return reduce(getattr, path, obj)
 
 
 def format_json(val):

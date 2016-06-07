@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=playbook.id) }}</li>
+  <li><strong>Files</strong></li>
+</ol>
+
+<h2>Files in playbook {{playbook.id}}</h2>
+<table class="list table table-striped table-bordered table-hover table-condensed">
+  <thead>
+    <tr>
+      <th>Path</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for file_ in files %}
+      <tr>
+        <td>{{ macros.make_link('playbook.show_playbook', file_.path,
+          playbook=playbook.id,
+          file_=file_.id) }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

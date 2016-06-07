@@ -1,7 +1,7 @@
 <div id="macros">
-{% macro make_link(view, label) %}
+{% macro make_link(view, label) -%}
 <a href="{{ url_for(view, **kwargs) }}">{{label}}</a>
-{% endmacro %}
+{%- endmacro %}
 
 
 {% macro statslink(stats, stat, playbook, host) %}

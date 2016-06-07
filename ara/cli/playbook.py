@@ -18,15 +18,25 @@ import logging
 from cliff.lister import Lister
 from cliff.show import ShowOne
 from cliff.command import Command
-from ara import models, utils
+from ara import models
 from ara.models import db
+from ara.fields import Field
 
-FIELDS = (
-    ('ID',),
-    ('Path',),
-    ('Time Start',),
-    ('Time End',),
-    ('Complete',),
+LIST_FIELDS = (
+    Field('ID'),
+    Field('Path'),
+    Field('Time Start'),
+    Field('Duration'),
+    Field('Complete'),
+)
+
+SHOW_FIELDS = (
+    Field('ID'),
+    Field('Path'),
+    Field('Time Start'),
+    Field('Time End'),
+    Field('Duration'),
+    Field('Complete'),
 )
 
 
@@ -57,7 +67,9 @@ class PlaybookList(Lister):
         if args.complete:
             playbooks = playbooks.filter_by(complete=True)
 
-        return utils.fields_from_iter(FIELDS, playbooks)
+        return [[field.name for field in LIST_FIELDS],
+                [[field(playbook) for field in LIST_FIELDS]
+                 for playbook in playbooks]]
 
 
 class PlaybookShow(ShowOne):
@@ -78,8 +90,8 @@ class PlaybookShow(ShowOne):
         if playbook is None:
             raise RuntimeError('Playbook %s could not be found' %
                                args.playbook_id)
-
-        return utils.fields_from_object(FIELDS, playbook)
+        return [[field.name for field in SHOW_FIELDS],
+                [field(playbook) for field in SHOW_FIELDS]]
 
 
 class PlaybookDelete(Command):
@@ -133,13 +145,5 @@ class PlaybookDelete(Command):
             self.log.warning('deleting playbook %s', pid)
             playbook = models.Playbook.query.get(pid)
             db.session.delete(playbook)
-            orphan_hosts = (models.Host.query
-                            .outerjoin(models.HostPlaybook)
-                            .filter(models.HostPlaybook.host_id == None))  # NOQA
-
-            for host in orphan_hosts:
-                self.log.warning('deleting host %s (no more playbooks)',
-                                 host.name)
-                db.session.delete(host)
 
         db.session.commit()

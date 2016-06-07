@@ -24,67 +24,6 @@ class TestUtils(TestCase):
         m.db.session.remove()
         m.db.drop_all()
 
-    def test_fields_from_iter(self):
-        fields = (
-            ('Field 1',),
-            ('Field 2', 'field2'),
-            ('Field 3', 'field3.value'),
-        )
-
-        items = [
-            Mock(field_1='value 1', field2='value 2',
-                 field3=Mock(value='value 3')),
-        ]
-
-        res = u.fields_from_iter(fields, items)
-
-        self.assertEqual(res,
-                         (('Field 1', 'Field 2', 'Field 3'),
-                          [['value 1', 'value 2', 'value 3']]))
-
-    def test_fields_from_iter_xform(self):
-        fields = (
-            ('Field 1',),
-            ('Field 2', 'field2'),
-        )
-
-        items = [
-            Mock(field_1='value 1', field2='value 2'),
-        ]
-
-        res = u.fields_from_iter(fields, items,
-                                 xforms={'Field 2': lambda x: x.upper()})
-
-        self.assertEqual(res,
-                         (('Field 1', 'Field 2'), [['value 1', 'VALUE 2']]))
-
-    def test_fields_from_object(self):
-        fields = (
-            ('Field 1',),
-            ('Field 2', 'field2'),
-        )
-
-        obj = Mock(field_1='value 1', field2='value 2')
-
-        res = u.fields_from_object(fields, obj)
-
-        self.assertEqual(res,
-                         (('Field 1', 'Field 2'), ['value 1', 'value 2']))
-
-    def test_fields_from_object_xform(self):
-        fields = (
-            ('Field 1',),
-            ('Field 2', 'field2'),
-        )
-
-        obj = Mock(field_1='value 1', field2='value 2')
-
-        res = u.fields_from_object(fields, obj,
-                                   xforms={'Field 2': lambda x: x.upper()})
-
-        self.assertEqual(res,
-                         (('Field 1', 'Field 2'), ['value 1', 'VALUE 2']))
-
     def test_status_to_query(self):
         res = u.status_to_query('ok')
         self.assertEqual(res, {'status': 'ok'})
