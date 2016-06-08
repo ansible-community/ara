@@ -1,16 +1,16 @@
+# This is a cross-platform list tracking distribution packages needed by tests;
+# see http://docs.openstack.org/infra/bindep/ for additional information.
+
 gcc
-python-virtualenv
 git
 tree
-hg [platform:rpm]
+mercurial
+subversion
 libffi-devel [platform:rpm]
 openssl-devel [platform:rpm]
 python-devel [platform:rpm]
 rubygems [platform:rpm]
-svn [platform:rpm]
 libffi-dev [platform:dpkg]
 libssl-dev [platform:dpkg]
 python-dev [platform:dpkg]
-subversion [platform:dpkg]
-mercurial [platform:dpkg]
 ruby [platform:dpkg]
