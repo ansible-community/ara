@@ -7,7 +7,7 @@ set -e
 tox -e docs
 tox -e pep8
 tox -e py27
-tox -e ara-integration
-# ansible-integration tests can be run manually for the time being
+tox -e integration-smoke
+# ansible integration tests can be run manually for the time being
 # It requires jumping through hoops if we want to run them inside Travis CI
-# tox -e ansible-integration
+# tox -e integration-ansible
