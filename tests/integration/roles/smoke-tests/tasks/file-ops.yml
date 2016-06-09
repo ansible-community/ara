@@ -1,0 +1,52 @@
+---
+#   Copyright Red Hat, Inc. All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License"); you may
+#   not use this file except in compliance with the License. You may obtain
+#   a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#   License for the specific language governing permissions and limitations
+#   under the License.
+#
+
+# Tests some things around files
+
+- name: Ensure temporary directory exists
+  file:
+    path: "{{ tmpdir }}"
+    state: directory
+
+- name: Check if a file exists
+  stat:
+    path: "{{ tmpfile }}"
+  register: file_exists_result
+
+- name: Touch a file if it doesn't exist
+  file:
+    path: "{{ tmpfile }}"
+    state: touch
+  when: file_exists_result.stat.exists == False
+
+- name: Remove a file if it doesn't exist
+  file:
+    path: "{{ tmpfile }}"
+    state: absent
+  when: file_exists_result.stat.exists == False
+  ignore_errors: true
+
+- name: Remove a file if it exists
+  file:
+    path: "{{ tmpfile }}"
+    state: absent
+  when: file_exists_result.stat.exists == True
+
+# Test for issue https://github.com/ansible/ansible/issues/16125
+- name: Output hostvars to file
+  copy:
+    content: "{{ hostvars[inventory_hostname] }}"
+    dest: "{{ tmpfile }}"

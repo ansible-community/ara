@@ -2,15 +2,11 @@
 # see http://docs.openstack.org/infra/bindep/ for additional information.
 
 gcc
-git
 tree
-mercurial
-subversion
 libffi-devel [platform:rpm]
 openssl-devel [platform:rpm]
 python-devel [platform:rpm]
-rubygems [platform:rpm]
+libselinux-python [platform:rpm]
 libffi-dev [platform:dpkg]
 libssl-dev [platform:dpkg]
 python-dev [platform:dpkg]
-ruby [platform:dpkg]

@@ -13,3 +13,4 @@ eggs
 .cache/
 .coverage
 htmlcov/
+*.retry

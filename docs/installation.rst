@@ -14,8 +14,9 @@ Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ::
 
-    yum -y install python-virtualenv git hg svn rubygems python-setuptools tree
+    yum -y install python-setuptools tree libselinux-python
     easy_install pip
+    pip install tox
 
 Ubuntu, Debian packages
 -----------------------
@@ -29,7 +30,8 @@ Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ::
 
-    apt-get -y install python-pip python-virtualenv ruby git mercurial subversion tree
+    apt-get -y install python-pip tree
+    pip install tox
 
 Installing ARA from source
 --------------------------

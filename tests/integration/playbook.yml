@@ -1,7 +1,0 @@
-- name: Test playbook
-  hosts: localhost
-  gather_facts: yes
-  tasks:
-    - name: Integration test
-      debug:
-        msg: "Integration test"
