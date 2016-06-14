@@ -12,5 +12,5 @@ eggs
 .tox/
 .cache/
 .coverage
-htmlcov/
 *.retry
+cover/
