@@ -2,96 +2,46 @@ ARA: Ansible Run Analysis
 =========================
 tl;dr
 -----
-ARA_ is an attempt to make Ansible_ runs easier to visualize, understand and
-troubleshoot.
+ARA_ records Ansible_ Playbook runs seemlessly to make them easier to
+visualize, understand and troubleshoot. It integrates with Ansible wherever you
+run it.
 
 ARA is three things:
 
-1. An `Ansible callback plugin`_ to record playbook runs into a local or remote database
-2. A `CLI client`_ to query the database
-3. A `web interface`_ to visualize the database
+1. An `Ansible callback plugin`_ to record playbook runs into a local or remote
+   database
+2. A `CLI client`_
+3. A `dynamic, database-driven web interface`_ that can also be `generated and served from static files`_
 
-.. _ARA: https://github.com/dmsimard/ara
+.. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
 .. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
-.. _web interface: https://ara.readthedocs.io/en/latest/usage.html#browsing-the-web-interface
-
-Overview
---------
-ARA organizes recorded playbook data in a way to make it intuitive for you to
-search and find what you're interested for as fast and as easily as possible.
-
-It provides summaries of task results per host or per playbook.
-
-It allows you to filter task results by playbook, play, host, task or by the
-status of the task.
-
-With ARA, you're able to easily drill down from the summary view for the results
-you're interested in, whether it's a particular host or a specific task.
-
-Beyond browsing a single ansible-playbook run, ARA supports recording and
-viewing multiple runs in the same database.
-
-This allows you to, for example, recognize patterns (ex: this particular host
-is always failing this particular task) since you have access to data from
-multiple runs.
-
-Installing
-==========
-Packaged dependencies
----------------------
-RHEL, CentOS, Fedora
-~~~~~~~~~~~~~~~~~~~~
-::
-
-    yum -y install gcc python-devel libffi-devel openssl-devel
-
-Ubuntu, Debian
-~~~~~~~~~~~~~~
-::
-
-    apt-get -y install gcc python-dev libffi-dev libssl-dev
-
-From source
------------
-::
-
-    git clone https://github.com/dmsimard/ara
-    cd ara
-    pip install .
-
-From pip
---------
-::
-
-    pip install ara
-
-What does the web interface look like ?
----------------------------------------
-A video is available on YouTube_ and the following are screenshots of the
-web interface:
-
-.. image:: docs/images/preview1.png
-.. image:: docs/images/preview2.png
-
-.. _YouTube: https://www.youtube.com/watch?v=k3qtgSFzAHI
-
-Documentation
--------------
-Documentation is available on `readthedocs.io`_.
-
-.. _readthedocs.io: https://ara.readthedocs.io/en/latest/
+.. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
+.. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-version-of-the-web-application
 
 Discussing ARA
 --------------
-We hang out in **#ara** on freenode IRC. Come chat with us !
+We hang out in **#ara** on freenode IRC. Come chat with developers and users !
+
+Documentation
+-------------
+`Frequently asked questions`_ and documentation on how to install_, configure_,
+use_ or contribute_ to ARA is available on `readthedocs.io`_.
+
+.. _Frequently asked questions: https://ara.readthedocs.io/en/latest/faq.html
+.. _install: https://ara.readthedocs.io/en/latest/installation.html
+.. _configure: https://ara.readthedocs.io/en/latest/configuration.html
+.. _use: https://ara.readthedocs.io/en/latest/usage.html
+.. _contribute: https://ara.readthedocs.io/en/latest/contributing.html
+
+.. _readthedocs.io: https://ara.readthedocs.io/en/latest/
 
 Contributors
 ============
 See contributors on GitHub_.
 
-.. _GitHub: https://github.com/dmsimard/ara/graphs/contributors
+.. _GitHub: https://github.com/openstack/ara/graphs/contributors
 
 Copyright
 =========
