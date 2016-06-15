@@ -11,3 +11,4 @@ Table of Contents
     Installation <installation>
     Configuration <configuration>
     Usage <usage>
+    Contributing <contributing>
