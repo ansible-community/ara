@@ -99,26 +99,32 @@ class CallbackModule(CallbackBase):
 
     def get_or_create_file(self, path):
         try:
-            file_ = (models.File.query
-                     .filter_by(path=path)
-                     .filter_by(playbook_id=self.playbook.id)
-                     .one())
+            if self.playbook.id:
+                file_ = (models.File.query
+                         .filter_by(path=path)
+                         .filter_by(playbook_id=self.playbook.id)
+                         .one())
+
+                return file_
         except models.NoResultFound:
-            file_ = models.File(path=path, playbook=self.playbook)
-            db.session.add(file_)
+            pass
 
-            try:
-                with open(path, 'r') as fd:
-                    sha1 = hashlib.sha1(fd.read()).hexdigest()
-                    content = models.FileContent.query.get(sha1)
-                    if not content:
-                        fd.seek(0)
-                        data = fd.read()
-                        content = models.FileContent(content=data)
+        file_ = models.File(path=path, playbook=self.playbook)
+        db.session.add(file_)
 
-                file_.content = content
-            except IOError:
-                LOG.warn('failed to open %s for reading', path)
+        try:
+            with open(path, 'r') as fd:
+                data = fd.read()
+
+            sha1 = hashlib.sha1(data).hexdigest()
+            content = models.FileContent.query.get(sha1)
+
+            if content is None:
+                content = models.FileContent(content=data)
+
+            file_.content = content
+        except IOError:
+            LOG.warn('failed to open %s for reading', path)
 
         return file_
 
@@ -254,9 +260,8 @@ class CallbackModule(CallbackBase):
         self.playbook.start()
         db.session.add(self.playbook)
 
-        file_ = models.File(
-            path=path, is_playbook=True, playbook=self.playbook)
-        db.session.add(file_)
+        file_ = self.get_or_create_file(path)
+        file_.is_playbook = True
 
     def v2_playbook_on_play_start(self, play):
         self.close_task()
