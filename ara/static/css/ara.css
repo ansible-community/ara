@@ -21,7 +21,7 @@ pre {
     font-size: 90%;
     font-family: monospace;
     display: inline-block;
-    width: 7.5em;
+    width: 8em;
 }
 
 .failed, .unreachable {
@@ -44,7 +44,7 @@ ol.breadcrumb {
 }
 
 .breadcrumb > li + li:before {
-    content: "> ";
+    content: ">> ";
     padding: 0 2px;
 }
 

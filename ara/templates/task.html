@@ -1,63 +1,97 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=task.playbook.id) }}</li>
-  <li>{{ macros.make_link('play.show_play', 'Play', play=task.play.id) }}</li>
-  <li class="active"><strong>Task</strong>{% if task.name %}: "{{task.name}}"{% endif %}</li>
-</ol>
+<!-- Header container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h1><strong>Task</strong>{% if task.name %}: {{ task.name }}{% endif %}</h1>
+      <h2>{{ task.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ task.time_end |datefmt }}</h2>
+    </div>
+  </div>
+</div>
+<!-- Dashboard container -->
+<div class="container-fluid container-cards-pf container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row row-cards-pf">
+    <div class="col-xs-12 col-sm-6 col-md-2 col-md-offset-1">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-server"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.hosts.count() }}</span> <strong>Hosts</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Task information</h2>
-<table class="summary table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-      <th>Action</th>
-      <th>File</th>
-      <th>Line</th>
-    </tr>
-  </thead>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-folder-open"></span>
+          <span class="card-pf-aggregate-status-count">{{ task.file.path|pathtruncate(15) }}</span> <strong>File</strong>
+        </h2>
+      </div>
+    </div>
 
-  <tbody>
-    <tr>
-      <td>{{ task.time_start |datefmt }}</td>
-      <td>{{ task.time_end |datefmt }}</td>
-      <td>{{ task.duration |timefmt }}</td>
-      <td>{{ task.action }}</td>
-      <td>{{ task.path|pathtruncate }}</td>
-      <td>{{ task.lineno }}</td>
-    </tr>
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-search"></span>
+          <span class="card-pf-aggregate-status-count">{{ task.lineno }}</span> <strong>File line</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Results</h2>
-<table class="results table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-      <th>Host</th>
-      <th>Status</th>
-      <th></th>
-    </tr>
-  </thead>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa pficon-info"></span>
+          <span class="card-pf-aggregate-status-count">{{ task.action }}</span> <strong>Action</strong>
+        </h2>
+      </div>
+    </div>
 
-  <tbody>
-    {% for result in task_results %}
-    {% set status = result.derived_status %}
-    <tr>
-      <td>{{ result.time_start |datefmt }}</td>
-      <td>{{ result.time_end |datefmt }}</td>
-      <td>{{ result.duration |timefmt }}</td>
-      <td>{{ macros.make_link('host.show_host', result.host.name,
-        id=result.host.id) }}</td>
-      <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
-      <td>{{ macros.make_link('result.show_result', 'details', task_result=result.id) }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-clock-o"></span>
+          <span class="card-pf-aggregate-status-count">{{ task.duration |timefmt }}</span> <strong>Duration</strong>
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Detail container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h2><strong>Task Results</strong></h2>
+      <table class="results table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration</th>
+            <th>Host</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for result in task_results %}
+          {% set status = result.derived_status %}
+          <tr>
+            <td>{{ result.time_start |datefmt }}</td>
+            <td>{{ result.time_end |datefmt }}</td>
+            <td>{{ result.duration |timefmt }}</td>
+            <td>{{ macros.make_link('host.show_host', result.host.name,
+              id=result.host.id) }}</td>
+            <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
+            <td>{{ macros.make_link('result.show_result', 'details', task_result=result.id) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

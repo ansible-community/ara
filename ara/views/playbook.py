@@ -10,7 +10,7 @@ def playbook_summary():
                  .order_by(models.Playbook.time_start.desc()))
     stats = utils.get_summary_stats(playbooks, 'playbook_id')
 
-    return render_template('playbook_summary.html',
+    return render_template('playbook_list.html',
                            playbooks=playbooks,
                            stats=stats)
 

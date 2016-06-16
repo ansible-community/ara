@@ -1,46 +1,41 @@
-<!DOCTYPE html>
-
+<html class="layout-pf layout-pf-fixed">
 {% import "macros.html" as macros %}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block scripts %}
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery.matchHeight-min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/patternfly.min.js') }}"></script>
+  {% endblock %}
 
-    {% block stylesheets %}
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
-    {% endblock %}
+  {% block stylesheets %}
+  <link href="{{ url_for('static', filename='css/patternfly.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
+  {% endblock %}
 
-    <title>{% block title %}ARA - Ansible Run Analysis{% endblock %}</title>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        {% block header %}
-        {% include "navbar.html" %}
-        {% endblock %}
-      </div>
+  <title>{% block title %}ARA - Ansible Run Analysis{% endblock %}</title>
+</head>
 
-      <div class="content">
-        {% block content %}
-        {% endblock %}
-      </div>
+{% include "navbar.html" %}
 
-      <div class="footer">
-        {% block footer %}
-        <div class="container text-center">
-          <strong>ARA</strong> - Ansible Run Analysis is an open source project available on <a href="https://github.com/openstack/ara" target="_blank">Github</a>.
-        </div>
-        {% endblock %}
-      </div>
-    </div>
+{% block content %}
+{% endblock %}
 
-    {% block scripts %}
-    <script src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    {% endblock %}
-  </body>
+<script>
+  $(document).ready(function() {
+    // matchHeight the contents of each .card-pf and then the .card-pf itself
+    $(".row-cards-pf > [class*='col'] > .card-pf .card-pf-title").matchHeight();
+    $(".row-cards-pf > [class*='col'] > .card-pf > .card-pf-body").matchHeight();
+    $(".row-cards-pf > [class*='col'] > .card-pf > .card-pf-footer").matchHeight();
+    $(".row-cards-pf > [class*='col'] > .card-pf").matchHeight();
+
+    // Initialize the vertical navigation
+    $().setupVerticalNavigation(true);
+  });
+</script>
 </html>

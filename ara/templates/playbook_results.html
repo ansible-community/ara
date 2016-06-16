@@ -1,61 +1,124 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=playbook.id) }}</li>
-</ol>
+<!-- Header container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h1><strong>Playbook details</strong>: {{ playbook.path }}</h1>
+      <h2>{{ playbook.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ playbook.time_end |datefmt }}</h2>
+    </div>
+  </div>
+</div>
+<!-- Dashboard container -->
+<div class="container-fluid container-cards-pf container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row row-cards-pf">
+    <div class="col-xs-12 col-sm-6 col-md-2 col-md-offset-1">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-server"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.hosts.count() }}</span> <strong>Hosts</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Playbook {% if playbook.path %}"{{
-  playbook.path|pathtruncate }}"
-  {% else %}{{playbook.id}}{% endif %}</h2>
-<table class="summary table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ playbook.time_start |datefmt }}</td>
-      <td>{{ playbook.time_end |datefmt }}</td>
-      <td>{{ playbook.duration |timefmt}}</td>
-    </tr>
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-flag"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.plays.count() }}</span> <strong>Plays</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Tasks results in playbook {% if playbook.path %}"{{
-  playbook.path|pathtruncate }}"
-  {% else %}{{playbook.id}}{% endif %}</h2>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-check"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.tasks.count() }}</span> <strong>Tasks</strong>
+        </h2>
+      </div>
+    </div>
 
-  <h3>Results</h3>
-  <table class="results table table-striped table-bordered table-hover table-condensed">
-    <thead>
-      <tr>
-        <th>Offset from playbook</th>
-        <th>Duration</th>
-        <th>Host</th>
-        <th>Task</th>
-        <th>Action</th>
-        <th>Status</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for result in task_results %}
-      {% set status = result.derived_status %}
-      <tr>
-        <td>{{ result.task.offset_from_playbook|timefmt }}</td>
-        <td>{{ result.duration |timefmt }}</td>
-        <td>{{ macros.make_link('host.show_host', result.host.name,
-          id=result.host.id) }}</td>
-        <td>{{ result.task.name }}</td>
-        <td>{{ result.task.action }}</td>
-        <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
-        <td>{{ macros.make_link('result.show_result', 'details', task_result=result.id) }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-folder-open"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.files.count() }}</span> <strong>Files</strong>
+        </h2>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-clock-o"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.duration |timefmt }}</span> <strong>Duration</strong>
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Detail container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h2><strong>Statistics</strong></h2>
+      <table class="stats table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th><span class="ok label status-label">OK</span></th>
+            <th><span class="changed label status-label">CHANGED</span></th>
+            <th><span class="failed label status-label">FAILED</span></th>
+            <th><span class="skipped label status-label">SKIPPED</span></th>
+            <th><span class="unreachable label status-label">UNREACHABLE</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stat in playbook.stats %}
+          <tr>
+            <td>{{ macros.make_link('playbook.playbook_results', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
+              {{ macros.statslink(stat, 'ok', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'changed', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'failed', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'skipped', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'unreachable', playbook, stat.host) }}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2><strong>Tasks Results</strong></h2>
+      <table class="results table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Offset from playbook</th>
+            <th>Duration</th>
+            <th>Host</th>
+            <th>Task</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for result in task_results %}
+          {% set status = result.derived_status %}
+          <tr>
+            <td>{{ result.task.offset_from_playbook|timefmt }}</td>
+            <td>{{ result.duration |timefmt }}</td>
+            <td>{{ macros.make_link('host.show_host', result.host.name,
+              id=result.host.id) }}</td>
+            <td>{{ result.task.name }}</td>
+            <td>{{ result.task.action }}</td>
+            <td><span class="{{ status }} label status-label">{{ status |upper }}</span></td>
+            <td>{{ macros.make_link('result.show_result', 'details', task_result=result.id) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}
