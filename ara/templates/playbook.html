@@ -115,18 +115,6 @@
       </table>
 
       <h2><strong>Tasks</strong></h2>
-      <p><span class="pficon pficon-info"></span>
-      {% if not file_ %}
-      This is a list of all tasks encounted in the Ansible run.  You may
-      limit this to a list of tasks contained in a particular file by going
-      to {{ macros.make_link('playbook.show_playbook_files', 'the list of files',
-      playbook=playbook.id) }}.
-      {% else %}
-      This is a list of tasks in <code>{{ file_.path }}</code>.  You may
-      also see {{ macros.make_link('playbook.show_playbook',
-      'the complete list of tasks', playbook=playbook.id) }}.
-      {% endif %}
-      </p>
       <table class="tasks table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
@@ -147,10 +135,15 @@
             <td>{{ task.duration |timefmt }}</td>
             <td>{{ task.name }}</td>
             <td>{{ task.action }}</td>
-            <td>{{ task.file.path|pathtruncate(60) }}</td>
-            <td>{{ task.lineno }}</td>
-            <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}
+            <td>
+              {% if task.file %}
+                {{ task.file.path |pathtruncate(30) }}
+                <a href="{{ url_for('playbook.show_playbook', playbook=playbook.id, file_=task.file.id) }}"><span class="fa fa-filter pull-right"></span></a>
+                <a href="{{ url_for('file.show_file', file_=task.file.id) }}"><span class="fa fa-file-text-o pull-right"></span></a>
+              {% endif %}
             </td>
+            <td>{{ task.lineno }}</td>
+            <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}</td>
           </tr>
           {% endfor %}
         </tbody>
