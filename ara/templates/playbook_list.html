@@ -1,15 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<!-- Main container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
-  <div class="row text-center">
-    <h1>ARA - Ansible Run Analysis</h1>
-    <h2><a href="https://github.com/openstack/ara">ARA</a> records <a href="https://www.ansible.com/">Ansible</a> Playbook runs seemlessly to make them easier to visualize, understand and troubleshoot.</h2>
-  </div>
   <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
-      <h2><strong>Latest playbook runs</strong></h2>
+      <h1><strong>All Playbooks</strong></h1>
       <table class="list table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
@@ -26,7 +21,7 @@
         <tbody>
             {% for playbook in playbooks %}
             <tr>
-              <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate,
+              <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate(60),
                 playbook=playbook.id) }}</td>
               <td>{{ playbook.time_start |datefmt }}</td>
               <td>{{ playbook.hosts|list|length }}</td>

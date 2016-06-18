@@ -45,18 +45,20 @@ def configure_template_filters(app):
             return val
 
     @app.template_filter('pathtruncate')
-    def jinja_pathtruncate(path):
+    def jinja_pathtruncate(path, length=None):
         '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
         are truncated on path separators.  We prepend an ellipsis when we
         return a truncated path.'''
         if path is None:
             return
-        if len(path) < app.config['ARA_PATH_MAX']:
+        if length is None:
+            length = app.config['ARA_PATH_MAX']
+        if len(path) < length:
             return path
 
         dirname, basename = os.path.split(path)
         while dirname:
-            if len(dirname) + len(basename) < app.config['ARA_PATH_MAX']:
+            if len(dirname) + len(basename) < length:
                 break
             dirlist = dirname.split('/')
             dirlist.pop(0)

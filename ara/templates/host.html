@@ -1,50 +1,52 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook',
-    playbook=host.playbook.id) }}</li>
-  <li class="active"><strong>Host</strong>: {{ host.name }}</li>
-</ol>
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <ol class="breadcrumb">
+    <li>{{ macros.make_link('playbook.show_playbook', 'Playbook',
+      playbook=host.playbook.id) }}</li>
+    <li class="active"><strong>Host</strong>: {{ host.name }}</li>
+  </ol>
 
-<h2>Stats</h2>
-<table class="list table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th><span class="ok label status-label">OK</span></th>
-      <th><span class="changed label status-label">CHANGED</span></th>
-      <th><span class="failed label status-label">FAILED</span></th>
-      <th><span class="skipped label status-label">SKIPPED</span></th>
-      <th><span class="unreachable label status-label">UNREACHABLE</span></th>
-    </tr>
-  </thead>
-  <tbody>
+  <h2>Stats</h2>
+  <table class="list table table-striped table-bordered table-hover table-condensed">
+    <thead>
       <tr>
-        {{ macros.statslink(host.stats, 'ok', host.playbook, host) }}
-        {{ macros.statslink(host.stats, 'changed', host.playbook, host) }}
-        {{ macros.statslink(host.stats, 'failed', host.playbook, host) }}
-        {{ macros.statslink(host.stats, 'skipped', host.playbook, host) }}
-        {{ macros.statslink(host.stats, 'unreachable', host.playbook, host) }}
+        <th><span class="ok label status-label">OK</span></th>
+        <th><span class="changed label status-label">CHANGED</span></th>
+        <th><span class="failed label status-label">FAILED</span></th>
+        <th><span class="skipped label status-label">SKIPPED</span></th>
+        <th><span class="unreachable label status-label">UNREACHABLE</span></th>
       </tr>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+        <tr>
+          {{ macros.statslink(host.stats, 'ok', host.playbook, host) }}
+          {{ macros.statslink(host.stats, 'changed', host.playbook, host) }}
+          {{ macros.statslink(host.stats, 'failed', host.playbook, host) }}
+          {{ macros.statslink(host.stats, 'skipped', host.playbook, host) }}
+          {{ macros.statslink(host.stats, 'unreachable', host.playbook, host) }}
+        </tr>
+    </tbody>
+  </table>
 
-<h2>Facts</h2>
-<p>Last updated at {{ host.facts.timestamp |datefmt }}</p>
-<table class="facts table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Fact</th>
-      <th>Value</th>
-    </tr>
-  </thead>
-  <tbody>
-      {% for fact, value in facts %}
+  <h2>Facts</h2>
+  <p>Last updated at {{ host.facts.timestamp |datefmt }}</p>
+  <table class="facts table table-striped table-bordered table-hover table-condensed">
+    <thead>
       <tr>
-        <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
-        <td><pre>{{ value | to_nice_json }}</pre></td>
+        <th>Fact</th>
+        <th>Value</th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+        {% for fact, value in facts %}
+        <tr>
+          <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
+          <td><pre>{{ value | to_nice_json }}</pre></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

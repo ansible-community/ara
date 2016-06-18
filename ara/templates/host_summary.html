@@ -1,30 +1,32 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>All Hosts</h2>
-<table class="list table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Host</th>
-      <th><span class="ok label status-label">OK</span></th>
-      <th><span class="changed label status-label">CHANGED</span></th>
-      <th><span class="failed label status-label">FAILED</span></th>
-      <th><span class="skipped label status-label">SKIPPED</span></th>
-      <th><span class="unreachable label status-label">UNREACHABLE</span></th>
-    </tr>
-  </thead>
-  <tbody>
-      {% for host in hosts %}
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <h2>All Hosts</h2>
+  <table class="list table table-striped table-bordered table-hover table-condensed">
+    <thead>
       <tr>
-        <td>{{ macros.make_link('host.show_host', host.name,
-          id=host.id) }}</td>
-        <td>{{ stats[host.id].ok }}</td>
-        <td>{{ stats[host.id].changed }}</td>
-        <td>{{ stats[host.id].failed }}</td>
-        <td>{{ stats[host.id].skipped }}</td>
-        <td>{{ stats[host.id].unreachable }}</td>
+        <th>Host</th>
+        <th><span class="ok label status-label">OK</span></th>
+        <th><span class="changed label status-label">CHANGED</span></th>
+        <th><span class="failed label status-label">FAILED</span></th>
+        <th><span class="skipped label status-label">SKIPPED</span></th>
+        <th><span class="unreachable label status-label">UNREACHABLE</span></th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+        {% for host in hosts %}
+        <tr>
+          <td>{{ macros.make_link('host.show_host', host.name,
+            id=host.id) }}</td>
+          <td>{{ stats[host.id].ok }}</td>
+          <td>{{ stats[host.id].changed }}</td>
+          <td>{{ stats[host.id].failed }}</td>
+          <td>{{ stats[host.id].skipped }}</td>
+          <td>{{ stats[host.id].unreachable }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

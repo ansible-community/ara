@@ -1,119 +1,161 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li class="active"><strong>Playbook</strong>{% if playbook.path %}:
-    "{{playbook.path}}"{% endif %}</li>
-</ol>
+<!-- Header container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h1><strong>Playbook</strong>: {{ playbook.path }}</h1>
+      <h2>{{ playbook.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ playbook.time_end |datefmt }}</h2>
+    </div>
+  </div>
+</div>
+<!-- Dashboard container -->
+<div class="container-fluid container-cards-pf container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row row-cards-pf">
+    <div class="col-xs-12 col-sm-6 col-md-2 col-md-offset-1">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-server"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.hosts.count() }}</span> <strong>Hosts</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Playbook {% if playbook.path %}"{{
-  playbook.path|pathtruncate }}"
-  {% else %}{{playbook.id}}{% endif %}</h2>
-<table class="summary table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ playbook.time_start |datefmt }}</td>
-      <td>{{ playbook.time_end |datefmt }}</td>
-      <td>{{ playbook.duration |timefmt }}</td>
-    </tr>
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-flag"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.plays.count() }}</span> <strong>Plays</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Statistics</h2>
-<table class="stats table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Host</th>
-      <th><span class="ok label status-label">OK</span></th>
-      <th><span class="changed label status-label">CHANGED</span></th>
-      <th><span class="failed label status-label">FAILED</span></th>
-      <th><span class="skipped label status-label">SKIPPED</span></th>
-      <th><span class="unreachable label status-label">UNREACHABLE</span></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for stat in playbook.stats %}
-    <tr>
-      <td>{{ macros.make_link('playbook.playbook_results', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
-        {{ macros.statslink(stat, 'ok', playbook, stat.host) }}
-        {{ macros.statslink(stat, 'changed', playbook, stat.host) }}
-        {{ macros.statslink(stat, 'failed', playbook, stat.host) }}
-        {{ macros.statslink(stat, 'skipped', playbook, stat.host) }}
-        {{ macros.statslink(stat, 'unreachable', playbook, stat.host) }}
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-check"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.tasks.count() }}</span> <strong>Tasks</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Plays</h2>
-<table class="plays table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-      <th></th>
-    </tr>
-  </thead>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="pficon pficon-folder-open"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.files.count() }}</span> <strong>Files</strong>
+        </h2>
+      </div>
+    </div>
 
-  <tbody>
-    {% for play in plays %}
-    <tr>
-      <td>{{ play.name }}</td>
-      <td>{{ play.time_start |datefmt }}</td>
-      <td>{{ play.time_end |datefmt }}</td>
-      <td>{{ play.duration |timefmt }}</td>
-      <td>{{ macros.make_link('play.show_play', 'details', play=play.id) }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-clock-o"></span>
+          <span class="card-pf-aggregate-status-count">{{ playbook.duration |timefmt }}</span> <strong>Duration</strong>
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Detail container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h2><strong>Statistics</strong></h2>
+      <table class="stats table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th><span class="ok label status-label">OK</span></th>
+            <th><span class="changed label status-label">CHANGED</span></th>
+            <th><span class="failed label status-label">FAILED</span></th>
+            <th><span class="skipped label status-label">SKIPPED</span></th>
+            <th><span class="unreachable label status-label">UNREACHABLE</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stat in playbook.stats %}
+          <tr>
+            <td>{{ macros.make_link('playbook.playbook_results', stat.host.name, playbook=playbook.id, host=stat.host.name) }}</td>
+              {{ macros.statslink(stat, 'ok', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'changed', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'failed', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'skipped', playbook, stat.host) }}
+              {{ macros.statslink(stat, 'unreachable', playbook, stat.host) }}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-<h2>Tasks</h2>
-{% if not file_ %}
-<p>This is a list of all tasks encounted in the Ansible run.  You may
-limit this to a list of tasks contained in a particular file by going
-to {{ macros.make_link('playbook.show_playbook_files', 'the list of files',
-playbook=playbook.id) }}.</p>
-{% else %}
-<p>This is a list of tasks in <code>{{ file_.path }}</code>.  You may
-also see {{ macros.make_link('playbook.show_playbook',
-'the complete list of tasks', playbook=playbook.id) }}.</p>
-{% endif %}
-<table class="tasks table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Offset from Playbook</th>
-      <th>Duration</th>
-      <th>Name</th>
-      <th>Action</th>
-      <th>File</th>
-      <th>Line</th>
-      <th></th>
-    </tr>
-  </thead>
+      <h2><strong>Plays</strong></h2>
+      <table class="plays table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration</th>
+            <th></th>
+          </tr>
+        </thead>
 
-  <tbody>
-    {% for task in tasks %}
-    <tr>
-      <td>{{ task.offset_from_playbook |timefmt }}</td>
-      <td>{{ task.duration |timefmt }}</td>
-      <td>{{ task.name }}</td>
-      <td>{{ task.action }}</td>
-      <td>{{ task.file.path|pathtruncate }}</td>
-      <td>{{ task.lineno }}</td>
-      <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        <tbody>
+          {% for play in plays %}
+          <tr>
+            <td>{{ play.name }}</td>
+            <td>{{ play.time_start |datefmt }}</td>
+            <td>{{ play.time_end |datefmt }}</td>
+            <td>{{ play.duration |timefmt }}</td>
+            <td>{{ macros.make_link('play.show_play', 'details', play=play.id) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2><strong>Tasks</strong></h2>
+      <p><span class="pficon pficon-info"></span>
+      {% if not file_ %}
+      This is a list of all tasks encounted in the Ansible run.  You may
+      limit this to a list of tasks contained in a particular file by going
+      to {{ macros.make_link('playbook.show_playbook_files', 'the list of files',
+      playbook=playbook.id) }}.
+      {% else %}
+      This is a list of tasks in <code>{{ file_.path }}</code>.  You may
+      also see {{ macros.make_link('playbook.show_playbook',
+      'the complete list of tasks', playbook=playbook.id) }}.
+      {% endif %}
+      </p>
+      <table class="tasks table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Offset from Playbook</th>
+            <th>Duration</th>
+            <th>Name</th>
+            <th>Action</th>
+            <th>File</th>
+            <th>Line</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td>{{ task.offset_from_playbook |timefmt }}</td>
+            <td>{{ task.duration |timefmt }}</td>
+            <td>{{ task.name }}</td>
+            <td>{{ task.action }}</td>
+            <td>{{ task.file.path|pathtruncate(60) }}</td>
+            <td>{{ task.lineno }}</td>
+            <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

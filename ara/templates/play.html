@@ -1,54 +1,68 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<ol class="breadcrumb">
-  <li>{{ macros.make_link('playbook.show_playbook', 'Playbook', playbook=play.playbook.id) }}</li>
-  <li class="active"><strong>Play</strong>{% if play.name %}: "{{play.name}}"{% endif %}</li>
-</ol>
+<!-- Header container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h1><strong>Play</strong>{% if play.name %}: {{ play.name }}{% endif %}</h1>
+      <h2>{{ play.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ play.time_end |datefmt }}</h2>
+    </div>
+  </div>
+</div>
+<!-- Dashboard container -->
+<div class="container-fluid container-cards-pf container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row row-cards-pf">
+    <div class="col-xs-12 col-sm-6 col-md-2 col-md-offset-1">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-check"></span>
+          <span class="card-pf-aggregate-status-count">{{ tasks.count() }}</span> <strong>Tasks</strong>
+        </h2>
+      </div>
+    </div>
 
-<h2>Play information</h2>
-<table class="summary table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Duration</th>
-    </tr>
-  </thead>
+    <div class="col-xs-12 col-sm-6 col-md-2">
+      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
+        <h2 class="card-pf-title" style="height: 42px;">
+          <span class="fa fa-clock-o"></span>
+          <span class="card-pf-aggregate-status-count">{{ play.duration |timefmt }}</span> <strong>Duration</strong>
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Detail container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h2><strong>Tasks</strong></h2>
+      <table class="tasks table table-striped table-bordered table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Offset from play</th>
+            <th>Duration</th>
+            <th>Action</th>
+            <th>File</th>
+            <th>Line</th>
+            <th></th>
+          </tr>
+        </thead>
 
-  <tbody>
-    <tr>
-      <td>{{ play.time_start |datefmt }}</td>
-      <td>{{ play.time_end |datefmt }}</td>
-      <td>{{ play.duration |timefmt }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2>Tasks</h2>
-<table class="tasks table table-striped table-bordered table-hover table-condensed">
-  <thead>
-    <tr>
-      <th>Offset from play</th>
-      <th>Duration</th>
-      <th>Action</th>
-      <th>File</th>
-      <th>Line</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-  {% for task in tasks %}
-  <tr>
-    <td>{{ task.offset_from_play |timefmt }}</td>
-    <td>{{ task.duration |timefmt }}</td>
-    <td>{{ task.action }}</td>
-    <td>{{ task.path|pathtruncate }}</td>
-    <td>{{ task.lineno }}</td>
-    <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+        <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ task.offset_from_play |timefmt }}</td>
+          <td>{{ task.duration |timefmt }}</td>
+          <td>{{ task.action }}</td>
+          <td>{{ task.file.path|pathtruncate(60) }}</td>
+          <td>{{ task.lineno }}</td>
+          <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

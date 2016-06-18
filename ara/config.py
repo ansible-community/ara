@@ -23,7 +23,7 @@ DEFAULT_ARA_LOGFILE = os.path.join(DEFAULT_ARA_DIR, 'ara.log')
 DEFAULT_ARA_LOG_LEVEL = 'INFO'
 DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
-DEFAULT_ARA_PATH_MAX = 30
+DEFAULT_ARA_PATH_MAX = 40
 
 config, path = load_config_file()
 
