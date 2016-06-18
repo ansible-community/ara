@@ -1,8 +1,5 @@
-.footer {
-    padding-top: 15px;
-    margin-top: 25px;
-    border-top: 1px dashed black;
-}
+/* Code pretty print to show line numbers */
+.prettyprint ol.linenums > li { list-style-type: decimal; }
 
 /* Wrap pre tags so they don't print endlessly horizontally */
 pre {
@@ -54,8 +51,7 @@ ol.breadcrumb {
 }
 
 td a {
-    width:100%;
-    display:block;
+    width:100%;;
     font-weight: bold;
 }
 

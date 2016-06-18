@@ -46,20 +46,6 @@ def show_playbook(playbook, file_=None):
                            file_=file_)
 
 
-@playbook.route('/<playbook>/file/')
-def show_playbook_files(playbook):
-    playbook = models.Playbook.query.get(playbook)
-    if playbook is None:
-        abort(404)
-
-    # This places the main playbook (is_playbook=True) on top.
-    files = playbook.files.order_by(models.File.is_playbook.desc())
-
-    return render_template('playbook_file_summary.html',
-                           playbook=playbook,
-                           files=files)
-
-
 @playbook.route('/<playbook>/results/')
 @playbook.route('/<playbook>/results/<host>/')
 @playbook.route('/<playbook>/results/<host>/<status>/')

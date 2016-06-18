@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Header container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+      <h1><strong>File</strong>: {{ file_.path }}</h1>
+    </div>
+  </div>
+</div>
+<!-- Detail container -->
+<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-md-offset-1">
+      <h1><strong>Contents</strong></h1>
+      <pre class="prettyprint linenums">{{ file_.content.content }}</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Initialize code prettyprint
+    prettyPrint();
+  }
+</script>
+{% endblock %}
