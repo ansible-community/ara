@@ -136,13 +136,16 @@
             <td>{{ task.name }}</td>
             <td>{{ task.action }}</td>
             <td>
-              {% if task.file %}
-                {{ task.file.path |pathtruncate(30) }}
+                {% if task.file %}
+                {{ macros.make_link('file.show_file', task.file.path |pathtruncate(30), file_=task.file.id) }}
                 <a href="{{ url_for('playbook.show_playbook', playbook=playbook.id, file_=task.file.id) }}"><span class="fa fa-filter pull-right"></span></a>
-                <a href="{{ url_for('file.show_file', file_=task.file.id) }}"><span class="fa fa-file-text-o pull-right"></span></a>
-              {% endif %}
+                {% endif %}
             </td>
-            <td>{{ task.lineno }}</td>
+            <td>
+                {% if task.file %}
+                {{ macros.make_link('file.show_file', task.lineno, file_=task.file.id, _anchor="line-" ~ task.lineno) }}
+                {% endif %}
+            </td>
             <td>{{ macros.make_link('task.show_task', 'details', task=task.id) }}</td>
           </tr>
           {% endfor %}

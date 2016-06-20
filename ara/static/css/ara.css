@@ -1,5 +1,16 @@
-/* Code pretty print to show line numbers */
-.prettyprint ol.linenums > li { list-style-type: decimal; }
+/* Push pre a href anchors further down so their destination is not hidden by the top navigation bar */
+pre a:before {
+  display: block;
+  content: " ";
+  margin-top: -64px;
+  height: 64px;
+  visibility: hidden;
+}
+/* Colors for highlighted line */
+.hll {
+    background-color: #39a5dc;
+    color: white;
+}
 
 /* Wrap pre tags so they don't print endlessly horizontally */
 pre {

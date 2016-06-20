@@ -22,11 +22,14 @@
       </div>
     </div>
 
+    {% if task.file %}
     <div class="col-xs-12 col-sm-6 col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="pficon pficon-folder-open"></span>
-          <span class="card-pf-aggregate-status-count">{{ task.file.path|pathtruncate(15) }}</span> <strong>File</strong>
+          <span class="card-pf-aggregate-status-count">
+              {{ macros.make_link('file.show_file', task.file.path |pathtruncate(15), file_=task.file.id) }}
+          </span> <strong>File</strong>
         </h2>
       </div>
     </div>
@@ -35,10 +38,13 @@
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="fa fa-search"></span>
-          <span class="card-pf-aggregate-status-count">{{ task.lineno }}</span> <strong>File line</strong>
+          <span class="card-pf-aggregate-status-count">
+              {{ macros.make_link('file.show_file', task.lineno, file_=task.file.id, _anchor="line-" ~ task.lineno) }}
+          </span> <strong>File line</strong>
         </h2>
       </div>
     </div>
+    {% endif %}
 
     <div class="col-xs-12 col-sm-6 col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">

@@ -4,7 +4,7 @@
 <!-- Header container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+    <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1">
       <h1><strong>File</strong>: {{ file_.path }}</h1>
     </div>
   </div>
@@ -12,17 +12,24 @@
 <!-- Detail container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-6 col-md-offset-1">
+    <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1">
       <h1><strong>Contents</strong></h1>
-      <pre class="prettyprint linenums">{{ file_.content.content }}</pre>
+      {{ file_.content.content |yamlhighlight |safe }}
     </div>
   </div>
 </div>
-
 <script>
-  $(document).ready(function() {
-    // Initialize code prettyprint
-    prettyPrint();
-  }
+    $(document).ready(function(){
+        /* Highlight the anchor line */
+        var hash = $(location).attr('hash');
+        $(hash).closest('span').addClass('hll');
+
+        /* Refresh the highlighted line when clicking on a new line */
+        $("a").click(function(){
+            $("span.hll").removeClass('hll');
+            var hash = $(this).attr('href');
+            $(hash).closest('span').addClass('hll');
+        });
+    });
 </script>
 {% endblock %}

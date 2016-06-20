@@ -3,6 +3,11 @@ import json
 import logging
 import os
 
+from jinja2 import Markup
+from pygments import highlight
+from pygments.lexers import YamlLexer
+from pygments.formatters import HtmlFormatter
+
 
 def configure_template_filters(app):
     log = logging.getLogger('%s.filters' % app.logger_name)
@@ -65,3 +70,14 @@ def configure_template_filters(app):
             dirname = "/".join(dirlist)
 
         return "..." + os.path.join(dirname, basename)
+
+    @app.template_filter('yamlhighlight')
+    def jinja_yamlhighlight(code):
+        formatter = HtmlFormatter(linenos='table',
+                                  anchorlinenos=True,
+                                  lineanchors='line',
+                                  linespans='line')
+
+        return highlight(Markup(code.rstrip()).unescape(),
+                         YamlLexer(),
+                         formatter)
