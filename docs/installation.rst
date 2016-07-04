@@ -8,7 +8,7 @@ Required dependencies
 ~~~~~~~~~~~~~~~~~~~~~
 ::
 
-    yum -y install gcc python-devel libffi-devel openssl-devel
+    yum -y install gcc python-devel libffi-devel openssl-devel redhat-rpm-config
 
 Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
