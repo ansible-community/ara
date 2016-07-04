@@ -33,16 +33,14 @@ Development or integration testing dependencies
     apt-get -y install python-pip tree
     pip install tox
 
-Installing ARA from source
---------------------------
+Installing ARA from trunk source
+--------------------------------
 ::
 
-    git clone https://github.com/dmsimard/ara
-    cd ara
-    pip install .
+    pip install git+https://git.openstack.org/openstack/ara
 
-Installing ARA from pip
------------------------
+Installing ARA from latest release on PyPi
+------------------------------------------
 ::
 
     pip install ara
