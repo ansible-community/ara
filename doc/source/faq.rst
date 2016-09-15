@@ -22,8 +22,8 @@ What does the web interface look like ?
 A video is available on YouTube_ and the following are screenshots of the
 web interface:
 
-.. image:: images/preview1.png
-.. image:: images/preview2.png
+.. image:: _static/preview1.png
+.. image:: _static/preview2.png
 
 .. _YouTube: https://www.youtube.com/watch?v=k3qtgSFzAHI
 

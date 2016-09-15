@@ -68,7 +68,7 @@ Make sure they are installed according to the documentation_.
 
 Sending a patch for review
 --------------------------
-.. image:: images/code_review.png
+.. image:: _static/code_review.png
 
 The process looks a bit like this::
 
