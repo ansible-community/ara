@@ -24,6 +24,7 @@ DEFAULT_ARA_LOG_LEVEL = 'INFO'
 DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
 DEFAULT_ARA_PATH_MAX = 40
+DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS = True
 
 config, path = load_config_file()
 
@@ -60,3 +61,6 @@ SQLALCHEMY_ECHO                = get_config(config, 'ara', 'sqldebug',
 # Static generation
 FREEZER_RELATIVE_URLS = True
 FREEZER_DEFAULT_MIMETYPE = 'text/html'
+FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
+    config, 'ara', 'ignore_mimetype_warnings', 'ARA_IGNORE_MIMETYPE_WARNINGS',
+    DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS)
