@@ -5,7 +5,7 @@ import random
 import ara.webapp as w
 import ara.models as m
 import ara.utils as u
-import ara.callback.log_ara as l
+import ara.plugins.callbacks.log_ara as l
 
 from mock import Mock
 

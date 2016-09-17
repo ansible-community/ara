@@ -17,7 +17,7 @@ tox -e venv --notest
 source .tox/venv/bin/activate
 
 # Setup ARA
-export ANSIBLE_CALLBACK_PLUGINS="ara/callback"
+export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
 export ARA_DATABASE="sqlite:///${DATABASE}"
 
 # Run test playbooks

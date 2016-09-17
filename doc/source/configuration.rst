@@ -11,9 +11,9 @@ Set up your `ansible.cfg`_ file to seek that callback in the appropriate
 directory. Here's an example that covers most common locations::
 
     [defaults]
-    callback_plugins = /usr/lib/python2.7/site-packages/ara/callback:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/callback:/usr/local/lib/python2.7/dist-packages/ara/callback
+    callback_plugins = /usr/lib/python2.7/site-packages/ara/plugins/callbacks:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/callbacks:/usr/local/lib/python2.7/dist-packages/ara/plugins/callbacks
 
-.. _callback: https://github.com/dmsimard/ara/blob/master/ara/callback/log_ara.py
+.. _callback: https://github.com/dmsimard/ara/blob/master/ara/plugins/callbacks/log_ara.py
 .. _ansible.cfg: http://docs.ansible.com/ansible/intro_configuration.html#configuration-file
 
 *That's it!*
