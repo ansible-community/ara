@@ -11,7 +11,7 @@ ARA is three things:
 2. A `CLI client`_ to query the database
 3. A `web interface`_ to visualize the database
 
-.. _ARA: https://github.com/dmsimard/ara
+.. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
 .. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
