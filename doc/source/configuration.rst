@@ -8,7 +8,15 @@ The callback comes provided when installing ARA but you need to let Ansible
 know where it is located.
 
 Set up your `ansible.cfg`_ file to seek that callback in the appropriate
-directory. Here's an example that covers most common locations::
+directory. If you are not sure where ARA will end up being installed, here's
+an example that covers most common locations:
+
+.. warning:: Prior to version 0.10 of ARA, the path to the ARA callback plugin
+             was at ``ara/callback``.
+             This path has since then been deprecated and moved to
+             ``ara/plugins/callbacks``.
+
+::
 
     [defaults]
     callback_plugins = /usr/lib/python2.7/site-packages/ara/plugins/callbacks:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/callbacks:/usr/local/lib/python2.7/dist-packages/ara/plugins/callbacks
