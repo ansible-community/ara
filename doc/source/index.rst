@@ -12,3 +12,4 @@ Table of Contents
     Configuration <configuration>
     Usage <usage>
     Contributing <contributing>
+    Developer notes <developer>
