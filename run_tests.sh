@@ -8,13 +8,22 @@ BUILD_DIR="${LOGDIR}/build"
 export ANSIBLE_TMP_DIR="${LOGDIR}/ansible"
 DATABASE="${LOGDIR}/ansible.sqlite"
 
-# Cleanup any previous runs
-rm -rf $LOGDIR
-mkdir -p $LOGDIR
+# Cleanup from any previous runs if necessary
+git checkout requirements.txt
+[[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
+[[ -e ".tox/venv" ]] && rm -rf .tox/venv
+mkdir -p "${LOGDIR}"
+
+# We might want to test with a particular version of Ansible
+# To specify a version, use "./run_tests.sh ansible==2.x.x.x"
+if [ -n "${1}" ]; then
+    sed -i.tmp -e "s/ansible.*/${1}/" requirements.txt
+fi
 
 # Install ARA so it can be used from a virtual environment
 tox -e venv --notest
 source .tox/venv/bin/activate
+ansible --version
 
 # Setup ARA
 export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
@@ -38,3 +47,5 @@ ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ara generate ${BUILD_DIR} && tree ${BUILD_DIR}
+
+echo "Run complete, logs and build available in ${LOGDIR}"
