@@ -16,7 +16,7 @@ mkdir -p "${LOGDIR}"
 
 # We might want to test with a particular version of Ansible
 # To specify a version, use "./run_tests.sh ansible==2.x.x.x"
-if [ -n "${1}" ]; then
+if [[ -n "${1}" && "${1}" -ne "ansible==latest" ]]; then
     sed -i.tmp -e "s/ansible.*/${1}/" requirements.txt
 fi
 
