@@ -16,7 +16,7 @@ from debtcollector import moves
 from ara.plugins.callbacks import log_ara
 
 long_message = """[WARNING]
-ara.callback has been moved to ara.plugins.callbacks.
+ara.callback has been moved to ara.plugins.callbacks in ARA 0.9.2.
 Please update your Ansible Callback Plugins path to include
     <path>/ara/plugins/callbacks
 instead of:
@@ -30,18 +30,18 @@ print(long_message)
 
 CommitAfter = moves.moved_class(log_ara.CommitAfter, 'CommitAfter',
                                 'ara',
-                                version='0.10.0',
+                                version='0.9.2',
                                 removal_version='?',
                                 message=message)
 
 IncludeResult = moves.moved_class(log_ara.IncludeResult, 'IncludeResult',
                                   'ara',
-                                  version='0.10.0',
+                                  version='0.9.2',
                                   removal_version='?',
                                   message=message)
 
 CallbackModule = moves.moved_class(log_ara.CallbackModule, 'CallbackModule',
                                    'ara',
-                                   version='0.10.0',
+                                   version='0.9.2',
                                    removal_version='?',
                                    message=message)
