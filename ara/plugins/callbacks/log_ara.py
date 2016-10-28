@@ -263,6 +263,16 @@ class CallbackModule(CallbackBase):
         file_ = self.get_or_create_file(path)
         file_.is_playbook = True
 
+        # We need to persist the playbook id so it can be used by the modules
+        data = {
+            'playbook': {
+                'id': self.playbook.id
+            }
+        }
+        tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
+        with open(tmpfile, 'w') as file:
+            file.write(json.dumps(data))
+
     def v2_playbook_on_play_start(self, play):
         self.close_task()
         self.close_play()

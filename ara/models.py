@@ -124,6 +124,7 @@ class Playbook(db.Model, TimedEntity):
 
     `Playbook` entities have the following relationships:
 
+    - `data` -- a list of k/v pairs recorded in this playbook run.
     - `plays` -- a list of plays encountered in this playbook run.
     - `tasks` -- a list of tasks encountered in this playbook run.
     - `stats` -- a list of  statistic records, one for each host
@@ -137,6 +138,7 @@ class Playbook(db.Model, TimedEntity):
 
     id = std_pkey()
     path = db.Column(db.Text)
+    data = one_to_many('Data', backref='playbook')
     files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')
     tasks = one_to_many('Task', backref='playbook')
@@ -387,3 +389,26 @@ class Stats(db.Model):
 
     def __repr__(self):
         return '<Stats for %s>' % self.host.name
+
+
+class Data(db.Model):
+    '''The `Data` object represents a recorded key/value pair provided by
+    the ara_record module.
+
+    A `Data` entity has the following relationships:
+
+    - `playbook` -- the playbook this key/value pair was recorded in
+    '''
+
+    __tablename__ = 'data'
+    __table_args__ = (
+        db.UniqueConstraint('playbook_id', 'key'),
+    )
+
+    id = std_pkey()
+    playbook_id = std_fkey('playbooks.id')
+    key = db.Column(db.String(255))
+    value = db.Column(db.Text(16777215))
+
+    def __repr__(self):
+        return '<Data %s:%s>' % (self.data.playbook_id, self.data.key)
