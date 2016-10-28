@@ -27,6 +27,8 @@ ansible --version
 
 # Setup ARA
 export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
+export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
+export ANSIBLE_LIBRARY="ara/plugins/modules"
 export ARA_DATABASE="sqlite:///${DATABASE}"
 
 # Run test playbooks
@@ -40,6 +42,8 @@ ara playbook show $pbid
 ara host list -b $pbid
 ara host show -b $pbid localhost
 ara host facts -b $pbid localhost
+ara data list -b $pbid
+ara data show -b $pbid foo
 ara play show $(ara play list -a -c ID -f value |head -n1)
 ara result show $(ara result list -a -c ID -f value |tail -n1) --long
 ara stats show $(ara stats list -c ID -f value |head -n1)

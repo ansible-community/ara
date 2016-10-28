@@ -14,13 +14,18 @@
 #   under the License.
 #
 
-- name: Deferred setup
-  setup:
+# ARA module specific tests
+- name: Record a k/v pair with ara_record
+  ara_record:
+    key: "foo"
+    value: "bar"
 
-- include: file-ops.yml
-  static: no
-- include: pkg-ops.yml
-- include: blk-ops.yml
-  static: no
-- include: ara-ops.yml
-  static: no
+- name: Update a k/v pair with ara_record
+  ara_record:
+    key: "foo"
+    value: "barfoo"
+
+- name: Add another k/v pair with ara_record
+  ara_record:
+    key: "bar"
+    value: "foo"
