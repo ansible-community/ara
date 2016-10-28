@@ -30,6 +30,13 @@ def show_playbook(playbook, file_=None):
              .filter(models.Task.playbook_id == playbook.id)
              .order_by(models.Task.sortkey))
 
+    try:
+        data = (models.Data.query
+                .filter(models.Data.playbook_id == playbook.id)
+                .order_by(models.Data.key))
+    except models.NoResultFound:
+        data = None
+
     if file_:
         file_ = (models.File.query.get(file_))
         if file_ is None:
@@ -43,6 +50,7 @@ def show_playbook(playbook, file_=None):
                            playbook=playbook,
                            plays=plays,
                            tasks=tasks,
+                           data=data,
                            file_=file_)
 
 
@@ -78,3 +86,14 @@ def playbook_results(playbook, host=None, status=None):
     return render_template('playbook_results.html',
                            playbook=playbook,
                            task_results=task_results)
+
+
+@playbook.route('/<playbook>/data/')
+def playbook_data(playbook):
+    data = (models.Data.query
+            .filter(models.Data.playbook_id == playbook)
+            .order_by(models.Data.key))
+
+    return render_template('playbook_data.html',
+                           playbook=playbook,
+                           data=data)
