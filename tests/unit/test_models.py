@@ -31,6 +31,12 @@ class TestModels(TestCase):
             playbook=self.playbook,
         )
 
+        self.data = m.Data(
+            playbook=self.playbook,
+            key='test key',
+            value='test value'
+        )
+
         self.host = m.Host(
             name='localhost',
             playbook=self.playbook,
@@ -57,7 +63,7 @@ class TestModels(TestCase):
             ok=0,
         )
 
-        for obj in [self.playbook, self.play, self.task,
+        for obj in [self.playbook, self.play, self.task, self.data,
                     self.host, self.task_result, self.stats]:
             m.db.session.add(obj)
 
@@ -79,6 +85,23 @@ class TestModels(TestCase):
         task = m.Task.query.get(self.task.id)
         assert task in self.playbook.tasks
         assert task in self.play.tasks
+
+    def test_data(self):
+        data = m.Data.query.get(self.data.id)
+        self.assertEqual(data.playbook_id, self.playbook.id)
+        self.assertEqual(data.key, 'test key')
+        self.assertEqual(data.value, 'test value')
+
+    def test_duplicate_data(self):
+        data = m.Data(
+            playbook=self.playbook,
+            key='test key',
+            value='another value'
+        )
+        m.db.session.add(data)
+
+        with self.assertRaises(Exception):
+            m.db.session.commit()
 
     def test_task_result(self):
         result = m.TaskResult.query.get(self.task_result.id)
