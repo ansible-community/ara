@@ -14,30 +14,5 @@
 #   under the License.
 #
 
-- name: ARA Tasks test play
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - name: ARA Integration test
-      debug:
-        msg: "ARA Integration test"
-  roles:
-    - { role: "smoke-tests" }
-
-- name: ARA Tasks another test play
-  hosts: localhost
-  gather_facts: yes
-  tasks:
-    - name: Nothing important
-      debug:
-        msg: "Nothing important"
-
-- name: ARA Include role actions
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - include_role:
-        name: "included-role"
-    - include_role:
-        name: "included-role"
-        tasks_from: "included-task"
+role_message: "This message is from an included role"
+task_message: "This message is from an included task in an included role"
