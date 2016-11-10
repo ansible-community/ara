@@ -30,6 +30,7 @@
     </tbody>
   </table>
 
+  {% if facts %}
   <h2>Facts</h2>
   <p>Last updated at {{ host.facts.timestamp |datefmt }}</p>
   <table class="facts table table-striped table-bordered table-hover table-condensed">
@@ -48,5 +49,6 @@
       {% endfor %}
     </tbody>
   </table>
+  {% endif %}
 </div>
 {% endblock %}

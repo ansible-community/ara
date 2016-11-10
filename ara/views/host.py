@@ -23,10 +23,10 @@ def show_host(id):
     except models.NoResultFound:
         abort(404)
 
-    if not host.facts:
-        abort(404)
-    else:
+    if host.facts:
         facts = sorted(json.loads(host.facts.values).iteritems())
+    else:
+        facts = None
 
     return render_template('host.html',
                            host=host,
