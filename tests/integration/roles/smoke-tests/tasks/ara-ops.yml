@@ -29,3 +29,11 @@
   ara_record:
     key: "bar"
     value: "foo"
+
+- name: Read the value of foo
+  ara_read:
+    key: "foo"
+
+- name: Read the value of bar
+  ara_read:
+    key: "bar"
