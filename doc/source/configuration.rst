@@ -7,16 +7,16 @@ To use ARA, you'll first need to set up Ansible to use the ARA callback_.
 The callback comes provided when installing ARA but you need to let Ansible
 know where it is located.
 
-Set up your `ansible.cfg`_ file to seek that callback in the appropriate
-directory. If you are not sure where ARA will end up being installed, here's
-an example that covers most common locations:
-
-.. warning:: Prior to version 0.10 of ARA, the path to the ARA callback plugin
+.. warning:: Prior to version 0.9.2 of ARA, the path to the ARA callback plugin
              was at ``ara/callback``.
              This path has since then been deprecated and moved to
              ``ara/plugins/callbacks``.
 
-::
+Using ansible.cfg
+~~~~~~~~~~~~~~~~~
+Set up your `ansible.cfg`_ file to seek that callback in the appropriate
+directory. If you are not sure where ARA will end up being installed, here's
+an example that covers most common locations::
 
     [defaults]
     callback_plugins = /usr/lib/python2.7/site-packages/ara/plugins/callbacks:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/callbacks:/usr/local/lib/python2.7/dist-packages/ara/plugins/callbacks
@@ -24,7 +24,17 @@ an example that covers most common locations:
 .. _callback: https://github.com/openstack/ara/blob/master/ara/plugins/callbacks/log_ara.py
 .. _ansible.cfg: http://docs.ansible.com/ansible/intro_configuration.html#configuration-file
 
-*That's it!*
+Using environment variable
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ansible, like ARA, is able to load configuration from looking up specific
+`environment variables`_.
+
+You can make Ansible look for the ARA callback using the
+``ANSIBLE_CALLBACK_PLUGINS`` variable, like so::
+
+    export ANSIBLE_CALLBACK_PLUGINS=/usr/lib/python2.7/site-packages/ara/plugins/callbacks
+
+.. _environment variables: http://docs.ansible.com/ansible/intro_configuration.html#environmental-configuration
 
 ARA
 ---
