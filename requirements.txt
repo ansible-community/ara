@@ -1,5 +1,6 @@
 Flask==0.11.1
 Flask-SQLAlchemy
+Flask-Migrate
 Flask-Script
 Frozen-Flask
 pbr>=1.6
