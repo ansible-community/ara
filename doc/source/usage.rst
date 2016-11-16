@@ -15,22 +15,22 @@ exist and will be used automatically.
 
 Using the ara_record module
 ---------------------------
-ARA comes with a built-in module called ``ara_record``.
+ARA comes with a built-in Ansible module called ``ara_record``.
 
 This module can be used as an action for a task in your Ansible playbooks in
 order to register whatever you'd like in a key/value format, for example::
 
+    ---
     - name: Test playbook
-      hosts: all
-      gather_facts: yes
+      hosts: localhost
       tasks:
-        - name: Get git revision of playbooks
+        - name: Get git version of playbooks
           command: git rev-parse HEAD
           register: git_version
 
-        - name: Record git revision
+        - name: Record git version
           ara_record:
-            key: "git_revision"
+            key: "git_version"
             value: "{{ git_version.stdout }}"
 
 This data will be recorded inside ARA's database and associated with the
@@ -38,6 +38,39 @@ particular playbook run that was executed.
 
 You can then query ARA, either through the CLI or the web interface to see the
 recorded values.
+
+Using the ara_read module
+-------------------------
+ARA comes with a built-in Ansible module called ``ara_read`` that can read data
+that was previously recorded with ``ara_record`` within the same playbook run.
+
+This module can be used as an action for a task anywhere in your in your
+Ansible playbooks as long as it is within the same playbook run. It can be
+re-used across plays or roles if necessary, for example::
+
+    ---
+    - name: Test play on localhost
+      hosts: localhost
+      tasks:
+        - name: Compute md5sum of file
+          command: md5sum file
+          register: local_mdfive
+
+        - name: Record md5sum of dile
+          ara_record:
+            key: "md5sum"
+            value: "{{ local_mdfive.stdout }}"
+
+    - name: Test play on remote hosts
+      hosts: webservers
+      tasks:
+          - name: Retrieve md5sum
+            ara_read:
+              key: "md5sum"
+            register: mdfive
+
+          - name: Compare md5sum of files
+            shell: diff <(md5sum file) <(echo "{{ mdfive.value }}")
 
 Looking at the data
 -------------------
