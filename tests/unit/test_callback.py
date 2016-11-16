@@ -1,7 +1,10 @@
 from flask.ext.testing import TestCase
 from collections import defaultdict
 import random
+import os
+import json
 
+from ara import app as a
 import ara.webapp as w
 import ara.models as m
 import ara.utils as u
@@ -133,6 +136,14 @@ class TestCallback(TestCase):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
         self.assertEqual(r_playbook.path, self.playbook.path)
+
+    def test_playbook_persistence(self):
+        r_playbook = m.Playbook.query.first()
+        tmpfile = os.path.join(a.config['ARA_TMP_DIR'], 'ara.json')
+
+        with open(tmpfile) as file:
+            data = json.load(file)
+        self.assertEqual(r_playbook.id, data['playbook']['id'])
 
     def test_callback_play(self):
         r_play = m.Play.query.first()

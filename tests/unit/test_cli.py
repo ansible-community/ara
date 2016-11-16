@@ -5,6 +5,7 @@ from flask.ext.testing import TestCase
 
 import ara.webapp as w
 import ara.models as m
+import ara.cli.data
 import ara.cli.host
 import ara.cli.play
 import ara.cli.playbook
@@ -32,6 +33,70 @@ class TestCLI(TestCase):
     def tearDown(self):
         m.db.session.remove()
         m.db.drop_all()
+
+    #################################
+    # ara data <cmd>
+    #################################
+    def test_data_list(self):
+        ctx = ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataList(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args(['-a'])
+        res = cmd.take_action(args)
+
+        self.assertEqual(res[1][0][0], ctx['data'].id)
+
+    def test_data_list_for_playbook(self):
+        ctx = ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataList(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        res = cmd.take_action(args)
+
+        self.assertEqual(res[1][0][0], ctx['data'].id)
+
+    def test_data_list_for_non_existing_playbook(self):
+        ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataList(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args(['--playbook', 'foo'])
+        res = cmd.take_action(args)
+
+        self.assertEqual(res[1], [])
+
+    def test_data_show_by_id(self):
+        ctx = ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataShow(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([ctx['data'].id])
+        res = cmd.take_action(args)
+
+        self.assertEqual(res[1][0], ctx['data'].id)
+
+    def test_data_show_by_key(self):
+        ctx = ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataShow(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([
+            '-b', ctx['data'].playbook.id, ctx['data'].key])
+        res = cmd.take_action(args)
+
+        self.assertEqual(res[1][0], ctx['data'].id)
+
+    def test_data_show_for_non_existing_data(self):
+        ansible_run(ara_record=True)
+
+        cmd = ara.cli.data.DataShow(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args(['foo'])
+
+        with self.assertRaises(RuntimeError):
+            cmd.take_action(args)
 
     #################################
     # ara host <cmd>
