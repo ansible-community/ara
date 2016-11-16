@@ -13,6 +13,32 @@ in the ``callback_plugins`` Ansible configuration.
 After running an Ansible playbook, the database will be created if it doesn't
 exist and will be used automatically.
 
+Using the ara_record module
+---------------------------
+ARA comes with a built-in module called ``ara_record``.
+
+This module can be used as an action for a task in your Ansible playbooks in
+order to register whatever you'd like in a key/value format, for example::
+
+    - name: Test playbook
+      hosts: all
+      gather_facts: yes
+      tasks:
+        - name: Get git revision of playbooks
+          command: git rev-parse HEAD
+          register: git_version
+
+        - name: Record git revision
+          ara_record:
+            key: "git_revision"
+            value: "{{ git_version.stdout }}"
+
+This data will be recorded inside ARA's database and associated with the
+particular playbook run that was executed.
+
+You can then query ARA, either through the CLI or the web interface to see the
+recorded values.
+
 Looking at the data
 -------------------
 Once you've run ansible-playbook at least once, the database will be populated

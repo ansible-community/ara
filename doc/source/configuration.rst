@@ -20,6 +20,9 @@ an example that covers most common locations::
 
     [defaults]
     callback_plugins = /usr/lib/python2.7/site-packages/ara/plugins/callbacks:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/callbacks:/usr/local/lib/python2.7/dist-packages/ara/plugins/callbacks
+    # If you'd like to use the ara_record module, you'll also need the following:
+    action_plugins = /usr/lib/python2.7/site-packages/ara/plugins/actions:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/actions:/usr/local/lib/python2.7/dist-packages/ara/plugins/actions
+    library = /usr/lib/python2.7/site-packages/ara/plugins/modules:$VIRTUAL_ENV/lib/python2.7/site-packages/ara/plugins/modules:/usr/local/lib/python2.7/dist-packages/ara/plugins/modules
 
 .. _callback: https://github.com/openstack/ara/blob/master/ara/plugins/callbacks/log_ara.py
 .. _ansible.cfg: http://docs.ansible.com/ansible/intro_configuration.html#configuration-file
