@@ -65,7 +65,7 @@ ARA provides a CLI client to query the database.
 
 Example commands::
 
-    # ara help
+    $ ara help
     usage: ara [--version] [-v | -q] [--log-file LOG_FILE] [-h] [--debug]
 
     A CLI client to query ARA databases
@@ -80,11 +80,18 @@ Example commands::
 
     Commands:
       complete       print bash completion command
+      data list      Returns a list of recorded key/value pairs
+      data show      Show details of a recorded key/value pair
+      file list      Returns a list of files
+      file show      Show details of a file
+      generate       Generates a static tree of the web application
       help           print detailed help for another command
+      host facts     Show facts for a host
       host list      Returns a list of hosts
       host show      Show details of a host
       play list      Returns a list of plays
       play show      Show details of a play
+      playbook delete  Delete playbooks from the database.
       playbook list  Returns a list of playbooks
       playbook show  Show details of a playbook
       result list    Returns a list of results
