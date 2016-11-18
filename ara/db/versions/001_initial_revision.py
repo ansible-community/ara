@@ -1,13 +1,13 @@
 """Initial Revision
 
-Revision ID: da9459a1f71c
+Revision ID: 001
 Revises: None
 Create Date: 2016-11-01 17:52:04.170217
 
 """
 # flake8: noqa
 # revision identifiers, used by Alembic.
-revision = 'da9459a1f71c'
+revision = '001'
 down_revision = None
 
 import ara

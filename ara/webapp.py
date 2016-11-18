@@ -14,9 +14,13 @@
 
 import os
 import logging
+import flask_migrate
 
+from alembic.script import ScriptDirectory
+from alembic.migration import MigrationContext
 from flask import Flask
 from flask import logging as flask_logging
+from sqlalchemy.engine.reflection import Inspector
 
 from ara.models import db
 from ara.filters import configure_template_filters
@@ -27,7 +31,6 @@ import ara.config
 
 
 DEFAULT_APP_NAME = 'ara'
-
 
 views = (
     (ara.views.home, ''),
@@ -81,11 +84,43 @@ def configure_dirs(app):
 
 
 def configure_db(app):
+    """
+    0.10 is the first version of ARA that ships with a stable database schema.
+    We can identify a database that originates from before this by checking if
+    there is an alembic revision available.
+    If there is no alembic revision available, assume we are running the first
+    revision which contains the latest state of the database prior to this.
+    """
     db.init_app(app)
+    log = logging.getLogger(app.logger_name)
 
     if app.config.get('ARA_AUTOCREATE_DATABASE'):
         with app.app_context():
-            db.create_all()
+            migrations = app.config['DB_MIGRATIONS']
+            flask_migrate.Migrate(app, db, directory=migrations)
+            config = app.extensions['migrate'].migrate.get_config(migrations)
+
+            # Verify if the database tables have been created at all
+            inspector = Inspector.from_engine(db.engine)
+            if len(inspector.get_table_names()) == 0:
+                log.info('Initializing new DB from scratch')
+                flask_migrate.upgrade(directory=migrations)
+
+            # Get current alembic head revision
+            script = ScriptDirectory.from_config(config)
+            head = script.get_current_head()
+
+            # Get current revision, if available
+            context = MigrationContext.configure(db.engine)
+            current = context.get_current_revision()
+
+            if not current:
+                log.info('Unstable DB schema, stamping original revision')
+                flask_migrate.stamp(directory=migrations, revision='001')
+
+            if head != current:
+                log.info('DB schema out of date, upgrading')
+                flask_migrate.upgrade(directory=migrations)
 
 
 def configure_logging(app):

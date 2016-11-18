@@ -8,7 +8,7 @@ from ara.models import db
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory=app.config['DB_MIGRATIONS'])
 
 
 @manager.command

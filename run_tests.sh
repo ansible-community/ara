@@ -5,6 +5,7 @@ export PATH=$PATH:/usr/local/sbin:/usr/sbin
 LOGROOT=${WORKSPACE:-/tmp}
 LOGDIR="${LOGROOT}/logs"
 BUILD_DIR="${LOGDIR}/build"
+SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 export ANSIBLE_TMP_DIR="${LOGDIR}/ansible"
 DATABASE="${LOGDIR}/ansible.sqlite"
 
@@ -51,5 +52,12 @@ ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ara generate ${BUILD_DIR} && tree ${BUILD_DIR}
+
+# Database migration tests
+for test_db in $(ls tests/integration/databases/*.sqlite)
+do
+    export ARA_DATABASE="sqlite:///${SCRIPT_DIR}/${test_db}"
+    ara-manage db upgrade
+done
 
 echo "Run complete, logs and build available in ${LOGDIR}"
