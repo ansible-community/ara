@@ -15,20 +15,36 @@
 #
 
 # ARA module specific tests
+# Record text (default)
+- name: Record a k/v pair without type with ara_record
+  ara_record:
+    key: "notype"
+    value: "text"
+
+# Record text, update to url
 - name: Record a k/v pair with ara_record
   ara_record:
     key: "foo"
     value: "bar"
+    type: "text"
 
 - name: Update a k/v pair with ara_record
   ara_record:
     key: "foo"
-    value: "barfoo"
+    value: "http://barfoo"
+    type: "url"
 
+# Record json
 - name: Add another k/v pair with ara_record
   ara_record:
     key: "bar"
-    value: "foo"
+    value: '{ "foo": "bar" }'
+    type: "json"
+
+# Read things
+- name: Read the value of notype
+  ara_read:
+    key: "notype"
 
 - name: Read the value of foo
   ara_read:

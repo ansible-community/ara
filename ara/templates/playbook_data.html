@@ -20,7 +20,7 @@
         {% for item in data %}
         <tr>
           <td id="{{ item.id }}"><a href="#{{ item.id }}">{{ item.key }}</a></td>
-          <td><pre>{{ item.value | to_nice_json }}</pre></td>
+          <td>{{ macros.render_value_type(item.value, item.type) }}</td>
         </tr>
       {% endfor %}
     </tbody>

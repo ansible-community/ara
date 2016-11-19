@@ -14,4 +14,14 @@
 {% endif %}
 </td>
 {% endmacro %}
+
+{% macro render_value_type(value, type) %}
+{% if type == 'json' %}
+    <pre>{{ value |to_nice_json |safe }}</pre>
+{% elif type == 'url' %}
+    <a href="{{ value }}" target="_blank">{{ value }}</a>
+{% else %}
+    <pre>{{ value }}</pre>
+{% endif %}
+{% endmacro %}
 </div>

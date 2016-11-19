@@ -33,6 +33,20 @@ order to register whatever you'd like in a key/value format, for example::
             key: "git_version"
             value: "{{ git_version.stdout }}"
 
+It also supports data types which will have an impact on how the value will be
+displayed in the web interface. The default type if not specified is "text".
+Example usage::
+
+    ---
+    - ara_record:
+        key: "{{ item.key }}"
+        value: "{{ item.value }}"
+        type: "{{ item.type }}"
+      with_items:
+        - { key: "log", value: "error", type: "text" }
+        - { key: "website", value: "http://domain.tld", type: "url" }
+        - { key: "data", value: '{ "key": "value" }', type: "json" }
+
 This data will be recorded inside ARA's database and associated with the
 particular playbook run that was executed.
 

@@ -7,3 +7,4 @@ successfully.
 - 000: Unstable database schema (assumed ~0.9.3)
 - 001: First stable database schema
 - 002: ara_record module data added
+- 003: ara_record type added

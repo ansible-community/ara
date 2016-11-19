@@ -25,6 +25,7 @@ LIST_FIELDS = (
     Field('Playbook ID', 'playbook.id'),
     Field('Playbook Path', 'playbook.path'),
     Field('Key'),
+    Field('Type')
 )
 
 SHOW_FIELDS = (
@@ -32,7 +33,8 @@ SHOW_FIELDS = (
     Field('Playbook ID', 'playbook.id'),
     Field('Playbook Path', 'playbook.path'),
     Field('Key'),
-    Field('Value')
+    Field('Value'),
+    Field('Type')
 )
 
 

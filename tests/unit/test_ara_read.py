@@ -105,7 +105,8 @@ class TestModule(TestCase):
         self.task.async = MagicMock()
         self.task.args = {
             'key': 'test-key',
-            'value': 'test-value'
+            'value': 'test-value',
+            'type': 'text'
         }
 
         action = ara_record.ActionModule(self.task, self.connection,
@@ -170,11 +171,12 @@ class TestModule(TestCase):
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-key')
         self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
 
         self.assertEqual(data['playbook_id'], r_data.playbook_id)
         self.assertEqual(data['key'], r_data.key)
         self.assertEqual(data['value'], r_data.value)
-
+        self.assertEqual(data['type'], r_data.type)
 
     def test_read_record_with_no_key(self):
         """

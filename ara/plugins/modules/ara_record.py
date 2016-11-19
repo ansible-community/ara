@@ -22,12 +22,11 @@
 DOCUMENTATION = '''
 ---
 module: ara_record
-short_description: Ansible module to record data with ARA
+short_description: Ansible module to record persistent data with ARA.
 version_added: "2.0"
 author: "RDO Community <rdo-list@redhat.com>"
 description:
-    - Ansible module to record data with ARA. This module should always be
-      executed wherever the playbook is run from.
+    - Ansible module to record persistent data with ARA.
 options:
     key:
         description:
@@ -37,6 +36,11 @@ options:
         description:
             - Value of the key written to
         required: true
+    type:
+        description:
+            - Type of the key
+        choices: [text, url, json]
+        default: text
 
 requirements:
     - "python >= 2.6"
@@ -57,4 +61,15 @@ EXAMPLES = '''
 - ara_record:
     key: "git_version"
     value: "{{ git_version.stdout }}"
+
+# Write data with a type (otherwise defaults to "text")
+# This changes the behavior on how the value is presented in the web interface
+- ara_record:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    type: "{{ item.type }}"
+  with_items:
+    - { key: "log", value: "error", type: "text" }
+    - { key: "website", value: "http://domain.tld", type: "url" }
+    - { key: "data", value: "{ 'key': 'value' }", type: "json" }
 '''

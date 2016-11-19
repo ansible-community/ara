@@ -55,5 +55,6 @@ EXAMPLES = '''
   with_items:
     - foo.key
     - foo.value
+    - foo.type
     - foo.playbook_id
 '''

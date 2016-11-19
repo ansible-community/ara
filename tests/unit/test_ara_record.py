@@ -140,7 +140,8 @@ class TestModule(TestCase):
         task.async = MagicMock()
         task.args = {
             'key': 'test-key',
-            'value': 'test-value'
+            'value': 'test-value',
+            'type': 'text'
         }
 
         action = ara_record.ActionModule(task, self.connection,
@@ -157,11 +158,11 @@ class TestModule(TestCase):
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-key')
         self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
 
-    def test_update_record(self):
+    def test_create_record_with_no_type(self):
         """
-        Update an existing record by running ara_record a second time on the
-        same key.
+        Create a new record with ara_record with no type specified.
         """
         task = MagicMock(Task)
         task.async = MagicMock()
@@ -184,10 +185,41 @@ class TestModule(TestCase):
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-key')
         self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
+
+    def test_update_record(self):
+        """
+        Update an existing record by running ara_record a second time on the
+        same key.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-key',
+            'value': 'test-value',
+            'type': 'text'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-key').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
 
         task.args = {
             'key': 'test-key',
-            'value': 'another-value'
+            'value': 'http://another-value',
+            'type': 'url'
         }
         action = ara_record.ActionModule(task, self.connection,
                                          self.play_context, loader=None,
@@ -196,7 +228,9 @@ class TestModule(TestCase):
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
                                         key='test-key').one()
-        self.assertEqual(r_data.value, 'another-value')
+
+        self.assertEqual(r_data.value, 'http://another-value')
+        self.assertEqual(r_data.type, 'url')
 
     def test_record_with_no_key(self):
         """

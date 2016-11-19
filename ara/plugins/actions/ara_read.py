@@ -60,6 +60,7 @@ EXAMPLES = '''
   with_items:
     - foo.key
     - foo.value
+    - foo.type
     - foo.playbook_id
 '''
 
@@ -122,12 +123,14 @@ class ActionModule(ActionBase):
             if data:
                 result['key'] = data.key
                 result['value'] = data.value
+                result['type'] = data.type
                 result['playbook_id'] = data.playbook_id
             msg = "Sucessfully read data for the key {0}".format(data.key)
             result['msg'] = msg
         except Exception as e:
             result['key'] = None
             result['value'] = None
+            result['type'] = None
             result['playbook_id'] = None
             result['failed'] = True
             msg = "Could not read data for key {0}: {1}".format(key, str(e))

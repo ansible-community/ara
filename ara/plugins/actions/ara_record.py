@@ -42,6 +42,11 @@ options:
         description:
             - Value of the key written to
         required: true
+    type:
+        description:
+            - Type of the key
+        choices: [text, url, json]
+        default: text
 
 requirements:
     - "python >= 2.6"
@@ -62,6 +67,17 @@ EXAMPLES = '''
 - ara_record:
     key: "git_version"
     value: "{{ git_version.stdout }}"
+
+# Write data with a type (otherwise defaults to "text")
+# This changes the behavior on how the value is presented in the web interface
+- ara_record:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+    type: "{{ item.type }}"
+  with_items:
+    - { key: "log", value: "error", type: "text" }
+    - { key: "website", value: "http://domain.tld", type: "url" }
+    - { key: "data", value: "{ 'key': 'value' }", type: "json" }
 '''
 
 
@@ -69,19 +85,22 @@ class ActionModule(ActionBase):
     ''' Record persistent data as key/value pairs in ARA '''
 
     TRANSFERS_FILES = False
-    VALID_ARGS = frozenset(('key', 'value'))
+    VALID_ARGS = frozenset(('key', 'value', 'type'))
+    VALID_TYPES = ['text', 'url', 'json']
 
-    def create_or_update_key(self, playbook_id, key, value):
+    def create_or_update_key(self, playbook_id, key, value, type):
         try:
             data = (models.Data.query
                     .filter_by(key=key)
                     .filter_by(playbook_id=playbook_id)
                     .one())
             data.value = value
+            data.type = type
         except models.NoResultFound:
             data = models.Data(playbook_id=playbook_id,
                                key=key,
-                               value=value)
+                               value=value,
+                               type=type)
         db.session.add(data)
         db.session.commit()
 
@@ -110,13 +129,23 @@ class ActionModule(ActionBase):
 
         key = self._task.args.get('key', None)
         value = self._task.args.get('value', None)
+        type = self._task.args.get('type', 'text')
 
         required = ['key', 'value']
         for parameter in required:
             if not self._task.args.get(parameter):
                 result['failed'] = True
-                result['msg'] = "{} parameter is required".format(parameter)
+                result['msg'] = "Parameter '{0}' is required".format(parameter)
                 return result
+
+        if type not in self.VALID_TYPES:
+            result['failed'] = True
+            msg = "Type '{0}' is not supported, choose one of: {1}".format(
+                type,
+                ", ".join(self.VALID_TYPES)
+            )
+            result['msg'] = msg
+            return result
 
         # Retrieve the persisted playbook_id from tmpfile
         tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
@@ -125,7 +154,7 @@ class ActionModule(ActionBase):
         playbook_id = data['playbook']['id']
 
         try:
-            self.create_or_update_key(playbook_id, key, value)
+            self.create_or_update_key(playbook_id, key, value, type)
             result['msg'] = "Data recorded in ARA for this playbook."
         except Exception as e:
             result['failed'] = True

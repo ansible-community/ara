@@ -166,7 +166,7 @@
           {% for item in data %}
           <tr>
             <td>{{ macros.make_link('playbook.playbook_data', item.key, playbook=playbook.id, _anchor=item.id) }}</td>
-            <td>{{ item.value }}</td>
+            <td>{{ macros.render_value_type(item.value, item.type) }}</td>
           </tr>
           {% endfor %}
         </tbody>
