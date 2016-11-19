@@ -116,7 +116,8 @@ def configure_db(app):
 
             if not current:
                 log.info('Unstable DB schema, stamping original revision')
-                flask_migrate.stamp(directory=migrations, revision='001')
+                flask_migrate.stamp(directory=migrations,
+                                    revision='da9459a1f71c')
 
             if head != current:
                 log.info('DB schema out of date, upgrading')
