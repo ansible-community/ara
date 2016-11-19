@@ -408,7 +408,7 @@ class Data(db.Model):
     id = std_pkey()
     playbook_id = std_fkey('playbooks.id')
     key = db.Column(db.String(255))
-    value = db.Column(db.Text(16777215))
+    value = db.Column(CompressedText((2 ** 32) - 1))
 
     def __repr__(self):
         return '<Data %s:%s>' % (self.data.playbook_id, self.data.key)
