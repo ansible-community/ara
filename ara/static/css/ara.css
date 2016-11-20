@@ -1,11 +1,3 @@
-/* Push pre a href anchors further down so their destination is not hidden by the top navigation bar */
-pre a:before {
-  display: block;
-  content: " ";
-  margin-top: -64px;
-  height: 64px;
-  visibility: hidden;
-}
 /* Colors for highlighted line */
 .hll {
     background-color: #39a5dc;
