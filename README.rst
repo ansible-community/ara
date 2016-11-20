@@ -6,16 +6,18 @@ ARA_ records Ansible_ Playbook runs seemlessly to make them easier to
 visualize, understand and troubleshoot. It integrates with Ansible wherever you
 run it.
 
-ARA is three things:
+ARA provides four things:
 
-1. An `Ansible callback plugin`_ to record playbook runs into a local or remote
-   database
-2. A `CLI client`_
-3. A `dynamic, database-driven web interface`_ that can also be `generated and served from static files`_
+1. An `Ansible callback plugin`_ to record playbook runs into a local or remote database
+2. The ara_record_ and ara_read_ pair of Ansible modules to record and read persistent data with ARA
+3. A `CLI client`_ to query the database
+4. A `dynamic, database-driven web interface`_ that can also be `generated and served from static files`_
 
 .. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
 .. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
+.. _ara_record: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
+.. _ara_read: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
 .. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
 .. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-version-of-the-web-application
