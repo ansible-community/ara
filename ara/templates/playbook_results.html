@@ -16,8 +16,10 @@
     <div class="col-xs-12 col-sm-6 col-md-2 col-md-offset-1">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
+          <a href="#hosts">
           <span class="pficon pficon-server"></span>
           <span class="card-pf-aggregate-status-count">{{ playbook.hosts.count() }}</span> <strong>Hosts</strong>
+          </a>
         </h2>
       </div>
     </div>
@@ -25,8 +27,10 @@
     <div class="col-xs-12 col-sm-6 col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
+          <a href="#plays">
           <span class="pficon pficon-flag"></span>
           <span class="card-pf-aggregate-status-count">{{ playbook.plays.count() }}</span> <strong>Plays</strong>
+          </a>
         </h2>
       </div>
     </div>
@@ -34,8 +38,10 @@
     <div class="col-xs-12 col-sm-6 col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
+          <a href="#tasks">
           <span class="fa fa-check"></span>
           <span class="card-pf-aggregate-status-count">{{ playbook.tasks.count() }}</span> <strong>Tasks</strong>
+          </a>
         </h2>
       </div>
     </div>
@@ -63,7 +69,7 @@
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
-      <h2><strong>Statistics</strong></h2>
+      <a href="#hosts"><h2 id="hosts"><strong>Hosts</strong></h2></a>
       <table class="stats table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
@@ -89,11 +95,11 @@
         </tbody>
       </table>
 
-      <h2><strong>Tasks Results</strong></h2>
+      <a href="#tasks"><h2 id="tasks"><strong>Tasks Results</strong></h2></a>
       <table class="results table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
-            <th>Offset from playbook</th>
+            <th>Elapsed</th>
             <th>Duration</th>
             <th>Host</th>
             <th>Task</th>

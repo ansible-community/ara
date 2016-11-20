@@ -21,7 +21,7 @@ pre {
     font-size: 90%;
     font-family: monospace;
     display: inline-block;
-    width: 8em;
+    width: 7.5em;
 }
 
 .failed, .unreachable {
@@ -56,6 +56,10 @@ ol.breadcrumb {
 td a {
     width:100%;;
     font-weight: bold;
+}
+
+.date {
+    white-space: nowrap;
 }
 
 .summary table, .summary th, .summary td {

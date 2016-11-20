@@ -21,9 +21,9 @@
         <tbody>
             {% for playbook in playbooks %}
             <tr>
-              <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate(60),
+              <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate(35),
                 playbook=playbook.id) }}</td>
-              <td>{{ playbook.time_start |datefmt }}</td>
+              <td class="date">{{ playbook.time_start |datefmt }}</td>
               <td>{{ playbook.hosts|list|length }}</td>
               <td>{{ stats[playbook.id].ok }}</td>
               <td>{{ stats[playbook.id].changed }}</td>
