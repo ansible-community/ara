@@ -43,4 +43,5 @@ Installing ARA from latest release on PyPi
 ------------------------------------------
 ::
 
+    pip install pbr
     pip install ara
