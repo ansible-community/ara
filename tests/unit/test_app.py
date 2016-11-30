@@ -29,11 +29,6 @@ class TestApp(TestCase):
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
 
-    def test_list_host(self):
-        ansible_run()
-        res = self.client.get('/host/')
-        self.assertEqual(res.status_code, 200)
-
     def test_list_playbook(self):
         ansible_run()
         res = self.client.get('/playbook/')
@@ -70,117 +65,61 @@ class TestApp(TestCase):
 
     def test_show_playbook_results_host(self):
         ctx = ansible_run()
-        res = self.client.get('/playbook/{}/results/{}/'.format(
+        res = self.client.get('/playbook/{}/host/{}/'.format(
             ctx['playbook'].id,
             ctx['host'].name))
         self.assertEqual(res.status_code, 200)
 
     def test_show_playbook_results_host_status(self):
         ctx = ansible_run()
-        res = self.client.get('/playbook/{}/results/{}/ok/'.format(
+        res = self.client.get('/playbook/{}/host/{}/ok/'.format(
             ctx['playbook'].id,
             ctx['host'].name))
         self.assertEqual(res.status_code, 200)
 
+    def test_show_playbook_results_play(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}/play/{}/'.format(
+            ctx['playbook'].id,
+            ctx['play'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_playbook_results_task(self):
+        ctx = ansible_run()
+        res = self.client.get('/playbook/{}/task/{}/'.format(
+            ctx['playbook'].id,
+            ctx['task'].id))
+        self.assertEqual(res.status_code, 200)
+
     def test_show_playbook_results_missing(self):
-        ctx = ansible_run()
-        res = self.client.get('/playbook/foo/results/'.format(
-            ctx['playbook'].id))
-        self.assertEqual(res.status_code, 404)
-
-    def test_show_play(self):
-        ctx = ansible_run()
-        res = self.client.get('/play/{}/'.format(
-            ctx['play'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_play_missing(self):
-        ctx = ansible_run()
-        res = self.client.get('/play/foo/'.format(
-            ctx['play'].id))
-        self.assertEqual(res.status_code, 404)
-
-    @pytest.mark.incomplete
-    def test_show_play_incomplete(self):
-        ctx = ansible_run(complete=False)
-        res = self.client.get('/play/{}/'.format(
-            ctx['play'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_task(self):
-        ctx = ansible_run()
-        res = self.client.get('/task/{}/'.format(
-            ctx['task'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_task_host(self):
-        ctx = ansible_run()
-        res = self.client.get('/task/{}/?host={}'.format(
-            ctx['task'].id,
-            ctx['host'].name))
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('<td><a href="/host/{id}/">{host}</a></td>'.format(
-            id=ctx['host'].id, host=ctx['host'].name), res.get_data())
-
-    def test_show_task_status(self):
-        ctx = ansible_run()
-        res = self.client.get('/task/{}/?status=ok'.format(
-            ctx['task'].id))
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('<td><a href="/host/{id}/">{host}</a></td>'.format(
-            id=ctx['host'].id, host=ctx['host'].name), res.get_data())
-
-    def test_show_task_missing(self):
         ansible_run()
-        res = self.client.get('/task/foo/')
+        res = self.client.get('/playbook/foo/results/')
         self.assertEqual(res.status_code, 404)
 
-    @pytest.mark.incomplete
-    def test_show_task_incomplete(self):
-        ctx = ansible_run(complete=False)
-        res = self.client.get('/task/{}/'.format(
-            ctx['task'].id))
-        self.assertEqual(res.status_code, 200)
-
-    @pytest.mark.skip(reason='host functionality currently in flux')
     def test_show_host(self):
         ctx = ansible_run()
-        res = self.client.get('/host/{}/'.format(
-            ctx['host'].name))
+        res = self.client.get('/host/{}/'.format(ctx['host'].id))
         self.assertEqual(res.status_code, 200)
 
-    @pytest.mark.skip(reason='host functionality currently in flux')
     def test_show_host_missing(self):
         ansible_run()
         res = self.client.get('/host/foo/')
         self.assertEqual(res.status_code, 404)
 
-    @pytest.mark.skip(reason='host functionality currently in flux')
-    def test_show_host_facts(self):
-        ctx = ansible_run()
-        res = self.client.get('/host/{}/facts/'.format(
-            ctx['host'].name))
-        self.assertEqual(res.status_code, 200)
-
-    @pytest.mark.skip(reason='host functionality currently in flux')
     def test_show_host_exists_facts_missing(self):
         ctx = ansible_run(gather_facts=False)
-        res = self.client.get('/host/{}/facts/'.format(
-            ctx['host'].name))
+        res = self.client.get('/host/{}/'.format(ctx['host'].id))
         self.assertEqual(res.status_code, 404)
 
-    @pytest.mark.skip(reason='host functionality currently in flux')
     def test_show_host_missing_facts_missing(self):
         ansible_run()
-        res = self.client.get('/host/foo/facts/')
+        res = self.client.get('/host/foo/')
         self.assertEqual(res.status_code, 404)
 
-    @pytest.mark.skip(reason='host functionality currently in flux')
     @pytest.mark.incomplete
     def test_show_host_incomplete(self):
         ctx = ansible_run(complete=False)
-        res = self.client.get('/host/{}/'.format(
-            ctx['host'].name))
+        res = self.client.get('/host/{}/'.format(ctx['host'].id))
         self.assertEqual(res.status_code, 200)
 
     def test_show_result(self):

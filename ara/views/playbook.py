@@ -26,6 +26,15 @@ def show_playbook(playbook, file_=None):
              .filter(models.Play.playbook_id == playbook.id)
              .order_by(models.Play.sortkey))
 
+    playbook_file = (models.File.query
+                     .filter(models.File.playbook_id == playbook.id)
+                     .filter(models.File.is_playbook.is_(True))).one()
+
+    files = (models.File.query
+             .filter(models.File.playbook_id == playbook.id)
+             .filter(models.File.is_playbook.is_(False))
+             .order_by(models.File.path))
+
     tasks = (models.Task.query
              .filter(models.Task.playbook_id == playbook.id)
              .order_by(models.Task.sortkey))
@@ -34,6 +43,9 @@ def show_playbook(playbook, file_=None):
         data = (models.Data.query
                 .filter(models.Data.playbook_id == playbook.id)
                 .order_by(models.Data.key))
+        # If there are no results, don't return an empty query
+        if not data.count():
+            data = None
     except models.NoResultFound:
         data = None
 
@@ -49,31 +61,69 @@ def show_playbook(playbook, file_=None):
     return render_template('playbook.html',
                            playbook=playbook,
                            plays=plays,
+                           playbook_file=playbook_file,
+                           files=files,
                            tasks=tasks,
                            data=data,
                            file_=file_)
 
 
 @playbook.route('/<playbook>/results/')
-@playbook.route('/<playbook>/results/<host>/')
-@playbook.route('/<playbook>/results/<host>/<status>/')
-def playbook_results(playbook, host=None, status=None):
+@playbook.route('/<playbook>/host/<host>/')
+@playbook.route('/<playbook>/host/<host>/<status>/')
+@playbook.route('/<playbook>/play/<play>/')
+@playbook.route('/<playbook>/task/<task>/')
+def playbook_results(playbook, host=None, play=None, task=None, status=None):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
         abort(404)
 
     task_results = (models.TaskResult.query
                     .join(models.Task)
+                    .join(models.Play)
                     .join(models.Host)
                     .join(models.Playbook)
                     .filter(models.Playbook.id == playbook.id)
                     .order_by(models.TaskResult.time_start))
 
+    hosts = None
     host = host or request.args.get('host')
     if host is not None:
         hosts = [str(h) for h in host.split(',')]
         task_results = (task_results
                         .filter(models.Host.name.in_(hosts)))
+
+    plays = None
+    play = play or request.args.get('play')
+    if play is not None:
+        plays = [str(h) for h in play.split(',')]
+        task_results = (task_results
+                        .filter(models.Play.id.in_(plays)))
+
+    playbook_file = (models.File.query
+                     .filter(models.File.playbook_id == playbook.id)
+                     .filter(models.File.is_playbook.is_(True))).one()
+
+    files = (models.File.query
+             .filter(models.File.playbook_id == playbook.id)
+             .filter(models.File.is_playbook.is_(False))
+             .order_by(models.File.path))
+
+    task = task or request.args.get('task')
+    if task is not None:
+        tasks = [str(h) for h in task.split(',')]
+        task_results = (task_results
+                        .filter(models.Task.id.in_(tasks)))
+
+    try:
+        data = (models.Data.query
+                .filter(models.Data.playbook_id == playbook.id)
+                .order_by(models.Data.key))
+        # If there are no results, don't return an empty query
+        if not data.count():
+            data = None
+    except models.NoResultFound:
+        data = None
 
     # LKS: We're filtering this with Python rather than SQL.  This
     # may become relevant if we implement result paging.
@@ -84,16 +134,10 @@ def playbook_results(playbook, host=None, status=None):
                         if res.derived_status in status)
 
     return render_template('playbook_results.html',
+                           hosts=hosts,
+                           plays=plays,
+                           files=files,
+                           data=data,
                            playbook=playbook,
+                           playbook_file=playbook_file,
                            task_results=task_results)
-
-
-@playbook.route('/<playbook>/data/')
-def playbook_data(playbook):
-    data = (models.Data.query
-            .filter(models.Data.playbook_id == playbook)
-            .order_by(models.Data.key))
-
-    return render_template('playbook_data.html',
-                           playbook=playbook,
-                           data=data)

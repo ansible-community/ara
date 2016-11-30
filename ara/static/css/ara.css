@@ -1,7 +1,30 @@
-/* Colors for highlighted line */
+/* Color for highlighted line */
 .hll {
     background-color: #39a5dc;
     color: white;
+}
+
+table.table.table-striped tr.active {
+    /*
+    This doesn't actually work as intended, it doesn't set the actual color...
+    But it still changes the row's color to highlight it, let's fix it later.
+    */
+    background-color: blue;
+}
+
+.action-icon {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 6px;
+    padding-right: 12px;
+}
+
+.action-available {
+    color: #008000;
+}
+
+.action-unavailable {
+    color: #000000;
 }
 
 /* Wrap pre tags so they don't print endlessly horizontally */
@@ -37,20 +60,13 @@ pre {
     background-color: #9d8000;
 }
 
-/* Breadcrumb styling */
-ol.breadcrumb {
-    font-size: 125%;
-    font-family: monospace;
-}
-
-.breadcrumb > li + li:before {
-    content: ">> ";
-    padding: 0 2px;
-}
-
 /* Table styling */
 .table th {
     font-size: 120%;
+}
+
+.table table, .table th, .table td {
+    text-align: center;
 }
 
 td a {
@@ -58,34 +74,10 @@ td a {
     font-weight: bold;
 }
 
-.date {
+.date td {
     white-space: nowrap;
 }
 
-.summary table, .summary th, .summary td {
-    text-align: center;
-}
-
-.stats table, .stats th, .stats td {
-    text-align: center;
-}
-
-.plays table, .plays th, .plays td {
-    text-align: center;
-}
-
-.tasks table, .tasks th, .tasks td {
-    text-align: center;
-}
-
-.results table, .results th, .results td {
-    text-align: center;
-}
-
-.list table, .list th, .list td {
-    text-align: center;
-}
-
-.facts table, .facts th, .facts td {
-    text-align: center;
+.table tbody>tr>td.vert-align{
+    vertical-align: middle;
 }

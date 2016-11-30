@@ -4,7 +4,9 @@
 <!-- Header container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1">
+    <div class="col-md-10 col-md-offset-1">
+      <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', file_.playbook.path, playbook=file_.playbook.id) }}</h1>
+      <h2>{{ file_.playbook.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ file_.playbook.time_end |datefmt }}</h2>
       <h1><strong>File</strong>: {{ file_.path }}</h1>
     </div>
   </div>
@@ -12,7 +14,7 @@
 <!-- Detail container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1">
+    <div class="col-md-11 col-md-offset-1">
       <h1><strong>Contents</strong></h1>
       {{ file_.content.content |yamlhighlight |safe }}
     </div>

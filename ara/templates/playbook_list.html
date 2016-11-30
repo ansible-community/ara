@@ -3,28 +3,31 @@
 {% block content %}
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+    <div class="col-md-10 col-md-offset-1">
       <h1><strong>All Playbooks</strong></h1>
-      <table class="list table table-striped table-bordered table-hover table-condensed">
+      <table class="table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
             <th>Playbook</th>
-            <th>Executed</th>
-            <th>Hosts</th>
-            <th><span class="ok label status-label">OK</span></th>
-            <th><span class="changed label status-label">CHANGED</span></th>
-            <th><span class="failed label status-label">FAILED</span></th>
-            <th><span class="skipped label status-label">SKIPPED</span></th>
-            <th><span class="unreachable label status-label">UNREACHABLE</span></th>
+            <th class="col-md-1">Hosts</th>
+            <th class="date col-md-2">Date</th>
+            <th class="date col-md-1">Duration</th>
+            <th class="col-md-1"><span class="ok label status-label">OK</span></th>
+            <th class="col-md-1"><span class="changed label status-label">CHANGED</span></th>
+            <th class="col-md-1"><span class="failed label status-label">FAILED</span></th>
+            <th class="col-md-1"><span class="skipped label status-label">SKIPPED</span></th>
+            <th class="col-md-1"><span class="unreachable label status-label">UNREACHABLE</span></th>
           </tr>
         </thead>
         <tbody>
             {% for playbook in playbooks %}
             <tr>
-              <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate(35),
-                playbook=playbook.id) }}</td>
-              <td class="date">{{ playbook.time_start |datefmt }}</td>
+              <td>
+                  <span class="pull-left">{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate(35), playbook=playbook.id) }}</span>
+              </td>
               <td>{{ playbook.hosts|list|length }}</td>
+              <td>{{ playbook.time_start |datefmt }}</td>
+              <td>{{ playbook.duration |timefmt }}</td>
               <td>{{ stats[playbook.id].ok }}</td>
               <td>{{ stats[playbook.id].changed }}</td>
               <td>{{ stats[playbook.id].failed }}</td>

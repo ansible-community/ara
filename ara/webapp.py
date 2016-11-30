@@ -37,8 +37,6 @@ views = (
     (ara.views.file, '/file'),
     (ara.views.playbook, '/playbook'),
     (ara.views.host, '/host'),
-    (ara.views.play, '/play'),
-    (ara.views.task, '/task'),
     (ara.views.result, '/result'),
 )
 

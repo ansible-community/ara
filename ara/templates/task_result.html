@@ -24,14 +24,15 @@
     <pre>{{ result |to_nice_json |safe }}</pre>
   {% endif %}
 {% endmacro %}
-
-{% block content %}
 <!-- Header container -->
+{% block content %}
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
-      <h1><strong>Task result details</strong></h1>
+    <div class="col-md-10 col-md-offset-1">
+      <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', task_result.task.playbook.path, playbook=task_result.task.playbook.id) }}</h1>
       <h2>{{ task_result.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ task_result.time_end |datefmt }}</h2>
+      <h1><strong>Task</strong>: {{ task_result.task.name }}</h1>
+      <h1><strong>Host</strong>: {{ task_result.host.name }}</h1>
     </div>
   </div>
 </div>
@@ -40,7 +41,7 @@
   <div class="row row-cards-pf">
     <div class="col-md-1"></div>
     {% if task_result.task.file %}
-    <div class="col-xs-12 col-sm-6 col-md-2">
+    <div class="col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="pficon pficon-folder-open"></span>
@@ -51,7 +52,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-2">
+    <div class="col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="fa fa-search"></span>
@@ -63,7 +64,7 @@
     </div>
     {% endif %}
 
-    <div class="col-xs-12 col-sm-6 col-md-2">
+    <div class="col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="fa pficon-info"></span>
@@ -72,7 +73,7 @@
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-6 col-md-2">
+    <div class="col-md-2">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
         <h2 class="card-pf-title" style="height: 42px;">
           <span class="fa fa-clock-o"></span>
@@ -85,7 +86,7 @@
 <!-- Detail container -->
 <div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
+    <div class="col-md-10 col-md-offset-1">
       <h2><strong>Task result information</strong></h2>
       {% set result = task_result.result|from_json %}
 

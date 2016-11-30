@@ -32,6 +32,9 @@ def ansible_run(complete=True, gather_facts=True, ara_record=False):
     '''
 
     playbook = m.Playbook(path='testing.yml')
+    playbook_file = m.File(path=playbook.path,
+                           playbook=playbook,
+                           is_playbook=True)
     play = m.Play(playbook=playbook, name='test play')
     host = m.Host(name='host-%04d' % random.randint(0, 9999),
                   playbook=playbook)
@@ -48,6 +51,7 @@ def ansible_run(complete=True, gather_facts=True, ara_record=False):
     ctx = dict(
         playbook=playbook,
         play=play,
+        file=playbook_file,
         task=task,
         host=host,
         result=result)

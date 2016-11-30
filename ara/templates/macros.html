@@ -6,7 +6,7 @@
 
 {% macro statslink(stats, stat, playbook, host) %}
 <td>
-{% if stats[stat] >= 1 -%}
+{% if stats[stat] and stats[stat] >= 1 -%}
 {{ make_link('playbook.playbook_results', stats[stat],
    playbook=playbook.id, host=host.name, status=stat) }}
 {% else -%}
