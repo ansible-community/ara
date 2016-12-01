@@ -22,13 +22,53 @@ ARA provides four things:
 
 What does the web interface look like ?
 ---------------------------------------
-A video is available on YouTube_ and the following are screenshots of the
-web interface:
+A video is available on YouTube_, featuring playbook runs from the
+OpenStack-Ansible_ project.
+
+.. _YouTube: https://www.youtube.com/watch?v=zT1l-rFne-Q
+.. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
+
+Otherwise, here's some screenshots highlighting some of ARA's features:
+
+Playbook listing
+~~~~~~~~~~~~~~~~
+List either all recorded playbooks or only the most recent ones:
 
 .. image:: _static/preview1.png
+
+Playbook results
+~~~~~~~~~~~~~~~~
+Filter your playbook results by host, play, task, status, file and more:
+
 .. image:: _static/preview2.png
 
-.. _YouTube: https://www.youtube.com/watch?v=k3qtgSFzAHI
+Detailed task results
+~~~~~~~~~~~~~~~~~~~~~
+If necessary, dig into the full readable details of your tasks as if Ansible
+was *way* too verbose:
+
+.. image:: _static/preview3.png
+
+Recorded host facts
+~~~~~~~~~~~~~~~~~~~
+If you're gathering facts throughout your playbooks, ARA will pick those up
+and make them available:
+
+.. image:: _static/preview4.png
+
+Full playbook and task files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ARA will store the full playbook file as well as your standalone or role task
+files so you can see exactly what run:
+
+.. image:: _static/preview5.png
+
+Arbitrarily recorded data
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The ara_record_ and ara_read_ built-in Ansible modules allow you to write and
+read arbitrary data, making them available in the web interface as well:
+
+.. image:: _static/preview6.png
 
 Why is ARA being developed ?
 ----------------------------
