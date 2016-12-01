@@ -73,7 +73,7 @@ While the features provided by Tower and other products are definitely nice,
 the scope of ARA is kept narrow on purpose.
 By doing so, ARA remains a relatively simple application that is very easy to
 install and configure. It does not require any changes to your setup or
-workflow, it adds itself in transparently and seemlessly.
+workflow, it adds itself in transparently and seamlessly.
 
 .. _Ansible Tower: https://www.ansible.com/tower
 .. _Semaphore: https://github.com/ansible-semaphore/semaphore

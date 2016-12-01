@@ -2,7 +2,7 @@ ARA: Ansible Run Analysis
 =========================
 tl;dr
 -----
-ARA_ records Ansible_ Playbook runs seemlessly to make them easier to
+ARA_ records Ansible_ Playbook runs seamlessly to make them easier to
 visualize, understand and troubleshoot. It integrates with Ansible wherever you
 run it.
 
