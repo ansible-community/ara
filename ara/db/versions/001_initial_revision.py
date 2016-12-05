@@ -23,7 +23,7 @@ def upgrade():
     )
     op.create_table('playbooks',
     sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('path', sa.Text(), nullable=True),
+    sa.Column('path', sa.String(255), nullable=True),
     sa.Column('time_start', sa.DateTime(), nullable=True),
     sa.Column('time_end', sa.DateTime(), nullable=True),
     sa.Column('complete', sa.Boolean(), nullable=True),
@@ -32,7 +32,7 @@ def upgrade():
     op.create_table('files',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('playbook_id', sa.String(length=36), nullable=True),
-    sa.Column('path', sa.String(length=3000), nullable=True),
+    sa.Column('path', sa.String(length=255), nullable=True),
     sa.Column('content_id', sa.String(length=40), nullable=True),
     sa.Column('is_playbook', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['content_id'], ['file_contents.id'], ),

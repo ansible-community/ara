@@ -137,7 +137,7 @@ class Playbook(db.Model, TimedEntity):
     __tablename__ = 'playbooks'
 
     id = std_pkey()
-    path = db.Column(db.Text)
+    path = db.Column(db.String(255))
     data = one_to_many('Data', backref='playbook')
     files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')
@@ -172,7 +172,7 @@ class File(db.Model):
     # limited to a maximum key length of 3072 bytes.  This
     # restrictions stems from the fact that we are using this column in
     # a UNIQUE constraint.
-    path = db.Column(db.String(3000))
+    path = db.Column(db.String(255))
     content = many_to_one('FileContent', backref='files')
     content_id = db.Column(db.String(40),
                            db.ForeignKey('file_contents.id'))
