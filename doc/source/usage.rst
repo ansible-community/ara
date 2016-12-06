@@ -276,16 +276,15 @@ artifacts of the jobs, allowing you to browse the results in-place.
 The ARA CLI client provides a command to generate a static version::
 
     $ ara help generate
-    usage: ara generate [-h] --path <path>
+    usage: ara generate [-h] <path>
+      <path>                Path where the static files will be built in
 
     Generates a static tree of the web application
 
     optional arguments:
       -h, --help            show this help message and exit
-      --path <path>, -p <path>
-                            Path where the static files will be built in
 
-    $ ara generate --path /tmp/build/
+    $ ara generate /tmp/build/
     Generating static files at /tmp/build/...
     Done.
     $ tree /tmp/build/
