@@ -1,19 +1,23 @@
 Configuration
 =============
+
 Ansible
 -------
+
 To use ARA, you'll first need to set up Ansible to use the ARA callback_.
 
 The callback comes provided when installing ARA but you need to let Ansible
 know where it is located.
 
-.. warning:: Prior to version 0.9.2 of ARA, the path to the ARA callback plugin
-             was at ``ara/callback``.
-             This path has since then been deprecated and moved to
-             ``ara/plugins/callbacks``.
+.. warning::
+
+   Prior to version 0.9.2 of ARA, the path to the ARA callback plugin
+   was at ``ara/callback``. This path has since then been deprecated and
+   moved to ``ara/plugins/callbacks``.
 
 Using ansible.cfg
 ~~~~~~~~~~~~~~~~~
+
 Set up your `ansible.cfg`_ file to seek that callback in the appropriate
 directory. If you are not sure where ARA will end up being installed, here's
 an example that covers most common locations::
@@ -29,6 +33,7 @@ an example that covers most common locations::
 
 Using environment variable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Ansible, like ARA, is able to load configuration from looking up specific
 `environment variables`_.
 
@@ -41,6 +46,7 @@ You can make Ansible look for the ARA callback using the
 
 ARA
 ---
+
 ARA uses the same mechanism and configuration files as Ansible to retrieve it's
 configuration. It comes with sane defaults that can be customized if need be.
 
@@ -57,12 +63,15 @@ the ara namespace, as follows::
     [ara]
     variable = value
 
-.. note:: The callback, CLI client and web application all share the same
-          settings. For example, if you configure the database location, all
-          three will use that location.
+.. note::
+
+   The callback, CLI client and web application all share the same
+   settings. For example, if you configure the database location, all
+   three will use that location.
 
 Parameters and their defaults
 -----------------------------
+
 +-------------------------------+--------------------------+-------------------------------------------+
 | Environment variable          | ansible.cfg variable     | Default value                             |
 +===============================+==========================+===========================================+
@@ -83,11 +92,13 @@ Parameters and their defaults
 
 ARA_DIR
 ~~~~~~~
+
 Base directory where ARA will store it's log file and sqlite database, unless
 specified otherwise.
 
 ARA_DATABASE
 ~~~~~~~~~~~~
+
 ARA records Ansible data in a database.
 The callback, the CLI client and the web application all need to know where
 that database is located.
@@ -112,27 +123,33 @@ And then setup the database connection::
 
 ARA_LOG
 ~~~~~~~
+
 Path to the logfile to store ARA logs in.
 
 ARA_LOG_LEVEL
 ~~~~~~~~~~~~~
+
 The loglevel to adjust debug or verbosity.
 
 ARA_LOG_FORMAT
 ~~~~~~~~~~~~~~
+
 The log format of the logs.
 
 ARA_SQL_DEBUG
 ~~~~~~~~~~~~~
+
 Enables the SQLAlchemy echo verbose mode.
 
 ARA_IGNORE_MIMETYPE_WARNINGS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Whether or not to ignore mimetype warnings when generating the static version
 of the ARA web application.
 
 The CLI client and the web application
 --------------------------------------
+
 The CLI client and the web application do not need to be run on the same
 machine that Ansible is executed from but they do need a database and know it's
 location.

@@ -1,5 +1,6 @@
 Usage
 =====
+
 Once ARA is installed_ and configured_, you're ready to use it!
 
 .. _installed: installation.html
@@ -7,6 +8,7 @@ Once ARA is installed_ and configured_, you're ready to use it!
 
 Using the callback
 ------------------
+
 The callback is executed by Ansible automatically once the path is set properly
 in the ``callback_plugins`` Ansible configuration.
 
@@ -15,6 +17,7 @@ exist and will be used automatically.
 
 Using the ara_record module
 ---------------------------
+
 ARA comes with a built-in Ansible module called ``ara_record``.
 
 This module can be used as an action for a task in your Ansible playbooks in
@@ -55,6 +58,7 @@ recorded values.
 
 Using the ara_read module
 -------------------------
+
 ARA comes with a built-in Ansible module called ``ara_read`` that can read data
 that was previously recorded with ``ara_record`` within the same playbook run.
 
@@ -88,6 +92,7 @@ re-used across plays or roles if necessary, for example::
 
 Looking at the data
 -------------------
+
 Once you've run ansible-playbook at least once, the database will be populated
 with data::
 
@@ -108,6 +113,7 @@ with data::
 
 Querying the database with the CLI
 ----------------------------------
+
 ARA provides a CLI client to query the database.
 
 Example commands::
@@ -212,6 +218,7 @@ Example commands::
 
 Browsing the web interface
 --------------------------
+
 The frontend is a visualization of the data recorded in the database.
 
 The interface provided by ARA provides is a simple Flask application.
@@ -255,6 +262,7 @@ bundled with ARA::
 
 Generating a static version of the web application
 --------------------------------------------------
+
 ARA is able to generate a static html version of it's dynamic, database-driven
 web application.
 

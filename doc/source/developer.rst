@@ -1,11 +1,14 @@
 Developer notes and documentation
 =================================
+
 ARA static files and assets
 ---------------------------
+
 This documents the files and assets ARA uses in it's web application.
 
 Patternfly CSS, JS and Fonts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ARA uses the Patternfly_ CSS framework.
 The current version of Patternfly is `3.12.0`_.
 
@@ -18,6 +21,7 @@ The Patternfly assets are imported directly from
 
 jquery.matchHeight
 ~~~~~~~~~~~~~~~~~~
+
 Patternfly's vertical navigation needs the `jquery.matchHeight`_ library.
 The version of jquery.matchHeight is currently `0.7.0`_.
 
@@ -29,6 +33,7 @@ This is imported directly from the `jquery.matchHeight source`_.
 
 Bootstrap JS
 ~~~~~~~~~~~~
+
 Patternfly leverages Bootstrap_ and requires bootstrap.js.
 The current version of Bootstrap is `3.3.7`_.
 

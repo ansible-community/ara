@@ -1,7 +1,9 @@
 FAQ
 ===
+
 What is ARA ?
 -------------
+
 ARA_ makes Ansible_ runs easier to visualize, understand and troubleshoot.
 
 ARA provides four things:
@@ -22,6 +24,7 @@ ARA provides four things:
 
 What does the web interface look like ?
 ---------------------------------------
+
 A video is available on YouTube_, featuring playbook runs from the
 OpenStack-Ansible_ project.
 
@@ -32,18 +35,21 @@ Otherwise, here's some screenshots highlighting some of ARA's features:
 
 Playbook listing
 ~~~~~~~~~~~~~~~~
+
 List either all recorded playbooks or only the most recent ones:
 
 .. image:: _static/preview1.png
 
 Playbook results
 ~~~~~~~~~~~~~~~~
+
 Filter your playbook results by host, play, task, status, file and more:
 
 .. image:: _static/preview2.png
 
 Detailed task results
 ~~~~~~~~~~~~~~~~~~~~~
+
 If necessary, dig into the full readable details of your tasks as if Ansible
 was *way* too verbose:
 
@@ -51,6 +57,7 @@ was *way* too verbose:
 
 Recorded host facts
 ~~~~~~~~~~~~~~~~~~~
+
 If you're gathering facts throughout your playbooks, ARA will pick those up
 and make them available:
 
@@ -58,6 +65,7 @@ and make them available:
 
 Full playbook and task files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ARA will store the full playbook file as well as your standalone or role task
 files so you can see exactly what run:
 
@@ -65,6 +73,7 @@ files so you can see exactly what run:
 
 Arbitrarily recorded data
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The ara_record_ and ara_read_ built-in Ansible modules allow you to write and
 read arbitrary data, making them available in the web interface as well:
 
@@ -86,6 +95,7 @@ to visualize these records to help you be more efficient.
 
 Why don't you use Ansible Tower, Rundeck or Semaphore ?
 -------------------------------------------------------
+
 `Ansible Tower`_ is currently a product from Ansible and has not been open
 sourced (*yet*). We do not know when it will be made freely available and it's
 source opened.
@@ -121,6 +131,7 @@ workflow, it adds itself in transparently and seamlessly.
 
 Can ARA be used outside the context of OpenStack or continuous integration ?
 ----------------------------------------------------------------------------
+
 Of course, you can.
 
 ARA has no dependencies or requirements with OpenStack or Jenkins for CI.
@@ -131,11 +142,13 @@ troubleshooting OpenStack continuous integration jobs faster and easier.
 
 What versions of Ansible are supported ?
 ----------------------------------------
+
 ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
 contained multiple regressions.
 
 What's an Ansible callback ?
 ----------------------------
+
 `Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
 send an event and you can react to it with a callback.
 You could use a callback to do things like print additional details or, in the

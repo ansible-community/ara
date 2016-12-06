@@ -1,5 +1,6 @@
 Contributing
 ============
+
 ARA is an Open Source project and welcomes contributions, whether they are in
 the form of feedback, comments, suggestions, bugs, code contributions or
 code reviews.
@@ -23,7 +24,9 @@ and read on.
 This documentation you will find here is mostly a summary of
 `OpenStack's developer getting started`_ guide.
 
-.. note:: ARA is *not* an official OpenStack project. As such, you are not
+.. note::
+
+   ARA is *not* an official OpenStack project. As such, you are not
    required to have signed a contributors agreement with the OpenStack
    foundation to be able to contribute to ARA.
 
@@ -32,8 +35,10 @@ This documentation you will find here is mostly a summary of
 
 Pre-requirements
 ----------------
+
 Setting up your Gerrit code review account
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 OpenStack's Gerrit instance uses Launchpad_ for authentication. If you do not
 already have a Launchpad account, you will need to create one.
 
@@ -49,6 +54,7 @@ to the settings where you will see the tab to set up your SSH key.
 
 Installing Git Review
 ~~~~~~~~~~~~~~~~~~~~~
+
 Git Review is a python module that adds a "git review" command that wraps
 around the process of sending a commit for review in Gerrit. You need to
 install it to be able to send patches for code reviews.
@@ -59,6 +65,7 @@ There are different ways to install git-review, `choose your favorite`_.
 
 Install development dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ARA requires some additional dependencies for development purposes, for running
 tests, for example.
 
@@ -68,6 +75,7 @@ Make sure they are installed according to the documentation_.
 
 Sending a patch for review
 --------------------------
+
 .. image:: _static/code_review.png
 
 The process looks a bit like this::
@@ -107,6 +115,7 @@ core reviewers must provide their agreement with the patch.
 
 Running tests locally
 ---------------------
+
 Unit tests::
 
    tox -e py27
@@ -135,6 +144,7 @@ Integration tests:
 
 More reading
 ------------
+
 - `Official OpenStack developer documentation`_
 - `Gerrit documentation`_
 - `Git commit good practices`_
