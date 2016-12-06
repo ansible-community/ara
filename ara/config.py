@@ -56,12 +56,10 @@ ARA_AUTOCREATE_DATABASE = get_config(
 
 # SQL Alchemy/Alembic
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI        = get_config(config, 'ara', 'database',
-                                            'ARA_DATABASE',
-                                            DEFAULT_DATABASE)
-SQLALCHEMY_ECHO                = get_config(config, 'ara', 'sqldebug',
-                                            'ARA_SQL_DEBUG',
-                                            DEFAULT_ARA_SQL_DEBUG)
+SQLALCHEMY_DATABASE_URI = get_config(config, 'ara', 'database', 'ARA_DATABASE',
+                                     DEFAULT_DATABASE)
+SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
+                             DEFAULT_ARA_SQL_DEBUG)
 INSTALL_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
 
