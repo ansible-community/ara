@@ -33,8 +33,8 @@ export ANSIBLE_LIBRARY="ara/plugins/modules"
 export ARA_DATABASE="sqlite:///${DATABASE}"
 
 # Run test playbooks
-ansible-playbook -vv tests/integration/smoke.yml
-ansible-playbook -vv tests/integration/hosts.yml
+ansible-playbook -vv ara/tests/integration/smoke.yml
+ansible-playbook -vv ara/tests/integration/hosts.yml
 
 # Run test commands
 pbid=$(ara playbook list -c ID -f value |head -n1)
@@ -54,7 +54,7 @@ ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ara generate ${BUILD_DIR} && tree ${BUILD_DIR}
 
 # Database migration tests
-for test_db in $(ls tests/integration/databases/*.sqlite)
+for test_db in $(ls ara/tests/integration/databases/*.sqlite)
 do
     export ARA_DATABASE="sqlite:///${SCRIPT_DIR}/${test_db}"
     ara-manage db upgrade

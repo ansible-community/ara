@@ -186,7 +186,7 @@ class TestCLI(TestCase):
         self.assertEqual(res, zip(*sorted(six.iteritems(facts))))
 
     def test_host_fact_non_existing_host(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
@@ -229,7 +229,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['play'].id)
 
     def test_play_list_non_existing_playbook(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
@@ -249,7 +249,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['play'].id)
 
     def test_play_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.play.PlayShow(None, None)
         parser = cmd.get_parser('test')
@@ -282,7 +282,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['playbook'].id)
 
     def test_playbook_list_complete_with_no_complete(self):
-        ctx = ansible_run(complete=False)
+        ansible_run(complete=False)
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
@@ -302,7 +302,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['playbook'].id)
 
     def test_playbook_list_incomplete_with_no_incomplete(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
@@ -322,7 +322,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['playbook'].id)
 
     def test_playbook_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.playbook.PlaybookShow(None, None)
         parser = cmd.get_parser('test')
@@ -355,7 +355,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['result'].id)
 
     def test_result_list_non_existing_playbook(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
@@ -375,7 +375,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['result'].id)
 
     def test_result_list_non_existing_play(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
@@ -469,7 +469,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['task'].id)
 
     def test_task_list_non_existing_play(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
@@ -489,7 +489,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0][0], ctx['task'].id)
 
     def test_task_list_non_existing_playbook(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
@@ -509,7 +509,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['task'].id)
 
     def test_task_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.task.TaskShow(None, None)
         parser = cmd.get_parser('test')
@@ -542,7 +542,7 @@ class TestCLI(TestCase):
         self.assertEqual(res[1][0], ctx['stats'].id)
 
     def test_stats_show_non_existing(self):
-        ctx = ansible_run()
+        ansible_run()
 
         cmd = ara.cli.stats.StatsShow(None, None)
         parser = cmd.get_parser('test')

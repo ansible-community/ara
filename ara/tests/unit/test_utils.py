@@ -4,8 +4,6 @@ import ara.models as m
 import ara.utils as u
 import json
 
-from mock import Mock
-
 
 class TestUtils(TestCase):
     '''Tests the utils module'''
