@@ -121,6 +121,16 @@ And then setup the database connection::
     [ara]
     database = mysql+pymysql://ara:password@localhost/ara
 
+When using a different database driver such as MySQL (pymysql), you also need
+to make sure you install the driver::
+
+    # From pypi
+    pip install pymysql
+    # For RHEL derivatives
+    yum install python-PyMySQL
+    # For Debian or Ubuntu
+    apt-get install python-pymysql
+
 ARA_LOG
 ~~~~~~~
 
