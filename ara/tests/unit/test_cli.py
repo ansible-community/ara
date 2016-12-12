@@ -1,10 +1,6 @@
 import json
 import six
 
-from flask.ext.testing import TestCase
-
-import ara.webapp as w
-import ara.models as m
 import ara.cli.data
 import ara.cli.host
 import ara.cli.play
@@ -14,25 +10,16 @@ import ara.cli.task
 import ara.cli.stats
 
 from common import ansible_run
+from common import TestAra
 
 
-class TestCLI(TestCase):
+class TestCLI(TestAra):
     '''Tests for the ARA CLI interface'''
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    TESTING = True
-
-    def create_app(self):
-        return w.create_app(self)
-
     def setUp(self):
-        m.db.create_all()
-
-        self.client = self.app.test_client()
+        super(TestCLI, self).setUp()
 
     def tearDown(self):
-        m.db.session.remove()
-        m.db.drop_all()
+        super(TestCLI, self).tearDown()
 
     #################################
     # ara data <cmd>

@@ -1,22 +1,14 @@
 import json
 
-from flask.ext.testing import TestCase
-
-import ara.webapp as w
 import ara.models as m
 
+from common import TestAra
 
-class TestModels(TestCase):
+
+class TestModels(TestAra):
     '''Basic tests for database models'''
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    TESTING = True
-
-    def create_app(self):
-        return w.create_app(self)
-
     def setUp(self):
-        m.db.create_all()
+        super(TestModels, self).setUp()
 
         self.playbook = m.Playbook(path='testing.yml')
 
@@ -70,8 +62,7 @@ class TestModels(TestCase):
         m.db.session.commit()
 
     def tearDown(self):
-        m.db.session.remove()
-        m.db.drop_all()
+        super(TestModels, self).tearDown()
 
     def test_playbook(self):
         playbooks = m.Playbook.query.all()

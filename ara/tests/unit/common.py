@@ -1,7 +1,32 @@
 import random
+import flask
+import unittest
 
+import ara.webapp as w
 import ara.models as m
 from ara.models import db
+
+
+class TestAra(unittest.TestCase):
+    '''Common setup/teardown for ARA tests'''
+    def setUp(self):
+        self.config = {
+            "SQLALCHEMY_DATABASE_URI": "sqlite://",
+            "TESTING": True
+        }
+
+        self.app = w.create_app(self)
+        self.client = self.app.test_client()
+
+        if not flask.current_app:
+            ctx = self.app.app_context()
+            ctx.push()
+
+        m.db.create_all()
+
+    def tearDown(self):
+        m.db.session.remove()
+        m.db.drop_all()
 
 
 def ansible_run(complete=True, gather_facts=True, ara_record=False):

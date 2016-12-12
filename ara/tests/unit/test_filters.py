@@ -1,25 +1,16 @@
-from flask.ext.testing import TestCase
-import ara.webapp as w
-import ara.models as m
 import datetime
 
+from common import TestAra
 
-class TestFilters(TestCase):
+
+class TestFilters(TestAra):
     '''Tests for our Jinja2 filters'''
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    TESTING = True
-
-    def create_app(self):
-        return w.create_app(self)
-
     def setUp(self):
-        m.db.create_all()
+        super(TestFilters, self).setUp()
         self.env = self.app.jinja_env
 
     def tearDown(self):
-        m.db.session.remove()
-        m.db.drop_all()
+        super(TestFilters, self).tearDown()
 
     def test_pathtruncate_short(self):
         path = '/short/path.yml'

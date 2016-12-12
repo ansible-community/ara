@@ -1,28 +1,16 @@
-from flask.ext.testing import TestCase
 import pytest
 
-import ara.webapp as w
-import ara.models as m
-
 from common import ansible_run
+from common import TestAra
 
 
-class TestApp(TestCase):
+class TestApp(TestAra):
     '''Tests for the ARA web interface'''
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    TESTING = True
-
-    def create_app(self):
-        return w.create_app(self)
-
     def setUp(self):
-        m.db.create_all()
-        self.client = self.app.test_client()
+        super(TestApp, self).setUp()
 
     def tearDown(self):
-        m.db.session.remove()
-        m.db.drop_all()
+        super(TestApp, self).tearDown()
 
     def test_overview(self):
         res = self.client.get('/')

@@ -1,12 +1,12 @@
-from flask.ext.testing import TestCase
 from collections import defaultdict
 import random
 
-import ara.webapp as w
 import ara.models as m
 import ara.plugins.callbacks.log_ara as l
 import ara.plugins.actions.ara_record as ara_record
 import ara.plugins.actions.ara_read as ara_read
+
+from common import TestAra
 
 from mock import Mock, MagicMock
 
@@ -62,25 +62,17 @@ class Stats(object):
         }
 
 
-class TestModule(TestCase):
+class TestModule(TestAra):
     '''Tests for the Ansible ara_record module'''
-
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    TESTING = True
-
-    def create_app(self):
-        return w.create_app(self)
-
     def setUp(self):
-        m.db.create_all()
+        super(TestModule, self).setUp()
+
         self.cb = l.CallbackModule()
         self.tag = '%04d' % random.randint(0, 9999)
-
         self.ansible_run()
 
     def tearDown(self):
-        m.db.session.remove()
-        m.db.drop_all()
+        super(TestModule, self).tearDown()
 
     def ansible_run(self):
         '''Simulates an ansible run by creating stub versions of the
