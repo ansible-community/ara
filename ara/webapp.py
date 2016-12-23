@@ -78,7 +78,7 @@ def configure_app(app, config):
 
 def configure_dirs(app):
     if not os.path.isdir(app.config['ARA_DIR']):
-        os.makedirs(app.config['ARA_DIR'], mode=0700)
+        os.makedirs(app.config['ARA_DIR'], mode=0o700)
 
 
 def configure_db(app):
