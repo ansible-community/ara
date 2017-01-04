@@ -22,6 +22,16 @@ ARA provides four things:
 .. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
 .. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-version-of-the-web-application
 
+What's an Ansible callback ?
+----------------------------
+
+`Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
+send an event and you can react to it with a callback.
+You could use a callback to do things like print additional details or, in the
+case of ARA, record the playbook run data in a database.
+
+.. _Ansible Callbacks: http://docs.ansible.com/ansible/developing_plugins.html
+
 What does the web interface look like ?
 ---------------------------------------
 
@@ -145,13 +155,3 @@ What versions of Ansible are supported ?
 
 ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
 contained multiple regressions.
-
-What's an Ansible callback ?
-----------------------------
-
-`Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
-send an event and you can react to it with a callback.
-You could use a callback to do things like print additional details or, in the
-case of ARA, record the playbook run data in a database.
-
-.. _Ansible Callbacks: http://docs.ansible.com/ansible/developing_plugins.html
