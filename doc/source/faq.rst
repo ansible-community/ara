@@ -22,6 +22,16 @@ ARA provides four things:
 .. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
 .. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-version-of-the-web-application
 
+What versions of Ansible are supported ?
+----------------------------------------
+
+The minimum required version of Ansible to run ARA is 2.1.0.0.
+
+ARA is developed, tested and used with Ansible 2.1.x and 2.2.x.
+Ansible 2.0.x is `no longer supported`_.
+
+.. _no longer supported: https://groups.google.com/forum/#!topic/ansible-devel/6-6FdxZ94kc
+
 What's an Ansible callback ?
 ----------------------------
 
@@ -149,9 +159,3 @@ You can use ARA with Ansible for any playbook in any context.
 
 ARA is completely generic but was developed out of necessity to make
 troubleshooting OpenStack continuous integration jobs faster and easier.
-
-What versions of Ansible are supported ?
-----------------------------------------
-
-ARA is developed and tested against Ansible >= 2.0.1.0, excluding 2.0.2.0 which
-contained multiple regressions.
