@@ -15,6 +15,18 @@
 </td>
 {% endmacro %}
 
+{% macro render_status(status) %}
+{% if status == 'success' %}
+    <span class="pficon pficon-ok list-view-pf-icon-md list-view-pf-icon-success" title="Playbook finished successfully"></span>
+{% elif status == 'failed' %}
+    <span class="pficon pficon-error-circle-o list-view-pf-icon-md list-view-pf-icon-danger" title="Playbook finished with errors"></span>
+{% elif status == 'incomplete' %}
+    <span class="pficon pficon-info list-view-pf-icon-md list-view-pf-icon-info" title="Playbook was interrupted: data will be incomplete."></span>
+{% else %}
+    <span class="fa fa-question-circle" title="The status of this playbook is unknown."></span>
+{% endif %}
+{% endmacro %}
+
 {% macro render_value_type(value, type) %}
 {% if type == 'json' %}
     <pre>{{ value |to_nice_json |safe }}</pre>

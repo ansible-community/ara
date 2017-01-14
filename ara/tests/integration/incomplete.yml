@@ -1,0 +1,6 @@
+- name: Incomplete playbook
+  hosts: localhost
+  tasks:
+    - debug:
+        msg: "This playbook is meant to be interrupted"
+    - command: sleep 30

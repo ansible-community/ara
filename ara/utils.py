@@ -73,7 +73,22 @@ def get_summary_stats(items, attr):
             'skipped': sum([int(stat.skipped) for stat in stats]),
             'unreachable': sum([int(stat.unreachable) for stat in stats])
         }
+
+        # If we're aggregating stats for a playbook, also infer status
+        if attr is "playbook_id":
+            data[item.id]['status'] = _infer_status(item, data[item.id])
+
     return data
+
+
+def _infer_status(playbook, playbook_stats):
+    if not playbook.complete:
+        return 'incomplete'
+
+    if playbook_stats['failed'] >= 1 or playbook_stats['unreachable'] >= 1:
+        return 'failed'
+    else:
+        return 'success'
 
 
 def format_json(val):

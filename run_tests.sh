@@ -35,6 +35,12 @@ export ARA_DATABASE="sqlite:///${DATABASE}"
 # Run test playbooks
 ansible-playbook -vv ara/tests/integration/smoke.yml
 ansible-playbook -vv ara/tests/integration/hosts.yml
+# This playbook is meant to fail
+ansible-playbook -vv ara/tests/integration/failed.yml || true
+# This playbook is meant to be interrupted
+ansible-playbook -vv ara/tests/integration/incomplete.yml &
+sleep 5
+kill $!
 
 # Run test commands
 pbid=$(ara playbook list -c ID -f value |head -n1)

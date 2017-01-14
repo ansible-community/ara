@@ -29,7 +29,8 @@ class TestAra(unittest.TestCase):
         m.db.drop_all()
 
 
-def ansible_run(complete=True, gather_facts=True, ara_record=False):
+def ansible_run(complete=True, failed=False, gather_facts=True,
+                ara_record=False):
     '''Simulate a simple Ansible run by creating the
     expected database objects.  This roughly approximates the
     following playbook:
@@ -49,6 +50,8 @@ def ansible_run(complete=True, gather_facts=True, ara_record=False):
 
     Set the `complete` parameter to `False` to simulate an
     aborted Ansible run.
+    Set the `failed` parameter to `True` to simulate a
+    failed Ansible run.
     Set the `gathered_facts` parameter to `False` to simulate a run with no
     facts gathered.
     Set the `ara_record` parameter to `True` to simulate a run with an
@@ -72,13 +75,21 @@ def ansible_run(complete=True, gather_facts=True, ara_record=False):
 
     result = m.TaskResult(task=task, status='ok', host=host, result=msg)
 
+    task_skipped = m.Task(play=play, playbook=playbook, action='foo')
+    result_skipped = m.TaskResult(task=task_skipped, status='skipped',
+                                  host=host, result='Conditional check failed')
+
+    task_failed = m.Task(play=play, playbook=playbook, action='bar')
+    result_failed = m.TaskResult(task=task_failed, status='failed', host=host,
+                                 result='Failed to do thing')
+
     ctx = dict(
         playbook=playbook,
         play=play,
-        file=playbook_file,
         task=task,
-        host=host,
-        result=result)
+        result=result,
+        file=playbook_file,
+        host=host)
 
     if gather_facts:
         facts = m.HostFacts(host=host, values='{"fact": "value"}')
@@ -93,10 +104,19 @@ def ansible_run(complete=True, gather_facts=True, ara_record=False):
             obj.start()
         db.session.add(obj)
 
+    extra_tasks = [task_skipped, result_skipped]
+    if failed:
+        extra_tasks.append(task_failed)
+        extra_tasks.append(result_failed)
+
+    for obj in extra_tasks:
+        db.session.add(obj)
+
     db.session.commit()
 
     if complete:
-        stats = m.Stats(playbook=playbook, host=host)
+        stats = m.Stats(playbook=playbook, host=host, ok=1, skipped=1,
+                        failed=int(failed))
         ctx['stats'] = stats
         db.session.add(stats)
         ctx['playbook'].complete = True

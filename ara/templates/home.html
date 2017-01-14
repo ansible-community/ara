@@ -8,11 +8,12 @@
     <h2><a href="https://github.com/openstack/ara">ARA</a> records <a href="https://www.ansible.com/">Ansible</a> Playbook runs seamlessly to make them easier to visualize, understand and troubleshoot.</h2>
   </div>
   <div class="row">
-    <div class="col-md-10 col-md-offset-1">
+    <div class="col-md-12">
       <h2><strong>Latest playbook runs</strong></h2>
       <table class="table table-striped table-bordered table-hover table-condensed">
         <thead>
           <tr>
+            <th></th>
             <th>Playbook</th>
             <th class="col-md-1">Hosts</th>
             <th class="date col-md-2">Date</th>
@@ -27,6 +28,7 @@
         <tbody>
             {% for playbook in playbooks %}
             <tr>
+              <td class="vert-align">{{ macros.render_status(stats[playbook.id].status) }}</td>
               <td>{{ macros.make_link('playbook.show_playbook', playbook.path|pathtruncate,
                 playbook=playbook.id) }}</td>
               <td>{{ playbook.hosts|list|length }}</td>

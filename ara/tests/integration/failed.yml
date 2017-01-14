@@ -1,0 +1,5 @@
+- name: Failed playbook
+  hosts: localhost
+  tasks:
+    - fail:
+        msg: "This is a failed playbook"
