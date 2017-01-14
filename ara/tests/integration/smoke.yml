@@ -31,13 +31,3 @@
     - name: Nothing important
       debug:
         msg: "Nothing important"
-
-- name: ARA Include role actions
-  hosts: localhost
-  gather_facts: no
-  tasks:
-    - include_role:
-        name: "included-role"
-    - include_role:
-        name: "included-role"
-        tasks_from: "included-task"

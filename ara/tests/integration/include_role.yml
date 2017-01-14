@@ -1,0 +1,9 @@
+- name: "Ansible >=2.2: include_role tasks"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - include_role:
+        name: "included-role"
+    - include_role:
+        name: "included-role"
+        tasks_from: "included-task"

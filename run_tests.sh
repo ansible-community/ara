@@ -1,4 +1,16 @@
 #!/bin/bash
+# Some tests only work on certain versions of Ansible.
+# Use Ansible's pseudo semver to determine if we can run something.
+function semver_compare() {
+    cat <<EOF |python
+from __future__ import print_function
+import sys
+from distutils.version import LooseVersion
+
+print(LooseVersion('${1}') ${2} LooseVersion('${3}'))
+EOF
+}
+
 set -ex
 # This script runs ara-specific integration tests.
 export PATH=$PATH:/usr/local/sbin:/usr/sbin
@@ -17,7 +29,7 @@ mkdir -p "${LOGDIR}"
 
 # We might want to test with a particular version of Ansible
 # To specify a version, use "./run_tests.sh ansible==2.x.x.x"
-if [[ -n "${1}" && "${1}" -ne "ansible==latest" ]]; then
+if [[ -n "${1}" && "${1}" != "ansible==latest" ]]; then
     sed -i.tmp -e "s/ansible.*/${1}/" requirements.txt
 fi
 
@@ -35,12 +47,18 @@ export ARA_DATABASE="sqlite:///${DATABASE}"
 # Run test playbooks
 ansible-playbook -vv ara/tests/integration/smoke.yml
 ansible-playbook -vv ara/tests/integration/hosts.yml
+
 # This playbook is meant to fail
 ansible-playbook -vv ara/tests/integration/failed.yml || true
 # This playbook is meant to be interrupted
 ansible-playbook -vv ara/tests/integration/incomplete.yml &
 sleep 5
 kill $!
+# This playbook leverages include_role that landed in 2.2.0.0
+ansible_version=$(pip freeze |grep ansible== |cut -f3 -d =)
+if [[ $(semver_compare "${ansible_version}" ">=" "2.2.0.0") == "True" ]]; then
+    ansible-playbook -vv ara/tests/integration/include_role.yml
+fi
 
 # Run test commands
 pbid=$(ara playbook list -c ID -f value |head -n1)
