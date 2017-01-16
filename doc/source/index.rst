@@ -1,5 +1,6 @@
 Welcome to the ARA documentation!
 =================================
+.. image:: _static/ara.png
 
 Table of Contents
 =================

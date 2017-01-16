@@ -1,5 +1,7 @@
 ARA: Ansible Run Analysis
 =========================
+.. image:: doc/source/_static/ara-with-icon.png
+
 tl;dr
 -----
 ARA_ records Ansible_ Playbook runs seamlessly to make them easier to
