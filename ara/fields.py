@@ -1,6 +1,5 @@
 import datetime
 from flask import render_template_string
-from jinja2 import Undefined
 
 from ara import app
 
@@ -37,8 +36,7 @@ class Field(object):
         self.raise_on_err = raise_on_err
         self.path = path
 
-        self.expr = app.jinja_env.compile_expression(
-            path, undefined_to_none=False)
+        self.expr = app.jinja_env.compile_expression(path)
 
     def __call__(self, obj):
         '''Extract a value from `obj` and return the formatted value.'''
@@ -48,7 +46,7 @@ class Field(object):
                              for x in dir(obj)
                              if not x.startswith('_')})
 
-        if value is Undefined:
+        if value is None:
             if self.raise_on_err:
                 raise AttributeError(self.path)
 
