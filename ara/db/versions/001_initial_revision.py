@@ -77,7 +77,7 @@ def upgrade():
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('host_id', sa.String(length=36), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
-    sa.Column('values', sa.Text(length=16777215), nullable=True),
+    sa.Column('values', sa.Text(length=16777215).with_variant(sa.Text(), 'postgresql'), nullable=True),
     sa.ForeignKeyConstraint(['host_id'], ['hosts.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -115,7 +115,7 @@ def upgrade():
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('task_id', sa.String(length=36), nullable=True),
     sa.Column('host_id', sa.String(length=36), nullable=True),
-    sa.Column('status', sa.Enum('ok', 'failed', 'skipped', 'unreachable'), nullable=True),
+    sa.Column('status', sa.Enum('ok', 'failed', 'skipped', 'unreachable', name='status'), nullable=True),
     sa.Column('changed', sa.Boolean(), nullable=True),
     sa.Column('failed', sa.Boolean(), nullable=True),
     sa.Column('skipped', sa.Boolean(), nullable=True),

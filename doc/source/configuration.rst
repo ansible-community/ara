@@ -163,6 +163,30 @@ to make sure you install the driver::
     # For Debian or Ubuntu
     apt-get install python-pymysql
 
+Alternatively, if you prefer PostgreSQL, you can do the following in psql::
+
+    CREATE ROLE ara WITH LOGIN PASSWORD 'password';
+    CREATE DATABASE ara OWNER ara;
+    GRANT ALL ON DATABASE ara TO ara;
+
+Be sure you update your pg_hba.conf afterwards if needed.
+
+Then, setup the database connection::
+
+    export ARA_DATABASE="postgresql+psycopg2://ara:password@localhost:5432/ara"
+    # or
+    [ara]
+    database = postgresql+psycopg2://ara:password@localhost:5432/ara
+
+You will need to install the database driver by::
+
+    # From pypi
+    pip install psycopg2
+    # For RHEL derivatives
+    yum install python-psycopg2
+    # For Debian or Ubuntu
+    apt-get install python-psycopg2
+
 ARA_LOG_FILE
 ~~~~~~~~~~~~
 
