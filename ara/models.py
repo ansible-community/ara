@@ -169,8 +169,8 @@ class File(db.Model):
     # This has to be a String intead of Text because of
     # http://stackoverflow.com/questions/1827063/
     # and it must have a max length smaller than PATH_MAX because MySQL is
-    # limited to a maximum key length of 3072 bytes.  This
-    # restrictions stems from the fact that we are using this column in
+    # limited to a maximum key length of 3072 bytes.  These
+    # restrictions stem from the fact that we are using this column in
     # a UNIQUE constraint.
     path = db.Column(db.String(255))
     content = many_to_one('FileContent', backref='files')
