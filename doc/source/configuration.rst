@@ -103,7 +103,7 @@ Parameters and their defaults
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_DATABASE_                 | database                 | sqlite:///~/.ara/ansible.sqlite           |
 +-------------------------------+--------------------------+-------------------------------------------+
-| ARA_LOG_                      | logfile                  | ~/.ara/ara.log                            |
+| ARA_LOG_FILE_                 | logfile                  | ~/.ara/ara.log                            |
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_LOG_LEVEL_                | loglevel                 | INFO                                      |
 +-------------------------------+--------------------------+-------------------------------------------+
@@ -155,8 +155,8 @@ to make sure you install the driver::
     # For Debian or Ubuntu
     apt-get install python-pymysql
 
-ARA_LOG
-~~~~~~~
+ARA_LOG_FILE
+~~~~~~~~~~~~
 
 Path to the logfile to store ARA logs in.
 
