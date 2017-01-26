@@ -78,6 +78,12 @@ def configure_template_filters(app):
                                   lineanchors='line',
                                   linespans='line')
 
+        # We have little control over the content of the files we're
+        # formatting. This can lead into UnicodeDecodeError raised by Jinja
+        # due to breaking whitespace characters or other possibly encoded
+        # characters.
+        code = code.decode('utf-8')
+
         return highlight(Markup(code.rstrip()).unescape(),
                          YamlLexer(),
                          formatter)
