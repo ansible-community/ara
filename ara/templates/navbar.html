@@ -1,76 +1,23 @@
-<!-- Top navbar -->
-<nav class="navbar navbar-pf-vertical">
+<nav class="navbar navbar-default navbar-pf" role="navigation">
   <div class="navbar-header">
-    <button type="button" class="navbar-toggle">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
       <span class="sr-only">Toggle navigation</span>
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="{{ url_for('home.main') }}"><strong>ARA</strong> - Ansible Run Analysis</a>
+    <a class="navbar-brand" href="{{ url_for('home.main') }}">
+      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="ARA: Ansible Run Analysis" />
+    </a>
   </div>
-  <nav class="collapse navbar-collapse">
-    <ul class="nav navbar-nav navbar-right navbar-iconic">
-      <li class="dropdown">
-        <a class="dropdown-toggle nav-item-iconic" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          <span title="Help" class="fa pficon-help"></span>
-          <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-          <li><a href="https://ara.readthedocs.io/en/latest/" target="_blank">Documentation</a></li>
-          <li><a href="https://github.com/openstack/ara/" target="_blank">Source code</a></li>
-        </ul>
-      </li>
+  <div class="collapse navbar-collapse navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-utility">
+      <li><a href="https://ara.readthedocs.io/en/latest/">Documentation</a></li>
+      <li><a href="https://github.com/openstack/ara">Source code</a></li>
     </ul>
-  </nav>
+    <ul class="nav navbar-nav navbar-primary persistent-secondary">
+      <li><a href="{{ url_for('home.main') }}">Home</a></li>
+      <li><a href="{{ url_for('playbook.playbook_summary') }}">All Playbooks</a></li>
+    </ul>
+  </div>
 </nav>
-
-<!-- Left navbar -->
-<div class="nav-pf-vertical nav-pf-vertical-with-sub-menus nav-pf-persistent-secondary">
-  <ul class="list-group">
-    <li class="list-group-item active">
-      <a href="{{ url_for('home.main') }}">
-        <span class="pficon pficon-home"></span>
-        <span class="list-group-item-value">Home</span>
-      </a>
-    </li>
-    <li class="list-group-item">
-      <a href="{{ url_for('playbook.playbook_summary') }}">
-        <span class="pficon pficon-image"></span>
-        <span class="list-group-item-value">All playbooks</span>
-      </a>
-    </li>
-    <li class="list-group-item secondary-nav-item-pf" data-target="#playbook-secondary">
-      <a href="#">
-        <span class="pficon pficon-history"></span>
-        <span class="list-group-item-value">Last playbooks</span>
-      </a>
-      <div id="playbook-secondary" class="nav-pf-secondary-nav">
-        <div class="nav-item-pf-header">
-          <a class="secondary-collapse-toggle-pf" href="#" data-toggle="collapse-secondary-nav"></a>
-          <span>Last playbooks</span>
-        </div>
-        {% for playbook in playbooks %}
-        <h5>{{ playbook.time_start |datefmt }}</h5>
-        <ul class="list-group">
-          <li class="list-group-item">
-            <a href="{{ url_for('playbook.show_playbook', playbook=playbook.id) }}">
-              <span class="list-group-item-value">{{ playbook.path|pathtruncate(10) }}</span>
-            </a>
-            <div class="badge-container-pf">
-              <div class="badge">
-                <span class="pficon pficon-server"></span>
-                <span>{{ playbook.hosts.count() }}</span>
-              </div>
-              <div class="badge">
-                <span class="fa fa-check"></span>
-                <span>{{ playbook.tasks.count() }}</span>
-              </div>
-            </div>
-          </li>
-        </ul>
-        {% endfor %}
-      </div>
-    </li>
-  </ul>
-</div>

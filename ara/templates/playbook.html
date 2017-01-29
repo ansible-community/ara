@@ -2,7 +2,7 @@
 
 {% block content %}
 <!-- Header container -->
-<div class="container-fluid container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+<div class="container-fluid">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
       <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', playbook.path, playbook=playbook.id) }}</h1>
@@ -11,7 +11,7 @@
   </div>
 </div>
 <!-- Dashboard container -->
-<div class="container-fluid container-cards-pf container-pf-nav-pf-vertical container-pf-nav-pf-vertical-with-secondary">
+<div class="container-fluid container-cards-pf">
   <div class="row row-cards-pf">
     <div class="col-md-2 col-md-offset-1">
       <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
