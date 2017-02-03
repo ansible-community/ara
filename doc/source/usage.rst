@@ -49,6 +49,8 @@ Example usage::
         - { key: "log", value: "error", type: "text" }
         - { key: "website", value: "http://domain.tld", type: "url" }
         - { key: "data", value: '{ "key": "value" }', type: "json" }
+        - { key: "somelist", value: ['one', 'two'], type: "list" }
+        - { key: "somedict", value: {'key': 'value' }, type: "dict" }
 
 This data will be recorded inside ARA's database and associated with the
 particular playbook run that was executed.

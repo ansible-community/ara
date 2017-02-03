@@ -45,7 +45,7 @@ options:
     type:
         description:
             - Type of the key
-        choices: [text, url, json]
+        choices: [text, url, json, list, dict]
         default: text
 
 requirements:
@@ -78,6 +78,8 @@ EXAMPLES = '''
     - { key: "log", value: "error", type: "text" }
     - { key: "website", value: "http://domain.tld", type: "url" }
     - { key: "data", value: "{ 'key': 'value' }", type: "json" }
+    - { key: "somelist", value: ['one', 'two'], type: "list" }
+    - { key: "somedict", value: {'key': 'value' }, type: "dict" }
 '''
 
 
@@ -86,7 +88,7 @@ class ActionModule(ActionBase):
 
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(('key', 'value', 'type'))
-    VALID_TYPES = ['text', 'url', 'json']
+    VALID_TYPES = ['text', 'url', 'json', 'list', 'dict']
 
     def create_or_update_key(self, playbook_id, key, value, type):
         try:
@@ -141,8 +143,7 @@ class ActionModule(ActionBase):
         if type not in self.VALID_TYPES:
             result['failed'] = True
             msg = "Type '{0}' is not supported, choose one of: {1}".format(
-                type,
-                ", ".join(self.VALID_TYPES)
+                type, ", ".join(self.VALID_TYPES)
             )
             result['msg'] = msg
             return result

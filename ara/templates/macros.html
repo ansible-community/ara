@@ -28,8 +28,14 @@
 {% endmacro %}
 
 {% macro render_value_type(value, type) %}
-{% if type == 'json' %}
+{% if type == 'json' or type == 'dict' %}
     <pre>{{ value |to_nice_json |safe }}</pre>
+{% elif type == 'list' %}
+    <ul class="text-left">
+    {% for item in value %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    </ul>
 {% elif type == 'url' %}
     <a href="{{ value }}" target="_blank">{{ value }}</a>
 {% else %}
