@@ -1,4 +1,4 @@
-#   Copyright Red Hat, Inc. All Rights Reserved.
+#   Copyright 2016 Red Hat, Inc. All Rights Reserved.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License"); you may
 #   not use this file except in compliance with the License. You may obtain
@@ -11,32 +11,24 @@
 #   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #   License for the specific language governing permissions and limitations
 #   under the License.
-#
 
-import logging
-import os
+from debtcollector import moves
+from ara.cli import generate
 
-from cliff.command import Command
-from ara import app, freezer
+long_message = """[WARNING]
+The "ara generate" command is deprecated and has been moved to
+"ara generate html" command in ARA 0.10.6.
 
+Please use the "ara generate html" command instead.
+"ara generate" will be removed in a future version.
+"""
 
-class Generate(Command):
-    """Generates a static tree of the web application"""
-    log = logging.getLogger(__name__)
+message = '"ara generate" command has been moved to "ara generate html".'
 
-    def get_parser(self, prog_name):
-        parser = super(Generate, self).get_parser(prog_name)
-        parser.add_argument(
-            'path',
-            metavar='<path>',
-            help='Path where the static files will be built in',
-        )
-        return parser
+print(long_message)
 
-    def take_action(self, args):
-        app.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
-        self.log.warn('Generating static files at %s...',
-                      args.path)
-        freezer.freezer.freeze()
-
-        print('Done.')
+Generate = moves.moved_class(generate.GenerateHtml, 'GenerateHtml',
+                             'ara',
+                             version='0.10.6',
+                             removal_version='?',
+                             message=message)
