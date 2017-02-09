@@ -4,6 +4,8 @@ import shutil
 import six
 import tempfile
 
+from lxml import etree
+
 import ara.cli.data
 import ara.cli.generate
 import ara.cli.host
@@ -635,3 +637,21 @@ class TestCLIGenerate(TestAra):
 
         for path in paths:
             self.assertTrue(os.path.exists(path))
+
+    def test_generate_junit(self):
+        """ Roughly ensures the expected xml is generated properly """
+        tdir = self.generate_dir
+
+        ansible_run()
+        cmd = ara.cli.generate.GenerateJunit(None, None)
+        parser = cmd.get_parser('test')
+
+        junit_file = "{tdir}/junit.xml".format(tdir=tdir)
+        args = parser.parse_args([junit_file])
+        cmd.take_action(args)
+
+        self.assertTrue(os.path.exists(junit_file))
+        tree = etree.parse(junit_file)
+        self.assertEqual(tree.getroot().tag, "testsuites")
+        self.assertEqual(tree.getroot()[0].tag, "testsuite")
+        self.assertEqual(tree.getroot()[0][0].tag, "testcase")

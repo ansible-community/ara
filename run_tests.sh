@@ -95,6 +95,8 @@ ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ara generate html ${BUILD_DIR} && tree ${BUILD_DIR}
+ara generate junit ${LOGDIR}/junit.xml
+python ara/tests/integration/helpers/junit_check.py ${LOGDIR}/junit.xml
 
 # Database migration tests
 for test_db in $(ls ara/tests/integration/databases/*.sqlite)
