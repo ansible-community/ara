@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from jinja2 import Markup
+from jinja2 import Markup, UndefinedError
 from pygments import highlight
 from pygments.lexers import YamlLexer
 from pygments.formatters import HtmlFormatter
@@ -82,7 +82,10 @@ def configure_template_filters(app):
         # formatting. This can lead into UnicodeDecodeError raised by Jinja
         # due to breaking whitespace characters or other possibly encoded
         # characters.
-        code = code.decode('utf-8')
+        try:
+            code = code.decode('utf-8')
+        except UndefinedError:
+            code = ''
 
         return highlight(Markup(code.rstrip()).unescape(),
                          YamlLexer(),

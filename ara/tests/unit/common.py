@@ -57,11 +57,22 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     Set the `ara_record` parameter to `True` to simulate a run with an
     ara_record task.
     '''
+    playbook_string = """
+    - name: ARA unit tests
+      hosts: localhost
+      gather_facts: no
+      tasks:
+        - debug:
+            msg: 'unit tests'
+    """
+    playbook_content = m.FileContent(content=playbook_string)
 
     playbook = m.Playbook(path='testing.yml')
     playbook_file = m.File(path=playbook.path,
                            playbook=playbook,
+                           content=playbook_content,
                            is_playbook=True)
+
     play = m.Play(playbook=playbook, name='test play')
     host = m.Host(name='host-%04d' % random.randint(0, 9999),
                   playbook=playbook)
@@ -72,6 +83,17 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     else:
         task = m.Task(play=play, playbook=playbook, action='test-action')
         msg = 'This is a test'
+    task_string = """
+    - debug:
+        msg: 'task'
+    """
+    task_content = m.FileContent(content=task_string)
+    task_file = m.File(path='main.yml',
+                       playbook=playbook,
+                       content=task_content)
+    task.lineno = '1'
+    task.file = task_file
+    task.file_id = task_file.id
 
     result = m.TaskResult(task=task, status='ok', host=host, result=msg)
 
@@ -88,7 +110,6 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
         play=play,
         task=task,
         result=result,
-        file=playbook_file,
         host=host)
 
     if gather_facts:
@@ -104,12 +125,13 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
             obj.start()
         db.session.add(obj)
 
-    extra_tasks = [task_skipped, result_skipped]
+    extra_objects = [playbook_file, playbook_content, task_file, task_content,
+                     task_skipped, result_skipped]
     if failed:
-        extra_tasks.append(task_failed)
-        extra_tasks.append(result_failed)
+        extra_objects.append(task_failed)
+        extra_objects.append(result_failed)
 
-    for obj in extra_tasks:
+    for obj in extra_objects:
         db.session.add(obj)
 
     db.session.commit()
