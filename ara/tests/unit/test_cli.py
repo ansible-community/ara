@@ -13,8 +13,8 @@ import ara.cli.result
 import ara.cli.task
 import ara.cli.stats
 
-from common import ansible_run
-from common import TestAra
+from ara.tests.unit.common import ansible_run
+from ara.tests.unit.common import TestAra
 
 
 class TestCLIData(TestAra):

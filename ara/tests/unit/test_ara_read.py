@@ -6,7 +6,7 @@ import ara.plugins.callbacks.log_ara as l
 import ara.plugins.actions.ara_record as ara_record
 import ara.plugins.actions.ara_read as ara_read
 
-from common import TestAra
+from ara.tests.unit.common import TestAra
 
 from mock import Mock, MagicMock
 

@@ -1,12 +1,12 @@
 import ara.utils as u
 import json
 
-from common import ansible_run
-from common import TestAra
+from ara.tests.unit.common import ansible_run
+from ara.tests.unit.common import TestAra
 
 
 class TestUtils(TestAra):
-    '''Tests the utils module'''
+    """ Tests the utils module """
     def setUp(self):
         super(TestUtils, self).setUp()
         self.env = self.app.jinja_env
@@ -28,7 +28,7 @@ class TestUtils(TestAra):
         res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
 
         self.assertEqual(1, res[playbook]['ok'])
-        self.assertEqual(0, res[playbook]['changed'])
+        self.assertEqual(1, res[playbook]['changed'])
         self.assertEqual(0, res[playbook]['failed'])
         self.assertEqual(1, res[playbook]['skipped'])
         self.assertEqual(0, res[playbook]['unreachable'])
@@ -52,7 +52,7 @@ class TestUtils(TestAra):
         res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
 
         self.assertEqual(1, res[playbook]['ok'])
-        self.assertEqual(0, res[playbook]['changed'])
+        self.assertEqual(1, res[playbook]['changed'])
         self.assertEqual(1, res[playbook]['failed'])
         self.assertEqual(1, res[playbook]['skipped'])
         self.assertEqual(0, res[playbook]['unreachable'])

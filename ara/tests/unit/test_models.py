@@ -1,62 +1,45 @@
-import json
-
 import ara.models as m
 
-from common import TestAra
+from ara.tests.unit.common import TestAra
+from ara.tests.unit import fakes
 
 
 class TestModels(TestAra):
-    '''Basic tests for database models'''
+    """ Basic tests for database models """
     def setUp(self):
         super(TestModels, self).setUp()
 
-        self.playbook = m.Playbook(path='testing.yml')
+        self.playbook = fakes.Playbook(path='testing.yml').model
+        self.file = fakes.File(path=self.playbook.path,
+                               playbook=self.playbook,
+                               is_playbook=True).model
+        content = fakes.FAKE_PLAYBOOK_CONTENT
+        self.file_content = fakes.FileContent(content=content).model
+        self.play = fakes.Play(name='test play',
+                               playbook=self.playbook).model
+        self.task = fakes.Task(name='test task',
+                               play=self.play,
+                               playbook=self.playbook).model
+        self.data = fakes.Data(playbook=self.playbook,
+                               key='test key',
+                               value='test value').model
+        self.host = fakes.Host(name='localhost',
+                               playbook=self.playbook).model
+        self.host_facts = fakes.HostFacts(host=self.host).model
+        self.task_result = fakes.TaskResult(task=self.task,
+                                            status='ok',
+                                            host=self.host).model
+        self.stats = fakes.Stats(playbook=self.playbook,
+                                 host=self.host,
+                                 changed=0,
+                                 failed=0,
+                                 skipped=0,
+                                 unreachable=0,
+                                 ok=0).model
 
-        self.play = m.Play(
-            name='test play',
-            playbook=self.playbook,
-        )
-
-        self.task = m.Task(
-            name='test task',
-            play=self.play,
-            playbook=self.playbook,
-        )
-
-        self.data = m.Data(
-            playbook=self.playbook,
-            key='test key',
-            value='test value'
-        )
-
-        self.host = m.Host(
-            name='localhost',
-            playbook=self.playbook,
-        )
-
-        self.host_facts = m.HostFacts(
-            host=self.host,
-            values=json.dumps('{"fact": "value"}')
-        )
-
-        self.task_result = m.TaskResult(
-            task=self.task,
-            status='ok',
-            host=self.host,
-        )
-
-        self.stats = m.Stats(
-            playbook=self.playbook,
-            host=self.host,
-            changed=0,
-            failed=0,
-            skipped=0,
-            unreachable=0,
-            ok=0,
-        )
-
-        for obj in [self.playbook, self.play, self.task, self.data,
-                    self.host, self.task_result, self.stats]:
+        for obj in [self.playbook, self.file, self.file_content, self.play,
+                    self.task, self.data, self.host, self.host_facts,
+                    self.task_result, self.stats]:
             m.db.session.add(obj)
 
         m.db.session.commit()

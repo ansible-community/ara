@@ -8,64 +8,12 @@ import ara.models as m
 import ara.utils as u
 import ara.plugins.callbacks.log_ara as l
 
-from common import TestAra
-
-from mock import Mock
-
-
-class Playbook(object):
-    def __init__(self, path):
-        self._file_name = path
-        self.path = path
-
-
-class Play(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class Task(object):
-    def __init__(self, name, path, lineno=1, action='fakeaction'):
-        self.name = name
-        self.action = action
-        self.path = '%s:%d' % (path, lineno)
-
-    def get_path(self):
-        return self.path
-
-
-class TaskResult(object):
-    def __init__(self, task, host, status, changed=False):
-        assert status in ['ok', 'failed', 'skipped', 'unreachable']
-
-        self.task = task
-        self.status = status
-        self._host = Mock()
-        self._host.name = host
-        self._result = {
-            'changed': changed,
-            'failed': status == 'failed',
-            'skipped': status == 'skipped',
-            'unreachable': status == 'unreachable',
-        }
-
-
-class Stats(object):
-    def __init__(self, processed):
-        self.processed = processed
-
-    def summarize(self, name):
-        return {
-            'failures': self.processed[name]['failed'],
-            'ok': self.processed[name]['ok'],
-            'changed': self.processed[name]['changed'],
-            'skipped': self.processed[name]['skipped'],
-            'unreachable': self.processed[name]['unreachable'],
-        }
+from ara.tests.unit.common import TestAra
+from ara.tests.unit import fakes
 
 
 class TestCallback(TestAra):
-    '''Tests for the Ansible callback module'''
+    """ Tests for the Ansible callback module """
     def setUp(self):
         super(TestCallback, self).setUp()
 
@@ -78,52 +26,44 @@ class TestCallback(TestAra):
         super(TestCallback, self).tearDown()
 
     def ansible_run(self):
-        '''Simulates an ansible run by creating stub versions of the
+        """ Simulates an ansible run by creating stub versions of the
         information that Ansible passes to the callback, and then
-        calling the various callback methods.'''
+        calling the various callback methods. """
 
-        self.playbook = self._test_playbook()
-        self.play = self._test_play()
-        self.task = self._test_task(self.playbook)
+        self.playbook = fakes.Playbook(path='/playbook-%s.yml' % self.tag)
+        self.cb.v2_playbook_on_start(self.playbook)
+
+        self.play = fakes.Play(playbook=self.playbook.model)
+        self.cb.v2_playbook_on_play_start(self.play)
+
+        self.task = fakes.Task(name='task-%s' % self.tag,
+                               playbook=self.playbook.model,
+                               path=self.playbook.path)
+        self.cb.v2_playbook_on_task_start(self.task, False)
+
+        self.host_one = fakes.Host(name='host1', playbook=self.playbook.model)
+        self.host_two = fakes.Host(name='host2', playbook=self.playbook.model)
         self.results = [
-            self._test_result(self.task, 'host1', 'ok', changed=True),
-            self._test_result(self.task, 'host2', 'failed'),
+            self._test_result(self.host_one, 'ok', changed=True),
+            self._test_result(self.host_two, 'failed'),
         ]
 
-        self.stats = self._test_stats()
+        processed_stats = {
+            self.host_one.name: defaultdict(int, ok=1, changed=1),
+            self.host_two.name: defaultdict(int, failed=1)
+        }
+        self.stats = fakes.Stats(playbook=self.playbook.model,
+                                 processed=processed_stats)
+        self.cb.v2_playbook_on_stats(self.stats)
 
-    def _test_stats(self):
-        stats = Stats({
-            'host1': defaultdict(int, ok=1, changed=1),
-            'host2': defaultdict(int, failed=1),
-        })
-
-        self.cb.v2_playbook_on_stats(stats)
-        return stats
-
-    def _test_result(self, task, host, status='ok', changed=False):
-        result = TaskResult(task, host, status, changed)
+    def _test_result(self, host, status='ok', changed=False):
+        result = fakes.TaskResult(task=self.task.model,
+                                  host=host.model.name,
+                                  status=status,
+                                  changed=changed)
         func = getattr(self.cb, 'v2_runner_on_%s' % status)
         func(result)
         return result
-
-    def _test_playbook(self):
-        path = '/test-playbook-%s.yml' % self.tag
-        playbook = Playbook(path)
-        self.cb.v2_playbook_on_start(playbook)
-        return playbook
-
-    def _test_play(self):
-        name = 'test-play-%s' % self.tag
-        play = Play(name)
-        self.cb.v2_playbook_on_play_start(play)
-        return play
-
-    def _test_task(self, playbook):
-        name = 'test-task-%s' % self.tag
-        task = Task(name, playbook.path)
-        self.cb.v2_playbook_on_task_start(task, False)
-        return task
 
     def test_callback_playbook(self):
         r_playbook = m.Playbook.query.first()
@@ -158,7 +98,8 @@ class TestCallback(TestAra):
         self.assertIsNotNone(r_results)
 
         for res in r_results:
-            self.assertIn(res.host.name, ['host1', 'host2'])
+            self.assertIn(res.host.name, [self.host_one.name,
+                                          self.host_two.name])
             self.assertEqual(res.task.name, self.task.name)
 
     def test_callback_stats(self):
@@ -175,7 +116,6 @@ class TestCallback(TestAra):
     def test_summary_stats(self):
         r_hosts = m.Host.query.all()
         summary = u.get_summary_stats(r_hosts, 'host_id')
-
         for host in r_hosts:
             for status in ['ok', 'changed', 'failed',
                            'skipped', 'unreachable']:
