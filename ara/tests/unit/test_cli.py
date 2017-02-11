@@ -17,17 +17,14 @@ from common import ansible_run
 from common import TestAra
 
 
-class TestCLI(TestAra):
-    '''Tests for the ARA CLI interface'''
+class TestCLIData(TestAra):
+    """ Tests for the ARA CLI data commands """
     def setUp(self):
-        super(TestCLI, self).setUp()
+        super(TestCLIData, self).setUp()
 
     def tearDown(self):
-        super(TestCLI, self).tearDown()
+        super(TestCLIData, self).tearDown()
 
-    #################################
-    # ara data <cmd>
-    #################################
     def test_data_list(self):
         ctx = ansible_run(ara_record=True)
 
@@ -89,9 +86,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara host <cmd>
-    #################################
+
+class TestCLIHost(TestAra):
+    """ Tests for the ARA CLI host commands """
+    def setUp(self):
+        super(TestCLIHost, self).setUp()
+
+    def tearDown(self):
+        super(TestCLIHost, self).tearDown()
+
     def test_host_list(self):
         ctx = ansible_run()
 
@@ -196,9 +199,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara play <cmd>
-    #################################
+
+class TestCLIPlay(TestAra):
+    """ Tests for the ARA CLI play commands """
+    def setUp(self):
+        super(TestCLIPlay, self).setUp()
+
+    def tearDown(self):
+        super(TestCLIPlay, self).tearDown()
+
     def test_play_list_all(self):
         ctx = ansible_run()
 
@@ -249,9 +258,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara playbook <cmd>
-    #################################
+
+class TestCLIPlaybook(TestAra):
+    """ Tests for the ARA CLI playbook commands """
+    def setUp(self):
+        super(TestCLIPlaybook, self).setUp()
+
+    def tearDown(self):
+        super(TestCLIPlaybook, self).tearDown()
+
     def test_playbook_list(self):
         ctx = ansible_run()
 
@@ -322,9 +337,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara result <cmd>
-    #################################
+
+class TestCLIResult(TestAra):
+    """ Tests for the ARA CLI result commands """
+    def setUp(self):
+        super(TestCLIResult, self).setUp()
+
+    def tearDown(self):
+        super(TestCLIResult, self).tearDown()
+
     def test_result_list_all(self):
         ctx = ansible_run()
 
@@ -436,9 +457,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara task <cmd>
-    #################################
+
+class TestCLITask(TestAra):
+    """ Tests for the ARA CLI task commands """
+    def setUp(self):
+        super(TestCLITask, self).setUp()
+
+    def tearDown(self):
+        super(TestCLITask, self).tearDown()
+
     def test_task_list_all(self):
         ctx = ansible_run()
 
@@ -509,9 +536,15 @@ class TestCLI(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    #################################
-    # ara stats <cmd>
-    #################################
+
+class TestCLIStats(TestAra):
+    """ Tests for the ARA CLI stats commands """
+    def setUp(self):
+        super(TestCLIStats, self).setUp()
+
+    def tearDown(self):
+        super(TestCLIStats, self).tearDown()
+
     def test_stats_list(self):
         ctx = ansible_run()
 
