@@ -1,6 +1,6 @@
 import datetime
 
-from common import TestAra
+from ara.tests.unit.common import TestAra
 
 
 class TestFilters(TestAra):

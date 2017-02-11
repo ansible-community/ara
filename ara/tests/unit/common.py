@@ -1,10 +1,11 @@
-import random
 import flask
 import unittest
 
 import ara.webapp as w
 import ara.models as m
 from ara.models import db
+
+from ara.tests.unit import fakes
 
 
 class TestAra(unittest.TestCase):
@@ -31,122 +32,156 @@ class TestAra(unittest.TestCase):
 
 def ansible_run(complete=True, failed=False, gather_facts=True,
                 ara_record=False):
-    '''Simulate a simple Ansible run by creating the
-    expected database objects.  This roughly approximates the
-    following playbook:
+    """
+    Simulates an Ansible run by creating the expected database objects.
+    This roughly approximates the following playbook:
 
-        - hosts: host-<int>
-          gather_facts: true
+        ---
+        - name: ARA unit tests
+          hosts: host-<random>
+          gather_facts: yes
           tasks:
-            - test-action:
-              when: not ara_record
-            - ara_record:
+            - name: Fake task
+              include: some/path/main.yml
+
+            - name: Record something
+              ara_record:
                 key: 'test key'
                 value: 'test value'
               when: ara_record
 
-    Where `<int>` is a random integer generated each time this
-    function is called.
+            - name: Fail something
+              fail:
+              when: failed
 
-    Set the `complete` parameter to `False` to simulate an
-    aborted Ansible run.
-    Set the `failed` parameter to `True` to simulate a
-    failed Ansible run.
-    Set the `gathered_facts` parameter to `False` to simulate a run with no
+    Where '<random>' is a random integer generated each time.
+
+    Set the 'complete' parameter to 'False' to simulate an aborted Ansible run.
+    Set the 'failed' parameter to 'True' to simulate a failed Ansible run.
+    Set the 'gathered_facts' parameter to 'False' to simulate a run with no
     facts gathered.
-    Set the `ara_record` parameter to `True` to simulate a run with an
+    Set the 'ara_record' parameter to 'True' to simulate a run with an
     ara_record task.
-    '''
-    playbook_string = """
-    - name: ARA unit tests
-      hosts: localhost
-      gather_facts: no
-      tasks:
-        - debug:
-            msg: 'unit tests'
     """
-    playbook_content = m.FileContent(content=playbook_string)
+    playbook = fakes.Playbook(complete=complete, path='playbook.yml').model
+    pb_file = fakes.File(playbook=playbook,
+                         is_playbook=True,
+                         path=playbook.path).model
+    pb_content = fakes.FileContent(content=fakes.FAKE_PLAYBOOK_CONTENT).model
 
-    playbook = m.Playbook(path='testing.yml')
-    playbook_file = m.File(path=playbook.path,
-                           playbook=playbook,
-                           content=playbook_content,
-                           is_playbook=True)
+    play = fakes.Play(playbook=playbook).model
+    host = fakes.Host(playbook=playbook).model
 
-    play = m.Play(playbook=playbook, name='test play')
-    host = m.Host(name='host-%04d' % random.randint(0, 9999),
-                  playbook=playbook)
+    tasks = []
+    task_results = []
 
-    if ara_record:
-        task = m.Task(play=play, playbook=playbook, action='ara_record')
-        msg = 'Data recorded in ARA for this playbook.'
-    else:
-        task = m.Task(play=play, playbook=playbook, action='test-action')
-        msg = 'This is a test'
-    task_string = """
-    - debug:
-        msg: 'task'
-    """
-    task_content = m.FileContent(content=task_string)
-    task_file = m.File(path='main.yml',
-                       playbook=playbook,
-                       content=task_content)
-    task.lineno = '1'
-    task.file = task_file
-    task.file_id = task_file.id
+    task_file = fakes.File(playbook=playbook,
+                           is_playbook=False,
+                           path='some/path/main.yml').model
+    task_content = fakes.FileContent(content=fakes.FAKE_TASK_CONTENT).model
+    task = fakes.Task(play=play,
+                      playbook=playbook,
+                      action='fake_action',
+                      file=task_file,
+                      file_id=task_file.id).model
+    tasks.append(task)
+    task_result = fakes.TaskResult(task=task,
+                                   host=host,
+                                   status='ok',
+                                   changed=True,
+                                   result='fake action result').model
+    task_results.append(task_result)
 
-    result = m.TaskResult(task=task, status='ok', host=host, result=msg)
-
-    task_skipped = m.Task(play=play, playbook=playbook, action='foo')
-    result_skipped = m.TaskResult(task=task_skipped, status='skipped',
-                                  host=host, result='Conditional check failed')
-
-    task_failed = m.Task(play=play, playbook=playbook, action='bar')
-    result_failed = m.TaskResult(task=task_failed, status='failed', host=host,
-                                 result='Failed to do thing')
+    record_task = fakes.Task(play=play,
+                             playbook=playbook,
+                             action='ara_record').model
+    tasks.append(record_task)
 
     ctx = dict(
         playbook=playbook,
+        pb_file=pb_file,
+        pb_content=pb_content,
         play=play,
+        host=host,
         task=task,
-        result=result,
-        host=host)
+        task_file=task_file,
+        task_content=task_content,
+        result=task_result,
+    )
+
+    items = [playbook, pb_file, pb_content,
+             task_file, task_content, play, host]
+
+    skipped = False
+    if ara_record:
+        msg = 'Data recorded in ARA for this playbook.'
+        record_result = fakes.TaskResult(task=record_task,
+                                         host=host,
+                                         status='ok',
+                                         changed=True,
+                                         result=msg).model
+
+        data = fakes.Data(playbook=playbook).model
+        ctx['data'] = data
+        items.append(data)
+    else:
+        skipped = True
+        msg = 'Conditional check failed'
+        record_result = fakes.TaskResult(task=record_task,
+                                         host=host,
+                                         status='skipped',
+                                         changed=False,
+                                         skipped=True,
+                                         result=msg).model
+    task_results.append(record_result)
+
+    failed_task = fakes.Task(play=play,
+                             playbook=playbook,
+                             action='fail').model
+    tasks.append(failed_task)
+    if failed:
+        msg = 'FAILED!'
+        failed_result = fakes.TaskResult(task=failed_task,
+                                         host=host,
+                                         status='failed',
+                                         changed=False,
+                                         failed=True,
+                                         result=msg).model
+    else:
+        skipped = True
+        msg = 'Conditional check failed'
+        failed_result = fakes.TaskResult(task=failed_task,
+                                         host=host,
+                                         status='skipped',
+                                         changed=False,
+                                         skipped=True,
+                                         result=msg).model
+    task_results.append(failed_result)
 
     if gather_facts:
-        facts = m.HostFacts(host=host, values='{"fact": "value"}')
+        facts = fakes.HostFacts(host=host).model
         ctx['facts'] = facts
+        items.append(facts)
 
-    if ara_record:
-        data = m.Data(playbook=playbook, key='test key', value='test value')
-        ctx['data'] = data
-
-    for obj in ctx.values():
-        if hasattr(obj, 'start'):
-            obj.start()
-        db.session.add(obj)
-
-    extra_objects = [playbook_file, playbook_content, task_file, task_content,
-                     task_skipped, result_skipped]
-    if failed:
-        extra_objects.append(task_failed)
-        extra_objects.append(result_failed)
-
-    for obj in extra_objects:
-        db.session.add(obj)
-
-    db.session.commit()
+    for item in items + tasks + task_results:
+        if hasattr(item, 'start'):
+            item.start()
 
     if complete:
-        stats = m.Stats(playbook=playbook, host=host, ok=1, skipped=1,
-                        failed=int(failed))
+        stats = fakes.Stats(playbook=playbook,
+                            host=host,
+                            ok=1,
+                            skipped=int(skipped),
+                            failed=int(failed)).model
         ctx['stats'] = stats
-        db.session.add(stats)
-        ctx['playbook'].complete = True
+        items.append(stats)
 
-        for obj in ctx.values():
-            if hasattr(obj, 'stop'):
-                obj.stop()
+        for item in items + tasks + task_results:
+            if hasattr(item, 'stop'):
+                item.stop()
 
+    for item in items + tasks + task_results:
+        db.session.add(item)
     db.session.commit()
 
     return ctx

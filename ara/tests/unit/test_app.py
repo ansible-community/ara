@@ -1,11 +1,11 @@
 import pytest
 
-from common import ansible_run
-from common import TestAra
+from ara.tests.unit.common import ansible_run
+from ara.tests.unit.common import TestAra
 
 
 class TestApp(TestAra):
-    '''Tests for the ARA web interface'''
+    """ Tests for the ARA web interface """
     def setUp(self):
         super(TestApp, self).setUp()
 
