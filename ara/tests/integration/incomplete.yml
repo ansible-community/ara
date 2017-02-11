@@ -3,4 +3,6 @@
   tasks:
     - debug:
         msg: "This playbook is meant to be interrupted"
-    - command: sleep 30
+    - name: Sleep for thirty seconds
+      command: sleep 30
+      changed_when: false

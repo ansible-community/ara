@@ -2,8 +2,10 @@
   hosts: localhost
   gather_facts: no
   tasks:
-    - include_role:
+    - name: Include a role
+      include_role:
         name: "included-role"
-    - include_role:
+    - name: Include tasks from a role
+      include_role:
         name: "included-role"
         tasks_from: "included-task"

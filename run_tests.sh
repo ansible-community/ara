@@ -44,6 +44,19 @@ export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
 export ANSIBLE_LIBRARY="ara/plugins/modules"
 export ARA_DATABASE="sqlite:///${DATABASE}"
 
+# Lint
+# failed.yml does not work with lint due to unicode error
+# https://github.com/willthames/ansible-lint/issues/242
+# include_role is excluded because it is only applied on >2.2 later
+for file in $(find ara/tests/integration ! -path '*failed.yml' ! -path '*include_role.yml' -regex '.*.y[a]?ml')
+do
+    ansible-lint ${file}
+done
+for file in $(find ara/tests/integration -maxdepth 1 ! -path '*include_role.yml' -regex '.*.y[a]?ml')
+do
+    ansible-playbook --syntax-check ${file}
+done
+
 # Run test playbooks
 ansible-playbook -vv ara/tests/integration/smoke.yml
 ansible-playbook -vv ara/tests/integration/hosts.yml
@@ -57,6 +70,8 @@ kill $!
 # This playbook leverages include_role that landed in 2.2.0.0
 ansible_version=$(pip freeze |grep ansible== |cut -f3 -d =)
 if [[ $(semver_compare "${ansible_version}" ">=" "2.2.0.0") == "True" ]]; then
+    ansible-playbook --syntax-check ara/tests/integration/include_role.yml
+    ansible-lint ara/tests/integration/include_role.yml
     ansible-playbook -vv ara/tests/integration/include_role.yml
 fi
 

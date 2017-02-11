@@ -17,14 +17,19 @@
 # Tests some things around blocks, failures and rescues
 
 - block:
-    - debug:
+    - name: Debug message
+      debug:
         msg: "Successful debug task"
-    - command: /bin/false
-    - debug:
+    - name: Return false
+      command: /bin/false
+    - name: Command that should not run
+      debug:
         msg: "This should never run"
   rescue:
-    - debug:
+    - name: Rescue task
+      debug:
         msg: "Rescue was called successfully"
   always:
-    - debug:
+    - name: Task that should always run
+      debug:
         msg: "This should always be printed"
