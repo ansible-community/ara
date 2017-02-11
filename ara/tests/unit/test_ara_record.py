@@ -125,14 +125,14 @@ class TestRecord(TestAra):
         self.cb.v2_playbook_on_task_start(task, False)
         return task
 
-    def test_create_record(self):
+    def test_create_text_record(self):
         """
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
         task.async = MagicMock()
         task.args = {
-            'key': 'test-key',
+            'key': 'test-text',
             'value': 'test-value',
             'type': 'text'
         }
@@ -146,12 +146,124 @@ class TestRecord(TestAra):
         self.assertIsNotNone(r_playbook)
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+                                        key='test-text').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
-        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.key, 'test-text')
         self.assertEqual(r_data.value, 'test-value')
         self.assertEqual(r_data.type, 'text')
+
+    def test_create_url_record(self):
+        """
+        Create a new record with ara_record.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-url',
+            'value': 'http://url',
+            'type': 'url'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-url').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-url')
+        self.assertEqual(r_data.value, 'http://url')
+        self.assertEqual(r_data.type, 'url')
+
+    def test_create_json_record(self):
+        """
+        Create a new record with ara_record.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-json',
+            'value': '{"foo": "bar"}',
+            'type': 'json'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-json').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-json')
+        self.assertEqual(r_data.value, '{"foo": "bar"}')
+        self.assertEqual(r_data.type, 'json')
+
+    def test_create_list_record(self):
+        """
+        Create a new record with ara_record.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-list',
+            'value': ['foo', 'bar'],
+            'type': 'list'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-list').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-list')
+        self.assertEqual(r_data.value, ['foo', 'bar'])
+        self.assertEqual(r_data.type, 'list')
+
+    def test_create_dict_record(self):
+        """
+        Create a new record with ara_record.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-dict',
+            'value': {'foo': 'bar'},
+            'type': 'dict'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-dict').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-dict')
+        self.assertEqual(r_data.value, {'foo': 'bar'})
+        self.assertEqual(r_data.type, 'dict')
 
     def test_create_record_with_no_type(self):
         """
@@ -160,7 +272,7 @@ class TestRecord(TestAra):
         task = MagicMock(Task)
         task.async = MagicMock()
         task.args = {
-            'key': 'test-key',
+            'key': 'test-notype',
             'value': 'test-value'
         }
 
@@ -173,11 +285,39 @@ class TestRecord(TestAra):
         self.assertIsNotNone(r_playbook)
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+                                        key='test-notype').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
-        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.key, 'test-notype')
         self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
+
+    def test_create_record_as_wrong_type(self):
+        """
+        Create a new record with ara_record.
+        """
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'key': 'test-wrongtype',
+            'value': ['foo', 'bar'],
+            'type': 'text'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-wrongtype').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-wrongtype')
+        self.assertEqual(r_data.value, ['foo', 'bar'])
         self.assertEqual(r_data.type, 'text')
 
     def test_update_record(self):
@@ -188,7 +328,7 @@ class TestRecord(TestAra):
         task = MagicMock(Task)
         task.async = MagicMock()
         task.args = {
-            'key': 'test-key',
+            'key': 'test-update',
             'value': 'test-value',
             'type': 'text'
         }
@@ -202,15 +342,15 @@ class TestRecord(TestAra):
         self.assertIsNotNone(r_playbook)
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+                                        key='test-update').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
-        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.key, 'test-update')
         self.assertEqual(r_data.value, 'test-value')
         self.assertEqual(r_data.type, 'text')
 
         task.args = {
-            'key': 'test-key',
+            'key': 'test-update',
             'value': 'http://another-value',
             'type': 'url'
         }
@@ -220,7 +360,7 @@ class TestRecord(TestAra):
         action.run()
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+                                        key='test-update').one()
 
         self.assertEqual(r_data.value, 'http://another-value')
         self.assertEqual(r_data.type, 'url')

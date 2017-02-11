@@ -39,7 +39,7 @@ options:
     type:
         description:
             - Type of the key
-        choices: [text, url, json]
+        choices: [text, url, json, list, dict]
         default: text
 
 requirements:
@@ -72,4 +72,6 @@ EXAMPLES = '''
     - { key: "log", value: "error", type: "text" }
     - { key: "website", value: "http://domain.tld", type: "url" }
     - { key: "data", value: "{ 'key': 'value' }", type: "json" }
+    - { key: "somelist", value: ['one', 'two'], type: "list" }
+    - { key: "somedict", value: {'key': 'value' }, type: "dict" }
 '''

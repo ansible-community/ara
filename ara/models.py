@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import json
 import uuid
 import zlib
 import hashlib
@@ -97,6 +98,25 @@ class TimedEntity(object):
     def stop(self):
         '''Explicitly set `self.time_end`.'''
         self.time_end = datetime.now()
+
+
+class CompressedData(types.TypeDecorator):
+    '''Implements a new sqlalchemy column type that automatically serializes
+    and compresses data when writing it to the database and decompresses
+    the data when reading it.
+
+    http://docs.sqlalchemy.org/en/latest/core/custom_types.html'''
+
+    impl = types.Binary
+
+    def process_bind_param(self, value, dialect):
+        return zlib.compress(json.dumps(value))
+
+    def process_result_value(self, value, dialect):
+        return json.loads(zlib.decompress(value))
+
+    def copy(self, **kwargs):
+        return CompressedData(self.impl.length)
 
 
 class CompressedText(types.TypeDecorator):
@@ -408,7 +428,7 @@ class Data(db.Model):
     id = std_pkey()
     playbook_id = std_fkey('playbooks.id')
     key = db.Column(db.String(255))
-    value = db.Column(CompressedText((2 ** 32) - 1))
+    value = db.Column(CompressedData((2 ** 32) - 1))
     type = db.Column(db.String(255))
 
     def __repr__(self):

@@ -74,6 +74,91 @@
       - "bar.value == '{ \"foo\": \"bar\" }'"
       - bar.type == "json"
 
+- name: Record a list value
+  vars:
+    someitems:
+      - one
+      - two
+      - three
+      - go
+  ara_record:
+    key: "somelist"
+    value: "{{ someitems }}"
+    type: "list"
+
+- name: Read somelist key
+  ara_read:
+    key: "somelist"
+  register: somelist
+
+- name: Validate somelist key
+  vars:
+    someitems:
+      - one
+      - two
+      - three
+      - go
+  assert:
+    that:
+      - somelist.key == "somelist"
+      - somelist.value == someitems
+      - somelist.type == "list"
+
+- name: Record a dict value
+  vars:
+    dictdata:
+      foo: "bar"
+      bar: "foo"
+  ara_record:
+    key: "somedict"
+    value: "{{ dictdata }}"
+    type: "dict"
+
+- name: Read somedict key
+  ara_read:
+    key: "somedict"
+  register: somedict
+
+- name: Validate somedict key
+  vars:
+    dictdata:
+      foo: "bar"
+      bar: "foo"
+  assert:
+    that:
+      - somedict.key == "somedict"
+      - somedict.value == dictdata
+      - somedict.type == "dict"
+
+- name: Record a list as a text type
+  vars:
+    list:
+      - foo
+      - bar
+  ara_record:
+    key: "list_as_text"
+    value: "{{ list }}"
+    type: "text"
+
+- name: Read a list as a text type
+  ara_read:
+    key: "list_as_text"
+  register: list_as_text
+
+# The key is still recorded as an actual list, however, it will be rendered
+# as text in the UI.
+- name: Validate list_as_text key
+  vars:
+    list:
+      - foo
+      - bar
+  assert:
+    that:
+      - list_as_text.key == "list_as_text"
+      - list_as_text.value == list
+      - list_as_text.value != "[u'foo', u'bar']"
+      - list_as_text.type == "text"
+
 # Things that should fail
 - name: Record with no key
   ara_record:
