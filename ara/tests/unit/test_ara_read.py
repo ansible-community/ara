@@ -62,17 +62,17 @@ class Stats(object):
         }
 
 
-class TestModule(TestAra):
-    '''Tests for the Ansible ara_record module'''
+class TestRead(TestAra):
+    """ Tests for the Ansible ara_read module """
     def setUp(self):
-        super(TestModule, self).setUp()
+        super(TestRead, self).setUp()
 
         self.cb = l.CallbackModule()
         self.tag = '%04d' % random.randint(0, 9999)
         self.ansible_run()
 
     def tearDown(self):
-        super(TestModule, self).tearDown()
+        super(TestRead, self).tearDown()
 
     def ansible_run(self):
         '''Simulates an ansible run by creating stub versions of the
