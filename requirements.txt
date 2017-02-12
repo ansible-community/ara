@@ -10,3 +10,4 @@ cliff
 setuptools>=11.3
 pygments
 debtcollector>=1.2.0
+junit-xml>=1.7
