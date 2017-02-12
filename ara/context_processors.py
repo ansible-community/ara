@@ -14,6 +14,18 @@
 
 from ara import models
 
+# TODO: Why can't I import __release__ from ara here ?
+import pbr.version
+
+# Setup version
+version_info = pbr.version.VersionInfo('ara')
+try:
+    __version__ = version_info.version_string()
+    __release__ = version_info.release_string()
+except AttributeError:
+    __version__ = None
+    __release__ = None
+
 
 def configure_context_processors(app):
 
@@ -24,8 +36,10 @@ def configure_context_processors(app):
 
         playbook_item_limit = app.config.get('NAV_MENU_MAX_PLAYBOOKS', 10)
         host_item_limit = app.config.get('NAV_MENU_MAX_HOSTS', 10)
+        ara_version = __release__
 
-        return dict(hosts=models.Host.query
+        return dict(ara_version=ara_version,
+                    hosts=models.Host.query
                     .order_by(models.Host.name)
                     .limit(host_item_limit),
                     playbooks=models.Playbook.query
