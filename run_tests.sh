@@ -21,6 +21,9 @@ SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 export ANSIBLE_TMP_DIR="${LOGDIR}/ansible"
 DATABASE="${LOGDIR}/ansible.sqlite"
 
+# Ensure we're running from the script directory
+pushd "${SCRIPT_DIR}"
+
 # Cleanup from any previous runs if necessary
 git checkout requirements.txt
 [[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
@@ -37,6 +40,7 @@ fi
 tox -e venv --notest
 source .tox/venv/bin/activate
 ansible --version
+python --version
 
 # Setup ARA
 export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
@@ -100,3 +104,4 @@ do
 done
 
 echo "Run complete, logs and build available in ${LOGDIR}"
+popd
