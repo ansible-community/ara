@@ -1,4 +1,4 @@
-<html class="layout-pf layout-pf-fixed">
+<html class="layout-pf">
 {% import "macros.html" as macros %}
 <head>
   <meta charset="utf-8">
@@ -21,7 +21,7 @@
   <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
   {% endblock %}
 </head>
-
+<body>
 {% include "navbar.html" %}
 
 {% block content %}
@@ -39,4 +39,5 @@
     $().setupVerticalNavigation(true);
   });
 </script>
+</body>
 </html>
