@@ -1,4 +1,5 @@
 import json
+import six
 
 from flask import render_template, abort, Blueprint
 from ara import models
@@ -14,7 +15,7 @@ def show_host(id):
         abort(404)
 
     if host and host.facts:
-        facts = sorted(json.loads(host.facts.values).iteritems())
+        facts = sorted(six.iteritems(json.loads(host.facts.values)))
     else:
         abort(404)
 
