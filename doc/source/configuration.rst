@@ -25,12 +25,6 @@ where they have been installed in order to let Ansible know where they are locat
 
       python -c "import os,ara; print(os.path.dirname(ara.__file__))"
 
-.. warning::
-
-   Prior to version 0.9.2 of ARA, the path to the ARA callback plugin
-   was at ``ara/callback``. This path has since then been deprecated and
-   moved to ``ara/plugins/callbacks``.
-
 .. _callback: https://ara.readthedocs.io/en/latest/faq.html#what-s-an-ansible-callback
 .. _ara_record: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
 .. _ara_read: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
