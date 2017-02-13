@@ -5,7 +5,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-10 col-md-offset-1">
-      <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', playbook.path, playbook=playbook.id) }}</h1>
+      <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', playbook.path, playbook=playbook.id) }}{% if playbook.ansible_version %} with Ansible v{{ playbook.ansible_version }}{% endif %}</h1>
       <h2>{{ playbook.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ playbook.time_end |datefmt }}</h2>
     </div>
   </div>

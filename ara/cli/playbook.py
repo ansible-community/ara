@@ -27,6 +27,7 @@ LIST_FIELDS = (
     Field('Time Start'),
     Field('Duration'),
     Field('Complete'),
+    Field('Ansible Version'),
 )
 
 SHOW_FIELDS = (
@@ -36,6 +37,7 @@ SHOW_FIELDS = (
     Field('Time End'),
     Field('Duration'),
     Field('Complete'),
+    Field('Ansible Version'),
 )
 
 
