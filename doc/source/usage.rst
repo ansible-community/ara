@@ -262,8 +262,8 @@ bundled with ARA::
 
 .. _any other Flask application: http://flask.pocoo.org/docs/0.10/deploying/uwsgi/
 
-Generating a static version of the web application
---------------------------------------------------
+Generating a static HTML version of the web application
+-------------------------------------------------------
 
 ARA is able to generate a static html version of it's dynamic, database-driven
 web application.
@@ -277,8 +277,8 @@ artifacts of the jobs, allowing you to browse the results in-place.
 
 The ARA CLI client provides a command to generate a static version::
 
-    $ ara help generate
-    usage: ara generate [-h] <path>
+    $ ara help generate html
+    usage: ara generate html [-h] <path>
       <path>                Path where the static files will be built in
 
     Generates a static tree of the web application

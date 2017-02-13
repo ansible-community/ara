@@ -22,7 +22,7 @@ ARA provides four things:
 .. _ara_read: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
 .. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
-.. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-version-of-the-web-application
+.. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-html-version-of-the-web-application
 
 Discussing ARA
 --------------
