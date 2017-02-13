@@ -19,8 +19,9 @@ from ara.webapp import create_app
 version_info = pbr.version.VersionInfo('ara')
 try:
     __version__ = version_info.version_string()
+    __release__ = version_info.release_string()
 except AttributeError:
     __version__ = None
-
+    __release__ = None
 
 app = create_app()
