@@ -158,6 +158,7 @@ class Playbook(db.Model, TimedEntity):
 
     id = std_pkey()
     path = db.Column(db.String(255))
+    ansible_version = db.Column(db.String(255))
     data = one_to_many('Data', backref='playbook')
     files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')

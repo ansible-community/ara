@@ -17,6 +17,7 @@ import random
 import ara.models as m
 
 from mock import Mock
+from ansible import __version__ as ansible_version
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests
@@ -107,6 +108,7 @@ class HostFacts(object):
 
 class Playbook(object):
     def __init__(self, complete=True, path='playbook.yml'):
+        self.ansible_version = ansible_version
         self.complete = complete
         self.path = path
 
@@ -115,7 +117,8 @@ class Playbook(object):
 
     @property
     def model(self):
-        return m.Playbook(complete=self.complete,
+        return m.Playbook(ansible_version=ansible_version,
+                          complete=self.complete,
                           path=self.path)
 
 

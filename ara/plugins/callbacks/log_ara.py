@@ -25,6 +25,7 @@ from datetime import datetime
 from ara import app, models
 from ara.models import db
 
+from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
 import json
 
@@ -254,6 +255,7 @@ class CallbackModule(CallbackBase):
 
         LOG.debug('starting playbook %s', path)
         self.playbook = models.Playbook(
+            ansible_version=ansible_version,
             path=path
         )
 
