@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+from ansible import __version__ as ansible_version
 from ara import models
 
 # TODO: Why can't I import __release__ from ara here ?
@@ -39,6 +40,7 @@ def configure_context_processors(app):
         ara_version = __release__
 
         return dict(ara_version=ara_version,
+                    ansible_version=ansible_version,
                     hosts=models.Host.query
                     .order_by(models.Host.name)
                     .limit(host_item_limit),
