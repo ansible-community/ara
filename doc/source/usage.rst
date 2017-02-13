@@ -328,3 +328,34 @@ The ARA CLI client provides a command to generate a static version::
         └── 946e1bc6-28b9-4f2f-ad4f-75b3c6c9032d
 
     13 directories, 22 files
+
+Generating a static junit version of the task results
+-----------------------------------------------------
+
+ARA is able to generate a junit xml report that contains all the tasks and
+their results. This can be used, for example, with the Jenkins junit
+implementation::
+
+    $ ara help generate junit
+    usage: ara generate junit [-h] <output file>
+
+    Generate junit stream from ara data
+
+    positional arguments:
+      <output file>  The file to write the junit xml to. Use "-" for stdout.
+
+    optional arguments:
+      -h, --help     show this help message and exit
+
+    $ ara generate junit -
+    <?xml version="1.0" ?>
+    <testsuites errors="0" failures="3" tests="66" time="33.0">
+        <testsuite errors="0" failures="3" name="Ansible Tasks" skipped="5" tests="66" time="33">
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Deferred setup" time="3.000000"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="include"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Ensure temporary directory exists"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Check if a file exists"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Touch a file if it doesn't exist"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Remove a file if it doesn't exist"/>
+            <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Remove a file if it exists">
+    [...]
