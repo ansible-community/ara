@@ -34,9 +34,14 @@ DEFAULT_ARA_LOGFILE = os.path.join(ARA_DIR, 'ara.log')
 DEFAULT_DATABASE_PATH = os.path.join(ARA_DIR, 'ansible.sqlite')
 DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
 
-ARA_TMP_DIR = get_config(
-    config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-    DEFAULT_ARA_TMPDIR, istmppath=True)
+try:
+    ARA_TMP_DIR = get_config(
+        config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
+        DEFAULT_ARA_TMPDIR, istmppath=True)
+except TypeError:
+    ARA_TMP_DIR = get_config(
+        config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
+        DEFAULT_ARA_TMPDIR, type_value="tmppath")
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
     DEFAULT_ARA_LOGFILE)
