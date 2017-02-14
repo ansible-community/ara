@@ -12,9 +12,9 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import json
 import logging
 import os
-import re
 import sys
 
 from cliff.command import Command
@@ -61,10 +61,6 @@ class GenerateJunit(Command):
         )
         return parser
 
-    def _sanitize(self, instr):
-        """Make a string suitable for use in a dotted pseudo python path"""
-        return re.sub('\W+', '_', instr)
-
     def take_action(self, args):
         test_cases = []
         task_results = models.TaskResult().query.all()
@@ -72,16 +68,20 @@ class GenerateJunit(Command):
             task_name = result.task.name
             if not task_name:
                 task_name = result.task.action
+            additional_results = {
+                'host': result.host.name,
+                'playbook_path': result.task.playbook.path
+            }
+            result_str = json.dumps(additional_results)
             test_path = \
-                "{host_name}.{playbook_path}.{play_name}".format(
-                    host_name=result.host.name,
-                    playbook_path=self._sanitize(result.task.playbook.path),
-                    play_name=self._sanitize(result.task.play.name))
+                "{playbook_file}.{play_name}".format(
+                    playbook_file=os.path.basename(result.task.playbook.path),
+                    play_name=result.task.play.name)
             test_case = TestCase(
                 name=task_name,
                 classname=test_path,
-                elapsed_sec=result.duration.seconds
-            )
+                elapsed_sec=result.duration.seconds,
+                stdout=result_str)
             if result.status == "skipped":
                 test_case.add_skipped_info(message=result.result)
             elif (result.status in ("failed", "unreachable") and
