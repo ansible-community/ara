@@ -31,7 +31,7 @@ This documentation you will find here is mostly a summary of
    foundation to be able to contribute to ARA.
 
 .. _OpenStack: http://www.openstack.org/
-.. _OpenStack's developer getting started: http://docs.openstack.org/infra/manual/developers.html
+.. _OpenStack's developer getting started: https://docs.openstack.org/infra/manual/developers.html
 
 Pre-requirements
 ----------------
@@ -61,7 +61,7 @@ install it to be able to send patches for code reviews.
 
 There are different ways to install git-review, `choose your favorite`_.
 
-.. _choose your favorite: http://docs.openstack.org/infra/manual/developers.html#installing-git-review
+.. _choose your favorite: https://docs.openstack.org/infra/manual/developers.html#installing-git-review
 
 Install development dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,9 +69,7 @@ Install development dependencies
 ARA requires some additional dependencies for development purposes, for running
 tests, for example.
 
-Make sure they are installed according to the documentation_.
-
-.. _documentation: http://ara.readthedocs.io/en/latest/installation.html
+Make sure they are installed according to the :ref:`documentation <installation>`.
 
 Sending a patch for review
 --------------------------
@@ -118,15 +116,18 @@ Running tests locally
 
 Unit tests::
 
+   # Python 2.7
    tox -e py27
+   # Python 3.5
+   tox -e py35
 
-PEP8/flake8 tests::
+pep8/flake8/bandit tests::
 
    tox -e pep8
 
 Documentation tests::
 
-   # This will also build the docs locally in docs/build
+   # This will also build the docs locally in docs/build/html
    tox -e docs
 
 Integration tests:
@@ -138,8 +139,8 @@ Integration tests:
 ::
 
    # When not run inside a Jenkins-based environment, this will create an ARA
-   # database at /tmp/ansible.sqlite, ARA logs at /tmp/logs and the ARA static
-   # website will be generated at /tmp/build.
+   # database at /tmp/logs/ansible.sqlite, ARA logs at /tmp/logs and the ARA static
+   # website will be generated at /tmp/logs/build.
    ./run_tests.sh
 
 More reading
@@ -149,6 +150,6 @@ More reading
 - `Gerrit documentation`_
 - `Git commit good practices`_
 
-.. _Official OpenStack developer documentation: http://docs.openstack.org/infra/manual/developers.html
+.. _Official OpenStack developer documentation: https://docs.openstack.org/infra/manual/developers.html
 .. _Gerrit documentation: https://review.openstack.org/Documentation/intro-quick.html
 .. _Git commit good practices: https://wiki.openstack.org/wiki/GitCommitMessages

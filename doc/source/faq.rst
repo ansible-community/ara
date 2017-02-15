@@ -1,3 +1,5 @@
+.. _faq:
+
 FAQ
 ===
 
@@ -8,19 +10,13 @@ ARA_ makes Ansible_ runs easier to visualize, understand and troubleshoot.
 
 ARA provides four things:
 
-1. An `Ansible callback plugin`_ to record playbook runs into a local or remote database
-2. The ara_record_ and ara_read_ pair of Ansible modules to record and read persistent data with ARA
-3. A `CLI client`_ to query the database
-4. A `dynamic, database-driven web interface`_ that can also be `generated and served from static files`_
+1. An :ref:`Ansible callback plugin <configuration_ansible>` to record playbook runs into a local or remote database
+2. The :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` pair of Ansible modules to record and read persistent data with ARA
+3. A :ref:`CLI client <cli_client>` to query the database
+4. A :ref:`dynamic, database-driven web interface <interface_preview>` that can also be :ref:`generated and served from static files <generating_html>`
 
 .. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
-.. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
-.. _ara_record: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
-.. _ara_read: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
-.. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
-.. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
-.. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-html-version-of-the-web-application
 
 What versions of Ansible are supported ?
 ----------------------------------------
@@ -32,6 +28,8 @@ Ansible 2.0.x is `no longer supported`_.
 
 .. _no longer supported: https://groups.google.com/forum/#!topic/ansible-devel/6-6FdxZ94kc
 
+.. _faq_callback:
+
 What's an Ansible callback ?
 ----------------------------
 
@@ -40,7 +38,9 @@ send an event and you can react to it with a callback.
 You could use a callback to do things like print additional details or, in the
 case of ARA, record the playbook run data in a database.
 
-.. _Ansible Callbacks: http://docs.ansible.com/ansible/developing_plugins.html
+.. _Ansible Callbacks: https://docs.ansible.com/ansible/dev_guide/developing_plugins.html
+
+.. _interface_preview:
 
 What does the web interface look like ?
 ---------------------------------------
@@ -94,7 +94,7 @@ files so you can see exactly what run:
 Arbitrarily recorded data
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ara_record_ and ara_read_ built-in Ansible modules allow you to write and
+The :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` built-in Ansible modules allow you to write and
 read arbitrary data, making them available in the web interface as well:
 
 .. image:: _static/preview6.png

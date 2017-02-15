@@ -1,10 +1,8 @@
 Usage
 =====
 
-Once ARA is installed_ and configured_, you're ready to use it!
-
-.. _installed: installation.html
-.. _configured: configuration.html
+Once ARA is :ref:`installed <installation>` and
+:ref:`configured <configuration_ansible>`, you're ready to use it!
 
 Using the callback
 ------------------
@@ -14,6 +12,8 @@ in the ``callback_plugins`` Ansible configuration.
 
 After running an Ansible playbook, the database will be created if it doesn't
 exist and will be used automatically.
+
+.. _ara_record:
 
 Using the ara_record module
 ---------------------------
@@ -57,6 +57,8 @@ particular playbook run that was executed.
 
 You can then query ARA, either through the CLI or the web interface to see the
 recorded values.
+
+.. _ara_read:
 
 Using the ara_read module
 -------------------------
@@ -112,6 +114,8 @@ with data::
     +--------------------------------------+--------------+---------------------+---------------------+
     | 48912da8-4e83-4fdb-b73d-62b03f2a5ed9 | playbook.yml | 2016-05-14 03:27:39 | 2016-05-14 03:27:39 |
     +--------------------------------------+--------------+---------------------+---------------------+
+
+.. _cli_client:
 
 Querying the database with the CLI
 ----------------------------------
@@ -260,7 +264,9 @@ bundled with ARA::
     $ ara-manage runserver -h 0.0.0.0 -p 8080
      * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
 
-.. _any other Flask application: http://flask.pocoo.org/docs/0.10/deploying/uwsgi/
+.. _any other Flask application: http://flask.pocoo.org/docs/0.12/deploying/
+
+.. _generating_html:
 
 Generating a static HTML version of the web application
 -------------------------------------------------------
