@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ara'
-copyright = u'2016, Red Hat'
+copyright = u'2017, Red Hat'
 author = 'RDO Community'
 
 # The short X.Y version.

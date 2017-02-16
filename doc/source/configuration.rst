@@ -1,11 +1,15 @@
+.. _configuration:
+
 Configuration
 =============
+
+.. _configuration_ansible:
 
 Ansible
 -------
 
 To begin using ARA, you'll first need to set up Ansible so it knows about the
-the ARA callback_ and, if necessary, the ara_record_ and ara_read_ modules.
+the ARA :ref:`callback <faq_callback>` and, if necessary, the :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` modules.
 
 The callback and modules are bundled when installing ARA but you need to know
 where they have been installed in order to let Ansible know where they are located.
@@ -25,10 +29,6 @@ where they have been installed in order to let Ansible know where they are locat
 
       python -c "import os,ara; print(os.path.dirname(ara.__file__))"
 
-.. _callback: https://ara.readthedocs.io/en/latest/faq.html#what-s-an-ansible-callback
-.. _ara_record: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
-.. _ara_read: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
-
 Using ansible.cfg
 ~~~~~~~~~~~~~~~~~
 
@@ -46,7 +46,7 @@ directories::
     library = $ara_location/plugins/modules
     EOF
 
-.. _ansible.cfg: http://docs.ansible.com/ansible/intro_configuration.html#configuration-file
+.. _ansible.cfg: https://docs.ansible.com/ansible/intro_configuration.html#configuration-file
 
 Using environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,7 +60,7 @@ Here's how you can set up Ansible to seek out ARA's callback and modules::
     $ export ANSIBLE_ACTION_PLUGINS=$ara_location/plugins/actions
     $ export ANSIBLE_LIBRARY=$ara_location/plugins/modules
 
-.. _environment variables: http://docs.ansible.com/ansible/intro_configuration.html#environmental-configuration
+.. _environment variables: https://docs.ansible.com/ansible/intro_configuration.html#environmental-configuration
 
 ARA
 ---
