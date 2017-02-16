@@ -6,11 +6,12 @@ Table of Contents
 =================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     Frequently asked questions <faq>
     Installation <installation>
     Configuration <configuration>
+    Web Server configuration <webserver>
     Usage <usage>
     Contributing <contributing>
     Developer notes <developer>

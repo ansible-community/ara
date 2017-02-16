@@ -62,6 +62,8 @@ Here's how you can set up Ansible to seek out ARA's callback and modules::
 
 .. _environment variables: https://docs.ansible.com/ansible/intro_configuration.html#environmental-configuration
 
+.. _configuration_ara:
+
 ARA
 ---
 
@@ -86,6 +88,8 @@ the ara namespace, as follows::
    The callback, CLI client and web application all share the same
    settings. For example, if you configure the database location, all
    three will use that location.
+
+.. _configuration_parameter_ara:
 
 Parameters and their defaults
 -----------------------------

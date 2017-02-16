@@ -225,46 +225,22 @@ Example commands::
 Browsing the web interface
 --------------------------
 
-The frontend is a visualization of the data recorded in the database.
+The web UI frontend is a visualization of the data recorded in the database.
+It provides insight on your playbooks, your hosts, your tasks and the results
+of your playbook run.
 
 The interface provided by ARA provides is a simple Flask application.
-As such, you can configure it to run like `any other Flask application`_.
+There are currently two documented options to host the web interface:
 
-To run the development webserver, you can use the ``ara-manage`` script
-bundled with ARA::
+1. :ref:`Embedded development server <web_config_embedded>` (easiest but least performance)
+3. :ref:`Apache with mod_wsgi <web_config_mod_wsgi>` (recommended)
 
-    $ ara-manage runserver --help
-    usage: ara-manage runserver [-?] [-h HOST] [-p PORT] [--threaded]
-                                [--processes PROCESSES] [--passthrough-errors]
-                                [-d] [-D] [-r] [-R]
+These should be enough to get you started or help you choose your own path on
+other `deployment options`_ you might be used to when hosting `Flask`_
+applications.
 
-    Runs the Flask development server i.e. app.run()
-
-    optional arguments:
-      -?, --help            show this help message and exit
-      -h HOST, --host HOST
-      -p PORT, --port PORT
-      --threaded
-      --processes PROCESSES
-      --passthrough-errors
-      -d, --debug           enable the Werkzeug debugger (DO NOT use in production
-                            code)
-      -D, --no-debug        disable the Werkzeug debugger
-      -r, --reload          monitor Python files for changes (not 100{'const':
-                            True, 'help': 'monitor Python files for changes (not
-                            100% safe for production use)', 'option_strings':
-                            ['-r', '--reload'], 'dest': 'use_reloader',
-                            'required': False, 'nargs': 0, 'choices': None,
-                            'default': None, 'prog': 'ara-manage runserver',
-                            'container': <argparse._ArgumentGroup object at
-                            0x7f6825596310>, 'type': None, 'metavar': None}afe for
-                            production use)
-      -R, --no-reload       do not monitor Python files for changes
-
-    $ ara-manage runserver -h 0.0.0.0 -p 8080
-     * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
-
-.. _any other Flask application: http://flask.pocoo.org/docs/0.12/deploying/
+.. _deployment options: http://flask.pocoo.org/docs/0.12/deploying/
+.. _Flask: http://flask.pocoo.org/
 
 .. _generating_html:
 
