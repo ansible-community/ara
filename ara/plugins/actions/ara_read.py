@@ -18,7 +18,9 @@ import os
 from ansible.plugins.action import ActionBase
 
 try:
-    from ara import app, models
+    from ara import models
+    from ara.webapp import create_app
+    app = create_app()
     HAS_ARA = True
 except ImportError:
     HAS_ARA = False

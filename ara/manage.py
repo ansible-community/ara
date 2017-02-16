@@ -17,9 +17,10 @@
 from flask_script import Manager, prompt_bool
 from flask_migrate import Migrate, MigrateCommand
 
-from ara import app
+from ara.webapp import create_app
 from ara.models import db
 
+app = create_app()
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 migrate = Migrate(app, db, directory=app.config['DB_MIGRATIONS'])

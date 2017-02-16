@@ -19,7 +19,8 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from ara import __version__
-from ara import app
+from ara.webapp import create_app
+app = create_app()
 
 
 class AraCli(App):

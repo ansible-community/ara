@@ -22,8 +22,9 @@ import logging
 import os
 from datetime import datetime
 
-from ara import app, models
+from ara import models
 from ara.models import db
+from ara.webapp import create_app
 
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
@@ -32,6 +33,7 @@ import json
 __metaclass__ = type
 
 LOG = logging.getLogger('ara.callback')
+app = create_app()
 
 
 class CommitAfter(type):

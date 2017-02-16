@@ -18,12 +18,14 @@ import os
 import sys
 
 from cliff.command import Command
+from flask_frozen import Freezer
 from junit_xml import TestCase
 from junit_xml import TestSuite
 
-from ara import app
-from ara import freezer
+from ara.webapp import create_app
 from ara import models
+
+app = create_app()
 
 
 class GenerateHtml(Command):
@@ -43,7 +45,8 @@ class GenerateHtml(Command):
         app.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
         self.log.warn('Generating static files at %s...',
                       args.path)
-        freezer.freezer.freeze()
+        freezer = Freezer(app)
+        freezer.freeze()
 
         print('Done.')
 

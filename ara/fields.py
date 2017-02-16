@@ -15,7 +15,9 @@
 import datetime
 from flask import render_template_string
 
-from ara import app
+from ara.webapp import create_app
+
+app = create_app()
 
 implicit_templates = {
     datetime.datetime: '{{ value|datefmt }}',

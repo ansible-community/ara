@@ -17,13 +17,15 @@ import random
 import os
 import json
 
-from ara import app as a
+from ara.webapp import create_app
 import ara.models as m
 import ara.utils as u
 import ara.plugins.callbacks.log_ara as l
 
 from ara.tests.unit.common import TestAra
 from ara.tests.unit import fakes
+
+a = create_app()
 
 
 class TestCallback(TestAra):

@@ -13,7 +13,6 @@
 #   under the License.
 
 import pbr.version
-from ara.webapp import create_app
 
 # Setup version
 version_info = pbr.version.VersionInfo('ara')
@@ -23,5 +22,3 @@ try:
 except AttributeError:
     __version__ = None
     __release__ = None
-
-app = create_app()
