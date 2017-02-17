@@ -3,7 +3,7 @@
 Web Server Configuration
 ========================
 
-The web interface provided by ARA provides is a simple Flask application.
+The web interface provided by ARA is a simple Flask application.
 There are many ways to `deploy and host`_ a Flask application, here we cover
 two different ways which should help you get started.
 
@@ -161,11 +161,11 @@ Set up the Apache virtual host at ``/etc/httpd/conf.d/ara.conf``::
         </Directory>
     </VirtualHost>
 
-Restart Apache and you're done !::
+Restart Apache and you're done::
 
     systemctl restart httpd
 
-You should now be able to access the web interface at the domain you set up.
+You should now be able to access the web interface at the domain you set up !
 
 Debian/Ubuntu
 ~~~~~~~~~~~~~
@@ -257,8 +257,8 @@ Ensure the configuration is enabled::
 
     a2ensite ara
 
-Restart Apache and you're done !::
+Restart Apache and you're done::
 
     systemctl restart apache2
 
-You should now be able to access the web interface at the domain you set up.
+You should now be able to access the web interface at the domain you set up !
