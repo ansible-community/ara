@@ -12,7 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, abort, Blueprint, request
+from flask import render_template, abort, Blueprint, request, current_app
 from ara import models, utils
 
 playbook = Blueprint('playbook', __name__)
@@ -20,8 +20,15 @@ playbook = Blueprint('playbook', __name__)
 
 @playbook.route('/')
 def playbook_summary():
-    playbooks = (models.Playbook.query
-                 .order_by(models.Playbook.time_start.desc()))
+    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
+        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
+        playbooks = (models.Playbook.query
+                     .filter(models.Playbook.id.in_(override))
+                     .order_by(models.Playbook.time_start.desc()))
+    else:
+        playbooks = (models.Playbook.query
+                     .order_by(models.Playbook.time_start.desc()))
+
     stats = utils.get_summary_stats(playbooks, 'playbook_id')
 
     return render_template('playbook_list.html',

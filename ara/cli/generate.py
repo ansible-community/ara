@@ -39,12 +39,23 @@ class GenerateHtml(Command):
             metavar='<path>',
             help='Path where the static files will be built in',
         )
+        parser.add_argument(
+            '--playbook',
+            metavar='<playbook>',
+            nargs="+",
+            help='Only include the specified playbooks in the generation.',
+            required=False,
+            default=None,
+        )
         return parser
 
     def take_action(self, args):
         app.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
-        self.log.warn('Generating static files at %s...',
-                      args.path)
+
+        if args.playbook is not None:
+            app.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
+
+        self.log.warn('Generating static files at %s...', args.path)
         freezer = Freezer(app)
         freezer.freeze()
 
@@ -62,12 +73,29 @@ class GenerateJunit(Command):
             metavar='<output file>',
             help='The file to write the junit xml to. Use "-" for stdout.',
         )
+        parser.add_argument(
+            '--playbook',
+            metavar='<playbook>',
+            nargs="+",
+            help='Only include the specified playbooks in the generation.',
+            required=False,
+            default=None,
+        )
+
         return parser
 
     def take_action(self, args):
         test_cases = []
-        task_results = models.TaskResult().query.all()
-        for result in task_results:
+        if args.playbook is not None:
+            playbooks = args.playbook
+            results = (models.TaskResult().query
+                       .join(models.Task)
+                       .filter(models.TaskResult.task_id == models.Task.id)
+                       .filter(models.Task.playbook_id.in_(playbooks)))
+        else:
+            results = models.TaskResult().query.all()
+
+        for result in results:
             task_name = result.task.name
             if not task_name:
                 task_name = result.task.action

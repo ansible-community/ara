@@ -28,6 +28,7 @@ import ara.cli.playbook
 import ara.cli.result
 import ara.cli.task
 import ara.cli.stats
+import ara.models as m
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
@@ -652,20 +653,105 @@ class TestCLIGenerate(TestAra):
         for path in paths:
             self.assertTrue(os.path.exists(path))
 
+    def test_generate_html_for_playbook(self):
+        """ Roughly ensures the expected files are generated properly """
+        dir = self.generate_dir
+
+        # Record two separate playbooks
+        ctx = ansible_run()
+        ansible_run()
+        cmd = ara.cli.generate.GenerateHtml(None, None)
+        parser = cmd.get_parser('test')
+
+        args = parser.parse_args([dir, '--playbook', ctx['playbook'].id])
+        cmd.take_action(args)
+
+        host_id = ctx['host'].id
+        file_id = ctx['task'].file_id
+        play_id = ctx['play'].id
+        playbook_id = ctx['playbook'].id
+        result_id = ctx['result'].id
+        task_id = ctx['task'].id
+
+        file_filter_path = 'playbook/{0}/file/{1}'.format(playbook_id, file_id)
+        play_path = 'playbook/{0}/play/{1}'.format(playbook_id, play_id)
+        task_path = 'playbook/{0}/task/{1}'.format(playbook_id, task_id)
+        paths = [
+            os.path.join(dir, 'index.html'),
+            os.path.join(dir, 'static'),
+            os.path.join(dir, 'file/{0}'.format(file_id)),
+            os.path.join(dir, 'host/{0}'.format(host_id)),
+            os.path.join(dir, 'playbook/{0}'.format(playbook_id)),
+            os.path.join(dir, file_filter_path),
+            os.path.join(dir, play_path),
+            os.path.join(dir, task_path),
+            os.path.join(dir, 'result/{0}'.format(result_id))
+        ]
+
+        for path in paths:
+            self.assertTrue(os.path.exists(path))
+
+        # Test that we effectively have two playbooks
+        playbooks = m.Playbook.query.all()
+        self.assertTrue(len(playbooks) == 2)
+
+        # Retrieve the other playbook and validate that we haven't generated
+        # files for it
+        playbook_two = (m.Playbook.query
+                        .filter(m.Playbook.id != ctx['playbook'].id).one())
+        path = os.path.join(dir, 'playbook/{0}'.format(playbook_two.id))
+        self.assertFalse(os.path.exists(path))
+
     def test_generate_junit(self):
         """ Roughly ensures the expected xml is generated properly """
         tdir = self.generate_dir
 
-        ansible_run()
+        ctx = ansible_run()
         cmd = ara.cli.generate.GenerateJunit(None, None)
         parser = cmd.get_parser('test')
 
-        junit_file = "{tdir}/junit.xml".format(tdir=tdir)
+        junit_file = '{tdir}/junit.xml'.format(tdir=tdir)
         args = parser.parse_args([junit_file])
         cmd.take_action(args)
 
         self.assertTrue(os.path.exists(junit_file))
+
+        tasks = m.Task.query.all()
         tree = etree.parse(junit_file)
         self.assertEqual(tree.getroot().tag, "testsuites")
         self.assertEqual(tree.getroot()[0].tag, "testsuite")
         self.assertEqual(tree.getroot()[0][0].tag, "testcase")
+        self.assertEqual(int(tree.getroot().get('tests')), len(tasks))
+        self.assertEqual(int(tree.getroot().get('failures')),
+                         ctx['stats'].failed)
+
+    def test_generate_junit_for_playbook(self):
+        """ Roughly ensures the expected xml is generated properly """
+        tdir = self.generate_dir
+
+        # Record two separate playbooks
+        ctx = ansible_run()
+        ansible_run()
+        cmd = ara.cli.generate.GenerateJunit(None, None)
+        parser = cmd.get_parser('test')
+
+        junit_file = "{tdir}/junit-playbook.xml".format(tdir=tdir)
+        playbook = ctx['playbook'].id
+        args = parser.parse_args([junit_file, '--playbook', playbook])
+        cmd.take_action(args)
+
+        # Test that we effectively have two playbooks
+        playbooks = m.Playbook.query.all()
+        all_tasks = m.Task.query.all()
+        tasks = (m.Task.query
+                 .filter(m.Task.playbook_id == ctx['playbook'].id).all())
+        self.assertEqual(len(playbooks), 2)
+        self.assertNotEqual(len(all_tasks), len(tasks))
+
+        self.assertTrue(os.path.exists(junit_file))
+
+        tree = etree.parse(junit_file)
+        self.assertEqual(tree.getroot().tag, "testsuites")
+        self.assertEqual(tree.getroot()[0].tag, "testsuite")
+        self.assertEqual(tree.getroot()[0][0].tag, "testcase")
+        self.assertEqual(int(tree.getroot().get('tests')), len(tasks))

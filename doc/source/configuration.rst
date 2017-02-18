@@ -111,6 +111,8 @@ Parameters and their defaults
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_IGNORE_MIMETYPE_WARNINGS_ | ignore_mimetype_warnings | True                                      |
 +-------------------------------+--------------------------+-------------------------------------------+
+| ARA_PLAYBOOK_OVERRIDE_        | playbook_override        | None                                      |
++-------------------------------+--------------------------+-------------------------------------------+
 
 ARA_DIR
 ~~~~~~~
@@ -178,6 +180,18 @@ ARA_IGNORE_MIMETYPE_WARNINGS
 
 Whether or not to ignore mimetype warnings when generating the static version
 of the ARA web application.
+
+ARA_PLAYBOOK_OVERRIDE
+~~~~~~~~~~~~~~~~~~~~~
+
+This configuration is exposed mostly for the purposes of the
+``ara generate html`` and ``ara generate junit`` commands but you can use it
+as well.
+
+ARA_PLAYBOOK_OVERRIDE will limit the playbooks displayed in the web application
+to the list of playbook IDs specified.
+This is expected to be playbook IDs (ex: retrieved through
+``ara playbook list``) in a comma-separated list.
 
 The CLI client and the web application
 --------------------------------------

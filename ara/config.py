@@ -34,14 +34,21 @@ DEFAULT_ARA_LOGFILE = os.path.join(ARA_DIR, 'ara.log')
 DEFAULT_DATABASE_PATH = os.path.join(ARA_DIR, 'ansible.sqlite')
 DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
 
+# Ansible >= 2.3 introduced the value_type parameter
 try:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
         DEFAULT_ARA_TMPDIR, istmppath=True)
+    ARA_PLAYBOOK_OVERRIDE = get_config(
+        config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
+        None, islist=True)
 except TypeError:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMPDIR, value_type="tmppath")
+        DEFAULT_ARA_TMPDIR, value_type='tmppath')
+    ARA_PLAYBOOK_OVERRIDE = get_config(
+        config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
+        None, value_type='list')
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
     DEFAULT_ARA_LOGFILE)

@@ -143,7 +143,8 @@ Example commands::
       data show      Show details of a recorded key/value pair
       file list      Returns a list of files
       file show      Show details of a file
-      generate       Generates a static tree of the web application
+      generate html  Generates a static tree of the web application
+      generate junit Generate junit stream from ara data
       help           print detailed help for another command
       host facts     Show facts for a host
       host list      Returns a list of hosts
@@ -257,18 +258,30 @@ For example, in the context of continuous integration, you could run an Ansible
 job with ARA, generate a static version and then recover the resulting build as
 artifacts of the jobs, allowing you to browse the results in-place.
 
-The ARA CLI client provides a command to generate a static version::
+This is done with the ``ara generate html`` command.
+
+By default, ARA will generate a static version for all the recorded playbook
+runs in it's database.
+It is also possible to generate a report for one or many specific playbooks.
+This is done by retrieving the playbook IDs you are interested in with
+``ara playbook list`` and then using the ``ara generate html`` command with the
+``--playbook`` parameter::
 
     $ ara help generate html
-    usage: ara generate html [-h] <path>
-      <path>                Path where the static files will be built in
+    usage: ara generate html [-h] [--playbook <playbook> [<playbook> ...]] <path>
 
     Generates a static tree of the web application
 
+    positional arguments:
+      <path>                Path where the static files will be built in
+
     optional arguments:
       -h, --help            show this help message and exit
+      --playbook <playbook> [<playbook> ...]
+                            Only include the specified playbooks in the
+                            generation.
 
-    $ ara generate /tmp/build/
+    $ ara generate html /tmp/build/
     Generating static files at /tmp/build/...
     Done.
     $ tree /tmp/build/
@@ -314,20 +327,33 @@ The ARA CLI client provides a command to generate a static version::
 Generating a static junit version of the task results
 -----------------------------------------------------
 
-ARA is able to generate a junit xml report that contains all the tasks and
-their results. This can be used, for example, with the Jenkins junit
-implementation::
+ARA is able to generate a junit xml report that contains task results and their
+status.
+
+This is done with the ``ara generate junit`` command.
+
+By default, ARA will generate a report on all task results across all the
+recorded playbook runs in it's database.
+It is also possible to generate a report for one or many specific playbooks.
+This is done by retrieving the playbook IDs you are interested in with
+``ara playbook list`` and then using the ``ara generate junit`` command with the
+``--playbook`` parameter::
 
     $ ara help generate junit
-    usage: ara generate junit [-h] <output file>
+    usage: ara generate junit [-h] [--playbook <playbook> [<playbook> ...]]
+                              <output file>
 
     Generate junit stream from ara data
 
     positional arguments:
-      <output file>  The file to write the junit xml to. Use "-" for stdout.
+      <output file>         The file to write the junit xml to. Use "-" for
+                            stdout.
 
     optional arguments:
-      -h, --help     show this help message and exit
+      -h, --help            show this help message and exit
+      --playbook <playbook> [<playbook> ...]
+                            Only include the specified playbooks in the
+                            generation.
 
     $ ara generate junit -
     <?xml version="1.0" ?>

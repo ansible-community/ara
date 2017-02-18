@@ -26,7 +26,19 @@ class TestApp(TestAra):
     def tearDown(self):
         super(TestApp, self).tearDown()
 
-    def test_overview(self):
+    def test_home(self):
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_home_with_override(self):
+        ctx = ansible_run()
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx['playbook'].id]
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_home_with_bad_override(self):
+        ansible_run()
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
 
@@ -37,6 +49,18 @@ class TestApp(TestAra):
 
     def test_list_playbook_incomplete(self):
         ansible_run(complete=False)
+        res = self.client.get('/playbook/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_list_playbook_with_override(self):
+        ctx = ansible_run()
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx['playbook'].id]
+        res = self.client.get('/playbook/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_list_playbook_with_bad_override(self):
+        ansible_run()
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
         res = self.client.get('/playbook/')
         self.assertEqual(res.status_code, 200)
 

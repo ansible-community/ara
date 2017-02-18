@@ -12,6 +12,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import hashlib
 import random
 
 import ara.models as m
@@ -73,7 +74,13 @@ class FileContent(object):
 
     @property
     def model(self):
-        return m.FileContent(content=self.content)
+        sha1 = hashlib.sha1(self.content).hexdigest()
+        content = m.FileContent.query.get(sha1)
+
+        if content is None:
+            return m.FileContent(content=self.content)
+        else:
+            return content
 
 
 class Host(object):
