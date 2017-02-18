@@ -27,4 +27,4 @@ def main():
 
     stats = utils.get_summary_stats(playbooks, 'playbook_id')
 
-    return render_template('home.html', stats=stats)
+    return render_template('home.html', playbooks=playbooks, stats=stats)

@@ -13,7 +13,6 @@
 #   under the License.
 
 from ansible import __version__ as ansible_version
-from ara import models
 
 # TODO: Why can't I import __release__ from ara here ?
 import pbr.version
@@ -35,15 +34,7 @@ def configure_context_processors(app):
         '''Makes some standard data from the database available in the
         template context.'''
 
-        playbook_item_limit = app.config.get('NAV_MENU_MAX_PLAYBOOKS', 10)
-        host_item_limit = app.config.get('NAV_MENU_MAX_HOSTS', 10)
         ara_version = __release__
 
         return dict(ara_version=ara_version,
-                    ansible_version=ansible_version,
-                    hosts=models.Host.query
-                    .order_by(models.Host.name)
-                    .limit(host_item_limit),
-                    playbooks=models.Playbook.query
-                    .order_by(models.Playbook.time_start.desc())
-                    .limit(playbook_item_limit))
+                    ansible_version=ansible_version)
