@@ -41,7 +41,7 @@ try:
 except TypeError:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMPDIR, type_value="tmppath")
+        DEFAULT_ARA_TMPDIR, value_type="tmppath")
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
     DEFAULT_ARA_LOGFILE)
