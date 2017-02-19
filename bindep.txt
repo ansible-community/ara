@@ -2,7 +2,6 @@
 # see http://docs.openstack.org/infra/bindep/ for additional information.
 
 gcc
-tree
 libffi-devel [platform:rpm]
 openssl-devel [platform:rpm]
 python-devel [platform:rpm]

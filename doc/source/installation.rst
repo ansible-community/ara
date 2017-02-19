@@ -20,7 +20,7 @@ Development or integration testing dependencies
 
 ::
 
-    yum -y install python-setuptools tree libselinux-python libxml2-devel libxslt-devel
+    yum -y install python-setuptools libselinux-python libxml2-devel libxslt-devel
     easy_install pip
     pip install tox
 
@@ -39,7 +39,7 @@ Development or integration testing dependencies
 
 ::
 
-    apt-get -y install python-pip tree libxml2-dev libxslt1-dev
+    apt-get -y install python-pip libxml2-dev libxslt1-dev
     pip install tox
 
 Installing ARA from trunk source
