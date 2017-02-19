@@ -18,7 +18,7 @@ import flask_migrate
 
 from alembic.script import ScriptDirectory
 from alembic.migration import MigrationContext
-from flask import Flask
+from flask import Flask, current_app
 from flask import logging as flask_logging
 from sqlalchemy.engine.reflection import Inspector
 
@@ -44,6 +44,9 @@ views = (
 def create_app(config=None, app_name=None):
     if app_name is None:
         app_name = DEFAULT_APP_NAME
+
+    if current_app:
+        return current_app
 
     app = Flask(app_name)
 
