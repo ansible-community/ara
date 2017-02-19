@@ -17,7 +17,7 @@ import os
 from ansible.constants import get_config, load_config_file
 
 DEFAULT_ARA_DIR = os.path.expanduser('~/.ara')
-DEFAULT_ARA_TMPDIR = os.path.expanduser('~/.ansible/tmp')
+DEFAULT_ARA_TMP_DIR = os.path.expanduser('~/.ansible/tmp')
 DEFAULT_ARA_LOG_LEVEL = 'INFO'
 DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
@@ -30,7 +30,7 @@ ARA_DIR = get_config(
     config, 'ara', 'dir', 'ARA_DIR',
     DEFAULT_ARA_DIR)
 # Log/database location default to the ARA directory once we know where it is
-DEFAULT_ARA_LOGFILE = os.path.join(ARA_DIR, 'ara.log')
+DEFAULT_ARA_LOG_FILE = os.path.join(ARA_DIR, 'ara.log')
 DEFAULT_DATABASE_PATH = os.path.join(ARA_DIR, 'ansible.sqlite')
 DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
 
@@ -38,20 +38,20 @@ DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
 try:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMPDIR, istmppath=True)
+        DEFAULT_ARA_TMP_DIR, istmppath=True)
     ARA_PLAYBOOK_OVERRIDE = get_config(
         config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
         None, islist=True)
 except TypeError:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMPDIR, value_type='tmppath')
+        DEFAULT_ARA_TMP_DIR, value_type='tmppath')
     ARA_PLAYBOOK_OVERRIDE = get_config(
         config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
         None, value_type='list')
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
-    DEFAULT_ARA_LOGFILE)
+    DEFAULT_ARA_LOG_FILE)
 ARA_LOG_LEVEL = get_config(
     config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
     DEFAULT_ARA_LOG_LEVEL).upper()
