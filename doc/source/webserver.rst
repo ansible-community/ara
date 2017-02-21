@@ -149,7 +149,7 @@ Set up the Apache virtual host at ``/etc/httpd/conf.d/ara.conf``::
         LogLevel warn
         CustomLog /var/log/httpd/ara-access.log combined
 
-        WSGIDaemonProcess ara user=apache group=apache processes=1 threads=4
+        WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
         WSGIScriptAlias / /var/www/ara/ara-wsgi
 
         SetEnv ANSIBLE_CONFIG /var/www/ara/ansible.cfg
@@ -241,7 +241,7 @@ Set up the Apache virtual host at ``/etc/apache/sites-available/ara.conf``::
         LogLevel warn
         CustomLog /var/log/apache2/ara-access.log combined
 
-        WSGIDaemonProcess ara user=www-data group=www-data processes=1 threads=4
+        WSGIDaemonProcess ara user=www-data group=www-data processes=4 threads=1
         WSGIScriptAlias / /var/www/ara/ara-wsgi
 
         SetEnv ANSIBLE_CONFIG /var/www/ara/ansible.cfg
