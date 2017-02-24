@@ -12,10 +12,29 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, abort, Blueprint
+from flask import render_template, abort, Blueprint, current_app
 from ara import models
 
 file = Blueprint('file', __name__)
+
+
+@file.route('/')
+def index():
+    """
+    This is not served anywhere in the web application.
+    It is used explicitly in the context of generating static files since
+    flask-frozen requires url_for's to crawl content.
+    url_for's are not used with file.show_file directly and are instead
+    dynamically generated through javascript for performance purposes.
+    """
+    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
+        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
+        files = (models.File.query
+                 .filter(models.File.playbook_id.in_(override)))
+    else:
+        files = models.File.query.all()
+
+    return render_template('file_index.html', files=files)
 
 
 @file.route('/<file_>/')

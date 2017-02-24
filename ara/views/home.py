@@ -13,24 +13,47 @@
 #   under the License.
 
 from flask import render_template, Blueprint, current_app
-from ara import models, utils
+from ara import models
 
 home = Blueprint('home', __name__)
 
 
 @home.route('/')
 def main():
-    """ Returns the dashboard """
+    """ Returns the home page """
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
+        files = (models.File.query
+                 .filter(models.File.playbook_id.in_(override)))
+        host_facts = (models.HostFacts.query
+                      .join(models.Host)
+                      .filter(models.Host.playbook_id.in_(override)))
+        hosts = (models.Host.query
+                 .filter(models.Host.playbook_id.in_(override)))
         playbooks = (models.Playbook.query
-                     .filter(models.Playbook.id.in_(override))
-                     .order_by(models.Playbook.time_start.desc()))
+                     .filter(models.Playbook.id.in_(override)))
+        records = (models.Data.query
+                   .filter(models.Data.playbook_id.in_(override)))
+        tasks = (models.Task.query
+                 .filter(models.Task.playbook_id.in_(override)))
+        task_results = (models.TaskResult.query
+                        .join(models.Task)
+                        .filter(models.Task.playbook_id.in_(override)))
     else:
-        playbooks = (models.Playbook.query
-                     .order_by(models.Playbook.time_start.desc())
-                     .limit(10))
+        files = models.File.query
+        host_facts = models.HostFacts.query
+        hosts = models.Host.query
+        playbooks = models.Playbook.query
+        records = models.Data.query
+        tasks = models.Task.query
+        task_results = models.TaskResult.query
 
-    stats = utils.get_summary_stats(playbooks, 'playbook_id')
-
-    return render_template('home.html', playbooks=playbooks, stats=stats)
+    return render_template('home.html',
+                           active='home',
+                           files=files.count(),
+                           host_facts=host_facts.count(),
+                           hosts=hosts.count(),
+                           playbooks=playbooks.count(),
+                           records=records.count(),
+                           tasks=tasks.count(),
+                           task_results=task_results.count())

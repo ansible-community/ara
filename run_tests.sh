@@ -107,6 +107,10 @@ ara stats show $(ara stats list -c ID -f value |head -n1)
 ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
+
+# We want to test pagination in html generation
+export ARA_PLAYBOOK_PER_PAGE=3
+export ARA_RESULT_PER_PAGE=20
 ara generate html ${LOGDIR}/build
 ara generate html ${LOGDIR}/build-playbook --playbook $pbid
 ara generate junit ${LOGDIR}/junit.xml

@@ -1,44 +1,10 @@
-<html class="layout-pf">
+{% include "head.html" %}
 {% import "macros.html" as macros %}
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ARA | Ansible Run Analysis</title>
-  <meta name="description" content="ARA: Ansible Run Analysis records Ansible Playbook runs and provides intuitive interfaces to browse them.">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  {% block scripts %}
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.matchHeight-min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/patternfly.min.js') }}"></script>
-  {% endblock %}
-
-  {% block stylesheets %}
-  <link href="{{ url_for('static', filename='css/patternfly.min.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/pygments.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
-  {% endblock %}
-</head>
 <body>
 {% include "navbar.html" %}
 
 {% block content %}
 {% endblock %}
 
-<script>
-  $(document).ready(function() {
-    // matchHeight the contents of each .card-pf and then the .card-pf itself
-    $(".row-cards-pf > [class*='col'] > .card-pf .card-pf-title").matchHeight();
-    $(".row-cards-pf > [class*='col'] > .card-pf > .card-pf-body").matchHeight();
-    $(".row-cards-pf > [class*='col'] > .card-pf > .card-pf-footer").matchHeight();
-    $(".row-cards-pf > [class*='col'] > .card-pf").matchHeight();
-
-    // Initialize the vertical navigation
-    $().setupVerticalNavigation(true);
-  });
-</script>
 </body>
 </html>

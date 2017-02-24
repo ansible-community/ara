@@ -628,25 +628,19 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([dir])
         cmd.take_action(args)
 
-        host_id = ctx['host'].id
         file_id = ctx['task'].file_id
-        play_id = ctx['play'].id
-        playbook_id = ctx['playbook'].id
+        host_id = ctx['host'].id
         result_id = ctx['result'].id
-        task_id = ctx['task'].id
-
-        file_filter_path = 'playbook/{0}/file/{1}'.format(playbook_id, file_id)
-        play_path = 'playbook/{0}/play/{1}'.format(playbook_id, play_id)
-        task_path = 'playbook/{0}/task/{1}'.format(playbook_id, task_id)
         paths = [
             os.path.join(dir, 'index.html'),
             os.path.join(dir, 'static'),
+            os.path.join(dir, 'file/index.html'),
             os.path.join(dir, 'file/{0}'.format(file_id)),
+            os.path.join(dir, 'host/index.html'),
             os.path.join(dir, 'host/{0}'.format(host_id)),
-            os.path.join(dir, 'playbook/{0}'.format(playbook_id)),
-            os.path.join(dir, file_filter_path),
-            os.path.join(dir, play_path),
-            os.path.join(dir, task_path),
+            os.path.join(dir, 'reports/index.html'),
+            os.path.join(dir, 'playbook/index.html'),
+            os.path.join(dir, 'result/index.html'),
             os.path.join(dir, 'result/{0}'.format(result_id))
         ]
 
@@ -666,25 +660,19 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([dir, '--playbook', ctx['playbook'].id])
         cmd.take_action(args)
 
-        host_id = ctx['host'].id
         file_id = ctx['task'].file_id
-        play_id = ctx['play'].id
-        playbook_id = ctx['playbook'].id
+        host_id = ctx['host'].id
         result_id = ctx['result'].id
-        task_id = ctx['task'].id
-
-        file_filter_path = 'playbook/{0}/file/{1}'.format(playbook_id, file_id)
-        play_path = 'playbook/{0}/play/{1}'.format(playbook_id, play_id)
-        task_path = 'playbook/{0}/task/{1}'.format(playbook_id, task_id)
         paths = [
             os.path.join(dir, 'index.html'),
             os.path.join(dir, 'static'),
+            os.path.join(dir, 'file/index.html'),
             os.path.join(dir, 'file/{0}'.format(file_id)),
+            os.path.join(dir, 'host/index.html'),
             os.path.join(dir, 'host/{0}'.format(host_id)),
-            os.path.join(dir, 'playbook/{0}'.format(playbook_id)),
-            os.path.join(dir, file_filter_path),
-            os.path.join(dir, play_path),
-            os.path.join(dir, task_path),
+            os.path.join(dir, 'reports/index.html'),
+            os.path.join(dir, 'playbook/index.html'),
+            os.path.join(dir, 'result/index.html'),
             os.path.join(dir, 'result/{0}'.format(result_id))
         ]
 

@@ -25,23 +25,117 @@ class TestApp(TestAra):
 
     def tearDown(self):
         super(TestApp, self).tearDown()
+        # Reset app config which might have been altered to defaults
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = None
+        self.app.config['ARA_PLAYBOOK_PER_PAGE'] = 10
 
-    def test_home(self):
+    def test_home_with_data(self):
+        ansible_run()
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
 
-    def test_home_with_override(self):
+    def test_home_without_data(self):
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_reports_without_data(self):
+        res = self.client.get('/reports/')
+        self.assertEqual(res.status_code, 302)
+
+    def test_reports(self):
+        ansible_run()
+        res = self.client.get('/reports/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_reports_with_incomplete(self):
+        ansible_run(complete=False)
+        res = self.client.get('/reports/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_reports_with_override(self):
         ctx = ansible_run()
         self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx['playbook'].id]
-        res = self.client.get('/')
+        res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
-    def test_home_with_bad_override(self):
+    def test_reports_with_bad_override(self):
         ansible_run()
         self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
-        res = self.client.get('/')
+        res = self.client.get('/reports/')
+        self.assertEqual(res.status_code, 302)
+
+    def test_reports_with_pagination(self):
+        ansible_run()
+        ansible_run()
+        self.app.config['ARA_PLAYBOOK_PER_PAGE'] = 1
+        res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
+        res = self.client.get('/reports/1')
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client.get('/reports/2')
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_file(self):
+        ctx = ansible_run()
+        res = self.client.get('/file/{0}/'.format(ctx['pb_file'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_file_index(self):
+        ansible_run()
+        res = self.client.get('/file/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_host(self):
+        ctx = ansible_run()
+        res = self.client.get('/host/{}/'.format(ctx['host'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_host_index(self):
+        ansible_run()
+        res = self.client.get('/host/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_host_missing(self):
+        ansible_run()
+        res = self.client.get('/host/foo/')
+        self.assertEqual(res.status_code, 404)
+
+    def test_show_host_exists_facts_missing(self):
+        ctx = ansible_run(gather_facts=False)
+        res = self.client.get('/host/{}/'.format(ctx['host'].id))
+        self.assertEqual(res.status_code, 404)
+
+    def test_show_host_missing_facts_missing(self):
+        ansible_run()
+        res = self.client.get('/host/foo/')
+        self.assertEqual(res.status_code, 404)
+
+    def test_show_result(self):
+        ctx = ansible_run()
+        res = self.client.get('/result/{}/'.format(ctx['result'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_result_index(self):
+        ansible_run()
+        res = self.client.get('/result/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_show_result_missing(self):
+        ansible_run()
+        res = self.client.get('/result/foo/')
+        self.assertEqual(res.status_code, 404)
+
+    @pytest.mark.incomplete
+    def test_show_result_incomplete(self):
+        ctx = ansible_run(complete=False)
+        res = self.client.get('/result/{}/'.format(ctx['result'].id))
+        self.assertEqual(res.status_code, 200)
+
+    #####
+    # Tests on deprecated /playbook/, to be removed
+    #####
     def test_list_playbook(self):
         ansible_run()
         res = self.client.get('/playbook/')
@@ -52,28 +146,11 @@ class TestApp(TestAra):
         res = self.client.get('/playbook/')
         self.assertEqual(res.status_code, 200)
 
-    def test_list_playbook_with_override(self):
-        ctx = ansible_run()
-        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx['playbook'].id]
-        res = self.client.get('/playbook/')
-        self.assertEqual(res.status_code, 200)
-
-    def test_list_playbook_with_bad_override(self):
-        ansible_run()
-        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
-        res = self.client.get('/playbook/')
-        self.assertEqual(res.status_code, 200)
-
     def test_show_playbook(self):
         ctx = ansible_run()
         res = self.client.get('/playbook/{}/'.format(
             ctx['playbook'].id))
         self.assertEqual(res.status_code, 200)
-
-    def test_show_playbook_missing(self):
-        ansible_run()
-        res = self.client.get('/playbook/foo/')
-        self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_playbook_incomplete(self):
@@ -114,53 +191,4 @@ class TestApp(TestAra):
         res = self.client.get('/playbook/{}/task/{}/'.format(
             ctx['playbook'].id,
             ctx['task'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_playbook_results_missing(self):
-        ansible_run()
-        res = self.client.get('/playbook/foo/results/')
-        self.assertEqual(res.status_code, 404)
-
-    def test_show_host(self):
-        ctx = ansible_run()
-        res = self.client.get('/host/{}/'.format(ctx['host'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_host_missing(self):
-        ansible_run()
-        res = self.client.get('/host/foo/')
-        self.assertEqual(res.status_code, 404)
-
-    def test_show_host_exists_facts_missing(self):
-        ctx = ansible_run(gather_facts=False)
-        res = self.client.get('/host/{}/'.format(ctx['host'].id))
-        self.assertEqual(res.status_code, 404)
-
-    def test_show_host_missing_facts_missing(self):
-        ansible_run()
-        res = self.client.get('/host/foo/')
-        self.assertEqual(res.status_code, 404)
-
-    @pytest.mark.incomplete
-    def test_show_host_incomplete(self):
-        ctx = ansible_run(complete=False)
-        res = self.client.get('/host/{}/'.format(ctx['host'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_result(self):
-        ctx = ansible_run()
-        res = self.client.get('/result/{}/'.format(
-            ctx['result'].id))
-        self.assertEqual(res.status_code, 200)
-
-    def test_show_result_missing(self):
-        ansible_run()
-        res = self.client.get('/result/foo/')
-        self.assertEqual(res.status_code, 404)
-
-    @pytest.mark.incomplete
-    def test_show_result_incomplete(self):
-        ctx = ansible_run(complete=False)
-        res = self.client.get('/result/{}/'.format(
-            ctx['result'].id))
         self.assertEqual(res.status_code, 200)

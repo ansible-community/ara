@@ -113,6 +113,10 @@ Parameters and their defaults
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_PLAYBOOK_OVERRIDE_        | playbook_override        | None                                      |
 +-------------------------------+--------------------------+-------------------------------------------+
+| ARA_PLAYBOOK_PER_PAGE_        | playbook_per_page        | 10                                        |
++-------------------------------+--------------------------+-------------------------------------------+
+| ARA_RESULT_PER_PAGE_          | result_per_page          | 25                                        |
++-------------------------------+--------------------------+-------------------------------------------+
 
 ARA_DIR
 ~~~~~~~
@@ -192,6 +196,30 @@ ARA_PLAYBOOK_OVERRIDE will limit the playbooks displayed in the web application
 to the list of playbook IDs specified.
 This is expected to be playbook IDs (ex: retrieved through
 ``ara playbook list``) in a comma-separated list.
+
+ARA_PLAYBOOK_PER_PAGE
+~~~~~~~~~~~~~~~~~~~~~
+
+This is the amount of playbooks runs shown in a single page in the ARA web
+interface. The default is ``10`` but you might want to tweak this number up
+or down depending on the amount of hosts, tasks and task results contained in
+your playbooks.
+This directly influences the weight of the pages that will end up being
+displayed. Setting this value too high might yield very heavy pages.
+
+Set this parameter to ``0`` to disable playbook listing pagination entirely.
+
+ARA_RESULT_PER_PAGE
+~~~~~~~~~~~~~~~~~~~
+
+This is the amount of results shown in a single page in the different data
+tables such as hosts, plays and tasks of the ARA web interface.
+The default is ``25`` but you might want to tweak this number up or down
+depending on your preference.
+This has no direct impact on the weight of the page being sent for the reports
+as these data tables are rendered on the client side.
+
+Set this parameter to ``0`` to disable pagination for results entirely.
 
 The CLI client and the web application
 --------------------------------------

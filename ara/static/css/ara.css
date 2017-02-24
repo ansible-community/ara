@@ -1,43 +1,23 @@
-/* Color for highlighted line */
-.hll {
-    background-color: #39a5dc;
-    color: white;
+/* Main container layout size and offset */
+.col-md-custom {
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 95%;
+        -ms-flex: 0 0 95%;
+            flex: 0 0 95%;
+    max-width: 95%;
 }
 
-table.table.table-striped tr.active {
-    /*
-    This doesn't actually work as intended, it doesn't set the actual color...
-    But it still changes the row's color to highlight it, let's fix it later.
-    */
-    background-color: blue;
+.col-md-offset-custom {
+    margin-left: 2.5%;
 }
 
-.action-icon {
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 6px;
-    padding-right: 12px;
-}
-
-.action-available {
-    color: #008000;
-}
-
-.action-unavailable {
-    color: #000000;
-}
-
-/* Wrap pre tags so they don't print endlessly horizontally */
-pre {
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
+/* Home stat highlight badges */
+.stat-highlight {
     text-align: left;
+    font-weight: bold;
 }
 
-/* Status styling */
+/* Status text styling */
 .status-label {
     padding-top: 5px;
     padding-bottom: 5px;
@@ -61,6 +41,17 @@ pre {
 }
 
 /* Table styling */
+/* Wrap pre tags so they don't print endlessly horizontally */
+.table pre, .results pre {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    text-align: left;
+}
+
 .table th {
     font-size: 120%;
 }
@@ -69,15 +60,36 @@ pre {
     text-align: center;
 }
 
-td a {
-    width:100%;;
+.table td a {
+    width: 100%;
     font-weight: bold;
-}
-
-.date td {
-    white-space: nowrap;
 }
 
 .table tbody>tr>td.vert-align{
     vertical-align: middle;
+}
+
+/* Tooltips */
+.tooltip-inner {
+    max-width: 100%;
+}
+
+/* Status icon on left side of report list */
+.list-view-pf-left {
+    max-width: 36px;
+}
+
+/* Width of date on left side of report list */
+.timestamp-heading {
+    max-width: 125px;
+}
+
+/* Combined width of date and playbook path in report list */
+.list-view-pf-description {
+    max-width: 40%;
+}
+
+/* Combined width of playbook highlights/panel items in report list */
+.list-view-pf-additional-info {
+    max-width: 70%;
 }

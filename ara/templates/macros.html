@@ -1,45 +1,86 @@
 <div id="macros">
-{% macro make_link(view, label) -%}
-<a href="{{ url_for(view, **kwargs) }}">{{label}}</a>
-{%- endmacro %}
-
-
-{% macro statslink(stats, stat, playbook, host) %}
-<td>
-{% if stats[stat] and stats[stat] >= 1 -%}
-{{ make_link('playbook.playbook_results', stats[stat],
-   playbook=playbook.id, host=host.name, status=stat) }}
-{% else -%}
-0
-{% endif %}
-</td>
+{% macro render_status(status) %}
+    {% if status == 'success' %}
+        <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed successfully">
+            <span class="pficon pficon-ok list-view-pf-icon-sm list-view-pf-icon-success"></span>
+        </div>
+    {% elif status == 'failed' %}
+        <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed with errors">
+            <span class="pficon pficon-error-circle-o list-view-pf-icon-sm list-view-pf-icon-danger"></span>
+        </div>
+    {% elif status == 'incomplete' %}
+        <div data-toggle="tooltip" data-placement="bottom" title="Playbook execution was interrupted: data will be incomplete and inconsistent">
+            <span class="pficon pficon-info list-view-pf-icon-sm list-view-pf-icon-info"></span>
+        </div>
+    {% else %}
+        <div data-toggle="tooltip" data-placement="bottom" title="The status of this playbook is unknown">
+            <span class="fa fa-question-circle"></span>
+        </div>
+    {% endif %}
 {% endmacro %}
 
-{% macro render_status(status) %}
-{% if status == 'success' %}
-    <span class="pficon pficon-ok list-view-pf-icon-md list-view-pf-icon-success" title="Playbook finished successfully"></span>
-{% elif status == 'failed' %}
-    <span class="pficon pficon-error-circle-o list-view-pf-icon-md list-view-pf-icon-danger" title="Playbook finished with errors"></span>
-{% elif status == 'incomplete' %}
-    <span class="pficon pficon-info list-view-pf-icon-md list-view-pf-icon-info" title="Playbook was interrupted: data will be incomplete."></span>
-{% else %}
-    <span class="fa fa-question-circle" title="The status of this playbook is unknown."></span>
-{% endif %}
+{% macro render_playbook_summary(playbook) %}
+    <dl class='dl-horizontal'>
+        <dt>Ansible version</dt>
+        <dd>{{ playbook.ansible_version }}</dd>
+        <dt>Path</dt>
+        <dd>{{ playbook.path }}</dd>
+    </dl>
+{% endmacro %}
+
+{% macro render_host_facts(host) %}
+    {% if host.facts.values %}
+        {% set facts = host.facts.values|from_json %}
+        {% set items = ['ansible_fqdn',
+                        'ansible_processor_cores',
+                        'ansible_processor_vcpus',
+                        'ansible_memtotal_mb',
+                        'ansible_swaptotal_mb',
+                        'ansible_distribution',
+                        'ansible_distribution_version'] %}
+        {% set lists = ['ansible_all_ipv4_addresses', 'ansible_all_ipv6_addresses'] %}
+        <dl class='dl-horizontal'>
+            {% for value in items %}
+                {% if facts[value] %}
+                <dt>{{ value }}</dt>
+                <dd>{{ facts[value] }}</dd>
+                {% endif %}
+            {% endfor %}
+            {% for value in lists %}
+                {% if facts[value] %}
+                    <dt>{{ value }}</dt>
+                    {% for item in facts[value] %}
+                        <dd>{{ item }}</dd>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </dl>
+    {% else %}
+        No host facts recorded for this host.
+    {% endif %}
 {% endmacro %}
 
 {% macro render_value_type(value, type) %}
-{% if type == 'json' or type == 'dict' %}
-    <pre>{{ value |to_nice_json |safe }}</pre>
-{% elif type == 'list' %}
-    <ul class="text-left">
-    {% for item in value %}
-        <li>{{ item }}</li>
-    {% endfor %}
-    </ul>
-{% elif type == 'url' %}
-    <a href="{{ value }}" target="_blank">{{ value }}</a>
-{% else %}
-    <pre>{{ value }}</pre>
-{% endif %}
+    {% if type == 'json' or type == 'dict' %}
+        <pre>{{ value |to_nice_json |safe }}</pre>
+    {% elif type == 'list' %}
+        <ul class="text-left">
+        {% for item in value %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    {% elif type == 'url' %}
+        <a href="{{ value }}" target="_blank">{{ value }}</a>
+    {% else %}
+        <pre>{{ value }}</pre>
+    {% endif %}
+{% endmacro %}
+
+{% macro result_page_length(length) %}
+    {% if length == 0 %}
+        "paging": false,
+    {% else %}
+        "pageLength": {{ length }}
+    {% endif %}
 {% endmacro %}
 </div>

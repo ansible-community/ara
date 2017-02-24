@@ -19,17 +19,18 @@ The Patternfly assets are imported directly from
 .. _3.21.0: https://github.com/patternfly/patternfly/releases/tag/v3.21.0
 .. _Patternfly's compiled source: https://github.com/patternfly/patternfly/tree/v3.21
 
-jquery.matchHeight
-~~~~~~~~~~~~~~~~~~
+jquery.datatables
+~~~~~~~~~~~~~~~~~
 
-Patternfly's vertical navigation needs the `jquery.matchHeight`_ library.
-The version of jquery.matchHeight is currently `0.7.0`_.
+`jquery.datatables`_ is what provides the ability for the different tables
+in the web interface to be searchable and sortable.
 
-This is imported directly from the `jquery.matchHeight source`_.
+The current version of jquery.datatables is 1.10.13.
 
-.. _jquery.matchHeight: https://github.com/liabru/jquery-match-height
-.. _0.7.0: https://github.com/liabru/jquery-match-height/releases/tag/0.7.0
-.. _jquery.matchHeight source: https://github.com/liabru/jquery-match-height/tree/0.7.0
+This is imported directly from the `jquery.datatables source`_.
+
+.. _jquery.datatables: https://datatables.net/
+.. _jquery.datatables source: https://cdn.datatables.net/
 
 Bootstrap JS
 ~~~~~~~~~~~~

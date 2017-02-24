@@ -1,76 +1,65 @@
-/* Taken from http://stackoverflow.com/a/13067009 */
-(function(document, history, location) {
-  var HISTORY_SUPPORT = !!(history && history.pushState);
+$(document).ready(function () {
+    // Toggle dropdown menu
+    $(".list-view-pf-actions").on("show.bs.dropdown", function () {
+        var $this = $(this);
+        var $dropdown = $this.find(".dropdown");
+        var space = $(window).height() - $dropdown[0].getBoundingClientRect().top - $this.find(".dropdown-menu").outerHeight(true);
+        $dropdown.toggleClass("dropup", space < 10);
+    });
 
-  var anchorScrolls = {
-    ANCHOR_REGEX: /^#[^ ]+$/,
-    OFFSET_HEIGHT_PX: 12,
+    // Compound expansion
+    $(".list-view-pf-expand").on("click", function () {
+        var $this = $(this);
+        var $heading = $(this).parents(".list-group-item");
+        //var $row = $heading.parent();
+        var $subPanels = $heading.find(".list-group-item-container");
+        var index = $heading.find(".list-view-pf-expand").index(this);
 
-    /**
-     * Establish events, and fix initial scroll position if a hash is provided.
-     */
-    init: function() {
-      this.scrollToCurrent();
-      $(window).on('hashchange', $.proxy(this, 'scrollToCurrent'));
-      $('body').on('click', 'a', $.proxy(this, 'delegateAnchors'));
-    },
+        // Remove all active status
+        $heading.find(".list-view-pf-expand.active").find(".fa-angle-right").removeClass("fa-angle-down")
+          .end().removeClass("active")
+            .end().removeClass("list-view-pf-expand-active");
 
-    /**
-     * Return the offset amount to deduct from the normal scroll position.
-     * Modify as appropriate to allow for dynamic calculations
-     */
-    getFixedOffset: function() {
-      return this.OFFSET_HEIGHT_PX;
-    },
+        // Add active to the clicked item
+        $(this).addClass("active")
+          .parents(".list-group-item").addClass("list-view-pf-expand-active")
+            .end().find(".fa-angle-right").addClass("fa-angle-down");
 
-    /**
-     * If the provided href is an anchor which resolves to an element on the
-     * page, scroll to it.
-     * @param  {String} href
-     * @return {Boolean} - Was the href an anchor.
-     */
-    scrollIfAnchor: function(href, pushToHistory) {
-      var match, anchorOffset;
-
-      if(!this.ANCHOR_REGEX.test(href)) {
-        return false;
-      }
-
-      match = document.getElementById(href.slice(1));
-
-      if(match) {
-        anchorOffset = $(match).offset().top - this.getFixedOffset();
-        $('html, body').animate({ scrollTop: anchorOffset});
-
-        // Add the state to history as-per normal anchor links
-        if(HISTORY_SUPPORT && pushToHistory) {
-          history.pushState({}, document.title, location.pathname + href);
+        // Check if it needs to hide
+        if($subPanels.eq(index).hasClass("hidden")) {
+            $heading.find(".list-group-item-container:visible").addClass("hidden");
+            $subPanels.eq(index).removeClass("hidden");
+        } else {
+            $subPanels.eq(index).addClass("hidden");
+            $heading.find(".list-view-pf-expand.active").find(".fa-angle-right").removeClass("fa-angle-down")
+              .end().removeClass("active")
+                .end().removeClass("list-view-pf-expand-active");
         }
-      }
+    });
 
-      return !!match;
-    },
+    // Click close button to close the panel
+    $(".list-group-item-container .close").on("click", function () {
+        var $this = $(this);
+        var $panel = $this.parent();
 
-    /**
-     * Attempt to scroll to the current location's hash.
-     */
-    scrollToCurrent: function(e) {
-      if(this.scrollIfAnchor(window.location.hash) && e) {
-        e.preventDefault();
-      }
-    },
+        // Close the container and remove the active status
+        $panel.addClass("hidden")
+          .parent().removeClass("list-view-pf-expand-active")
+            .find(".list-view-pf-expand.active").removeClass("active")
+              .find(".fa-angle-right").removeClass("fa-angle-down")
+    });
 
-    /**
-     * If the click event's target was an anchor, fix the scroll position.
-     */
-    delegateAnchors: function(e) {
-      var elem = e.target;
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
 
-      if(this.scrollIfAnchor(elem.getAttribute('href'), true)) {
-        e.preventDefault();
-      }
-    }
-  };
+    // Highlight the anchor line in file views
+    var hash = $(location).attr('hash');
+    $(hash).closest('span').addClass('hll');
 
-    $(document).ready($.proxy(anchorScrolls, 'init'));
-})(window.document, window.history, window.location);
+    // Refresh the highlighted line when clicking on a new line in file views
+    $('a').click(function(){
+        $("span.hll").removeClass('hll');
+        var hash = $(this).attr('href');
+        $(hash).closest('span').addClass('hll');
+    });
+});

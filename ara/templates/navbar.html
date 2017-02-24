@@ -1,24 +1,38 @@
 <nav class="navbar navbar-default navbar-pf" role="navigation">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="{{ url_for('home.main') }}">
-      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="ARA: Ansible Run Analysis" />
-    </a>
-  </div>
-  <div class="collapse navbar-collapse navbar-collapse-1">
-    <ul class="nav navbar-nav navbar-utility">
-      <li><a href="https://ara.readthedocs.io/en/latest/" target="_blank">Documentation</a></li>
-      <li><a href="https://github.com/openstack/ara" target="_blank"><strong>ARA</strong> {{ ara_version }}</a></li>
-      <li><a href="https://www.ansible.com/" target="_blank"><strong>Ansible</strong> {{ ansible_version }}</a></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-primary persistent-secondary">
-      <li><a href="{{ url_for('home.main') }}">Home</a></li>
-      <li><a href="{{ url_for('playbook.playbook_summary') }}">All Playbooks</a></li>
-    </ul>
-  </div>
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{{ url_for('home.main') }}">
+            <img src="{{ url_for('static', filename='images/logo-header.svg') }}" width="81" height="32" alt="ARA: Ansible Run Analysis" />
+        </a>
+    </div>
+    <div class="collapse navbar-collapse navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-utility">
+            <li><a href="https://ara.readthedocs.io/en/latest/" target="_blank">Documentation</a></li>
+            <li><a href="https://github.com/openstack/ara" target="_blank"><strong>ARA</strong> {{ ara_version }}</a></li>
+            <li><a href="https://www.ansible.com/" target="_blank"><strong>Ansible</strong> {{ ansible_version }}</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-primary">
+            {% if active and active == 'home' %}
+            <li class="active">
+            {% else %}
+            <li>
+            {% endif %}
+                <a href="{{ url_for('home.main') }}">Home</a>
+            </li>
+            {% if playbooks and playbooks > 0 %}
+            {% if active and active == 'reports' %}
+            <li class="active">
+            {% else %}
+            <li>
+            {% endif %}
+                <a href="{{ url_for('reports.report_list') }}">Playbook reports</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>

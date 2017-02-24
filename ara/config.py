@@ -23,6 +23,8 @@ DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 DEFAULT_ARA_SQL_DEBUG = False
 DEFAULT_ARA_PATH_MAX = 40
 DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS = True
+DEFAULT_ARA_PLAYBOOK_PER_PAGE = 10
+DEFAULT_ARA_RESULT_PER_PAGE = 25
 
 config, path = load_config_file()
 
@@ -42,6 +44,14 @@ try:
     ARA_PLAYBOOK_OVERRIDE = get_config(
         config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
         None, islist=True)
+    ARA_PLAYBOOK_PER_PAGE = get_config(
+        config, 'ara', 'playbook_per_page', 'ARA_PLAYBOOK_PER_PAGE',
+        DEFAULT_ARA_PLAYBOOK_PER_PAGE, integer=True
+    )
+    ARA_RESULT_PER_PAGE = get_config(
+        config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
+        DEFAULT_ARA_RESULT_PER_PAGE, integer=True
+    )
 except TypeError:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
@@ -49,6 +59,14 @@ except TypeError:
     ARA_PLAYBOOK_OVERRIDE = get_config(
         config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
         None, value_type='list')
+    ARA_PLAYBOOK_PER_PAGE = get_config(
+        config, 'ara', 'playbook_per_page', 'ARA_PLAYBOOK_PER_PAGE',
+        DEFAULT_ARA_PLAYBOOK_PER_PAGE, value_type='integer'
+    )
+    ARA_RESULT_PER_PAGE = get_config(
+        config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
+        DEFAULT_ARA_RESULT_PER_PAGE, value_type='integer'
+    )
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
     DEFAULT_ARA_LOG_FILE)

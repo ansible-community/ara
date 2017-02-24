@@ -1,105 +1,48 @@
-{% extends "layout.html" %}
+{% include "head.html" %}
 
 {% macro display_result(result, hdr) %}
-  {% if result is mapping %}
-    {% if 'item' in result %}
-      <{{ hdr }}>Item</{{ hdr }}>
-      <pre>{{ result.item |to_nice_json |safe }}</pre>
-    {% endif %}
-
-    {% for attr in result.keys()|sort
-      if attr not in ['item', 'changed', 'stdout_lines'] %}
-      {% if result[attr]|default(False) %}
-        <{{ hdr }}>{{ attr|title }}</{{ hdr }}>
-        {% if result[attr] is string %}
-          <pre>{{ result[attr] }}</pre>
-        {% elif result[attr] is mapping or result[attr] is iterable%}
-          <pre>{{ result[attr] |to_nice_json |safe }}</pre>
-        {% else %}
-          <pre>{{ result |to_nice_json |safe }}</pre>
+    {% if result is mapping %}
+        {% if 'item' in result %}
+            <{{ hdr }}>Item</{{ hdr }}>
+            <pre>{{ result.item |to_nice_json |safe }}</pre>
         {% endif %}
-      {% endif %}
-    {% endfor %}
-  {% else %}
-    <pre>{{ result |to_nice_json |safe }}</pre>
-  {% endif %}
-{% endmacro %}
-<!-- Header container -->
-{% block content %}
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-10 col-md-offset-1">
-      <h1><strong>Playbook</strong>: {{ macros.make_link('playbook.show_playbook', task_result.task.playbook.path, playbook=task_result.task.playbook.id) }}{% if task_result.task.playbook.ansible_version %} with Ansible v{{ task_result.task.playbook.ansible_version }}{% endif %}</h1>
-      <h2>{{ task_result.time_start |datefmt }} <span class="fa fa-angle-double-right"></span> {{ task_result.time_end |datefmt }}</h2>
-      <h1><strong>Task</strong>: {{ task_result.task.name }}</h1>
-      <h1><strong>Host</strong>: {{ task_result.host.name }}</h1>
-    </div>
-  </div>
-</div>
-<!-- Dashboard container -->
-<div class="container-fluid container-cards-pf">
-  <div class="row row-cards-pf">
-    <div class="col-md-1"></div>
-    {% if task_result.task.file %}
-    <div class="col-md-2">
-      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
-        <h2 class="card-pf-title" style="height: 42px;">
-          <span class="pficon pficon-folder-open"></span>
-          <span class="card-pf-aggregate-status-count">
-              {{ macros.make_link('file.show_file', task_result.task.file.path |pathtruncate(15), file_=task_result.task.file.id) }}
-          </span> <strong>File</strong>
-        </h2>
-      </div>
-    </div>
 
-    <div class="col-md-2">
-      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
-        <h2 class="card-pf-title" style="height: 42px;">
-          <span class="fa fa-search"></span>
-          <span class="card-pf-aggregate-status-count">
-              {{ macros.make_link('file.show_file', task_result.task.lineno, file_=task_result.task.file.id, _anchor="line-" ~ task_result.task.lineno) }}
-          </span> <strong>File line</strong>
-        </h2>
-      </div>
-    </div>
-    {% endif %}
-
-    <div class="col-md-2">
-      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
-        <h2 class="card-pf-title" style="height: 42px;">
-          <span class="fa pficon-info"></span>
-          <span class="card-pf-aggregate-status-count">{{ task_result.task.action }}</span> <strong>Action</strong>
-        </h2>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-pf card-pf-accented card-pf-aggregate-status card-pf-aggregate-status-mini" style="height: 59px;">
-        <h2 class="card-pf-title" style="height: 42px;">
-          <span class="fa fa-clock-o"></span>
-          <span class="card-pf-aggregate-status-count">{{ task_result.duration |timefmt }}</span> <strong>Duration</strong>
-        </h2>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Detail container -->
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-10 col-md-offset-1">
-      <h2><strong>Task result information</strong></h2>
-      {% set result = task_result.result|from_json %}
-
-      {% if 'results' in result %}
-        {% for item in result.results %}
-          <h2>Result {{loop.index}}</h2>
-
-          {{ display_result(item, 'h3') }}
+        {% for attr in result.keys()|sort if attr not in ['item', 'changed', 'stdout_lines'] %}
+            {% if result[attr]|default(False) %}
+                <{{ hdr }}>{{ attr|title }}</{{ hdr }}>
+                {% if result[attr] is string %}
+                    <pre>{{ result[attr] }}</pre>
+                {% elif result[attr] is mapping or result[attr] is iterable%}
+                    <pre>{{ result[attr] |to_nice_json |safe }}</pre>
+                {% else %}
+                    <pre>{{ result |to_nice_json |safe }}</pre>
+                {% endif %}
+            {% endif %}
         {% endfor %}
-      {% else %}
-        {{ display_result(result, 'h2') }}
-      {% endif %}
+    {% else %}
+        <pre>{{ result |to_nice_json |safe }}</pre>
+    {% endif %}
+{% endmacro %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 results">
+          <h2>Task: <strong>{{ task_result.task.name }}</strong></h2>
+          <h2>Host: <strong>{{ task_result.host.name }}</strong></h2>
+          <p>Time: <strong>{{ task_result.time_start |datefmt }}</strong></p>
+          <p>Ansible version: <strong>{{ task_result.task.playbook.ansible_version }}</strong></p>
+
+          {% set result = task_result.result|from_json %}
+
+          {% if 'results' in result %}
+              {% for item in result.results %}
+                  <h2>Result {{loop.index}}</h2>
+
+                  {{ display_result(item, 'h3') }}
+              {% endfor %}
+          {% else %}
+              {{ display_result(result, 'h2') }}
+          {% endif %}
+        </div>
     </div>
-  </div>
 </div>
-{% endblock %}
