@@ -10,14 +10,14 @@ Patternfly CSS, JS and Fonts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ARA uses the Patternfly_ CSS framework.
-The current version of Patternfly is `3.17.0`_.
+The current version of Patternfly is `3.21.0`_.
 
 The Patternfly assets are imported directly from
 `Patternfly's compiled source`_.
 
 .. _Patternfly: http://www.patternfly.org/#_
-.. _3.17.0: https://github.com/patternfly/patternfly/releases/tag/v3.17.0
-.. _Patternfly's compiled source: https://github.com/patternfly/patternfly/tree/v3.17.0/dist
+.. _3.21.0: https://github.com/patternfly/patternfly/releases/tag/v3.21.0
+.. _Patternfly's compiled source: https://github.com/patternfly/patternfly/tree/v3.21
 
 jquery.matchHeight
 ~~~~~~~~~~~~~~~~~~
