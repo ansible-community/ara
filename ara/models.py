@@ -171,6 +171,12 @@ class Playbook(db.Model, TimedEntity):
 
     complete = db.Column(db.Boolean, default=False)
 
+    @property
+    def file(self):
+        return (self.files
+                .filter(File.playbook_id == self.id)
+                .filter(File.is_playbook)).one()
+
     def __repr__(self):
         return '<Playbook %s>' % self.path
 

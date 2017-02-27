@@ -65,6 +65,13 @@ class TestModels(TestAra):
         playbooks = m.Playbook.query.all()
         self.assertIn(self.playbook, playbooks)
 
+    def test_playbook_file(self):
+        playbook = m.Playbook.query.one()
+        file = (m.File.query
+                .filter(m.File.playbook_id == playbook.id)
+                .filter(m.File.is_playbook)).one()
+        self.assertEqual(playbook.file, file)
+
     def test_play(self):
         playbook = m.Playbook.query.get(self.playbook.id)
         self.assertIn(self.play, playbook.plays)
