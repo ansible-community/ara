@@ -90,7 +90,8 @@ def configure_template_filters(app):
         formatter = HtmlFormatter(linenos='table',
                                   anchorlinenos=True,
                                   lineanchors='line',
-                                  linespans='line')
+                                  linespans='line',
+                                  cssclass='codehilite')
 
         # We have little control over the content of the files we're
         # formatting. This can lead into UnicodeDecodeError raised by Jinja
