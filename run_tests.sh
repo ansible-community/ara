@@ -117,6 +117,8 @@ ara generate junit ${LOGDIR}/junit.xml
 ara generate junit ${LOGDIR}/junit-playbook.xml --playbook $pbid
 python ara/tests/integration/helpers/junit_check.py ${LOGDIR}/junit.xml
 
+# It's important that ARA behaves well when gzipped
+gzip --best --recursive ${LOGDIR}/build
 
 # Database migration tests
 for test_db in $(ls ara/tests/integration/databases/*.sqlite)

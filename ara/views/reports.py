@@ -19,7 +19,7 @@ reports = Blueprint('reports', __name__)
 
 
 @reports.route('/')
-@reports.route('/<int:page>')
+@reports.route('/<int:page>.html')
 def report_list(page=1):
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']

@@ -71,10 +71,10 @@ class TestApp(TestAra):
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
-        res = self.client.get('/reports/1')
+        res = self.client.get('/reports/1.html')
         self.assertEqual(res.status_code, 200)
 
-        res = self.client.get('/reports/2')
+        res = self.client.get('/reports/2.html')
         self.assertEqual(res.status_code, 200)
 
     def test_show_file(self):
