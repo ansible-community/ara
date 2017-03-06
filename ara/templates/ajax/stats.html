@@ -1,0 +1,32 @@
+{% macro render_host_facts(host) -%}
+    {% if host.facts.values -%}
+        {% set facts = host.facts.values|from_json -%}
+        {% set items = ['ansible_fqdn',
+                        'ansible_processor_cores',
+                        'ansible_processor_vcpus',
+                        'ansible_memtotal_mb',
+                        'ansible_swaptotal_mb',
+                        'ansible_distribution',
+                        'ansible_distribution_version'] -%}
+        {% set lists = ['ansible_all_ipv4_addresses', 'ansible_all_ipv6_addresses'] -%}
+        <dl class="dl-horizontal">
+            {% for value in items -%}
+                {% if facts[value] -%}
+                <dt>{{ value }}</dt>
+                <dd>{{ facts[value] }}</dd>
+                {% endif %}
+            {%- endfor %}
+            {% for value in lists -%}
+                {% if facts[value] -%}
+                    <dt>{{ value }}</dt>
+                    {% for item in facts[value] -%}
+                        <dd>{{ item }}</dd>
+                    {% endfor %}
+                {% endif %}
+            {%- endfor %}
+        </dl>
+    {% else -%}
+        No host facts recorded for this host.
+    {% endif %}
+{% endmacro %}
+<div class="pull-left" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ render_host_facts(stat.host) }}">{% if stat.host.facts -%}<a href="#" data-toggle="modal" data-target="#host_modal" data-load="{{ stat.host.id }}">{{ stat.host.name }}</a>{% else -%}{{ stat.host.name }}{% endif %}</div>

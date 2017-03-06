@@ -77,6 +77,61 @@ class TestApp(TestAra):
         res = self.client.get('/reports/2.html')
         self.assertEqual(res.status_code, 200)
 
+    def test_report_ajax_files(self):
+        ctx = ansible_run()
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/files/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_files(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/files/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
+    def test_report_ajax_plays(self):
+        ctx = ansible_run()
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/plays/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_plays(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/plays/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
+    def test_report_ajax_records(self):
+        ctx = ansible_run(ara_record=True)
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/records/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_records(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/records/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
+    def test_report_ajax_results(self):
+        ctx = ansible_run()
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/results/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_results(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/results/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
+    def test_report_ajax_stats(self):
+        ctx = ansible_run()
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/stats/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_stats(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/stats/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
     def test_show_file(self):
         ctx = ansible_run()
         res = self.client.get('/file/{0}/'.format(ctx['pb_file'].id))

@@ -1,0 +1,5 @@
+{% if result.task.file -%}
+<a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ result.task.file.id }}#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+{% else -%}
+{{ result.task.action }}
+{% endif %}

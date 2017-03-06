@@ -18,25 +18,40 @@
 }
 
 /* Status text styling */
-.status-label {
+.failed, .unreachable {
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 90%;
     font-family: monospace;
     display: inline-block;
     width: 8em;
-}
-
-.failed, .unreachable {
     background-color: #a30000;
 }
 .skipped, .ignored {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 90%;
+    font-family: monospace;
+    display: inline-block;
+    width: 8em;
     background-color: #047a7b;
 }
 .ok {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 90%;
+    font-family: monospace;
+    display: inline-block;
+    width: 8em;
     background-color: #3e7b04;
 }
 .changed {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 90%;
+    font-family: monospace;
+    display: inline-block;
+    width: 8em;
     background-color: #9d8000;
 }
 
@@ -50,6 +65,17 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     text-align: left;
+}
+
+.iframe-spinner {
+    margin-top: 32px;
+}
+
+.table-spinner {
+    display: inline-block;
+    margin-top: 32px;
+    width: 32px;
+    height: 32px;
 }
 
 .table th {

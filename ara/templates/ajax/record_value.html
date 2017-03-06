@@ -1,0 +1,13 @@
+{% if record.type == 'json' or record.type == 'dict' -%}
+    <pre>{{ record.value |to_nice_json |safe }}</pre>
+{% elif record.type == 'list' -%}
+    <ul class="text-left">
+    {% for item in record.value -%}
+        <li>{{ item }}</li>
+    {%- endfor %}
+    </ul>
+{% elif record.type == 'url' -%}
+    <span class="pull-left"><a href="{{ record.value }}" target="_blank">{{ record.value }}</a></span>
+{% else -%}
+    <pre>{{ record.value }}</pre>
+{% endif %}
