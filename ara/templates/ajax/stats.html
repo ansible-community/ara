@@ -9,7 +9,7 @@
                         'ansible_distribution',
                         'ansible_distribution_version'] -%}
         {% set lists = ['ansible_all_ipv4_addresses', 'ansible_all_ipv6_addresses'] -%}
-        <dl class="dl-horizontal">
+        <dl class='dl-horizontal'>
             {% for value in items -%}
                 {% if facts[value] -%}
                 <dt>{{ value }}</dt>
