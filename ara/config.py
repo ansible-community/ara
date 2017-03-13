@@ -52,6 +52,13 @@ try:
         config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
         DEFAULT_ARA_RESULT_PER_PAGE, integer=True
     )
+    SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
+                                 DEFAULT_ARA_SQL_DEBUG, boolean=True)
+    FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
+        config, 'ara', 'ignore_mimetype_warnings',
+        'ARA_IGNORE_MIMETYPE_WARNINGS',
+        DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS, boolean=True)
+
 except TypeError:
     ARA_TMP_DIR = get_config(
         config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
@@ -67,6 +74,13 @@ except TypeError:
         config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
         DEFAULT_ARA_RESULT_PER_PAGE, value_type='integer'
     )
+    SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
+                                 DEFAULT_ARA_SQL_DEBUG, value_type='boolean')
+    FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
+        config, 'ara', 'ignore_mimetype_warnings',
+        'ARA_IGNORE_MIMETYPE_WARNINGS',
+        DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS, value_type='boolean')
+
 ARA_LOG_FILE = get_config(
     config, 'ara', 'logfile', 'ARA_LOG_FILE',
     DEFAULT_ARA_LOG_FILE)
@@ -90,14 +104,9 @@ ARA_AUTOCREATE_DATABASE = get_config(
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = get_config(config, 'ara', 'database', 'ARA_DATABASE',
                                      DEFAULT_DATABASE)
-SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
-                             DEFAULT_ARA_SQL_DEBUG)
 INSTALL_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
 
 # Static generation
 FREEZER_RELATIVE_URLS = True
 FREEZER_DEFAULT_MIMETYPE = 'text/html'
-FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
-    config, 'ara', 'ignore_mimetype_warnings', 'ARA_IGNORE_MIMETYPE_WARNINGS',
-    DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS)
