@@ -26,36 +26,6 @@ class TestFilters(TestAra):
     def tearDown(self):
         super(TestFilters, self).tearDown()
 
-    def test_pathtruncate_short(self):
-        path = '/short/path.yml'
-        self.assertTrue(len(path) < self.app.config['ARA_PATH_MAX'])
-
-        t = self.env.from_string('{{ path | pathtruncate }}')
-        res = t.render(path=path)
-        self.assertEqual(res, path)
-        self.assertFalse(res.startswith('...'))
-        self.assertEqual(res.count('path.yml'), 1)
-
-    def test_pathtruncate_with_length(self):
-        path = '/this/is_definitely/a/very/very/long/path.yml'
-        self.assertTrue(len(path) > 20)
-        t = self.env.from_string('{{ path | pathtruncate(20) }}')
-        res = t.render(path=path)
-
-        self.assertNotEqual(res, path)
-        self.assertTrue(res.startswith('...'))
-        self.assertEqual(res.count('path.yml'), 1)
-
-    def test_pathtruncate_long(self):
-        path = '/this/is_definitely/a/very/very/long/path.yml'
-        self.assertTrue(len(path) > self.app.config['ARA_PATH_MAX'])
-        t = self.env.from_string('{{ path | pathtruncate }}')
-        res = t.render(path=path)
-
-        self.assertNotEqual(res, path)
-        self.assertTrue(res.startswith('...'))
-        self.assertEqual(res.count('path.yml'), 1)
-
     def test_datefmt(self):
         datestr = '2016-05-25 14:34:00'
         date = datetime.datetime.strptime(datestr, '%Y-%m-%d %H:%M:%S')

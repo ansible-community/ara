@@ -15,98 +15,103 @@
 import os
 
 from ansible.constants import get_config, load_config_file
+from ansible import __version__ as ansible_version
+from distutils.version import LooseVersion
 
-DEFAULT_ARA_DIR = os.path.expanduser('~/.ara')
-DEFAULT_ARA_TMP_DIR = os.path.expanduser('~/.ansible/tmp')
-DEFAULT_ARA_LOG_LEVEL = 'INFO'
-DEFAULT_ARA_LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-DEFAULT_ARA_SQL_DEBUG = False
-DEFAULT_ARA_PATH_MAX = 40
-DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS = True
-DEFAULT_ARA_PLAYBOOK_PER_PAGE = 10
-DEFAULT_ARA_RESULT_PER_PAGE = 25
 
+def _ara_config(config, key, env_var, default=None,
+                section='ara', value_type=None):
+    """ Wrapper around Ansible's get_config backward/forward compatibility """
+    if default is None:
+        try:
+            # We're using env_var as keys in the DEFAULTS dict
+            default = DEFAULTS.get(env_var)
+        except KeyError as e:
+            msg = 'There is no default value for {0}: {1}'.format(key, str(e))
+            raise KeyError(msg)
+
+    # >= 2.3.0.0 (NOTE: Ansible trunk versioning scheme has 3 digits, not 4)
+    if LooseVersion(ansible_version) >= LooseVersion('2.3.0'):
+        return get_config(config, section, key, env_var, default,
+                          value_type=value_type)
+
+    # < 2.3.0.0 compatibility
+    if value_type is None:
+        return get_config(config, section, key, env_var, default)
+
+    args = {
+        'boolean': dict(boolean=True),
+        'integer': dict(integer=True),
+        'list': dict(islist=True),
+        'tmppath': dict(istmppath=True)
+    }
+    return get_config(config, section, key, env_var, default,
+                      **args[value_type])
+
+
+DEFAULTS = {
+    'ARA_AUTOCREATE_DATABASE': True,
+    'ARA_DIR': os.path.expanduser('~/.ara'),
+    'ARA_ENABLE_DEBUG_VIEW': False,
+    'ARA_IGNORE_MIMETYPE_WARNINGS': True,
+    'ARA_LOG_FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    'ARA_LOG_LEVEL': 'INFO',
+    'ARA_PATH_MAX': 40,
+    'ARA_PLAYBOOK_OVERRIDE': None,
+    'ARA_PLAYBOOK_PER_PAGE': 10,
+    'ARA_RESULT_PER_PAGE': 25,
+    'ARA_SQL_DEBUG': False,
+    'ARA_TMP_DIR': os.path.expanduser('~/.ansible/tmp')
+}
+
+# Bootstrap Ansible configuration
 config, path = load_config_file()
 
-ARA_DIR = get_config(
-    config, 'ara', 'dir', 'ARA_DIR',
-    DEFAULT_ARA_DIR)
-# Log/database location default to the ARA directory once we know where it is
-DEFAULT_ARA_LOG_FILE = os.path.join(ARA_DIR, 'ara.log')
-DEFAULT_DATABASE_PATH = os.path.join(ARA_DIR, 'ansible.sqlite')
-DEFAULT_DATABASE = 'sqlite:///{}'.format(DEFAULT_DATABASE_PATH)
+# Some defaults need to be based on top of a "processed" ARA_DIR
+ARA_DIR = _ara_config(config, 'dir', 'ARA_DIR')
+database_path = os.path.join(ARA_DIR, 'ansible.sqlite')
+DEFAULTS.update({
+    'ARA_LOG_FILE': os.path.join(ARA_DIR, 'ara.log'),
+    'ARA_DATABASE': 'sqlite:///{}'.format(database_path)
+})
 
-# Ansible >= 2.3 introduced the value_type parameter
-try:
-    ARA_TMP_DIR = get_config(
-        config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMP_DIR, istmppath=True)
-    ARA_PLAYBOOK_OVERRIDE = get_config(
-        config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
-        None, islist=True)
-    ARA_PLAYBOOK_PER_PAGE = get_config(
-        config, 'ara', 'playbook_per_page', 'ARA_PLAYBOOK_PER_PAGE',
-        DEFAULT_ARA_PLAYBOOK_PER_PAGE, integer=True
-    )
-    ARA_RESULT_PER_PAGE = get_config(
-        config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
-        DEFAULT_ARA_RESULT_PER_PAGE, integer=True
-    )
-    SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
-                                 DEFAULT_ARA_SQL_DEBUG, boolean=True)
-    FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
-        config, 'ara', 'ignore_mimetype_warnings',
-        'ARA_IGNORE_MIMETYPE_WARNINGS',
-        DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS, boolean=True)
+ARA_AUTOCREATE_DATABASE = _ara_config(config, 'autocreate_database',
+                                      'ARA_AUTOCREATE_DATABASE',
+                                      value_type='boolean')
+ARA_ENABLE_DEBUG_VIEW = _ara_config(config, 'enable_debug_view',
+                                    'ARA_ENABLE_DEBUG_VIEW',
+                                    value_type='boolean')
+ARA_LOG_FILE = _ara_config(config, 'logfile', 'ARA_LOG_FILE')
+ARA_LOG_FORMAT = _ara_config(config, 'logformat', 'ARA_LOG_FORMAT')
+ARA_LOG_LEVEL = _ara_config(config, 'loglevel', 'ARA_LOG_LEVEL')
+ARA_PLAYBOOK_OVERRIDE = _ara_config(config, 'playbook_override',
+                                    'ARA_PLAYBOOK_OVERRIDE',
+                                    value_type='list')
+ARA_PLAYBOOK_PER_PAGE = _ara_config(config, 'playbook_per_page',
+                                    'ARA_PLAYBOOK_PER_PAGE',
+                                    value_type='integer')
+ARA_RESULT_PER_PAGE = _ara_config(config, 'result_per_page',
+                                  'ARA_RESULT_PER_PAGE',
+                                  value_type='integer')
+ARA_TMP_DIR = _ara_config(config, 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
+                          default=DEFAULTS['ARA_TMP_DIR'],
+                          section='defaults',
+                          value_type='tmppath')
 
-except TypeError:
-    ARA_TMP_DIR = get_config(
-        config, 'defaults', 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-        DEFAULT_ARA_TMP_DIR, value_type='tmppath')
-    ARA_PLAYBOOK_OVERRIDE = get_config(
-        config, 'ara', 'playbook_override', 'ARA_PLAYBOOK_OVERRIDE',
-        None, value_type='list')
-    ARA_PLAYBOOK_PER_PAGE = get_config(
-        config, 'ara', 'playbook_per_page', 'ARA_PLAYBOOK_PER_PAGE',
-        DEFAULT_ARA_PLAYBOOK_PER_PAGE, value_type='integer'
-    )
-    ARA_RESULT_PER_PAGE = get_config(
-        config, 'ara', 'result_per_page', 'ARA_RESULT_PER_PAGE',
-        DEFAULT_ARA_RESULT_PER_PAGE, value_type='integer'
-    )
-    SQLALCHEMY_ECHO = get_config(config, 'ara', 'sqldebug', 'ARA_SQL_DEBUG',
-                                 DEFAULT_ARA_SQL_DEBUG, value_type='boolean')
-    FREEZER_IGNORE_MIMETYPE_WARNINGS = get_config(
-        config, 'ara', 'ignore_mimetype_warnings',
-        'ARA_IGNORE_MIMETYPE_WARNINGS',
-        DEFAULT_ARA_IGNORE_MIMETYPE_WARNINGS, value_type='boolean')
+# Static generation with flask-frozen
+FREEZER_DEFAULT_MIMETYPE = 'text/html'
+FREEZER_IGNORE_MIMETYPE_WARNINGS = _ara_config(config,
+                                               'ignore_mimetype_warnings',
+                                               'ARA_IGNORE_MIMETYPE_WARNINGS',
+                                               value_type='boolean')
+FREEZER_RELATIVE_URLS = True
 
-ARA_LOG_FILE = get_config(
-    config, 'ara', 'logfile', 'ARA_LOG_FILE',
-    DEFAULT_ARA_LOG_FILE)
-ARA_LOG_LEVEL = get_config(
-    config, 'ara', 'loglevel', 'ARA_LOG_LEVEL',
-    DEFAULT_ARA_LOG_LEVEL).upper()
-ARA_LOG_FORMAT = get_config(
-    config, 'ara', 'logformat', 'ARA_LOG_FORMAT',
-    DEFAULT_ARA_LOG_FORMAT)
-ARA_PATH_MAX = get_config(
-    config, 'ara', 'path_max', 'ARA_PATH_MAX',
-    DEFAULT_ARA_PATH_MAX)
-ARA_ENABLE_DEBUG_VIEW = get_config(
-    config, 'ara', 'enable_debug_view', 'ARA_ENABLE_DEBUG_VIEW',
-    False)
-ARA_AUTOCREATE_DATABASE = get_config(
-    config, 'ara', 'autocreate_database', 'ARA_AUTOCREATE_DATABASE',
-    True)
-
-# SQL Alchemy/Alembic
+# SQLAlchemy/Alembic settings
+SQLALCHEMY_DATABASE_URI = _ara_config(config, 'database', 'ARA_DATABASE')
+SQLALCHEMY_ECHO = _ara_config(config, 'sqldebug',
+                              'ARA_SQL_DEBUG',
+                              value_type='boolean')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-SQLALCHEMY_DATABASE_URI = get_config(config, 'ara', 'database', 'ARA_DATABASE',
-                                     DEFAULT_DATABASE)
+
 INSTALL_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
-
-# Static generation
-FREEZER_RELATIVE_URLS = True
-FREEZER_DEFAULT_MIMETYPE = 'text/html'

@@ -15,7 +15,6 @@
 import datetime
 import json
 import logging
-import os
 
 from jinja2 import Markup, UndefinedError
 from pygments import highlight
@@ -62,28 +61,6 @@ def configure_template_filters(app):
         except ValueError as err:
             log.error('failed to load json: %s', err)
             return val
-
-    @app.template_filter('pathtruncate')
-    def jinja_pathtruncate(path, length=None):
-        '''Truncates a path to less than ARA_PATH_MAX characters.  Paths
-        are truncated on path separators.  We prepend an ellipsis when we
-        return a truncated path.'''
-        if path is None:
-            return
-        if length is None:
-            length = app.config['ARA_PATH_MAX']
-        if len(path) < length:
-            return path
-
-        dirname, basename = os.path.split(path)
-        while dirname:
-            if len(dirname) + len(basename) < length:
-                break
-            dirlist = dirname.split('/')
-            dirlist.pop(0)
-            dirname = "/".join(dirlist)
-
-        return "..." + os.path.join(dirname, basename)
 
     @app.template_filter('yamlhighlight')
     def jinja_yamlhighlight(code):
