@@ -145,6 +145,9 @@ By doing so, ARA remains a relatively simple application that is very easy to
 install and configure. It does not require any changes to your setup or
 workflow, it adds itself in transparently and seamlessly.
 
+For more information regarding the core values and the scope for the ARA
+project, refer to the project :ref:`manifesto <manifesto>`.
+
 .. _Ansible Tower: https://www.ansible.com/tower
 .. _Semaphore: https://github.com/ansible-semaphore/semaphore
 .. _Rundeck: http://rundeck.org/plugins/ansible/2016/03/11/ansible-plugin.html

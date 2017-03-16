@@ -15,3 +15,4 @@ Table of Contents
     Usage <usage>
     Contributing <contributing>
     Developer notes <developer>
+    Manifesto: Project core values <manifesto>
