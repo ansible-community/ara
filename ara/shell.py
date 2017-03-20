@@ -14,13 +14,12 @@
 
 import sys
 
-import flask
 from cliff.app import App
 from cliff.commandmanager import CommandManager
+from flask import current_app
 
 from ara import __version__
 from ara.webapp import create_app
-app = create_app()
 
 
 class AraCli(App):
@@ -44,17 +43,22 @@ class AraCli(App):
 
     def initialize_app(self, argv):
         self.LOG.debug('initialize_app')
-        if not flask.current_app:
-            ctx = app.app_context()
-            ctx.push()
 
     def prepare_to_run_command(self, cmd):
         self.LOG.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+
+        # Note: cliff uses self.app for itself
+        self.ara = create_app()
+        if not current_app:
+            self.ara_context = self.ara.app_context()
+            self.ara_context.push()
 
     def clean_up(self, cmd, result, err):
         self.LOG.debug('clean_up %s', cmd.__class__.__name__)
         if err:
             self.LOG.debug('got an error: %s', err)
+
+        self.ara_context.pop()
 
 
 def main(argv=sys.argv[1:]):

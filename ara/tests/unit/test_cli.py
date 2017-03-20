@@ -20,6 +20,7 @@ import tempfile
 
 from lxml import etree
 
+import ara.shell
 import ara.cli.data
 import ara.cli.generate
 import ara.cli.host
@@ -622,7 +623,10 @@ class TestCLIGenerate(TestAra):
         dir = self.generate_dir
 
         ctx = ansible_run()
-        cmd = ara.cli.generate.GenerateHtml(None, None)
+
+        shell = ara.shell.AraCli()
+        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
+        cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
 
         args = parser.parse_args([dir])
@@ -654,7 +658,10 @@ class TestCLIGenerate(TestAra):
         # Record two separate playbooks
         ctx = ansible_run()
         ansible_run()
-        cmd = ara.cli.generate.GenerateHtml(None, None)
+
+        shell = ara.shell.AraCli()
+        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
+        cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
 
         args = parser.parse_args([dir, '--playbook', ctx['playbook'].id])

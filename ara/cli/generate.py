@@ -22,10 +22,7 @@ from flask_frozen import Freezer
 from junit_xml import TestCase
 from junit_xml import TestSuite
 
-from ara.webapp import create_app
 from ara import models
-
-app = create_app()
 
 
 class GenerateHtml(Command):
@@ -50,13 +47,13 @@ class GenerateHtml(Command):
         return parser
 
     def take_action(self, args):
-        app.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
+        self.app.ara.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
 
         if args.playbook is not None:
-            app.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
+            self.app.ara.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
 
         self.log.warn('Generating static files at %s...', args.path)
-        freezer = Freezer(app)
+        freezer = Freezer(self.app.ara)
         freezer.freeze()
 
         print('Done.')
