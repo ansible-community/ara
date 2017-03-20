@@ -13,22 +13,25 @@
 #   under the License.
 
 import os
-import unittest
 
-from ara import webapp as w
-from ara import config as c
+from ara.tests.unit.common import TestAra
 
 
-class TestConfig(unittest.TestCase):
+class TestConfig(TestAra):
     """ Tests the config module """
+    def setUp(self):
+        super(TestConfig, self).setUp()
+
+    def tearDown(self):
+        super(TestConfig, self).tearDown()
+
     def test_default_config(self):
         """ Ensure we have expected default parameters """
-        app = w.create_app()
-
         keys = [
             'ARA_AUTOCREATE_DATABASE',
             'ARA_DIR',
             'ARA_ENABLE_DEBUG_VIEW',
+            'ARA_IGNORE_EMPTY_GENERATION',
             'ARA_LOG_FILE',
             'ARA_LOG_FORMAT',
             'ARA_LOG_LEVEL',
@@ -37,17 +40,20 @@ class TestConfig(unittest.TestCase):
             'ARA_RESULT_PER_PAGE',
         ]
 
-        for key in keys:
-            self.assertEqual(c.DEFAULTS[key], app.config[key])
+        defaults = self.app.config['DEFAULTS']
 
-        self.assertEqual(c.DEFAULTS['ARA_DATABASE'],
-                         app.config['SQLALCHEMY_DATABASE_URI'])
-        self.assertEqual(c.DEFAULTS['ARA_SQL_DEBUG'],
-                         app.config['SQLALCHEMY_ECHO'])
-        self.assertEqual(c.DEFAULTS['ARA_TMP_DIR'],
-                         os.path.split(app.config['ARA_TMP_DIR'])[:-1][0])
-        self.assertEqual(c.DEFAULTS['ARA_IGNORE_MIMETYPE_WARNINGS'],
-                         app.config['FREEZER_IGNORE_MIMETYPE_WARNINGS'])
+        for key in keys:
+            self.assertEqual(defaults[key],
+                             self.app.config[key])
+
+        self.assertEqual(defaults['ARA_DATABASE'],
+                         self.app.config['SQLALCHEMY_DATABASE_URI'])
+        self.assertEqual(defaults['ARA_SQL_DEBUG'],
+                         self.app.config['SQLALCHEMY_ECHO'])
+        self.assertEqual(defaults['ARA_TMP_DIR'],
+                         os.path.split(self.app.config['ARA_TMP_DIR'])[:-1][0])
+        self.assertEqual(defaults['ARA_IGNORE_MIMETYPE_WARNINGS'],
+                         self.app.config['FREEZER_IGNORE_MIMETYPE_WARNINGS'])
 
     # TODO:
     # - Add tests for config from hash (create_app(config))

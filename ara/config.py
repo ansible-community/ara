@@ -53,6 +53,7 @@ DEFAULTS = {
     'ARA_AUTOCREATE_DATABASE': True,
     'ARA_DIR': os.path.expanduser('~/.ara'),
     'ARA_ENABLE_DEBUG_VIEW': False,
+    'ARA_IGNORE_EMPTY_GENERATION': True,
     'ARA_IGNORE_MIMETYPE_WARNINGS': True,
     'ARA_LOG_FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     'ARA_LOG_LEVEL': 'INFO',
@@ -99,6 +100,10 @@ ARA_TMP_DIR = _ara_config(config, 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
                           value_type='tmppath')
 
 # Static generation with flask-frozen
+ARA_IGNORE_EMPTY_GENERATION = _ara_config(config,
+                                          'ignore_empty_generation',
+                                          'ARA_IGNORE_EMPTY_GENERATION',
+                                          value_type='boolean')
 FREEZER_DEFAULT_MIMETYPE = 'text/html'
 FREEZER_IGNORE_MIMETYPE_WARNINGS = _ara_config(config,
                                                'ignore_mimetype_warnings',

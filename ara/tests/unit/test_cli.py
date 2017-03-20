@@ -16,6 +16,7 @@ import json
 import os
 import shutil
 import six
+import sys
 import tempfile
 
 from lxml import etree
@@ -601,11 +602,60 @@ class TestCLIGenerate(TestAra):
         # Create a temporary directory for ara generate tests
         self.generate_dir = tempfile.mkdtemp(prefix='ara')
 
+        # Buffer stderr for warning tests
+        self.stderr = sys.stderr
+        self.buffer = six.StringIO()
+        sys.stderr = self.buffer
+
     def tearDown(self):
         super(TestCLIGenerate, self).tearDown()
-
         # Remove the temporary ara generate directory
         shutil.rmtree(self.generate_dir)
+
+        # Reset stderr back to default
+        sys.stderr = self.stderr
+
+    def test_generate_empty_html(self):
+        """ Ensures the application is still rendered gracefully """
+        self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = False
+        dir = self.generate_dir
+        shell = ara.shell.AraCli()
+        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
+        cmd = ara.cli.generate.GenerateHtml(shell, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([dir])
+        cmd.take_action(args)
+
+        output = self.buffer.getvalue().strip()
+        self.assertIn('MissingURLGeneratorWarning', output)
+
+        paths = [
+            os.path.join(dir, 'index.html'),
+            os.path.join(dir, 'static'),
+        ]
+
+        for path in paths:
+            self.assertTrue(os.path.exists(path))
+
+    def test_generate_empty_html_with_ignore_empty_generation(self):
+        """ Ensures the application is still rendered gracefully """
+        self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = True
+        dir = self.generate_dir
+
+        shell = ara.shell.AraCli()
+        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
+        cmd = ara.cli.generate.GenerateHtml(shell, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([dir])
+        cmd.take_action(args)
+
+        paths = [
+            os.path.join(dir, 'index.html'),
+            os.path.join(dir, 'static'),
+        ]
+
+        for path in paths:
+            self.assertTrue(os.path.exists(path))
 
     def test_generate_html_no_destination(self):
         """ Ensures generating without a destination fails """

@@ -18,9 +18,10 @@ import os
 import sys
 
 from cliff.command import Command
-from flask_frozen import Freezer
+from flask_frozen import Freezer, MissingURLGeneratorWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
+from warnings import filterwarnings
 
 from ara import models
 
@@ -53,6 +54,8 @@ class GenerateHtml(Command):
             self.app.ara.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
 
         self.log.warn('Generating static files at %s...', args.path)
+        if self.app.ara.config['ARA_IGNORE_EMPTY_GENERATION']:
+            filterwarnings('ignore', '.*', MissingURLGeneratorWarning)
         freezer = Freezer(self.app.ara)
         freezer.freeze()
 

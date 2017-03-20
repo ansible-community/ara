@@ -109,6 +109,8 @@ Parameters and their defaults
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_SQL_DEBUG_                | sqldebug                 | False                                     |
 +-------------------------------+--------------------------+-------------------------------------------+
+| ARA_IGNORE_EMPTY_GENERATION_  | ignore_empty_generation  | True                                      |
++-------------------------------+--------------------------+-------------------------------------------+
 | ARA_IGNORE_MIMETYPE_WARNINGS_ | ignore_mimetype_warnings | True                                      |
 +-------------------------------+--------------------------+-------------------------------------------+
 | ARA_PLAYBOOK_OVERRIDE_        | playbook_override        | None                                      |
@@ -179,11 +181,22 @@ ARA_SQL_DEBUG
 
 Enables the SQLAlchemy echo verbose mode.
 
+ARA_IGNORE_EMPTY_GENERATION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using ``ara generate html``, whether or not to ignore warnings provided
+by flask-frozen about endpoints for which the application found no available
+data.
+
+For example, if you do not use the ``ara_record`` module as part of your
+playbooks, this avoids printing a *MissingURLGeneratorWarning* because there
+is no recorded data to render.
+
 ARA_IGNORE_MIMETYPE_WARNINGS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Whether or not to ignore mimetype warnings when generating the static version
-of the ARA web application.
+When using ``ara generate html``, whether or not to ignore file mimetype
+warnings provided by flask-frozen.
 
 ARA_PLAYBOOK_OVERRIDE
 ~~~~~~~~~~~~~~~~~~~~~
