@@ -12,7 +12,6 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import flask
 import unittest
 
 import ara.webapp as w
@@ -31,17 +30,17 @@ class TestAra(unittest.TestCase):
         }
 
         self.app = w.create_app(self)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
         self.client = self.app.test_client()
-
-        if not flask.current_app:
-            ctx = self.app.app_context()
-            ctx.push()
 
         m.db.create_all()
 
     def tearDown(self):
         m.db.session.remove()
         m.db.drop_all()
+
+        self.app_context.pop()
 
 
 def ansible_run(complete=True, failed=False, gather_facts=True,

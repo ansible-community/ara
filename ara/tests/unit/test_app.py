@@ -25,9 +25,6 @@ class TestApp(TestAra):
 
     def tearDown(self):
         super(TestApp, self).tearDown()
-        # Reset app config which might have been altered to defaults
-        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = None
-        self.app.config['ARA_PLAYBOOK_PER_PAGE'] = 10
 
     def test_home_with_data(self):
         ansible_run()
