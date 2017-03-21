@@ -428,9 +428,14 @@
         $('.embed-responsive-item').css('height', $(window).height() * 0.7);
     });
 
+    /* Disable default error alerts from datatables, fold them to the javascript console instead */
+    $.fn.dataTable.ext.errMode = 'none';
+
     {% for playbook in playbooks.items -%}
     {% if playbook.stats.count() -%}
-    $("#stats_{{ playbook.id }}").DataTable({
+    $("#stats_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
         "ajax": "{{ url_for('reports.ajax_stats', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
@@ -446,7 +451,9 @@
     });
     {% endif %}
     {% if playbook.plays.count() -%}
-    $("#plays_{{ playbook.id }}").DataTable({
+    $("#plays_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
         "ajax": "{{ url_for('reports.ajax_plays', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
@@ -459,7 +466,9 @@
     });
     {% endif %}
     {% if playbook.files.count() -%}
-    $("#files_{{ playbook.id }}").DataTable({
+    $("#files_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
         "ajax": "{{ url_for('reports.ajax_files', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
@@ -472,7 +481,9 @@
     });
     {% endif %}
     {% if playbook.tasks.count() -%}
-    $("#tasks_{{ playbook.id }}").DataTable({
+    $("#tasks_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
         "ajax": "{{ url_for('reports.ajax_results', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
@@ -485,7 +496,9 @@
     });
     {% endif %}
     {% if playbook.data.count() -%}
-    $("#records_{{ playbook.id }}").DataTable({
+    $("#records_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
         "ajax": "{{ url_for('reports.ajax_records', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
