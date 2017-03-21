@@ -14,14 +14,17 @@
 
 import os
 
-from ansible.constants import get_config, load_config_file
 from ansible import __version__ as ansible_version
+from ansible.constants import get_config
+from ansible.constants import load_config_file
 from distutils.version import LooseVersion
 
 
-def _ara_config(config, key, env_var, default=None,
-                section='ara', value_type=None):
-    """ Wrapper around Ansible's get_config backward/forward compatibility """
+def _ara_config(config, key, env_var, default=None, section='ara',
+                value_type=None):
+    """
+    Wrapper around Ansible's get_config backward/forward compatibility
+    """
     if default is None:
         try:
             # We're using env_var as keys in the DEFAULTS dict

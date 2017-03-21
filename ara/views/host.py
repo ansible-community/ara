@@ -15,8 +15,11 @@
 import json
 import six
 
-from flask import render_template, abort, Blueprint, current_app
 from ara import models
+from flask import abort
+from flask import Blueprint
+from flask import current_app
+from flask import render_template
 
 host = Blueprint('host', __name__)
 

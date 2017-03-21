@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 COMMON_FIELDS = (
     Field('Changed'),
@@ -42,7 +42,7 @@ SHOW_FIELDS = (
 
 
 class StatsList(Lister):
-    """Returns a list of statistics"""
+    """ Returns a list of statistics """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -63,7 +63,7 @@ class StatsList(Lister):
 
 
 class StatsShow(ShowOne):
-    """Show details of a statistic"""
+    """ Show details of a statistic """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -78,8 +78,7 @@ class StatsShow(ShowOne):
     def take_action(self, args):
         stats = models.Stats.query.get(args.stats_id)
         if stats is None:
-            raise RuntimeError('Stats %s could not be found' %
-                               args.stats_id)
+            raise RuntimeError('Stats %s could not be found' % args.stats_id)
 
         return [[field.name for field in SHOW_FIELDS],
                 [field(stats) for field in SHOW_FIELDS]]

@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
@@ -38,7 +38,7 @@ SHOW_FIELDS = (
 
 
 class DataList(Lister):
-    """Returns a list of recorded key/value pairs"""
+    """ Returns a list of recorded key/value pairs """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -56,12 +56,10 @@ class DataList(Lister):
         return parser
 
     def take_action(self, args):
-        data = (models.Data.query
-                .order_by(models.Data.key))
+        data = models.Data.query.order_by(models.Data.key)
 
         if args.playbook:
-            data = (data
-                    .filter_by(playbook_id=args.playbook))
+            data = data.filter_by(playbook_id=args.playbook)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(key) for field in LIST_FIELDS]
@@ -69,7 +67,7 @@ class DataList(Lister):
 
 
 class DataShow(ShowOne):
-    """Show details of a recorded key/value pair"""
+    """ Show details of a recorded key/value pair """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -94,8 +92,7 @@ class DataShow(ShowOne):
                         .filter((models.Data.id == args.key) |
                                 (models.Data.key == args.key)).one())
             else:
-                data = (models.Data.query
-                        .filter_by(id=args.key).one())
+                data = models.Data.query.filter_by(id=args.key).one()
         except (models.NoResultFound, models.MultipleResultsFound):
             raise RuntimeError('Key %s could not be found' % args.key)
 

@@ -12,8 +12,11 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, abort, Blueprint, current_app
 from ara import models
+from flask import abort
+from flask import Blueprint
+from flask import current_app
+from flask import render_template
 
 file = Blueprint('file', __name__)
 
@@ -39,7 +42,9 @@ def index():
 
 @file.route('/<file_>/')
 def show_file(file_):
-    """ Returns details of a file """
+    """
+    Returns details of a file
+    """
     file_ = (models.File.query.get(file_))
     if file_ is None:
         abort(404)

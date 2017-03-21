@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
@@ -46,7 +46,7 @@ SHOW_FIELDS = (
 
 
 class TaskList(Lister):
-    """Returns a list of tasks"""
+    """ Returns a list of tasks """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -75,11 +75,9 @@ class TaskList(Lister):
                  .order_by(models.Task.time_start, models.Task.sortkey))
 
         if args.play:
-            tasks = (tasks
-                     .filter(models.Task.play_id == args.play))
+            tasks = tasks.filter(models.Task.play_id == args.play)
         elif args.playbook:
-            tasks = (tasks
-                     .filter(models.Task.playbook_id == args.playbook))
+            tasks = tasks.filter(models.Task.playbook_id == args.playbook)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(task) for field in LIST_FIELDS]
@@ -87,7 +85,7 @@ class TaskList(Lister):
 
 
 class TaskShow(ShowOne):
-    """Show details of a task"""
+    """ Show details of a task """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -102,8 +100,7 @@ class TaskShow(ShowOne):
     def take_action(self, args):
         task = models.Task.query.get(args.task_id)
         if task is None:
-            raise RuntimeError('Task %s could not be found' %
-                               args.task_id)
+            raise RuntimeError('Task %s could not be found' % args.task_id)
 
         return [[field.name for field in SHOW_FIELDS],
                 [field(task) for field in SHOW_FIELDS]]

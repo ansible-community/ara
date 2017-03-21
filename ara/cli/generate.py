@@ -17,17 +17,17 @@ import logging
 import os
 import sys
 
+from ara import models
 from cliff.command import Command
-from flask_frozen import Freezer, MissingURLGeneratorWarning
+from flask_frozen import Freezer
+from flask_frozen import MissingURLGeneratorWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
 from warnings import filterwarnings
 
-from ara import models
-
 
 class GenerateHtml(Command):
-    """Generates a static tree of the web application"""
+    """ Generates a static tree of the web application """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -40,7 +40,7 @@ class GenerateHtml(Command):
         parser.add_argument(
             '--playbook',
             metavar='<playbook>',
-            nargs="+",
+            nargs='+',
             help='Only include the specified playbooks in the generation.',
             required=False,
             default=None,
@@ -63,7 +63,7 @@ class GenerateHtml(Command):
 
 
 class GenerateJunit(Command):
-    """Generate junit stream from ara data"""
+    """ Generate junit stream from ara data """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -76,7 +76,7 @@ class GenerateJunit(Command):
         parser.add_argument(
             '--playbook',
             metavar='<playbook>',
-            nargs="+",
+            nargs='+',
             help='Only include the specified playbooks in the generation.',
             required=False,
             default=None,
@@ -105,7 +105,7 @@ class GenerateJunit(Command):
             }
             result_str = json.dumps(additional_results)
             test_path = \
-                "{playbook_file}.{play_name}".format(
+                '{playbook_file}.{play_name}'.format(
                     playbook_file=os.path.basename(result.task.playbook.path),
                     play_name=result.task.play.name)
             test_case = TestCase(
@@ -113,17 +113,17 @@ class GenerateJunit(Command):
                 classname=test_path,
                 elapsed_sec=result.duration.seconds,
                 stdout=result_str)
-            if result.status == "skipped":
+            if result.status == 'skipped':
                 test_case.add_skipped_info(message=result.result)
-            elif (result.status in ("failed", "unreachable") and
+            elif (result.status in ('failed', 'unreachable') and
                     result.ignore_errors is False):
                 test_case.add_failure_info(message=result.result)
             test_cases.append(test_case)
-        test_suite = TestSuite("Ansible Tasks", test_cases)
+        test_suite = TestSuite('Ansible Tasks', test_cases)
 
         xml_string = test_suite.to_xml_string([test_suite])
-        if args.output_file == "-":
+        if args.output_file == '-':
             sys.stdout.write(xml_string)
         else:
-            with open(args.output_file, "w") as f:
+            with open(args.output_file, 'w') as f:
                 f.write(xml_string)

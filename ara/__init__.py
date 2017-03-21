@@ -11,14 +11,17 @@
 #   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #   License for the specific language governing permissions and limitations
 #   under the License.
+"""
+ARA: Ansible Run Analysis
+"""
 
 import pbr.version
 
 # Setup version
-version_info = pbr.version.VersionInfo('ara')
+VERSION = pbr.version.VersionInfo('ara')
 try:
-    __version__ = version_info.version_string()
-    __release__ = version_info.release_string()
+    __version__ = VERSION.version_string()
+    __release__ = VERSION.release_string()
 except AttributeError:
     __version__ = None
     __release__ = None

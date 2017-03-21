@@ -14,8 +14,10 @@
 #   under the License.
 
 
-from flask_script import Manager, prompt_bool
-from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+from flask_script import prompt_bool
+from flask_migrate import Migrate
+from flask_migrate import MigrateCommand
 
 from ara.webapp import create_app
 from ara.models import db
@@ -35,7 +37,7 @@ def createall():
 def dropall():
     """ Drops all database tables """
 
-    if prompt_bool("Are you sure ? You will lose all your data !"):
+    if prompt_bool('Are you sure ? You will lose all your data !'):
         db.drop_all()
 
 

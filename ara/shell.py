@@ -14,12 +14,11 @@
 
 import sys
 
+from ara import __version__
+from ara.webapp import create_app
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 from flask import current_app
-
-from ara import __version__
-from ara.webapp import create_app
 
 
 class AraCli(App):
@@ -47,7 +46,8 @@ class AraCli(App):
     def prepare_to_run_command(self, cmd):
         self.LOG.debug('prepare_to_run_command %s', cmd.__class__.__name__)
 
-        # Note: cliff uses self.app for itself
+        # Note: cliff uses self.app for itself, this gets folded back into
+        # self.app.ara
         self.ara = create_app()
         if not current_app:
             self.ara_context = self.ara.app_context()

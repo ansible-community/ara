@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 FIELDS = (
     Field('ID'),
@@ -27,7 +27,7 @@ FIELDS = (
 
 
 class FileList(Lister):
-    """Returns a list of files"""
+    """ Returns a list of files """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -45,12 +45,10 @@ class FileList(Lister):
         return parser
 
     def take_action(self, args):
-        files = (models.File.query
-                 .order_by(models.File.path))
+        files = models.File.query.order_by(models.File.path)
 
         if args.playbook:
-            files = (files
-                     .filter_by(playbook_id=args.playbook))
+            files = files.filter_by(playbook_id=args.playbook)
 
         return [[field.name for field in FIELDS],
                 [[field(file_) for field in FIELDS]
@@ -58,7 +56,7 @@ class FileList(Lister):
 
 
 class FileShow(ShowOne):
-    """Show details of a file"""
+    """ Show details of a file """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):

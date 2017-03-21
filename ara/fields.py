@@ -13,9 +13,9 @@
 #   under the License.
 
 import datetime
-from flask import render_template_string
 
 from ara.webapp import create_app
+from flask import render_template_string
 
 app = create_app()
 
@@ -26,24 +26,24 @@ implicit_templates = {
 
 
 class Field(object):
-    '''A utility class for extracting a value from an object hierarchy and
-    formatting it using a Jinja2 template.'''
+    """
+    A utility class for extracting a value from an object hierarchy and
+    formatting it using a Jinja2 template.
+    """
+    def __init__(self, name, path=None, template=None, raise_on_err=False):
+        """
+        Initialize a Field object.
 
-    def __init__(self, name, path=None, template=None,
-                 raise_on_err=False):
-        '''Initialize a Field object.
-
-        - `name` -- field label (used for display)
-        - `path` -- a Jinja2 expression used to extract a value from
-           an object hierarchy.  If not specified, this is derived from
-           `name` by setting `name` to lower case and replacing ` ` with
-           `_`.
-        - `template` -- a Jinja2 template that will be used to render
+        - 'name' -- field label (used for display)
+        - 'path' -- a Jinja2 expression used to extract a value from
+           an object hierarchy. If not specified, this is derived from
+           'name' by setting 'name' to lower case and replacing ' ' with
+           '_'.
+        - 'template' -- a Jinja2 template that will be used to render
           the value for display.
-        - `raise_on_err` -- raise an AttributeError if the specified
-          `path` does not return a value.
-        '''
-
+        - 'raise_on_err' -- raise an AttributeError if the specified
+          'path' does not return a value.
+        """
         if path is None:
             path = name.lower().replace(' ', '_')
 
@@ -55,8 +55,9 @@ class Field(object):
         self.expr = app.jinja_env.compile_expression(path)
 
     def __call__(self, obj):
-        '''Extract a value from `obj` and return the formatted value.'''
-
+        """
+        Extract a value from `obj` and return the formatted value.
+        """
         # Extract value from the object.
         value = self.expr(**{x: getattr(obj, x)
                              for x in dir(obj)

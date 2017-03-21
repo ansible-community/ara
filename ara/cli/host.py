@@ -16,10 +16,10 @@ import json
 import logging
 import six
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
@@ -38,7 +38,7 @@ SHOW_FIELDS = (
 
 
 class HostList(Lister):
-    """Returns a list of hosts"""
+    """ Returns a list of hosts """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -56,12 +56,10 @@ class HostList(Lister):
         return parser
 
     def take_action(self, args):
-        hosts = (models.Host.query
-                 .order_by(models.Host.name))
+        hosts = models.Host.query.order_by(models.Host.name)
 
         if args.playbook:
-            hosts = (hosts
-                     .filter_by(playbook_id=args.playbook))
+            hosts = hosts.filter_by(playbook_id=args.playbook)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(host) for field in LIST_FIELDS]
@@ -69,7 +67,7 @@ class HostList(Lister):
 
 
 class HostShow(ShowOne):
-    """Show details of a host"""
+    """ Show details of a host """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -94,8 +92,7 @@ class HostShow(ShowOne):
                         .filter((models.Host.id == args.host) |
                                 (models.Host.name == args.host)).one())
             else:
-                host = (models.Host.query
-                        .filter_by(id=args.host).one())
+                host = models.Host.query.filter_by(id=args.host).one()
         except (models.NoResultFound, models.MultipleResultsFound):
             raise RuntimeError('Host %s could not be found' % args.host)
 
@@ -104,7 +101,7 @@ class HostShow(ShowOne):
 
 
 class HostFacts(ShowOne):
-    """Show facts for a host"""
+    """ Show facts for a host """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -135,8 +132,7 @@ class HostFacts(ShowOne):
                         .filter((models.Host.id == args.host) |
                                 (models.Host.name == args.host)).one())
             else:
-                host = (models.Host.query
-                        .filter_by(id=args.host).one())
+                host = models.Host.query.filter_by(id=args.host).one()
         except (models.NoResultFound, models.MultipleResultsFound):
             raise RuntimeError('Host %s could not be found' % args.host)
 

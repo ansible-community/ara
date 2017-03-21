@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
@@ -39,7 +39,7 @@ SHOW_FIELDS = (
 
 
 class PlayList(Lister):
-    """Returns a list of plays"""
+    """ Returns a list of plays """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -63,8 +63,7 @@ class PlayList(Lister):
                  .order_by(models.Play.time_start, models.Play.sortkey))
 
         if args.playbook:
-            plays = (plays
-                     .filter(models.Play.playbook_id == args.playbook))
+            plays = plays.filter(models.Play.playbook_id == args.playbook)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(play) for field in LIST_FIELDS]
@@ -72,7 +71,7 @@ class PlayList(Lister):
 
 
 class PlayShow(ShowOne):
-    """Show details of a play"""
+    """ Show details of a play """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -87,8 +86,7 @@ class PlayShow(ShowOne):
     def take_action(self, args):
         play = models.Play.query.get(args.play_id)
         if play is None:
-            raise RuntimeError('Play %s could not be found' %
-                               args.play_id)
+            raise RuntimeError('Play %s could not be found' % args.play_id)
 
         return [[field.name for field in SHOW_FIELDS],
                 [field(play) for field in SHOW_FIELDS]]

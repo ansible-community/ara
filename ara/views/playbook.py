@@ -12,7 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, Blueprint
+from flask import Blueprint
+from flask import render_template
 
 playbook = Blueprint('playbook', __name__)
 

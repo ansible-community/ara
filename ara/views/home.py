@@ -12,8 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, Blueprint, current_app
 from ara import models
+from flask import Blueprint
+from flask import current_app
+from flask import render_template
 
 home = Blueprint('home', __name__)
 

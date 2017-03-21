@@ -22,11 +22,13 @@ from ara.tests.unit import fakes
 
 
 class TestAra(unittest.TestCase):
-    '''Common setup/teardown for ARA tests'''
+    """
+    Common setup/teardown for ARA tests
+    """
     def setUp(self):
         self.config = {
-            "SQLALCHEMY_DATABASE_URI": "sqlite://",
-            "TESTING": True
+            'SQLALCHEMY_DATABASE_URI': 'sqlite://',
+            'TESTING': True
         }
 
         self.app = w.create_app(self)

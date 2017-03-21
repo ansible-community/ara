@@ -12,9 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
-from collections import defaultdict
 from ara import models
+from collections import defaultdict
 
 
 def status_to_query(status):
@@ -33,12 +32,12 @@ def status_to_query(status):
 
 
 def get_host_playbook_stats(host_obj):
-    '''Returns a dictionary that contains statistics for each playbook
-    where the host in host_obj is involved. If there are no statistics for
-    the playbook for that host (i.e, interrupted playbook run), we return 'n/a'
+    """
+    Returns a dictionary that contains statistics for each playbook where
+    the host in host_obj is involved. If there are no statistics for the
+    playbook for that host (i.e, interrupted playbook run), we return 'n/a'
     as statistics.
-    '''
-
+    """
     data = {}
     playbooks = host_obj.playbooks
     stats = host_obj.stats
@@ -52,8 +51,9 @@ def get_host_playbook_stats(host_obj):
 
 
 def get_summary_stats(items, attr):
-    '''Returns a dictionary of aggregated statistics for `items` filtered by
-    `attr`. For example, it will aggregate statistics for a host across all
+    """
+    Returns a dictionary of aggregated statistics for 'items' filtered by
+    "attr'. For example, it will aggregate statistics for a host across all
     the playbook runs it has been a member of, with the following structure:
 
         data[host.id] = {
@@ -61,8 +61,7 @@ def get_summary_stats(items, attr):
             'changed': 4
             ...
         }
-    '''
-
+    """
     data = {}
     for item in items:
         stats = models.Stats.query.filter_by(**{attr: item.id})
@@ -82,6 +81,9 @@ def get_summary_stats(items, attr):
 
 
 def _infer_status(playbook, playbook_stats):
+    """
+    Infer the status of a playbook run based on it's statistics or completion
+    """
     if not playbook.complete:
         return 'incomplete'
 
@@ -89,13 +91,3 @@ def _infer_status(playbook, playbook_stats):
         return 'failed'
     else:
         return 'success'
-
-
-def format_json(val):
-    try:
-        return json.dumps(json.loads(val),
-                          indent=4,
-                          sort_keys=True,
-                          default=str)
-    except (TypeError, ValueError):
-        return val

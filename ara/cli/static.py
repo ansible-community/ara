@@ -12,8 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from debtcollector import moves
 from ara.cli import generate
+from debtcollector import moves
 
 long_message = """[WARNING]
 The "ara generate" command is deprecated and has been moved to

@@ -14,10 +14,10 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
 from ara import models
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
@@ -57,7 +57,7 @@ SHOW_FIELDS_RAW = SHOW_FIELDS + (
 
 
 class ResultList(Lister):
-    """Returns a list of results"""
+    """ Returns a list of results """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -91,14 +91,11 @@ class ResultList(Lister):
                    .order_by(models.Task.time_start, models.Task.sortkey))
 
         if args.playbook:
-            results = (results
-                       .filter(models.Task.playbook_id == args.playbook))
+            results = results.filter(models.Task.playbook_id == args.playbook)
         elif args.play:
-            results = (results
-                       .filter(models.Task.play_id == args.play))
+            results = results.filter(models.Task.play_id == args.play)
         elif args.task:
-            results = (results
-                       .filter(models.TaskResult.task_id == args.task))
+            results = results.filter(models.TaskResult.task_id == args.task)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(result) for field in LIST_FIELDS]
@@ -106,7 +103,7 @@ class ResultList(Lister):
 
 
 class ResultShow(ShowOne):
-    """Show details of a result"""
+    """ Show details of a result """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -122,11 +119,8 @@ class ResultShow(ShowOne):
 
         # To understand why we have both --long and --raw, compare the
         # output of:
-        #
         #  ara result show ... -l -c Result -f json
-        #
         # With:
-        #
         #  ara result show ... -r -c Result -f json
         g.add_argument(
             '--raw', '-r',
@@ -145,8 +139,7 @@ class ResultShow(ShowOne):
     def take_action(self, args):
         result = models.TaskResult.query.get(args.result_id)
         if result is None:
-            raise RuntimeError('Result %s could not be found' %
-                               args.result_id)
+            raise RuntimeError('Result %s could not be found' % args.result_id)
 
         if args.format == 'long':
             fields = SHOW_FIELDS_LONG

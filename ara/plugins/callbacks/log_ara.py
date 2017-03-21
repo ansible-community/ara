@@ -18,17 +18,16 @@ import decorator
 import flask
 import hashlib
 import itertools
+import json
 import logging
 import os
-from datetime import datetime
-
-from ara import models
-from ara.models import db
-from ara.webapp import create_app
 
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
-import json
+from ara import models
+from ara.models import db
+from ara.webapp import create_app
+from datetime import datetime
 
 __metaclass__ = type
 
@@ -49,23 +48,23 @@ class CommitAfter(type):
         for k, v in attrs.items():
             if callable(v) and not k.startswith('_'):
                 attrs[k] = commit_after(v)
-        return super(CommitAfter, kls).__new__(
-            kls, name, bases, attrs)
+        return super(CommitAfter, kls).__new__(kls, name, bases, attrs)
 
 
 class IncludeResult(object):
-    '''This is used by the v2_playbook_on_include callback to synthesize
-    a task result for calling log_task.'''
+    """
+    This is used by the v2_playbook_on_include callback to synthesize a task
+    result for calling log_task.
+    """
     def __init__(self, host, path):
         self._host = host
         self._result = {'included_file': path}
 
 
 class CallbackModule(CallbackBase):
-    '''
-    Saves data from an Ansible run into an sqlite database
-    '''
-
+    """
+    Saves data from an Ansible run into a database
+    """
     __metaclass__ = CommitAfter
 
     CALLBACK_VERSION = 2.0
@@ -107,7 +106,6 @@ class CallbackModule(CallbackBase):
                          .filter_by(path=path)
                          .filter_by(playbook_id=self.playbook.id)
                          .one())
-
                 return file_
         except models.NoResultFound:
             pass
@@ -132,9 +130,11 @@ class CallbackModule(CallbackBase):
         return file_
 
     def log_task(self, result, status, **kwargs):
-        '''`log_task` is called when an individual task instance on a single
+        """
+        'log_task' is called when an individual task instance on a single
         host completes. It is responsible for logging a single
-        `TaskResult` record to the database.'''
+        'TaskResult' record to the database.
+        """
         LOG.debug('logging task result for task %s (%s), host %s',
                   self.task.name, self.task.id, result._host.name)
 
@@ -166,7 +166,9 @@ class CallbackModule(CallbackBase):
             db.session.add(facts)
 
     def log_stats(self, stats):
-        '''Logs playbook statistics to the database.'''
+        """
+        Logs playbook statistics to the database.
+        """
         LOG.debug('logging stats')
         hosts = sorted(stats.processed.keys())
         for hostname in hosts:
@@ -183,7 +185,9 @@ class CallbackModule(CallbackBase):
             ))
 
     def close_task(self):
-        '''Marks the completion time of the currently active task.'''
+        """
+        Marks the completion time of the currently active task.
+        """
         if self.task is not None:
             LOG.debug('closing task %s (%s)', self.task.name, self.task.id)
             self.task.stop()
@@ -192,7 +196,9 @@ class CallbackModule(CallbackBase):
             self.task = None
 
     def close_play(self):
-        '''Marks the completion time of the currently active play.'''
+        """
+        Marks the completion time of the currently active play.
+        """
         if self.play is not None:
             LOG.debug('closing play %s (%s)', self.play.name, self.play.id)
             self.play.stop()
@@ -201,7 +207,9 @@ class CallbackModule(CallbackBase):
             self.play = None
 
     def close_playbook(self):
-        '''Marks the completion time of the currently active playbook.'''
+        """
+        Marks the completion time of the currently active playbook.
+        """
         if self.playbook is not None:
             LOG.debug('closing playbook %s', self.playbook.path)
             self.playbook.stop()

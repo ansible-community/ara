@@ -12,12 +12,14 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import functools
+import hashlib
 import json
 import uuid
 import zlib
-import hashlib
-import functools
-from datetime import datetime, timedelta
+
+from datetime import datetime
+from datetime import timedelta
 
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
@@ -28,18 +30,21 @@ db = SQLAlchemy()
 
 
 def mkuuid():
-    '''This used to generate primary keys in the database tables.  We were
-    simply passing `default=uuid.uuid4` to `db.Column`, but it turns out
-    that while some database drivers seem to implicitly call `str()`,
+    """
+    This is used to generate primary keys in the database tables.
+    We were simply passing `default=uuid.uuid4` to `db.Column`, but it turns
+    out that while some database drivers seem to implicitly call `str()`,
     others may be calling `repr()` which resulted in SQLIte trying to
-    use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.'''
-
+    use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.
+    """
     return str(uuid.uuid4())
 
 
 def content_sha1(context):
-    '''Used by the FileContent class to automatically compute the sha1
-    hash of content before storing it to the database.'''
+    """
+    Used by the FileContent class to automatically compute the sha1
+    hash of content before storing it to the database.
+    """
     return hashlib.sha1(context.current_parameters['content']).hexdigest()
 
 
@@ -76,37 +81,42 @@ many_to_many = functools.partial(
 
 # Common options for foreign key relationships.
 def std_fkey(col):
-    return db.Column(pkey_type,
-                     db.ForeignKey(col, ondelete='RESTRICT'))
+    return db.Column(pkey_type, db.ForeignKey(col, ondelete='RESTRICT'))
 
 
 class TimedEntity(object):
     @property
     def duration(self):
-        '''Calculate `(time_end-time_start)` and return the resulting
-        `datetime.timedelta` object.'''
-
+        """
+        Calculates '(time_end-time_start)' and return the resulting
+        'datetime.timedelta' object.
+        """
         if self.time_end is None or self.time_start is None:
             return timedelta(seconds=0)
         else:
             return self.time_end - self.time_start
 
     def start(self):
-        '''Explicitly set `self.time_start`.'''
+        """
+        Explicitly sets 'self.time_start'
+        """
         self.time_start = datetime.now()
 
     def stop(self):
-        '''Explicitly set `self.time_end`.'''
+        """
+        Explicitly sets 'self.time_end'
+        """
         self.time_end = datetime.now()
 
 
 class CompressedData(types.TypeDecorator):
-    '''Implements a new sqlalchemy column type that automatically serializes
+    """
+    Implements a new sqlalchemy column type that automatically serializes
     and compresses data when writing it to the database and decompresses
     the data when reading it.
 
-    http://docs.sqlalchemy.org/en/latest/core/custom_types.html'''
-
+    http://docs.sqlalchemy.org/en/latest/core/custom_types.html
+    """
     impl = types.Binary
 
     def process_bind_param(self, value, dialect):
@@ -120,12 +130,13 @@ class CompressedData(types.TypeDecorator):
 
 
 class CompressedText(types.TypeDecorator):
-    '''Implements a new sqlalchemy column type that automatically
-    compresses data when writing it to the database and decompresses
-    the data when reading it.
+    """
+    Implements a new sqlalchemy column type that automatically compresses
+    data when writing it to the database and decompresses the data when
+    reading it.
 
-    http://docs.sqlalchemy.org/en/latest/core/custom_types.html'''
-
+    http://docs.sqlalchemy.org/en/latest/core/custom_types.html
+    """
     impl = types.Binary
 
     def process_bind_param(self, value, dialect):
@@ -139,26 +150,25 @@ class CompressedText(types.TypeDecorator):
 
 
 class Playbook(db.Model, TimedEntity):
-    '''The `Playbook` class represents a single run of
-    `ansible-playbook`.
+    """
+    The 'Playbook' class represents a single run of 'ansible-playbook'.
 
-    `Playbook` entities have the following relationships:
-
-    - `data` -- a list of k/v pairs recorded in this playbook run.
-    - `plays` -- a list of plays encountered in this playbook run.
-    - `tasks` -- a list of tasks encountered in this playbook run.
-    - `stats` -- a list of  statistic records, one for each host
-      involved in this playbook.
-    - `hosts` -- a list of hosts involved in this playbook
-    - `files` -- a list of files encountered by this playbook
+    'Playbook' entities have the following relationships:
+    - 'data' -- a list of k/v pairs recorded in this playbook run
+    - 'plays' -- a list of plays encountered in this playbook run
+    - 'tasks' -- a list of tasks encountered in this playbook run
+    - 'stats' -- a list of  statistic records, one for each host
+      involved in this playbook
+    - 'hosts' -- a list of hosts involved in this playbook
+    - 'files' -- a list of files encountered by this playbook
       (via include or role directives).
-    '''
-
+    """
     __tablename__ = 'playbooks'
 
     id = std_pkey()
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
+
     data = one_to_many('Data', backref='playbook')
     files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')
@@ -182,9 +192,10 @@ class Playbook(db.Model, TimedEntity):
 
 
 class File(db.Model):
-    '''Represents a task list (role or playbook or included file)
-    referenced by an Ansible run.'''
-
+    """
+    Represents a task list (role or playbook or included file) referenced by
+    an Ansible run.
+    """
     __tablename__ = 'files'
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'path'),
@@ -193,12 +204,11 @@ class File(db.Model):
     id = std_pkey()
     playbook_id = std_fkey('playbooks.id')
 
-    # This has to be a String intead of Text because of
+    # This has to be a String instead of Text because of
     # http://stackoverflow.com/questions/1827063/
     # and it must have a max length smaller than PATH_MAX because MySQL is
-    # limited to a maximum key length of 3072 bytes.  These
-    # restrictions stem from the fact that we are using this column in
-    # a UNIQUE constraint.
+    # limited to a maximum key length of 3072 bytes. These restrictions stem
+    # from the fact that we are using this column in a UNIQUE constraint.
     path = db.Column(db.String(255))
     content = many_to_one('FileContent', backref='files')
     content_id = db.Column(db.String(40),
@@ -210,12 +220,12 @@ class File(db.Model):
 
 
 class FileContent(db.Model):
-    '''Stores content of Ansible task lists encountered during an
-    Ansible run.  We store content keyed by the its sha1 hash, so if a
-    file doesn't change the content will only be stored once in the
-    database.  The hash is calculated automatically when the object is
-    written to the database.'''
-
+    """
+    Stores content of Ansible task lists encountered during an Ansible run.
+    We store content keyed by the its sha1 hash, so if a file doesn't change
+    the content will only be stored once in the database. The hash is
+    calculated automatically when the object is written to the database.
+    """
     __tablename__ = 'file_contents'
 
     id = db.Column(db.String(40), primary_key=True, default=content_sha1)
@@ -223,15 +233,14 @@ class FileContent(db.Model):
 
 
 class Play(db.Model, TimedEntity):
-    '''The `Play` class represents a play in an ansible playbook.
+    """
+    The 'Play' class represents a play in an ansible playbook.
 
-    `Play` entities have the following relationships:
-
-    - `tasks` -- a list of tasks in this play
-    - `task_results` -- a list of task results in this play (via the
-      `tasks` relationship defined by `TaskResult`).
-    '''
-
+    'Play' entities have the following relationships:
+    - 'tasks' -- a list of tasks in this play
+    - 'task_results' -- a list of task results in this play (via the
+      'tasks' relationship defined by 'TaskResult').
+    """
     __tablename__ = 'plays'
 
     id = std_pkey()
@@ -252,19 +261,16 @@ class Play(db.Model, TimedEntity):
 
 
 class Task(db.Model, TimedEntity):
-    '''The `Task` class represents a single task defined in an Ansible
-    playbook.
+    """
+    The 'Task' class represents a single task defined in an Ansible playbook.
 
-    `Task` entities have the following relationships:
-
-    - `playbook` -- the playbook containing thist ask (via the `tasks`
-      relationship defined by `Playbook`)
-    - `play` -- the play containing this task (via the `tasks`
-       relationship defined by `Play`)
-    - `task_results` -- a list of results for each host targeted by
-      this task.
-    '''
-
+    'Task' entities have the following relationships:
+    - 'playbook' -- the playbook containing this task (via the 'tasks'
+      relationship defined by 'Playbook')
+    - 'play' -- the play containing this task (via the 'tasks' relationship
+      defined by 'Play')
+    - 'task_results' -- a list of results for each host targeted by this task.
+    """
     __tablename__ = 'tasks'
 
     id = std_pkey()
@@ -298,17 +304,16 @@ class Task(db.Model, TimedEntity):
 
 
 class TaskResult(db.Model, TimedEntity):
-    '''The `TaskResult` class represents the result of running a
-    single task on a single host.
+    """
+    The 'TaskResult' class represents the result of running a single task on
+    a single host.
 
-    A `TaskResult` entity has the following relationships:
-
-    - `task` -- the task for which this is a result (via the
-      `task_results` relationship defined by `Task`).
-    - `host` -- the host associated with this result (via the
-      `task_results` relationship defined by `Host`)
-    '''
-
+    A 'TaskResult' entity has the following relationships:
+    - 'task' -- the task for which this is a result (via the 'task_results'
+      relationship defined by 'Task').
+    - 'host' -- the host associated with this result (via the 'task_results'
+      relationship defined by 'Host')
+    """
     __tablename__ = 'task_results'
 
     id = std_pkey()
@@ -340,19 +345,16 @@ class TaskResult(db.Model, TimedEntity):
 
 
 class Host(db.Model):
-    '''The `Host` object represents a host reference by an Ansible
-    inventory.
+    """
+    The 'Host' object represents a host reference by an Ansible inventory.
 
-    A `Host` entity has the following relationships:
-
-    - `task_results` -- a list of `TaskResult` objects associated with
-      this host.
-    - `stats` -- a list of `Stats` objects resulting from playbook
-      runs against this host.
-    - `playbooks` -- a list of `Playbook` runs that have included this
+    A 'Host' entity has the following relationships:
+    - 'task_results' -- a list of 'TaskResult' objects associated with this
       host.
-    '''
-
+    - 'stats' -- a list of 'Stats' objects resulting from playbook runs
+      against this host.
+    - 'playbooks' -- a list of 'Playbook' runs that have included this host.
+    """
     __tablename__ = 'hosts'
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'name'),
@@ -371,14 +373,13 @@ class Host(db.Model):
 
 
 class HostFacts(db.Model):
-    '''The `HostFacts` object represents a host reference by an Ansible
+    """
+    The 'HostFacts' object represents a host reference by an Ansible
     inventory. It is meant to record facts when a setup task is run for a host.
 
-    A `HostFacts` entity has the following relationship:
-
-    - `hosts` -- the host owner of the facts
-    '''
-
+    A 'HostFacts' entity has the following relationship:
+    - 'hosts' -- the host owner of the facts
+    """
     __tablename__ = 'host_facts'
 
     id = std_pkey()
@@ -391,17 +392,16 @@ class HostFacts(db.Model):
 
 
 class Stats(db.Model):
-    '''A `Stats` object contains statistics for a single host from a
-    single Ansible playbook run.
+    """
+    A 'Stats' object contains statistics for a single host from a single
+    Ansible playbook run.
 
-    A `Stats` entity has the following relationships:
-
-    - `playbook` -- the playbook associated with these statistics (via
-      the `stats` relationship defined in `Playbook`)
-    - `host` -- The host associated with these statistics (via the
-      `stats` relationship defined in `Host`)
-    '''
-
+    A 'Stats' entity has the following relationships:
+    - 'playbook' -- the playbook associated with these statistics (via the
+      'stats' relationship defined in `Playbook`)
+    - 'host' -- The host associated with these statistics (via the
+      'stats' relationship defined in 'Host')
+    """
     __tablename__ = 'stats'
 
     id = std_pkey()
@@ -419,14 +419,13 @@ class Stats(db.Model):
 
 
 class Data(db.Model):
-    '''The `Data` object represents a recorded key/value pair provided by
-    the ara_record module.
+    """
+    The 'Data' object represents a recorded key/value pair provided by the
+    ara_record module.
 
-    A `Data` entity has the following relationships:
-
-    - `playbook` -- the playbook this key/value pair was recorded in
-    '''
-
+    A 'Data' entity has the following relationships:
+    - 'playbook' -- the playbook this key/value pair was recorded in
+    """
     __tablename__ = 'data'
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'key'),

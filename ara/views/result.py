@@ -12,7 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from flask import render_template, abort, Blueprint, current_app
+from flask import abort
+from flask import Blueprint
+from flask import current_app
+from flask import render_template
 from ara import models
 
 result = Blueprint('result', __name__)

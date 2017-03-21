@@ -13,7 +13,6 @@
 #   under the License.
 
 import ara.utils as u
-import json
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
@@ -71,12 +70,3 @@ class TestUtils(TestAra):
         self.assertEqual(1, res[playbook]['skipped'])
         self.assertEqual(0, res[playbook]['unreachable'])
         self.assertEqual('failed', res[playbook]['status'])
-
-    def test_format_json(self):
-        data = json.dumps({'name': 'value'})
-        res = u.format_json(json.dumps(data))
-        self.assertEqual(res, '"{\\"name\\": \\"value\\"}"')
-
-    def test_format_json_fail(self):
-        res = u.format_json('{invalid:}')
-        self.assertEqual(res, '{invalid:}')

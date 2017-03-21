@@ -18,7 +18,7 @@
 # TODO: Remove this file and update the documentation when the issue is fixed,
 # released and present in all supported versions.
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: ara_read
 short_description: Ansible module to read recorded persistent data with ARA.
@@ -35,9 +35,9 @@ options:
 requirements:
     - "python >= 2.6"
     - "ara >= 0.10.0"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # Write data
 - ara_record:
     key: "foo"
@@ -50,10 +50,10 @@ EXAMPLES = '''
 
 # Use data
 - debug:
-    msg: "{{ item }}""
+    msg: "{{ item }}"
   with_items:
     - foo.key
     - foo.value
     - foo.type
     - foo.playbook_id
-'''
+"""

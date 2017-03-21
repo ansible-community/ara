@@ -13,7 +13,10 @@
 #   under the License.
 
 import cgi
-from flask import Blueprint, Response, url_for
+
+from flask import Blueprint
+from flask import Response
+from flask import url_for
 
 debug = Blueprint('debug', __name__)
 

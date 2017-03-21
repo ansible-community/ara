@@ -25,7 +25,7 @@ try:
 except ImportError:
     HAS_ARA = False
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: ara_read
 short_description: Ansible module to read recorded persistent data with ARA.
@@ -42,9 +42,9 @@ options:
 requirements:
     - "python >= 2.6"
     - "ara >= 0.10.0"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # Write data
 - ara_record:
     key: "foo"
@@ -57,17 +57,17 @@ EXAMPLES = '''
 
 # Use data
 - debug:
-    msg: "{{ item }}""
+    msg: "{{ item }}"
   with_items:
     - foo.key
     - foo.value
     - foo.type
     - foo.playbook_id
-'''
+"""
 
 
 class ActionModule(ActionBase):
-    ''' Read from recorded persistent data as key/value pairs in ARA '''
+    """ Read from recorded persistent data as key/value pairs in ARA """
 
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(('key',))
@@ -89,16 +89,16 @@ class ActionModule(ActionBase):
 
         if not HAS_ARA:
             result = {
-                "failed": True,
-                "msg": "ARA is required to run this module."
+                'failed': True,
+                'msg': 'ARA is required to run this module.'
             }
             return result
 
         for arg in self._task.args:
             if arg not in self.VALID_ARGS:
                 result = {
-                    "failed": True,
-                    "msg": "'{0}' is not a valid option.".format(arg)
+                    'failed': True,
+                    'msg': '{0} is not a valid option.'.format(arg)
                 }
                 return result
 
@@ -110,7 +110,7 @@ class ActionModule(ActionBase):
         for parameter in required:
             if not self._task.args.get(parameter):
                 result['failed'] = True
-                result['msg'] = "{} parameter is required".format(parameter)
+                result['msg'] = '{0} parameter is required'.format(parameter)
                 return result
 
         # Retrieve the persisted playbook_id from tmpfile
@@ -126,14 +126,15 @@ class ActionModule(ActionBase):
                 result['value'] = data.value
                 result['type'] = data.type
                 result['playbook_id'] = data.playbook_id
-            msg = "Sucessfully read data for the key {0}".format(data.key)
+            msg = 'Sucessfully read data for the key {0}'.format(data.key)
             result['msg'] = msg
+        # TODO: Do a better job for handling exception
         except Exception as e:
             result['key'] = None
             result['value'] = None
             result['type'] = None
             result['playbook_id'] = None
             result['failed'] = True
-            msg = "Could not read data for key {0}: {1}".format(key, str(e))
+            msg = 'Could not read data for key {0}: {1}'.format(key, str(e))
             result['msg'] = msg
         return result

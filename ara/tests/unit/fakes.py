@@ -12,13 +12,12 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import ara.models as m
 import hashlib
 import random
 
-import ara.models as m
-
-from mock import Mock
 from ansible import __version__ as ansible_version
+from mock import Mock
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests

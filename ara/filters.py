@@ -16,10 +16,11 @@ import datetime
 import json
 import logging
 
-from jinja2 import Markup, UndefinedError
+from jinja2 import Markup
+from jinja2 import UndefinedError
 from pygments import highlight
-from pygments.lexers import YamlLexer
 from pygments.formatters import HtmlFormatter
+from pygments.lexers import YamlLexer
 
 
 def configure_template_filters(app):
@@ -27,7 +28,7 @@ def configure_template_filters(app):
 
     @app.template_filter('datefmt')
     def jinja_date_formatter(timestamp, format='%Y-%m-%d %H:%M:%S'):
-        """ Reformats a datetime timestamp from str(datetime.datetime)"""
+        """ Reformats a datetime timestamp from str(datetime.datetime) """
         if timestamp is None:
             return 'n/a'
         else:
@@ -39,8 +40,8 @@ def configure_template_filters(app):
         if timestamp is None:
             return 'n/a'
         else:
-            d = datetime.timedelta(seconds=int(timestamp.total_seconds()))
-            return str(d)
+            date = datetime.timedelta(seconds=int(timestamp.total_seconds()))
+            return str(date)
 
     @app.template_filter('to_nice_json')
     def jinja_to_nice_json(result):

@@ -18,7 +18,7 @@
 # TODO: Remove this file and update the documentation when the issue is fixed,
 # released and present in all supported versions.
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: ara_record
 short_description: Ansible module to record persistent data with ARA.
@@ -44,9 +44,9 @@ options:
 requirements:
     - "python >= 2.6"
     - "ara >= 0.10.0"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # Write static data
 - ara_record:
     key: "foo"
@@ -73,4 +73,4 @@ EXAMPLES = '''
     - { key: "data", value: "{ 'key': 'value' }", type: "json" }
     - { key: "somelist", value: ['one', 'two'], type: "list" }
     - { key: "somedict", value: {'key': 'value' }, type: "dict" }
-'''
+"""

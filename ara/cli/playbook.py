@@ -14,12 +14,12 @@
 
 import logging
 
-from cliff.lister import Lister
-from cliff.show import ShowOne
-from cliff.command import Command
 from ara import models
 from ara.models import db
 from ara.fields import Field
+from cliff.lister import Lister
+from cliff.show import ShowOne
+from cliff.command import Command
 
 LIST_FIELDS = (
     Field('ID'),
@@ -42,7 +42,7 @@ SHOW_FIELDS = (
 
 
 class PlaybookList(Lister):
-    """Returns a list of playbooks"""
+    """ Returns a list of playbooks """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -60,8 +60,7 @@ class PlaybookList(Lister):
         return parser
 
     def take_action(self, args):
-        playbooks = (models.Playbook.query
-                     .order_by(models.Playbook.time_start))
+        playbooks = models.Playbook.query.order_by(models.Playbook.time_start)
 
         if args.incomplete:
             playbooks = playbooks.filter_by(complete=False)
@@ -74,7 +73,7 @@ class PlaybookList(Lister):
 
 
 class PlaybookShow(ShowOne):
-    """Show details of a playbook"""
+    """ Show details of a playbook """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
@@ -96,7 +95,7 @@ class PlaybookShow(ShowOne):
 
 
 class PlaybookDelete(Command):
-    """Delete playbooks from the database."""
+    """ Delete playbooks from the database. """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):

@@ -26,7 +26,7 @@ try:
 except ImportError:
     HAS_ARA = False
 
-DOCUMENTATION = '''
+DOCUMENTATION = """
 ---
 module: ara_record
 short_description: Ansible module to record persistent data with ARA.
@@ -52,9 +52,9 @@ options:
 requirements:
     - "python >= 2.6"
     - "ara >= 0.10.0"
-'''
+"""
 
-EXAMPLES = '''
+EXAMPLES = """
 # Write static data
 - ara_record:
     key: "foo"
@@ -81,11 +81,11 @@ EXAMPLES = '''
     - { key: "data", value: "{ 'key': 'value' }", type: "json" }
     - { key: "somelist", value: ['one', 'two'], type: "list" }
     - { key: "somedict", value: {'key': 'value' }, type: "dict" }
-'''
+"""
 
 
 class ActionModule(ActionBase):
-    ''' Record persistent data as key/value pairs in ARA '''
+    """ Record persistent data as key/value pairs in ARA """
 
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(('key', 'value', 'type'))
@@ -115,8 +115,8 @@ class ActionModule(ActionBase):
 
         if not HAS_ARA:
             result = {
-                "failed": True,
-                "msg": "ARA is required to run this module."
+                'failed': True,
+                'msg': 'ARA is required to run this module.'
             }
             return result
 
@@ -124,7 +124,7 @@ class ActionModule(ActionBase):
             if arg not in self.VALID_ARGS:
                 result = {
                     "failed": True,
-                    "msg": "'{0}' is not a valid option.".format(arg)
+                    "msg": '{0} is not a valid option.'.format(arg)
                 }
                 return result
 
@@ -157,8 +157,8 @@ class ActionModule(ActionBase):
 
         try:
             self.create_or_update_key(playbook_id, key, value, type)
-            result['msg'] = "Data recorded in ARA for this playbook."
+            result['msg'] = 'Data recorded in ARA for this playbook.'
         except Exception as e:
             result['failed'] = True
-            result['msg'] = "Data not recorded in ARA: {0}".format(str(e))
+            result['msg'] = 'Data not recorded in ARA: {0}'.format(str(e))
         return result

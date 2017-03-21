@@ -12,22 +12,21 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import os
-import logging
+import ara.config
+import ara.views
 import flask_migrate
+import logging
+import os
 
-from alembic.script import ScriptDirectory
 from alembic.migration import MigrationContext
+from alembic.script import ScriptDirectory
+from ara.context_processors import configure_context_processors
+from ara.errorhandlers import configure_errorhandlers
+from ara.filters import configure_template_filters
+from ara.models import db
 from flask import Flask, current_app
 from flask import logging as flask_logging
 from sqlalchemy.engine.reflection import Inspector
-
-from ara.models import db
-from ara.filters import configure_template_filters
-from ara.context_processors import configure_context_processors
-from ara.errorhandlers import configure_errorhandlers
-import ara.views
-import ara.config
 
 
 DEFAULT_APP_NAME = 'ara'

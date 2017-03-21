@@ -13,28 +13,14 @@
 #   under the License.
 
 from ansible import __version__ as ansible_version
-
-# TODO: Why can't I import __release__ from ara here ?
-import pbr.version
-
-# Setup version
-version_info = pbr.version.VersionInfo('ara')
-try:
-    __version__ = version_info.version_string()
-    __release__ = version_info.release_string()
-except AttributeError:
-    __version__ = None
-    __release__ = None
+from ara import __release__ as ara_release
 
 
 def configure_context_processors(app):
-
     @app.context_processor
     def ctx_add_nav_data():
-        '''Makes some standard data from the database available in the
-        template context.'''
-
-        ara_version = __release__
-
-        return dict(ara_version=ara_version,
+        """
+        Returns standard data that will be available in every template view.
+        """
+        return dict(ara_version=ara_release,
                     ansible_version=ansible_version)
