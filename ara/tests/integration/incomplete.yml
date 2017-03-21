@@ -15,6 +15,7 @@
 
 - name: Incomplete playbook
   hosts: localhost
+  gather_facts: no
   tasks:
     - debug:
         msg: "This playbook is meant to be interrupted"
