@@ -23,7 +23,9 @@ What versions of Ansible are supported ?
 
 The minimum required version of Ansible to run ARA is 2.1.0.0.
 
-ARA is developed, tested and used with Ansible 2.1.x and 2.2.x.
+ARA is developed and tested against the latest versions of Ansible:
+2.1.x and 2.2.x.
+
 Ansible 2.0.x is `no longer supported`_.
 
 .. _no longer supported: https://groups.google.com/forum/#!topic/ansible-devel/6-6FdxZ94kc
@@ -45,59 +47,73 @@ case of ARA, record the playbook run data in a database.
 What does the web interface look like ?
 ---------------------------------------
 
-A video is available on YouTube_, featuring playbook runs from the
-OpenStack-Ansible_ project.
+A video preview and explanation of the web interface is available on
+YouTube_, featuring playbook runs from the OpenStack-Ansible_ project.
 
-.. _YouTube: https://www.youtube.com/watch?v=zT1l-rFne-Q
+.. _YouTube: https://www.youtube.com/watch?v=aQiN5wBXZ4g
 .. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
 
 Otherwise, here's some screenshots highlighting some of ARA's features:
 
-Playbook listing
+Home page
+~~~~~~~~~
+
+The home page highlights the data recorded by ARA:
+
+.. image:: _static/home.png
+
+Playbook reports
 ~~~~~~~~~~~~~~~~
 
-List either all recorded playbooks or only the most recent ones:
+The core of the web application interface revolves around one and single page
+where you’ll be able to find all the information about your playbooks:
 
-.. image:: _static/preview1.png
+.. image:: _static/reports.png
 
-Playbook results
-~~~~~~~~~~~~~~~~
-
-Filter your playbook results by host, play, task, status, file and more:
-
-.. image:: _static/preview2.png
-
-Detailed task results
+Playbook host summary
 ~~~~~~~~~~~~~~~~~~~~~
 
-If necessary, dig into the full readable details of your tasks as if Ansible
-was *way* too verbose:
+Quickly have a glance at summary statistics or host facts for your playbook:
 
-.. image:: _static/preview3.png
+.. image:: _static/host_summary.png
 
 Recorded host facts
 ~~~~~~~~~~~~~~~~~~~
 
-If you're gathering facts throughout your playbooks, ARA will pick those up
-and make them available:
+If Ansible gathered facts as part of your playbook, ARA will save them and
+make them available:
 
-.. image:: _static/preview4.png
+.. image:: _static/host_facts.png
 
-Full playbook and task files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Organized task results
+~~~~~~~~~~~~~~~~~~~~~~
 
-ARA will store the full playbook file as well as your standalone or role task
-files so you can see exactly what run:
+Quickly and easily get insight into your task results.
 
-.. image:: _static/preview5.png
+**Sort them by duration to find which took the longest time**
+
+.. image:: _static/sort.png
+
+**Search and filter by task name, host, action or status**
+
+.. image:: _static/search.png
+
+**Click on the action to get context on where a specific task ran**
+
+.. image:: _static/action.png
+
+**Click on the status to dig into all the data made available by Ansible**
+
+.. image:: _static/result.png
 
 Arbitrarily recorded data
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` built-in Ansible modules allow you to write and
-read arbitrary data, making them available in the web interface as well:
+The :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` built-in
+Ansible modules allow you to write and read arbitrary data, making them
+available in the web interface:
 
-.. image:: _static/preview6.png
+.. image:: _static/record.png
 
 Why is ARA being developed ?
 ----------------------------
@@ -116,15 +132,17 @@ to visualize these records to help you be more efficient.
 Why don't you use Ansible Tower, Rundeck or Semaphore ?
 -------------------------------------------------------
 
-`Ansible Tower`_ is currently a product from Ansible and has not been open
-sourced (*yet*). We do not know when it will be made freely available and it's
-source opened.
+`Ansible Tower`_ is a product from Red Hat that has not been open sourced
+(*yet*). We do not know when it will be made freely available or when it will
+become open source.
 
 Ansible Tower, Semaphore_ and Rundeck_ all have something in common.
-They are tools that controls (or wants to control) the whole workflow
-from end-to-end and they do so in a fairly "centralized" fashion where
-everything runs from the place where the software is hosted.
-Inventory management, ACLs, playbook execution, editing features and so on.
+They are tools that control (or want to control) the whole workflow from
+end-to-end and they do so in a fairly "centralized" fashion where everything
+runs from the place where the software is hosted.
+
+They provide features like inventory management, ACLs, playbook execution,
+editing features and so on.
 
 Since they are the ones actually running Ansible, it makes sense that they can
 record and display the data in an organized way.
@@ -149,10 +167,35 @@ workflow, it adds itself in transparently and seamlessly.
 .. _Semaphore: https://github.com/ansible-semaphore/semaphore
 .. _Rundeck: http://rundeck.org/plugins/ansible/2016/03/11/ansible-plugin.html
 
+Can Ansible with ARA run on a different server than the web application ?
+-------------------------------------------------------------------------
+
+ARA comes bundled in an all-in-one package: callback, modules, web application
+and command line interface. When you install ARA, you get all of those out of
+the box.
+
+The ARA components themselves are mostly decoupled, however, and as long as
+they can all communicate with the same database, you'll get the same
+experience.
+
+You can run Ansible with ARA on your laptop, save to a local sqlite database
+and run the web application from the embedded server, everything offline, if
+that's what you need.
+
+However, you can also, for example, use a
+:ref:`MySQL configuration <ARA_DATABASE>` to have Ansible and ARA send data
+to a remote database server instead.
+
+Another server could host the web application with
+:ref:`Apache+mod_wsgi <webserver_configuration>` with the same database
+configuration and you would be accessing the same recorded data.
+
+You could also have ARA installed on yet another computer with the same
+configuration and the command line interface will be able to retrieve the data
+automatically as well.
+
 Can ARA be used outside the context of OpenStack or continuous integration ?
 ----------------------------------------------------------------------------
-
-Of course, you can.
 
 ARA has no dependencies or requirements with OpenStack or Jenkins for CI.
 You can use ARA with Ansible for any playbook in any context.
