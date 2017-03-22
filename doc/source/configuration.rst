@@ -126,6 +126,8 @@ ARA_DIR
 Base directory where ARA will store it's log file and sqlite database, unless
 specified otherwise.
 
+.. _ara_database:
+
 ARA_DATABASE
 ~~~~~~~~~~~~
 
