@@ -5,7 +5,7 @@ ARA is an Open Source project and welcomes contributions, whether they are in
 the form of feedback, comments, suggestions, bugs, code contributions or
 code reviews.
 
-Feel free to come discuss the project on IRC in #ara, on Freenode.
+ARA does not use GitHub for issues or pull requests.
 
 The project has decided to be hosted under the OpenStack_ umbrella to benefit
 from the code review and testing infrastructure on which hundreds of
@@ -33,19 +33,53 @@ This documentation you will find here is mostly a summary of
 .. _OpenStack: http://www.openstack.org/
 .. _OpenStack's developer getting started: https://docs.openstack.org/infra/manual/developers.html
 
-Pre-requirements
-----------------
+Set up your Ubuntu Launchpad account
+------------------------------------
 
-Setting up your Gerrit code review account
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OpenStack's Gerrit_ and StoryBoard_ instances currently use Launchpad_ for
+authentication. If you do not already have a Launchpad account,
+you will need to create one here_.
 
-OpenStack's Gerrit instance uses Launchpad_ for authentication. If you do not
-already have a Launchpad account, you will need to create one.
+.. _StoryBoard: https://storyboard.openstack.org/#!/page/about
+.. _here: https://login.launchpad.net/+login
+
+Filing issues and bugs
+----------------------
+
+Once you have your Ubuntu Launchpad account set up, you're ready to start
+contributing to the ARA project tracker in StoryBoard_.
+
+First, you'll need to login to StoryBoard -- the ARA project can be found here:
+https://storyboard.openstack.org/#!/project/843
+
+.. image:: _static/storyboard-login.png
+
+.. image:: _static/storyboard-launchpad.png
+
+Once you're logged in, you'll want to create a story for the
+``openstack/ara`` project:
+
+.. image:: _static/storyboard-create.png
+
+.. image:: _static/storyboard-story.png
+
+And then you're done:
+
+.. image:: _static/storyboard-complete.png
+
+Contributing code or code reviews
+---------------------------------
+
+Set up your Gerrit code review account
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you'll be contributing code or code reviews, you'll need to set up your
+Gerrit code review account.
 
 Once you have your Launchpad account, you will be able to sign in to
 `review.openstack.org`_.
 
-To be able to submit reviews, Gerrit needs to have your public SSH key in the
+To be able to submit code, Gerrit needs to have your public SSH key in the
 same way Github does. To do that, click on your name at the top right and go
 to the settings where you will see the tab to set up your SSH key.
 
