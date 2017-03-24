@@ -142,12 +142,16 @@ class CallbackModule(CallbackBase):
         result.task_end = datetime.now()
         host = self.get_or_create_host(result._host.name)
 
+        # Use Ansible's CallbackBase._dump_results in order to strip internal
+        # keys, respect no_log directive, etc.
+        results = json.loads(self._dump_results(result._result))
+
         self.taskresult = models.TaskResult(
             task=self.task,
             host=host,
             time_start=result.task_start,
             time_end=result.task_end,
-            result=json.dumps(result._result),
+            result=json.dumps(results),
             status=status,
             changed=result._result.get('changed', False),
             failed=result._result.get('failed', False),

@@ -13,6 +13,16 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+# Ensure no_log is respected
+- name: Print normal data
+  debug:
+    msg: "normal data"
+
+- name: Print confidential data
+  debug:
+    msg: "confidential data"
+  no_log: "yes"
+
 # ARA record and read modules specific tests
 - name: Record data with no type
   ara_record:
