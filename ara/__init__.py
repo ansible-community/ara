@@ -22,6 +22,6 @@ VERSION = pbr.version.VersionInfo('ara')
 try:
     __version__ = VERSION.version_string()
     __release__ = VERSION.release_string()
-except AttributeError:
+except (ValueError, AttributeError):
     __version__ = None
     __release__ = None
