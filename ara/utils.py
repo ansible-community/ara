@@ -14,6 +14,7 @@
 
 from ara import models
 from collections import defaultdict
+from sqlalchemy import func
 
 
 def status_to_query(status):
@@ -91,3 +92,14 @@ def _infer_status(playbook, playbook_stats):
         return 'failed'
     else:
         return 'success'
+
+
+def fast_count(query):
+    """
+    It turns out the built-in SQLAlchemy function for query.count() is pretty
+    slow. Alternatively, use this optimized function instead.
+    """
+    count_query = (query
+                   .statement.with_only_columns([func.count()]).order_by(None))
+    count = query.session.execute(count_query).scalar()
+    return count

@@ -16,6 +16,7 @@ import datetime
 import json
 import logging
 
+from ara.utils import fast_count
 from jinja2 import Markup
 from jinja2 import UndefinedError
 from pygments import highlight
@@ -83,3 +84,7 @@ def configure_template_filters(app):
         return highlight(Markup(code.rstrip()).unescape(),
                          YamlLexer(),
                          formatter)
+
+    @app.template_filter('fast_count')
+    def jinja_fast_count(query):
+        return fast_count(query)

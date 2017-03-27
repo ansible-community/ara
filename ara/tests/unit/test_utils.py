@@ -13,6 +13,7 @@
 #   under the License.
 
 import ara.utils as u
+import ara.models as m
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
@@ -70,3 +71,12 @@ class TestUtils(TestAra):
         self.assertEqual(1, res[playbook]['skipped'])
         self.assertEqual(0, res[playbook]['unreachable'])
         self.assertEqual('failed', res[playbook]['status'])
+
+    def test_fast_count(self):
+        ansible_run()
+        query = m.Task.query
+
+        normal_count = query.count()
+        fast_count = u.fast_count(query)
+
+        self.assertEqual(normal_count, fast_count)

@@ -13,6 +13,7 @@
 #   under the License.
 
 from ara import models
+from ara.utils import fast_count
 from flask import Blueprint
 from flask import current_app
 from flask import render_template
@@ -52,10 +53,10 @@ def main():
 
     return render_template('home.html',
                            active='home',
-                           files=files.count(),
-                           host_facts=host_facts.count(),
-                           hosts=hosts.count(),
-                           playbooks=playbooks.count(),
-                           records=records.count(),
-                           tasks=tasks.count(),
-                           task_results=task_results.count())
+                           files=fast_count(files),
+                           host_facts=fast_count(host_facts),
+                           hosts=fast_count(hosts),
+                           playbooks=fast_count(playbooks),
+                           records=fast_count(records),
+                           tasks=fast_count(tasks),
+                           task_results=fast_count(task_results))

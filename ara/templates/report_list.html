@@ -38,35 +38,35 @@
                                 <div class="list-view-pf-expand">
                                     <span class="fa fa-angle-right"></span>
                                     <span class="pficon pficon-server"></span>
-                                    <strong>{{ playbook.hosts|list|length }}</strong> Hosts
+                                    <strong>{{ playbook.hosts | fast_count }}</strong> Hosts
                                 </div>
                             </div>
                             <div class="list-view-pf-additional-info-item" title="Plays involved in the playbook">
                                 <div class="list-view-pf-expand">
                                     <span class="fa fa-angle-right"></span>
                                     <span class="pficon pficon-flag"></span>
-                                    <strong>{{ playbook.plays|list|length }}</strong> Plays
+                                    <strong>{{ playbook.plays | fast_count }}</strong> Plays
                                 </div>
                             </div>
                             <div class="list-view-pf-additional-info-item" title="Role and task files involved in the playbook">
                                 <div class="list-view-pf-expand">
                                     <span class="fa fa-angle-right"></span>
                                     <span class="fa fa-folder-open"></span>
-                                    <strong>{{ playbook.files|list|length }}</strong> Files
+                                    <strong>{{ playbook.files | fast_count }}</strong> Files
                                 </div>
                             </div>
                             <div class="list-view-pf-additional-info-item" title="Tasks involved in the playbook">
                                 <div class="list-view-pf-expand">
                                     <span class="fa fa-angle-right"></span>
                                     <span class="fa fa-check"></span>
-                                    <strong>{{ playbook.tasks|list|length }}</strong> Tasks
+                                    <strong>{{ playbook.tasks | fast_count }}</strong> Tasks
                                 </div>
                             </div>
                             <div class="list-view-pf-additional-info-item" title="Records saved with ara_record throughout the playbook">
                                 <div class="list-view-pf-expand">
                                     <span class="fa fa-angle-right"></span>
                                     <span class="fa pficon-save"></span>
-                                    <strong>{{ playbook.data|list|length }}</strong> Records
+                                    <strong>{{ playbook.data | fast_count }}</strong> Records
                                 </div>
                             </div>
                         </div>
@@ -110,7 +110,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            {% if playbook.stats.count() %}
+                            {% if playbook.stats | fast_count %}
                             <table class="table table-striped table-bordered table-hover table-condensed" id="stats_{{ playbook.id }}">
                                 <thead>
                                     <tr>
@@ -158,7 +158,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            {% if playbook.plays.count() %}
+                            {% if playbook.plays | fast_count %}
                             <table class="table table-striped table-bordered table-hover table-condensed" id="plays_{{ playbook.id }}">
                                 <thead>
                                     <tr>
@@ -205,7 +205,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            {% if playbook.files.count() %}
+                            {% if playbook.files | fast_count %}
                             <table class="table table-striped table-bordered table-hover table-condensed" id="files_{{ playbook.id }}">
                                 <thead>
                                     <tr>
@@ -255,7 +255,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            {% if playbook.tasks.count() %}
+                            {% if playbook.tasks | fast_count %}
                             <table class="table table-striped table-bordered table-hover table-condensed" id="tasks_{{ playbook.id }}">
                                 <thead>
                                     <tr>
@@ -302,7 +302,7 @@
                             </div>
                         </div>
                         <div class="col-md-8">
-                            {% if playbook.data.count() %}
+                            {% if playbook.data | fast_count %}
                             <table class="table table-striped table-bordered table-hover table-condensed" id="records_{{ playbook.id }}">
                                 <thead>
                                     <tr>
@@ -432,7 +432,7 @@
     $.fn.dataTable.ext.errMode = 'none';
 
     {% for playbook in playbooks.items -%}
-    {% if playbook.stats.count() -%}
+    {% if playbook.stats | fast_count -%}
     $("#stats_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
@@ -450,7 +450,7 @@
         {{ macros.result_page_length(result_per_page) }}
     });
     {% endif %}
-    {% if playbook.plays.count() -%}
+    {% if playbook.plays | fast_count -%}
     $("#plays_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
@@ -465,7 +465,7 @@
         {{ macros.result_page_length(result_per_page) }}
     });
     {% endif %}
-    {% if playbook.files.count() -%}
+    {% if playbook.files | fast_count -%}
     $("#files_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
@@ -480,7 +480,7 @@
         {{ macros.result_page_length(result_per_page) }}
     });
     {% endif %}
-    {% if playbook.tasks.count() -%}
+    {% if playbook.tasks | fast_count -%}
     $("#tasks_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
@@ -495,7 +495,7 @@
         {{ macros.result_page_length(result_per_page) }}
     });
     {% endif %}
-    {% if playbook.data.count() -%}
+    {% if playbook.data | fast_count -%}
     $("#records_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
