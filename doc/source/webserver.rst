@@ -231,7 +231,7 @@ directory::
 Apache configuration
 ++++++++++++++++++++
 
-Set up the Apache virtual host at ``/etc/apache/sites-available/ara.conf``::
+Set up the Apache virtual host at ``/etc/apache2/sites-available/ara.conf``::
 
     <VirtualHost *:80>
         # Replace ServerName by your hostname
