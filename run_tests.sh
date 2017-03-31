@@ -32,7 +32,16 @@ LOGROOT=${WORKSPACE:-/tmp}
 LOGDIR="${LOGROOT}/logs"
 SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 export ANSIBLE_TMP_DIR="${LOGDIR}/ansible"
-DATABASE="${LOGDIR}/ansible.sqlite"
+
+if [[ $ARA_TEST_PGSQL == "1" ]]; then
+  if [[ -z $ARA_TEST_PGSQL_USER || -z $ARA_TEST_PGSQL_PASSWORD ]]; then
+    echo 'Please set $ARA_TEST_PGSQL_USER and $ARA_TEST_PGSQL_PASSWORD'
+    exit 1
+  fi
+  DATABASE="postgresql+psycopg2://$ARA_TEST_PGSQL_USER:$ARA_TEST_PGSQL_PASSWORD@localhost:5432/ara"
+else
+  DATABASE="sqlite:///${LOGDIR}/ansible.sqlite"
+fi
 
 # Ensure we're running from the script directory
 pushd "${SCRIPT_DIR}"
@@ -55,11 +64,19 @@ source .tox/venv/bin/activate
 ansible --version
 python --version
 
+# We need to install the postgresql adapter for python,
+# But it requires pgsql development headers, and pg8000 won't
+# meet our needs here.
+if [[ $ARA_TEST_PGSQL == 1 ]]; then
+  command -v pg_config >/dev/null 2>&1 || { echo >&2 'pg_config is missing in $PATH, please install postgresql development headers.'; exit 1; }
+  pip install psycopg2
+fi
+
 # Setup ARA
 export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
 export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
 export ANSIBLE_LIBRARY="ara/plugins/modules"
-export ARA_DATABASE="sqlite:///${DATABASE}"
+export ARA_DATABASE="${DATABASE}"
 
 # Lint
 # failed.yml does not work with lint due to unicode error
@@ -123,7 +140,7 @@ gzip --best --recursive ${LOGDIR}/build
 # Database migration tests
 for test_db in $(ls ara/tests/integration/databases/*.sqlite)
 do
-    export ARA_DATABASE="sqlite:///${SCRIPT_DIR}/${test_db}"
+    export ARA_DATABASE="${DATABASE}"
     ara-manage db upgrade
 done
 
