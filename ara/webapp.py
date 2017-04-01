@@ -136,3 +136,9 @@ def configure_logging(app):
         logger.setLevel(app.config['ARA_LOG_LEVEL'])
         del logger.handlers[:]
         logger.addHandler(handler)
+
+        # TODO: Log things from Alembic to ARA_LOG_FILE properly
+        alembic_logger = logging.getLogger('alembic')
+        alembic_logger.setLevel(logging.WARNING)
+        del alembic_logger.handlers[:]
+        alembic_logger.addHandler(handler)
