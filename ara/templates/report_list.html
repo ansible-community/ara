@@ -25,7 +25,7 @@
                                 <span title="Date at which the playbook started">{{ playbook.time_start |datefmt }}</span>
                             </div>
                             <div class="list-group-item-heading" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ macros.render_playbook_summary(playbook) }}">
-                                <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}/">{{ playbook.path }}</a>
+                                <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}/">{{ playbook.path | basename }}</a>
                             </div>
                         </div>
                         <div class="list-view-pf-additional-info">

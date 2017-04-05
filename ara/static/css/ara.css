@@ -112,7 +112,7 @@
 
 /* Combined width of date and playbook path in report list */
 .list-view-pf-description {
-    max-width: 40%;
+    max-width: 30%;
 }
 
 /* Combined width of playbook highlights/panel items in report list */

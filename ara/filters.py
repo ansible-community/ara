@@ -19,6 +19,7 @@ import logging
 from ara.utils import fast_count
 from jinja2 import Markup
 from jinja2 import UndefinedError
+from os import path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
@@ -88,3 +89,7 @@ def configure_template_filters(app):
     @app.template_filter('fast_count')
     def jinja_fast_count(query):
         return fast_count(query)
+
+    @app.template_filter('basename')
+    def jinja_basename(pathname):
+        return path.basename(pathname)
