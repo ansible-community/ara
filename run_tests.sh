@@ -132,6 +132,7 @@ ara generate html ${LOGDIR}/build
 ara generate html ${LOGDIR}/build-playbook --playbook $pbid
 ara generate junit ${LOGDIR}/junit.xml
 ara generate junit ${LOGDIR}/junit-playbook.xml --playbook $pbid
+ara generate junit -
 python ara/tests/integration/helpers/junit_check.py ${LOGDIR}/junit.xml
 
 # It's important that ARA behaves well when gzipped

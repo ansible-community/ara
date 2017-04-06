@@ -23,10 +23,20 @@
   roles:
     - { role: "smoke-tests" }
 
-- name: ARA Tasks another test play
+- name: Add a host with non-ascii characters
   hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Add a host with non-ascii character
+      add_host:
+        name: "höstñämë"
+        ansible_host: "127.0.0.1"
+        ansible_connection: "local"
+
+- name: Play with non-ascii characters - ä, ö, ü
+  hosts: höstñämë
   gather_facts: yes
   tasks:
-    - name: Nothing important
+    - name: Task with non-ascii characters - ä, ö, ü
       debug:
-        msg: "Nothing important"
+        msg: "This is a task result with non-ascii characters: ä, ö, ü"

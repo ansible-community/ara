@@ -20,6 +20,7 @@
     - name: Include a role
       include_role:
         name: "included-role"
+
     - name: Include tasks from a role
       include_role:
         name: "included-role"

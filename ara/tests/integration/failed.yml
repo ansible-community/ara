@@ -17,4 +17,4 @@
   hosts: localhost
   tasks:
     - fail:
-        msg: "This is a failed playbook with non-ascii characters: ä, ö, ü"
+        msg: "This is a failed playbook"
