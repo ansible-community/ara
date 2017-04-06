@@ -105,7 +105,7 @@ class GenerateJunit(Command):
             }
             result_str = json.dumps(additional_results)
             test_path = \
-                '{playbook_file}.{play_name}'.format(
+                u'{playbook_file}.{play_name}'.format(
                     playbook_file=os.path.basename(result.task.playbook.path),
                     play_name=result.task.play.name)
             test_case = TestCase(
@@ -123,7 +123,7 @@ class GenerateJunit(Command):
 
         xml_string = test_suite.to_xml_string([test_suite])
         if args.output_file == '-':
-            sys.stdout.write(xml_string)
+            sys.stdout.write(xml_string.encode(sys.stdout.encoding or 'utf-8'))
         else:
             with open(args.output_file, 'w') as f:
-                f.write(xml_string)
+                f.write(xml_string.encode('utf-8'))
