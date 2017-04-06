@@ -101,7 +101,7 @@ def ajax_plays(playbook):
     results['data'] = list()
 
     for play in plays:
-        name = "<span class='pull-left'>{0}</span>".format(play.name)
+        name = u"<span class='pull-left'>{0}</span>".format(play.name)
         start = date.render(date=play.time_start)
         end = date.render(date=play.time_end)
         duration = time.render(time=play.duration)
@@ -150,7 +150,7 @@ def ajax_results(playbook):
     results['data'] = list()
 
     for result in task_results:
-        name = "<span class='pull-left'>{0}</span>".format(result.task.name)
+        name = u"<span class='pull-left'>{0}</span>".format(result.task.name)
         host = result.host.name
         action = action_link.render(result=result)
         elapsed = time.render(time=result.task.offset_from_playbook)
