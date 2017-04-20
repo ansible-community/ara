@@ -341,6 +341,9 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                 <span class="pficon pficon-close"></span>
                             </button>
+                            <button type="button" class="link" aria-hidden="true">
+                                <a data-href="{{ url_for('host.index') }}" target="_blank"><span class="fa fa-link" title="Permanent link to this host"></span></a>
+                            </button>
                         </div>
                         <div class="modal-body embed-responsive embed-responsive-item">
                             <div class="row text-center"><strong>Loading host facts...</strong></div>
@@ -357,6 +360,9 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                 <span class="pficon pficon-close"></span>
                             </button>
+                            <button type="button" class="link" aria-hidden="true">
+                                <a data-href="{{ url_for('file.index') }}" target="_blank"><span class="fa fa-link" title="Permanent link to this file"></span></a>
+                            </button>
                         </div>
                         <div class="modal-body embed-responsive embed-responsive-item">
                             <div class="row text-center"><strong>Loading file content...</strong></div>
@@ -372,6 +378,9 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                 <span class="pficon pficon-close"></span>
+                            </button>
+                            <button type="button" class="link" aria-hidden="true">
+                                <a data-href="{{ url_for('result.index') }}" target="_blank"><span class="fa fa-link" title="Permanent link to this task result"></span></a>
                             </button>
                         </div>
                         <div class="modal-body embed-responsive embed-responsive-item">
@@ -508,6 +517,10 @@
     $('.modal').on('show.bs.modal', function(e) {
         /* Only load the iframe content when the modal is opened */
         var load = $(e.relatedTarget).data('load');
+        $(this).find('a').prop('href', function() {
+            // Set their src attribute to the value of data-src
+            return $(this).data('href').replace('index.html','').concat(load);
+        });
         $(this).find('iframe').prop('src', function() {
             // Set their src attribute to the value of data-src
             return $(this).data('src').replace('index.html','').concat(load);
