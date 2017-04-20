@@ -1,10 +1,11 @@
+pbr!=2.1.0,>=2.0.0 # Apache-2.0
+
 ansible>=2.1.0.0
 Flask==0.11.1
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Script
 Frozen-Flask
-pbr>=1.6
 decorator>=4.0.0
 cliff
 setuptools>=11.3
