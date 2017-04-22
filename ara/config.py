@@ -13,6 +13,8 @@
 #   under the License.
 
 import os
+import xstatic.main
+import xstatic.pkg.jquery
 
 from ansible import __version__ as ansible_version
 from ansible.constants import get_config
@@ -123,3 +125,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 INSTALL_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
+
+# Xstatic configuration
+XSTATIC = dict(
+    jquery=xstatic.main.XStatic(xstatic.pkg.jquery).base_dir
+)

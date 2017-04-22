@@ -32,6 +32,7 @@ from sqlalchemy.engine.reflection import Inspector
 DEFAULT_APP_NAME = 'ara'
 
 views = (
+    (ara.views.static, '/static'),
     (ara.views.file, '/file'),
     (ara.views.home, ''),
     (ara.views.host, '/host'),
