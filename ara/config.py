@@ -16,6 +16,7 @@ import os
 import xstatic.main
 import xstatic.pkg.jquery
 import xstatic.pkg.bootstrap_scss
+import xstatic.pkg.patternfly
 
 from ansible import __version__ as ansible_version
 from ansible.constants import get_config
@@ -130,5 +131,6 @@ DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
 # Xstatic configuration
 XSTATIC = dict(
     jquery=xstatic.main.XStatic(xstatic.pkg.jquery).base_dir,
-    bootstrap=xstatic.main.XStatic(xstatic.pkg.bootstrap_scss).base_dir
+    bootstrap=xstatic.main.XStatic(xstatic.pkg.bootstrap_scss).base_dir,
+    patternfly=xstatic.main.XStatic(xstatic.pkg.patternfly).base_dir
 )

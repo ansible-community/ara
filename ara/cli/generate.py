@@ -19,7 +19,7 @@ import sys
 
 from ara import models
 from cliff.command import Command
-from flask_frozen import Freezer
+from flask_frozen import Freezer, walk_directory
 from flask_frozen import MissingURLGeneratorWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
@@ -57,6 +57,19 @@ class GenerateHtml(Command):
         if self.app.ara.config['ARA_IGNORE_EMPTY_GENERATION']:
             filterwarnings('ignore', '.*', MissingURLGeneratorWarning)
         freezer = Freezer(self.app.ara)
+
+        # Patternfly fonts are called from inside the CSS and are therefore
+        # not automatically found by flask-frozen. We need to generate URLs
+        # for the fonts.
+        patternfly = self.app.ara.config['XSTATIC']['patternfly']
+
+        @freezer.register_generator
+        def serve_static_packaged():
+            for font in walk_directory(os.path.join(patternfly, 'fonts')):
+                yield dict(
+                    module='patternfly',
+                    file='fonts/%s' % font
+                )
         freezer.freeze()
 
         print('Done.')

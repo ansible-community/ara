@@ -10,16 +10,16 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 
     {% block scripts %}
-    <script src="{{ url_for('static.serve', module='jquery', file='jquery.min.js') }}"></script>
+    <script src="{{ url_for('serve_static_packaged', module='jquery', file='jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('static.serve', module='bootstrap', file='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('serve_static_packaged', module='bootstrap', file='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/patternfly.min.js') }}"></script>
+    <script src="{{ url_for('serve_static_packaged', module='patternfly', file='js/patternfly.min.js') }}"></script>
     {% endblock %}
 
     {% block stylesheets %}
-    <link href="{{ url_for('static', filename='css/patternfly.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('serve_static_packaged', module='patternfly', file='css/patternfly.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('serve_static_packaged', module='patternfly', file='css/patternfly-additions.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/pygments.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
     {% endblock %}

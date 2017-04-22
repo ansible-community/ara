@@ -24,15 +24,17 @@ from ara.context_processors import configure_context_processors
 from ara.errorhandlers import configure_errorhandlers
 from ara.filters import configure_template_filters
 from ara.models import db
-from flask import Flask, current_app
+from flask import abort
+from flask import current_app
+from flask import Flask
 from flask import logging as flask_logging
+from flask import send_from_directory
 from sqlalchemy.engine.reflection import Inspector
 
 
 DEFAULT_APP_NAME = 'ara'
 
 views = (
-    (ara.views.static, '/static'),
     (ara.views.file, '/file'),
     (ara.views.home, ''),
     (ara.views.host, '/host'),
@@ -58,6 +60,7 @@ def create_app(config=None, app_name=None):
     configure_template_filters(app)
     configure_context_processors(app)
     configure_blueprints(app)
+    configure_static_route(app)
     configure_db(app)
 
     return app
@@ -143,3 +146,27 @@ def configure_logging(app):
         alembic_logger.setLevel(logging.WARNING)
         del alembic_logger.handlers[:]
         alembic_logger.addHandler(handler)
+
+
+def configure_static_route(app):
+    # Note (dmsimard)
+    # /static/ is provided from in-tree bundled files and libraries.
+    # /static/packaged/ is routed to serve packaged (i.e, XStatic) libraries.
+    #
+    # The reason why this isn't defined as a proper view by itself is due to
+    # a limitation in flask-frozen. Blueprint'd views methods are like so:
+    # "<view>.<method>. The URL generator of flask-frozen is a method decorator
+    # that expects the method name as the function and, obviously, you can't
+    # really have dots in functions.
+    # By having the route configured at the root of the application, there's no
+    # dots and we can decorate "serve_static_packaged" instead of, say,
+    # "static.serve_packaged".
+
+    @app.route('/static/packaged/<module>/<path:file>')
+    def serve_static_packaged(module, file):
+        xstatic = current_app.config['XSTATIC']
+
+        if module in xstatic:
+            return send_from_directory(xstatic[module], file)
+        else:
+            abort(404)
