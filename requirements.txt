@@ -14,4 +14,5 @@ debtcollector>=1.2.0
 junit-xml>=1.7
 
 XStatic>=1.0.0 # MIT License
+XStatic-Bootstrap-SCSS>=3.3.7.1 # Apache 2.0 License
 XStatic-jQuery>=1.8.2.1 # MIT License

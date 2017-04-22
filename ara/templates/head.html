@@ -12,7 +12,7 @@
     {% block scripts %}
     <script src="{{ url_for('static.serve', module='jquery', file='jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static.serve', module='bootstrap', file='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
     <script src="{{ url_for('static', filename='js/patternfly.min.js') }}"></script>
     {% endblock %}
