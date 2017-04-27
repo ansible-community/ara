@@ -24,7 +24,7 @@
             {% endif %}
                 <a href="{{ url_for('home.main') }}">Home</a>
             </li>
-            {% if playbooks and playbooks > 0 %}
+            {% if (playbooks and playbooks > 0) or playbook %}
             {% if active and active == 'reports' %}
             <li class="active">
             {% else %}

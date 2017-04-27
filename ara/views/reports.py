@@ -26,7 +26,7 @@ reports = Blueprint('reports', __name__)
 
 
 @reports.route('/')
-@reports.route('/<int:page>.html')
+@reports.route('/list/<int:page>.html')
 def report_list(page=1):
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
@@ -55,6 +55,23 @@ def report_list(page=1):
                            active='reports',
                            result_per_page=result_per_page,
                            playbooks=playbooks,
+                           stats=stats)
+
+
+@reports.route('/<playbook_id>.html')
+def report(playbook_id):
+    playbook = models.Playbook.query.get(playbook_id)
+    if playbook is None:
+        abort(404)
+
+    stats = utils.get_summary_stats([playbook], 'playbook_id')
+
+    result_per_page = current_app.config['ARA_RESULT_PER_PAGE']
+
+    return render_template('report_single.html',
+                           active='reports',
+                           result_per_page=result_per_page,
+                           playbook=playbook,
                            stats=stats)
 
 # Note (dmsimard)

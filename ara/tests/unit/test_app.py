@@ -68,11 +68,22 @@ class TestApp(TestAra):
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
-        res = self.client.get('/reports/1.html')
+        res = self.client.get('/reports/list/1.html')
         self.assertEqual(res.status_code, 200)
 
-        res = self.client.get('/reports/2.html')
+        res = self.client.get('/reports/list/2.html')
         self.assertEqual(res.status_code, 200)
+
+    def test_reports_single(self):
+        ctx = ansible_run()
+        res = self.client.get('/reports/{0}.html'.format(ctx['playbook'].id))
+        self.assertEqual(res.status_code, 200)
+
+    def test_reports_single_bad_playbook(self):
+        ansible_run()
+        uuid = 'uuuu-iiii-dddd-0000'
+        res = self.client.get('/reports/{0}.html'.format(uuid))
+        self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_files(self):
         ctx = ansible_run()

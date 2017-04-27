@@ -100,9 +100,9 @@
     max-width: 100%;
 }
 
-/* Status icon on left side of report list */
+/* Permanent link and status icon on left side of report list */
 .list-view-pf-left {
-    max-width: 36px;
+    min-width: 90px;
 }
 
 /* Width of date on left side of report list */
@@ -120,7 +120,14 @@
     max-width: 70%;
 }
 
-.link {
+.link-report {
+  float: left;
+  padding-top: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+}
+.link-modal {
   float: right;
   margin-right: 12px;
   padding-top: 3px;
@@ -128,6 +135,7 @@
   font-weight: bold;
   line-height: 1;
 }
+
 .link:hover,
 .link:focus {
   color: #000;
