@@ -61,6 +61,7 @@ DEFAULTS = {
     'ARA_AUTOCREATE_DATABASE': True,
     'ARA_DIR': os.path.expanduser('~/.ara'),
     'ARA_ENABLE_DEBUG_VIEW': False,
+    'ARA_HOST': '127.0.0.1',
     'ARA_IGNORE_EMPTY_GENERATION': True,
     'ARA_IGNORE_MIMETYPE_WARNINGS': True,
     'ARA_LOG_FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -68,6 +69,7 @@ DEFAULTS = {
     'ARA_PATH_MAX': 40,
     'ARA_PLAYBOOK_OVERRIDE': None,
     'ARA_PLAYBOOK_PER_PAGE': 10,
+    'ARA_PORT': '9191',
     'ARA_RESULT_PER_PAGE': 25,
     'ARA_SQL_DEBUG': False,
     'ARA_TMP_DIR': os.path.expanduser('~/.ansible/tmp')
@@ -90,6 +92,7 @@ ARA_AUTOCREATE_DATABASE = _ara_config(config, 'autocreate_database',
 ARA_ENABLE_DEBUG_VIEW = _ara_config(config, 'enable_debug_view',
                                     'ARA_ENABLE_DEBUG_VIEW',
                                     value_type='boolean')
+ARA_HOST = _ara_config(config, 'host', 'ARA_HOST')
 ARA_LOG_FILE = _ara_config(config, 'logfile', 'ARA_LOG_FILE')
 ARA_LOG_FORMAT = _ara_config(config, 'logformat', 'ARA_LOG_FORMAT')
 ARA_LOG_LEVEL = _ara_config(config, 'loglevel', 'ARA_LOG_LEVEL')
@@ -99,6 +102,7 @@ ARA_PLAYBOOK_OVERRIDE = _ara_config(config, 'playbook_override',
 ARA_PLAYBOOK_PER_PAGE = _ara_config(config, 'playbook_per_page',
                                     'ARA_PLAYBOOK_PER_PAGE',
                                     value_type='integer')
+ARA_PORT = _ara_config(config, 'port', 'ARA_PORT')
 ARA_RESULT_PER_PAGE = _ara_config(config, 'result_per_page',
                                   'ARA_RESULT_PER_PAGE',
                                   value_type='integer')

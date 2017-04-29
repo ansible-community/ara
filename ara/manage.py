@@ -14,6 +14,7 @@
 #   under the License.
 
 
+from flask_script import commands
 from flask_script import Manager
 from flask_script import prompt_bool
 from flask_migrate import Migrate
@@ -26,6 +27,15 @@ app = create_app()
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 migrate = Migrate(app, db, directory=app.config['DB_MIGRATIONS'])
+
+# Overwrite the default runserver command to be able to pass a custom host
+# and port from the config as the defaults
+manager.add_command(
+    "runserver",
+    commands.Server(host=app.config['ARA_HOST'],
+                    port=app.config['ARA_PORT'],
+                    threaded=True)
+)
 
 
 @manager.command
