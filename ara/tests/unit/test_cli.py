@@ -693,7 +693,6 @@ class TestCLIGenerate(TestAra):
             os.path.join(dir, 'host/index.html'),
             os.path.join(dir, 'host/{0}'.format(host_id)),
             os.path.join(dir, 'reports/index.html'),
-            os.path.join(dir, 'playbook/index.html'),
             os.path.join(dir, 'result/index.html'),
             os.path.join(dir, 'result/{0}'.format(result_id))
         ]
@@ -728,7 +727,6 @@ class TestCLIGenerate(TestAra):
             os.path.join(dir, 'host/index.html'),
             os.path.join(dir, 'host/{0}'.format(host_id)),
             os.path.join(dir, 'reports/index.html'),
-            os.path.join(dir, 'playbook/index.html'),
             os.path.join(dir, 'result/index.html'),
             os.path.join(dir, 'result/{0}'.format(result_id))
         ]
