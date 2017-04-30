@@ -192,7 +192,7 @@ You will need to install the database driver by::
     apt-get install python-psycopg2
 
 ARA_HOST
-~~~~~~~
+~~~~~~~~
 
 The host on which the development server will bind to by default when using the
 ``ara-manage runserver`` command.
@@ -201,7 +201,7 @@ It is equivalent to the ``-h`` or ``--host`` argument of the
 ``ara-manage runserver`` command.
 
 ARA_PORT
-~~~~~~~
+~~~~~~~~
 
 The port on which the development server will listen on by default when using
 the ``ara-manage runserver`` command.
