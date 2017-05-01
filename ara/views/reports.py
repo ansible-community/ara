@@ -84,25 +84,6 @@ def report(playbook_id):
 # The routes have a text extension for proper mimetype detection.
 
 
-@reports.route('/ajax/files/<playbook>.txt')
-def ajax_files(playbook):
-    files = (models.File.query
-             .filter(models.File.playbook_id.in_([playbook])))
-    if not files.count():
-        abort(404)
-
-    jinja = current_app.jinja_env
-    action_link = jinja.get_template('ajax/file.html')
-
-    results = dict()
-    results['data'] = list()
-
-    for file in files:
-        results['data'].append([action_link.render(file=file)])
-
-    return jsonify(results)
-
-
 @reports.route('/ajax/plays/<playbook>.txt')
 def ajax_plays(playbook):
     plays = (models.Play.query

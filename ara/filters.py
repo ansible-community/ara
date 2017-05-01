@@ -17,6 +17,7 @@ import json
 import logging
 
 from ara.utils import fast_count
+from ara.utils import playbook_treeview
 from jinja2 import Markup
 from jinja2 import UndefinedError
 from os import path
@@ -93,3 +94,7 @@ def configure_template_filters(app):
     @app.template_filter('basename')
     def jinja_basename(pathname):
         return path.basename(pathname)
+
+    @app.template_filter('treeview')
+    def jinja_treeview(playbook):
+        return playbook_treeview(playbook)

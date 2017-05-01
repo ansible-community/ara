@@ -78,7 +78,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     Set the 'ara_record' parameter to 'True' to simulate a run with an
     ara_record task.
     """
-    playbook = fakes.Playbook(complete=complete, path='playbook.yml').model
+    playbook = fakes.Playbook(complete=complete, path='/playbook.yml').model
     pb_file = fakes.File(playbook=playbook,
                          is_playbook=True,
                          path=playbook.path).model
@@ -92,7 +92,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
 
     task_file = fakes.File(playbook=playbook,
                            is_playbook=False,
-                           path='some/path/main.yml').model
+                           path='/some/path/main.yml').model
     task_content = fakes.FileContent(content=fakes.FAKE_TASK_CONTENT).model
     task = fakes.Task(play=play,
                       playbook=playbook,

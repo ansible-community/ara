@@ -15,6 +15,8 @@
 from ara import models
 from collections import defaultdict
 from sqlalchemy import func
+import json
+import pyfakefs.fake_filesystem as fake_filesystem
 
 
 def status_to_query(status):
@@ -103,3 +105,58 @@ def fast_count(query):
                    .statement.with_only_columns([func.count()]).order_by(None))
     count = query.session.execute(count_query).scalar()
     return count
+
+
+def generate_tree(root, paths, mock_os):
+    """
+    Given a file path, returns a JSON structure suitable for bootstrap-treeview
+    mock_os represents a faked filesystem generated from the playbook_treeview
+    method.
+    Credit: Mohammed Naser & David Moreau Simard
+    """
+    tree = []
+    dentries = mock_os.listdir(root)
+
+    for d in dentries:
+        full_path = mock_os.path.join(root, d)
+        node = {
+            'text': d,
+            'href': '#%s' % d,
+            'state': {
+                'expanded': True
+            }
+        }
+
+        if mock_os.path.isdir(full_path):
+            node['nodes'] = generate_tree(full_path, paths, mock_os)
+        else:
+            node['icon'] = 'fa fa-file-code-o'
+            node['href'] = '#'
+            node['color'] = '#0088ce'
+            node['dataAttr'] = {
+                'toggle': 'modal',
+                'target': '#file_modal',
+                'load': paths[full_path]
+            }
+        tree.append(node)
+    return tree
+
+
+def playbook_treeview(playbook):
+    """
+    Creates a fake filesystem with playbook files and uses generate_tree() to
+    recurse and return a JSON structure suitable for bootstrap-treeview.
+    """
+    fs = fake_filesystem.FakeFilesystem()
+    mock_os = fake_filesystem.FakeOsModule(fs)
+
+    files = models.File.query.filter(models.File.playbook_id.in_([playbook]))
+
+    paths = {}
+    for file in files:
+        fs.CreateFile(file.path)
+        paths[file.path] = file.id
+
+    return json.dumps(generate_tree('/', paths, mock_os),
+                      sort_keys=True,
+                      indent=2)

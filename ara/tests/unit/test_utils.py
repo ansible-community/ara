@@ -14,6 +14,7 @@
 
 import ara.utils as u
 import ara.models as m
+import json
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
@@ -80,3 +81,21 @@ class TestUtils(TestAra):
         fast_count = u.fast_count(query)
 
         self.assertEqual(normal_count, fast_count)
+
+    def test_playbook_treeview(self):
+        ctx = ansible_run()
+        treeview = u.playbook_treeview(ctx['playbook'].id)
+        data = json.loads(treeview)
+
+        # /some/path/main.yml or
+        # /playbook.yml (depends, racy condition ? TODO: debug this)
+        t = data[0]
+        if t['text'] is 'some':
+            self.assertEqual(t['text'], 'some')
+            self.assertEqual(t['nodes'][0]['text'], 'path')
+            self.assertEqual(t['nodes'][0]['nodes'][0]['text'], 'main.yml')
+            self.assertEqual(t['nodes'][0]['nodes'][0]['dataAttr']['load'],
+                             ctx['task_file'].id)
+        else:
+            self.assertEqual(t['text'], 'playbook.yml')
+            self.assertEqual(t['dataAttr']['load'], ctx['pb_file'].id)

@@ -18,6 +18,7 @@ import xstatic.pkg.bootstrap_scss
 import xstatic.pkg.datatables
 import xstatic.pkg.jquery
 import xstatic.pkg.patternfly
+import xstatic.pkg.patternfly_bootstrap_treeview
 
 from ansible import __version__ as ansible_version
 from ansible.constants import get_config
@@ -134,9 +135,11 @@ INSTALL_PATH = os.path.dirname(os.path.realpath(__file__))
 DB_MIGRATIONS = os.path.join(INSTALL_PATH, 'db')
 
 # Xstatic configuration
+treeview = xstatic.pkg.patternfly_bootstrap_treeview
 XSTATIC = dict(
     bootstrap=xstatic.main.XStatic(xstatic.pkg.bootstrap_scss).base_dir,
     datatables=xstatic.main.XStatic(xstatic.pkg.datatables).base_dir,
     jquery=xstatic.main.XStatic(xstatic.pkg.jquery).base_dir,
-    patternfly=xstatic.main.XStatic(xstatic.pkg.patternfly).base_dir
+    patternfly=xstatic.main.XStatic(xstatic.pkg.patternfly).base_dir,
+    patternfly_bootstrap_treeview=xstatic.main.XStatic(treeview).base_dir,
 )
