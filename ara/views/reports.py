@@ -37,7 +37,7 @@ def report_list(page=1):
         playbooks = (models.Playbook.query
                      .order_by(models.Playbook.time_start.desc()))
 
-    if not playbooks.count():
+    if not utils.fast_count(playbooks):
         return redirect(url_for('home.main'))
 
     playbook_per_page = current_app.config['ARA_PLAYBOOK_PER_PAGE']
@@ -107,7 +107,7 @@ def ajax_files(playbook):
 def ajax_plays(playbook):
     plays = (models.Play.query
              .filter(models.Play.playbook_id.in_([playbook])))
-    if not plays.count():
+    if not utils.fast_count(plays):
         abort(404)
 
     jinja = current_app.jinja_env
@@ -131,7 +131,7 @@ def ajax_plays(playbook):
 def ajax_records(playbook):
     records = (models.Data.query
                .filter(models.Data.playbook_id.in_([playbook])))
-    if not records.count():
+    if not utils.fast_count(records):
         abort(404)
 
     jinja = current_app.jinja_env
@@ -155,7 +155,7 @@ def ajax_results(playbook):
     task_results = (models.TaskResult.query
                     .join(models.Task)
                     .filter(models.Task.playbook_id.in_([playbook])))
-    if not task_results.count():
+    if not utils.fast_count(task_results):
         abort(404)
 
     jinja = current_app.jinja_env
@@ -182,7 +182,7 @@ def ajax_results(playbook):
 def ajax_stats(playbook):
     stats = (models.Stats.query
              .filter(models.Stats.playbook_id.in_([playbook])))
-    if not stats.count():
+    if not utils.fast_count(stats):
         abort(404)
 
     jinja = current_app.jinja_env
