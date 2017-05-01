@@ -161,11 +161,11 @@ def configure_static_route(app):
     # dots and we can decorate "serve_static_packaged" instead of, say,
     # "static.serve_packaged".
 
-    @app.route('/static/packaged/<module>/<path:file>')
-    def serve_static_packaged(module, file):
+    @app.route('/static/packaged/<module>/<path:filename>')
+    def serve_static_packaged(module, filename):
         xstatic = current_app.config['XSTATIC']
 
         if module in xstatic:
-            return send_from_directory(xstatic[module], file)
+            return send_from_directory(xstatic[module], filename)
         else:
             abort(404)

@@ -68,7 +68,7 @@ class GenerateHtml(Command):
             for font in walk_directory(os.path.join(patternfly, 'fonts')):
                 yield dict(
                     module='patternfly',
-                    file='fonts/%s' % font
+                    filename='fonts/%s' % font
                 )
         freezer.freeze()
 
