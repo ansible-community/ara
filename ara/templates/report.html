@@ -192,23 +192,14 @@
                     </div>
                     <div class="panel-body">
                         <ul>
-                            <li>The table column is sortable</li>
-                            <li>Use the search box to find a specific file based on it's name or path</li>
                             <li>Click on any file to see it's contents</li>
-                            <li><strong>Note:</strong> This panel is temporary and will be improved in a future version.</li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
                 {% if file_count %}
-                <table class="table table-striped table-bordered table-hover table-condensed" id="files_{{ playbook.id }}">
-                    <thead>
-                        <tr>
-                            <th><span class="pull-left">File</span></th>
-                        </tr>
-                    </thead>
-                </table>
+                <div id="files_{{ playbook.id }}"></div>
                 {% else %}
                 <div class="text-center">
                 <h2>There is no recorded file for this playbook.</h2>
@@ -416,18 +407,12 @@
     });
     {% endif %}
     {% if file_count -%}
-    $("#files_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
-        console.log( 'An error has been reported by DataTables: ', message );
-    }).DataTable({
-        "ajax": "{{ url_for('reports.ajax_files', playbook=playbook.id) }}",
-        "deferRender": true,
-        "processing": true,
-        "order": [[ 0, "asc" ]],
-        "language": {
-            "search": "Search: ",
-            "loadingRecords": "<br><div class='row'>Loading files...</div><div class='spinner table-spinner'></div>"
-        },
-        {{ macros.result_page_length(result_per_page) }}
+    $('#files_{{ playbook.id }}').treeview({
+      collapseIcon: "fa fa-angle-down",
+      data: {{ playbook.id |treeview |safe }},
+      expandIcon: "fa fa-angle-right",
+      nodeIcon: "fa fa-folder-o",
+      showBorder: false
     });
     {% endif %}
     {% if task_count -%}
