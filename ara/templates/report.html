@@ -19,9 +19,7 @@
                     <span title="Date at which the playbook started">{{ playbook.time_start |datefmt }}</span>
                 </div>
                 <div class="list-group-item-heading">
-                    <span data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ macros.render_playbook_summary(playbook) }}">
-                        <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}/">{{ playbook.path | basename }}</a>
-                    </span>
+                    <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}/">{{ playbook.path | basename }}</a>
                 </div>
             </div>
             <div class="list-view-pf-additional-info">
@@ -30,6 +28,13 @@
                     <strong>{{ playbook.duration |timefmt }}</strong>
                 </div>
                 <br>
+                <div class="list-view-pf-additional-info-item" title="Playbook parameters and options">
+                    <div class="list-view-pf-expand">
+                        <span class="fa fa-angle-right"></span>
+                        <span class="fa fa-gears"></span>
+                        Parameters
+                    </div>
+                </div>
                 <div class="list-view-pf-additional-info-item" title="Hosts involved in the playbook">
                     <div class="list-view-pf-expand">
                         <span class="fa fa-angle-right"></span>
@@ -71,6 +76,41 @@
     <!-- End playbook entry in the list -->
 
     <!-- Begin playbook details -->
+    <!-- Begin playbook options -->
+    <div class="list-group-item-container container-fluid hidden">
+        <div class="close">
+            <span class="pficon pficon-close"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <h3>
+                    <strong>Playbook parameters</strong>
+                </h3>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="pficon pficon-info"></span> Browsing tips</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul>
+                            <li>All table columns are sortable</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <table class="table table-striped table-bordered table-hover table-condensed" id="parameters_{{ playbook.id }}">
+                    <thead>
+                        <tr>
+                            <th><span class="pull-left">Parameter</span></th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- End playbook host stats details -->
+
     <!-- Begin playbook host stats details -->
     <div class="list-group-item-container container-fluid hidden">
         <div class="close">
@@ -373,6 +413,19 @@
 <!-- End modals -->
 <!-- Begin data table javascript -->
 <script>
+    $("#parameters_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+        console.log( 'An error has been reported by DataTables: ', message );
+    }).DataTable({
+        "ajax": "{{ url_for('reports.ajax_parameters', playbook=playbook.id) }}",
+        "deferRender": true,
+        "processing": true,
+        "order": [[ 0, "asc" ]],
+        "language": {
+            "search": "Search: ",
+            "loadingRecords": "<br><div class='row'>Loading playbook parameters...</div><div class='spinner table-spinner'></div>"
+        },
+        "paging": false
+    });
     {% if stats_count -%}
     $("#stats_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
@@ -426,6 +479,9 @@
         "language": {
             "search": "Search: ",
             "loadingRecords": "<br><div class='row'>Loading task results...</div><div class='spinner table-spinner'></div>"
+        },
+        "drawCallback": function(oSettings, json) {
+            $('[data-toggle="tooltip"]').tooltip();
         },
         {{ macros.result_page_length(result_per_page) }}
     });

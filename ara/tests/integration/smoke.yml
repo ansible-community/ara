@@ -20,6 +20,8 @@
     - name: ARA Integration test
       debug:
         msg: "ARA Integration test"
+      tags:
+        - tagged
   roles:
     - { role: "smoke-tests" }
 
@@ -32,6 +34,9 @@
         name: "höstñämë"
         ansible_host: "127.0.0.1"
         ansible_connection: "local"
+      tags:
+        - untag
+        - verytag
 
 - name: Play with non-ascii characters - ä, ö, ü
   hosts: höstñämë
@@ -40,3 +45,6 @@
     - name: Task with non-ascii characters - ä, ö, ü
       debug:
         msg: "This is a task result with non-ascii characters: ä, ö, ü"
+      tags:
+        - untag
+        - verytag

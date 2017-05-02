@@ -168,6 +168,7 @@ class Playbook(db.Model, TimedEntity):
     id = std_pkey()
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
+    options = db.Column(CompressedData((2 ** 32) - 1))
 
     data = one_to_many('Data', backref='playbook')
     files = one_to_many('File', backref='playbook')
@@ -280,6 +281,7 @@ class Task(db.Model, TimedEntity):
     name = db.Column(db.Text)
     sortkey = db.Column(db.Integer)
     action = db.Column(db.Text)
+    tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
 
     file = many_to_one('File', backref='tasks')

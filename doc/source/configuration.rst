@@ -113,6 +113,8 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_SQL_DEBUG_                | sqldebug                   | False                                     |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_IGNORE_PARAMETERS_        | ignore_parameters          | extra_vars                                |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_EMPTY_GENERATION_  | ignore_empty_generation    | True                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_MIMETYPE_WARNINGS_ | ignore_mimetype_warnings   | True                                      |
@@ -228,6 +230,21 @@ ARA_SQL_DEBUG
 ~~~~~~~~~~~~~
 
 Enables the SQLAlchemy echo verbose mode.
+
+ARA_IGNORE_PARAMETERS
+~~~~~~~~~~~~~~~~~~~~~
+
+ARA will, by default, save every parameter and option passed to
+ansible-playbook (except ``extra-vars``) and make them available as part of
+your reports.
+
+If, for example, you use `extra_vars`_ to send a password or secret variable
+to your playbooks, it is likely you don't want this saved in ARA's database.
+
+This configuration allows you to customize what ARA will and will not save.
+It is a list, provided by a comma-separated values.
+
+.. _extra_vars: https://docs.ansible.com/ansible/playbooks_variables.html#passing-variables-on-the-command-line
 
 ARA_IGNORE_EMPTY_GENERATION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

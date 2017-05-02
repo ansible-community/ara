@@ -29,6 +29,7 @@ class Playbook(object):
     def __init__(self, path):
         self._file_name = path
         self.path = path
+        self.options = {'fake': 'yes'}
 
 
 class Play(object):
@@ -41,6 +42,7 @@ class Task(object):
         self.name = name
         self.action = action
         self.path = '%s:%d' % (path, lineno)
+        self._attributes = {'tags': []}
 
     def get_path(self):
         return self.path

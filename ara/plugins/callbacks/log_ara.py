@@ -29,6 +29,12 @@ from ara.models import db
 from ara.webapp import create_app
 from datetime import datetime
 
+# To retrieve Ansible CLI options
+try:
+    from __main__ import cli
+except ImportError:
+    cli = None
+
 __metaclass__ = type
 
 LOG = logging.getLogger('ara.callback')
@@ -87,6 +93,11 @@ class CallbackModule(CallbackBase):
 
         self.play_counter = itertools.count()
         self.task_counter = itertools.count()
+
+        if cli:
+            self._options = cli.options
+        else:
+            self._options = None
 
     def get_or_create_host(self, hostname):
         try:
@@ -279,6 +290,7 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play,
             playbook=self.playbook,
+            tags=json.dumps(task._attributes['tags']),
             file=file_,
             lineno=lineno,
             is_handler=is_handler)
@@ -291,11 +303,22 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         path = os.path.abspath(playbook._file_name)
+        if self._options is not None:
+            options = self._options.__dict__.copy()
+        else:
+            options = {}
+
+        # Potentially sanitize some user-specified keys
+        for parameter in app.config['ARA_IGNORE_PARAMETERS']:
+            if parameter in options:
+                msg = "Parameter not saved by ARA due to configuration"
+                options[parameter] = msg
 
         LOG.debug('starting playbook %s', path)
         self.playbook = models.Playbook(
             ansible_version=ansible_version,
-            path=path
+            path=path,
+            options=options
         )
 
         self.playbook.start()

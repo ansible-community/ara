@@ -23,7 +23,8 @@ class TestModels(TestAra):
     def setUp(self):
         super(TestModels, self).setUp()
 
-        self.playbook = fakes.Playbook(path='testing.yml').model
+        self.playbook = fakes.Playbook(path='testing.yml',
+                                       options={'option': 'test'}).model
         self.file = fakes.File(path=self.playbook.path,
                                playbook=self.playbook,
                                is_playbook=True).model
@@ -33,7 +34,8 @@ class TestModels(TestAra):
                                playbook=self.playbook).model
         self.task = fakes.Task(name='test task',
                                play=self.play,
-                               playbook=self.playbook).model
+                               playbook=self.playbook,
+                               tags=['just', 'testing']).model
         self.data = fakes.Data(playbook=self.playbook,
                                key='test key',
                                value='test value').model

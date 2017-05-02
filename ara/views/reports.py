@@ -84,6 +84,25 @@ def report(playbook_id):
 # The routes have a text extension for proper mimetype detection.
 
 
+@reports.route('/ajax/parameters/<playbook>.txt')
+def ajax_parameters(playbook):
+    playbook = models.Playbook.query.get(playbook)
+    if playbook is None:
+        abort(404)
+
+    results = dict()
+    results['data'] = list()
+
+    results['data'].append(['playbook_path', playbook.path])
+    results['data'].append(['ansible_version', playbook.ansible_version])
+
+    if playbook.options:
+        for option in playbook.options:
+            results['data'].append([option, playbook.options[option]])
+
+    return jsonify(results)
+
+
 @reports.route('/ajax/plays/<playbook>.txt')
 def ajax_plays(playbook):
     plays = (models.Play.query
@@ -142,13 +161,14 @@ def ajax_results(playbook):
     jinja = current_app.jinja_env
     time = jinja.from_string('{{ time | timefmt }}')
     action_link = jinja.get_template('ajax/action.html')
+    name_cell = jinja.get_template('ajax/task_name.html')
     task_status_link = jinja.get_template('ajax/task_status.html')
 
     results = dict()
     results['data'] = list()
 
     for result in task_results:
-        name = u"<span class='pull-left'>{0}</span>".format(result.task.name)
+        name = name_cell.render(result=result)
         host = result.host.name
         action = action_link.render(result=result)
         elapsed = time.render(time=result.task.offset_from_playbook)

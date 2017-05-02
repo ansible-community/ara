@@ -13,6 +13,7 @@
 #   under the License.
 
 import ara.models as m
+import json
 import hashlib
 import random
 
@@ -113,9 +114,11 @@ class HostFacts(object):
 
 
 class Playbook(object):
-    def __init__(self, complete=True, path='playbook.yml'):
+    def __init__(self, complete=True, path='playbook.yml',
+                 options={'fake': 'yes'}):
         self.ansible_version = ansible_version
         self.complete = complete
+        self.options = options
         self.path = path
 
         # Callback specific parameter
@@ -125,6 +128,7 @@ class Playbook(object):
     def model(self):
         return m.Playbook(ansible_version=ansible_version,
                           complete=self.complete,
+                          options=self.options,
                           path=self.path)
 
 
@@ -143,8 +147,12 @@ class Play(object):
 
 class Task(object):
     def __init__(self, action='fake_action', lineno=1, name='Fake action',
-                 playbook=None, play=None, file=None, file_id=None, path=None):
+                 playbook=None, play=None, file=None, file_id=None, path=None,
+                 tags=None):
         self.action = action
+        if tags is None:
+            tags = []
+        self.tags = tags
         self.lineno = lineno
         self.name = name
         if playbook is None:
@@ -160,6 +168,7 @@ class Task(object):
         if path is None:
             path = playbook.path
         self.path = '%s:%d' % (path, self.lineno)
+        self._attributes = {'tags': self.tags}
 
     def get_path(self):
         """ Callback specific method """
@@ -168,6 +177,7 @@ class Task(object):
     @property
     def model(self):
         return m.Task(action=self.action,
+                      tags=json.dumps(self.tags),
                       lineno=self.lineno,
                       name=self.name,
                       playbook=self.playbook,

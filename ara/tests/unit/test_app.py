@@ -85,6 +85,17 @@ class TestApp(TestAra):
         res = self.client.get('/reports/{0}.html'.format(uuid))
         self.assertEqual(res.status_code, 404)
 
+    def test_report_ajax_parameters(self):
+        ctx = ansible_run()
+        pbid = ctx['playbook'].id
+        res = self.client.get('/reports/ajax/parameters/{0}.txt'.format(pbid))
+        self.assertEqual(res.status_code, 200)
+
+    def test_report_ajax_no_parameters(self):
+        ansible_run()
+        res = self.client.get('/reports/ajax/parameters/uuid.txt')
+        self.assertEqual(res.status_code, 404)
+
     def test_report_ajax_plays(self):
         ctx = ansible_run()
         pbid = ctx['playbook'].id

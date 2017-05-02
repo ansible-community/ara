@@ -19,15 +19,6 @@
     {% endif -%}
 {% endmacro -%}
 
-{% macro render_playbook_summary(playbook) -%}
-    <dl class='dl-horizontal'>
-        <dt>Ansible version</dt>
-        <dd>{{ playbook.ansible_version }}</dd>
-        <dt>Path</dt>
-        <dd>{{ playbook.path }}</dd>
-    </dl>
-{% endmacro -%}
-
 {% macro result_page_length(length) -%}
     {% if length == 0 -%}
         "paging": false,
