@@ -19,6 +19,15 @@
                 {% endif -%}
             {% endif -%}
         {% endfor -%}
+    {% elif result is iterable and result is not string %}
+        {% for item in result -%}
+            {% set item = item|from_json %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {{ display_result(item, 'h2') }}
+                </div>
+            </div>
+        {% endfor %}
     {% else -%}
         <pre>{{ result |to_nice_json |safe }}</pre>
     {% endif -%}

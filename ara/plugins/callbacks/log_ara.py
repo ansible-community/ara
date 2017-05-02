@@ -83,6 +83,7 @@ class CallbackModule(CallbackBase):
         self.play = None
         self.playbook = None
         self.stats = None
+        self.loop_items = []
 
         self.play_counter = itertools.count()
         self.task_counter = itertools.count()
@@ -144,7 +145,18 @@ class CallbackModule(CallbackBase):
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal
         # keys, respect no_log directive, etc.
-        results = json.loads(self._dump_results(result._result))
+        if self.loop_items:
+            # NOTE (dmsimard): There is a known issue in which Ansible can send
+            # callback hooks out of order and "exit" the task before all items
+            # have returned, this can cause one of the items to be missing
+            # from the task result in ARA.
+            # https://github.com/ansible/ansible/issues/24207
+            results = [self._dump_results(result._result)]
+            for item in self.loop_items:
+                results.append(self._dump_results(item._result))
+            results = json.loads(json.dumps(results))
+        else:
+            results = json.loads(self._dump_results(result._result))
 
         self.taskresult = models.TaskResult(
             task=self.task,
@@ -198,6 +210,7 @@ class CallbackModule(CallbackBase):
             db.session.add(self.task)
 
             self.task = None
+            self.loop_items = []
 
     def close_play(self):
         """
@@ -219,6 +232,18 @@ class CallbackModule(CallbackBase):
             self.playbook.stop()
             self.playbook.complete = True
             db.session.add(self.playbook)
+
+    def v2_runner_item_on_ok(self, result):
+        self.loop_items.append(result)
+
+    def v2_runner_item_on_failed(self, result):
+        self.loop_items.append(result)
+
+    def v2_runner_item_on_skipped(self, result):
+        self.loop_items.append(result)
+
+    def v2_runner_retry(self, result):
+        self.loop_items.append(result)
 
     def v2_runner_on_ok(self, result, **kwargs):
         self.log_task(result, 'ok', **kwargs)
