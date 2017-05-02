@@ -84,18 +84,19 @@ class TestUtils(TestAra):
 
     def test_playbook_treeview(self):
         ctx = ansible_run()
-        treeview = u.playbook_treeview(ctx['playbook'].id)
-        data = json.loads(treeview)
+        treeview = json.loads(u.playbook_treeview(ctx['playbook'].id))
 
-        # /some/path/main.yml or
-        # /playbook.yml (depends, racy condition ? TODO: debug this)
-        t = data[0]
-        if t['text'] is 'some':
-            self.assertEqual(t['text'], 'some')
-            self.assertEqual(t['nodes'][0]['text'], 'path')
-            self.assertEqual(t['nodes'][0]['nodes'][0]['text'], 'main.yml')
-            self.assertEqual(t['nodes'][0]['nodes'][0]['dataAttr']['load'],
-                             ctx['task_file'].id)
-        else:
-            self.assertEqual(t['text'], 'playbook.yml')
-            self.assertEqual(t['dataAttr']['load'], ctx['pb_file'].id)
+        # ansible_run provides two fake files:
+        # /some/path/main.yml and /playbook.yml
+        for f in treeview:
+            if f['text'] == 'some':
+                self.assertEqual(f['text'], 'some')
+                child = f['nodes'][0]
+                self.assertEqual(child['text'], 'path')
+                child = child['nodes'][0]
+                self.assertEqual(child['text'], 'main.yml')
+                self.assertEqual(child['dataAttr']['load'],
+                                 ctx['task_file'].id)
+            else:
+                self.assertEqual(f['text'], 'playbook.yml')
+                self.assertEqual(f['dataAttr']['load'], ctx['pb_file'].id)
