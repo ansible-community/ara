@@ -29,14 +29,6 @@ class TestUtils(TestAra):
     def tearDown(self):
         super(TestUtils, self).tearDown()
 
-    def test_status_to_query(self):
-        res = u.status_to_query('ok')
-        self.assertEqual(res, {'status': 'ok'})
-
-    def test_status_to_query_changed(self):
-        res = u.status_to_query('changed')
-        self.assertEqual(res, {'status': 'ok', 'changed': True})
-
     def test_get_summary_stats_complete(self):
         ctx = ansible_run()
         playbook = ctx['playbook'].id
