@@ -1,3 +1,4 @@
+<!-- Begin navbar -->
 <nav class="navbar navbar-default navbar-pf" role="navigation">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
@@ -17,22 +18,23 @@
             <li><a href="https://www.ansible.com/" target="_blank"><strong>Ansible</strong> {{ ansible_version }}</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-primary">
-            {% if active and active == 'home' %}
+            {% if active and active == 'home' -%}
             <li class="active">
-            {% else %}
+            {% else -%}
             <li>
-            {% endif %}
+            {% endif -%}
                 <a href="{{ url_for('home.main') }}">Home</a>
             </li>
-            {% if (playbooks and playbooks > 0) or playbook %}
-            {% if active and active == 'reports' %}
+            {% if (playbooks and playbooks > 0) or playbook -%}
+            {% if active and active == 'reports' -%}
             <li class="active">
-            {% else %}
+            {% else -%}
             <li>
-            {% endif %}
+            {% endif -%}
                 <a href="{{ url_for('reports.report_list') }}">Playbook reports</a>
             </li>
-            {% endif %}
+            {% endif -%}
         </ul>
     </div>
 </nav>
+<!-- End navbar -->

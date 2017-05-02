@@ -1,9 +1,9 @@
-{% set playbook_count = playbook.hosts | fast_count %}
-{% set play_count = playbook.plays | fast_count %}
-{% set file_count = playbook.files | fast_count %}
-{% set task_count = playbook.tasks | fast_count %}
-{% set record_count = playbook.data | fast_count %}
-{% set stats_count = playbook.stats | fast_count %}
+{% set playbook_count = playbook.hosts | fast_count -%}
+{% set play_count = playbook.plays | fast_count -%}
+{% set file_count = playbook.files | fast_count -%}
+{% set task_count = playbook.tasks | fast_count -%}
+{% set record_count = playbook.data | fast_count -%}
+{% set stats_count = playbook.stats | fast_count -%}
 <div class="list-group-item">
     <div class="list-view-pf-left">
         <button type="button" class="link link-report" aria-hidden="true">
@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="col-md-8">
-                {% if stats_count %}
+                {% if stats_count -%}
                 <table class="table table-striped table-bordered table-hover table-condensed" id="stats_{{ playbook.id }}">
                     <thead>
                         <tr>
@@ -119,12 +119,12 @@
                         </tr>
                     </thead>
                 </table>
-                {% else %}
+                {% else -%}
                 <div class="text-center">
                     <h2>There is no host statistics for this playbook.</h2>
                     <h3>Either no hosts were selected for the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
-                {% endif %}
+                {% endif -%}
             </div>
         </div>
     </div>
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="col-md-8">
-                {% if play_count %}
+                {% if play_count -%}
                 <table class="table table-striped table-bordered table-hover table-condensed" id="plays_{{ playbook.id }}">
                     <thead>
                         <tr>
@@ -165,12 +165,12 @@
                         </tr>
                     </thead>
                 </table>
-                {% else %}
+                {% else -%}
                 <div class="text-center">
                     <h2>There is no play information for this playbook.</h2>
                     <h3>Either there was no play in the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
-                {% endif %}
+                {% endif -%}
             </div>
         </div>
     </div>
@@ -198,14 +198,14 @@
                 </div>
             </div>
             <div class="col-md-8">
-                {% if file_count %}
+                {% if file_count -%}
                 <div id="files_{{ playbook.id }}"></div>
-                {% else %}
+                {% else -%}
                 <div class="text-center">
                 <h2>There is no recorded file for this playbook.</h2>
                 <h3>Either there was a problem or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
-                {% endif %}
+                {% endif -%}
             </div>
         </div>
     </div>
@@ -242,7 +242,7 @@
                 </div>
             </div>
             <div class="col-md-8">
-                {% if task_count %}
+                {% if task_count -%}
                 <table class="table table-striped table-bordered table-hover table-condensed" id="tasks_{{ playbook.id }}">
                     <thead>
                         <tr>
@@ -255,12 +255,12 @@
                         </tr>
                     </thead>
                 </table>
-                {% else %}
+                {% else -%}
                 <div class="text-center">
                     <h2>There is no task data for this playbook.</h2>
                     <h3>Either no tasks ran for the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
-                {% endif %}
+                {% endif -%}
             </div>
         </div>
     </div>
@@ -289,7 +289,7 @@
                 </div>
             </div>
             <div class="col-md-8">
-                {% if record_count %}
+                {% if record_count -%}
                 <table class="table table-striped table-bordered table-hover table-condensed" id="records_{{ playbook.id }}">
                     <thead>
                         <tr>
@@ -298,13 +298,13 @@
                         </tr>
                     </thead>
                 </table>
-                {% else %}
+                {% else -%}
                 <div class="text-center">
                     <h2>There is no recorded data for this playbook.</h2>
                     <h3>The <a href="https://ara.readthedocs.io/en/latest/usage.html#ara-record" target="_blank">ara_record</a> Ansible module helps you record arbitrary persistent data that is displayed here.</h3>
                     <h3>It provides the ability to save strings, lists, dicts, json or urls and each will be rendered accordingly. Try it out!</h3>
                 </div>
-                {% endif %}
+                {% endif -%}
             </div>
         </div>
     </div>
@@ -390,7 +390,7 @@
         },
         {{ macros.result_page_length(result_per_page) }}
     });
-    {% endif %}
+    {% endif -%}
     {% if play_count -%}
     $("#plays_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
@@ -405,7 +405,7 @@
         },
         {{ macros.result_page_length(result_per_page) }}
     });
-    {% endif %}
+    {% endif -%}
     {% if file_count -%}
     $('#files_{{ playbook.id }}').treeview({
       collapseIcon: "fa fa-angle-down",
@@ -414,7 +414,7 @@
       nodeIcon: "fa fa-folder-o",
       showBorder: false
     });
-    {% endif %}
+    {% endif -%}
     {% if task_count -%}
     $("#tasks_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
@@ -429,7 +429,7 @@
         },
         {{ macros.result_page_length(result_per_page) }}
     });
-    {% endif %}
+    {% endif -%}
     {% if record_count -%}
     $("#records_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
@@ -444,7 +444,7 @@
         },
         {{ macros.result_page_length(result_per_page) }}
     });
-    {% endif %}
+    {% endif -%}
 </script>
 <!-- End data table javascript -->
 

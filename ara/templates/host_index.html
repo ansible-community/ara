@@ -13,13 +13,13 @@ This template is not actually served or linked from within the web application.
                     </tr>
                 </thead>
                 <tbody>
-                    {% for host in hosts %}
-                    {% if host.facts %}
+                    {% for host in hosts -%}
+                    {% if host.facts -%}
                     <tr>
                         <td><a href="{{ url_for('host.show_host', id=host.id) }}">{{ host.id }}</a></td>
                     </tr>
-                    {% endif %}
-                    {% endfor %}
+                    {% endif -%}
+                    {% endfor -%}
                 </tbody>
             </table>
         </div>

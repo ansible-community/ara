@@ -1,5 +1,4 @@
 {% include "head.html" %}
-
 <body>
 <div class="container-fluid">
     <div class="row">
@@ -15,12 +14,12 @@
                   </tr>
               </thead>
               <tbody>
-                  {% for fact, value in facts %}
+                  {% for fact, value in facts -%}
                   <tr>
                       <td id="{{ fact }}"><a href="#{{ fact }}">{{ fact }}</a></td>
-                      <td><pre>{{ value | to_nice_json }}</pre></td>
+                      <td><pre>{{ value | to_nice_json | safe }}</pre></td>
                   </tr>
-                  {% endfor %}
+                  {% endfor -%}
               </tbody>
           </table>
         </div>
