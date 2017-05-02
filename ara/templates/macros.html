@@ -1,38 +1,38 @@
 <div id="macros">
-{% macro render_status(status) %}
-    {% if status == 'success' %}
+{% macro render_status(status) -%}
+    {% if status == 'success' -%}
         <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed successfully">
             <span class="pficon pficon-ok list-view-pf-icon-sm list-view-pf-icon-success"></span>
         </div>
-    {% elif status == 'failed' %}
+    {% elif status == 'failed' -%}
         <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed with errors">
             <span class="pficon pficon-error-circle-o list-view-pf-icon-sm list-view-pf-icon-danger"></span>
         </div>
-    {% elif status == 'incomplete' %}
+    {% elif status == 'incomplete' -%}
         <div data-toggle="tooltip" data-placement="bottom" title="Playbook execution is either in progress or was interrupted: data will be inconsistent">
             <span class="pficon pficon-info list-view-pf-icon-sm list-view-pf-icon-info"></span>
         </div>
-    {% else %}
+    {% else -%}
         <div data-toggle="tooltip" data-placement="bottom" title="The status of this playbook is unknown">
             <span class="fa fa-question-circle"></span>
         </div>
-    {% endif %}
-{% endmacro %}
+    {% endif -%}
+{% endmacro -%}
 
-{% macro render_playbook_summary(playbook) %}
+{% macro render_playbook_summary(playbook) -%}
     <dl class='dl-horizontal'>
         <dt>Ansible version</dt>
         <dd>{{ playbook.ansible_version }}</dd>
         <dt>Path</dt>
         <dd>{{ playbook.path }}</dd>
     </dl>
-{% endmacro %}
+{% endmacro -%}
 
-{% macro result_page_length(length) %}
-    {% if length == 0 %}
+{% macro result_page_length(length) -%}
+    {% if length == 0 -%}
         "paging": false,
-    {% else %}
+    {% else -%}
         "pageLength": {{ length }}
-    {% endif %}
-{% endmacro %}
+    {% endif -%}
+{% endmacro -%}
 </div>

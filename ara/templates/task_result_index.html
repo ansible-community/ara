@@ -13,11 +13,11 @@ This template is not actually served or linked from within the web application.
                     </tr>
                 </thead>
                 <tbody>
-                    {% for result in results %}
+                    {% for result in results -%}
                     <tr>
                         <td><a href="{{ url_for('result.show_result', task_result=result.id) }}">{{ result.id }}</a></td>
                     </tr>
-                    {% endfor %}
+                    {% endfor -%}
                 </tbody>
             </table>
         </div>

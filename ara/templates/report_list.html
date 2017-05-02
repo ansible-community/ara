@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block content %}
+{% block content -%}
 <!-- Begin report list -->
 <div class="col-md-custom col-md-offset-custom">
     <div class="row">
@@ -12,10 +12,10 @@
         </div>
         <div class="list-group list-view-pf list-view-pf-view">
             <!-- Begin playbook iteration -->
-            {% for playbook in playbooks.items %}
-            {% include "report.html" %}
+            {% for playbook in playbooks.items -%}
+            {% include "report.html" -%}
             <!-- End playbook iteration -->
-            {% endfor %}
+            {% endfor -%}
         </div>
     </div>
 </div>
@@ -25,32 +25,32 @@
     <div class="row text-center">
         Displaying <strong>{{ playbooks.items |length }}</strong> playbook reports out of a total of <strong>{{ playbooks.total }}</strong>.
     </div>
-    {% if playbooks.pages > 1 %}
+    {% if playbooks.pages > 1 -%}
     <div class="row text-center">
         <ul class="pagination">
-            {% if playbooks.has_prev %}
+            {% if playbooks.has_prev -%}
             <li>
                 <a href="{{ url_for('reports.report_list', page=playbooks.prev_num) }}"><span class="i fa fa-angle-left"></span></a>
             </li>
             {% endif %}
-            {% for page in playbooks.iter_pages() %}
-            {% if page == playbooks.page %}
+            {% for page in playbooks.iter_pages() -%}
+            {% if page == playbooks.page -%}
             <li class="active">
-            {% else %}
+            {% else -%}
             <li>
-            {% endif %}
+            {% endif -%}
                 <a href="{{ url_for('reports.report_list', page=page) }}">{{ page }}</a>
             </li>
-            {% endfor %}
+            {% endfor -%}
             {% if playbooks.has_next %}
             <li>
                 <a href="{{ url_for('reports.report_list', page=playbooks.next_num) }}"><span class="i fa fa-angle-right"></span></a>
             </li>
-            {% endif %}
+            {% endif -%}
         </ul>
     </div>
-    {% endif %}
+    {% endif -%}
 </div>
 <!-- End pagination -->
 <!-- End report list -->
-{% endblock %}
+{% endblock -%}

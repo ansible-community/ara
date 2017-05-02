@@ -5,24 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="ARA | Ansible Run Analysis records Ansible playbook runs seamlessly to make them easier to visualize, understand and troubleshoot">
-
     <title>ARA | Ansible Run Analysis</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-
-    {% block scripts %}
+    {% block scripts -%}
     <script src="{{ url_for('serve_static_packaged', module='jquery', filename='jquery.min.js') }}"></script>
     <script src="{{ url_for('serve_static_packaged', module='datatables', filename='js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ url_for('serve_static_packaged', module='bootstrap', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('serve_static_packaged', module='patternfly_bootstrap_treeview', filename='js/bootstrap-treeview.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
     <script src="{{ url_for('serve_static_packaged', module='patternfly', filename='js/patternfly.min.js') }}"></script>
-    {% endblock %}
-
-    {% block stylesheets %}
+    <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
+    {% endblock -%}
+    {% block stylesheets -%}
     <link href="{{ url_for('serve_static_packaged', module='patternfly', filename='css/patternfly.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('serve_static_packaged', module='patternfly', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('serve_static_packaged', module='patternfly_bootstrap_treeview', filename='css/bootstrap-treeview.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/pygments.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
-    {% endblock %}
+    {% endblock -%}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 </head>

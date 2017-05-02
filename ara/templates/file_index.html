@@ -13,11 +13,11 @@ This template is not actually served or linked from within the web application.
                     </tr>
                 </thead>
                 <tbody>
-                    {% for file in files %}
+                    {% for file in files -%}
                     <tr>
                         <td><a href="{{ url_for('file.show_file', file_=file.id) }}">{{ file.id }}</a></td>
                     </tr>
-                    {% endfor %}
+                    {% endfor -%}
                 </tbody>
             </table>
         </div>
