@@ -356,6 +356,60 @@ class TestCLIPlaybook(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
+    def test_playbook_delete(self):
+        # Run two playbook runs
+        ctx = ansible_run(ara_record=True)
+        ansible_run(gather_facts=False)
+
+        # Assert that we have two playbooks and that we have valid data for
+        # the first playbook
+        playbooks = m.Playbook.query.all()
+        self.assertTrue(len(playbooks) == 2)
+
+        d = m.Data.query.filter(m.Data.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(d.count(), 0)
+        f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(f.count(), 0)
+        p = m.Play.query.filter(m.Play.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(p.count(), 0)
+        t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(t.count(), 0)
+        tr = m.TaskResult.query.count()  # compared later
+        h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(h.count(), 0)
+        hf = m.HostFacts.query
+        self.assertNotEqual(hf.count(), 0)
+        s = m.Stats.query.filter(m.Stats.playbook_id.in_([ctx['playbook'].id]))
+        self.assertNotEqual(s.count(), 0)
+
+        # Delete the first playbook
+        cmd = ara.cli.playbook.PlaybookDelete(None, None)
+        parser = cmd.get_parser('test')
+        args = parser.parse_args([ctx['playbook'].id])
+        cmd.take_action(args)
+
+        # Assert that we only have one playbook left and that records have been
+        # deleted
+        playbooks = m.Playbook.query.all()
+        self.assertTrue(len(playbooks) == 1)
+
+        d = m.Data.query.filter(m.Data.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(d.count(), 0)
+        f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(f.count(), 0)
+        p = m.Play.query.filter(m.Play.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(p.count(), 0)
+        t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(t.count(), 0)
+        new_tr = m.TaskResult.query.count()  # compare before and after
+        self.assertNotEqual(tr, new_tr)
+        h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(h.count(), 0)
+        hf = m.HostFacts.query
+        self.assertEqual(hf.count(), 0)
+        s = m.Stats.query.filter(m.Stats.playbook_id.in_([ctx['playbook'].id]))
+        self.assertEqual(s.count(), 0)
+
 
 class TestCLIResult(TestAra):
     """ Tests for the ARA CLI result commands """
