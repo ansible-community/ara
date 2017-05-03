@@ -1,21 +1,13 @@
 <div id="macros">
 {% macro render_status(status) -%}
     {% if status == 'success' -%}
-        <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed successfully">
-            <span class="pficon pficon-ok list-view-pf-icon-sm list-view-pf-icon-success"></span>
-        </div>
+        <span data-toggle="tooltip" data-placement="bottom" title="Playbook completed successfully" class="pficon pficon-ok list-view-pf-icon-sm list-view-pf-icon-success"></span>
     {% elif status == 'failed' -%}
-        <div data-toggle="tooltip" data-placement="bottom" title="Playbook completed with errors">
-            <span class="pficon pficon-error-circle-o list-view-pf-icon-sm list-view-pf-icon-danger"></span>
-        </div>
+        <span data-toggle="tooltip" data-placement="bottom" title="Playbook completed with errors" class="pficon pficon-error-circle-o list-view-pf-icon-sm list-view-pf-icon-danger"></span>
     {% elif status == 'incomplete' -%}
-        <div data-toggle="tooltip" data-placement="bottom" title="Playbook execution is either in progress or was interrupted: data will be inconsistent">
-            <span class="pficon pficon-info list-view-pf-icon-sm list-view-pf-icon-info"></span>
-        </div>
+        <span data-toggle="tooltip" data-placement="bottom" title="Playbook execution is either in progress or was interrupted: data will be inconsistent" class="pficon pficon-info list-view-pf-icon-sm list-view-pf-icon-info"></span>
     {% else -%}
-        <div data-toggle="tooltip" data-placement="bottom" title="The status of this playbook is unknown">
-            <span class="fa fa-question-circle"></span>
-        </div>
+        <span data-toggle="tooltip" data-placement="bottom" title="The status of this playbook is unknown" class="fa fa-question-circle"></span>
     {% endif -%}
 {% endmacro -%}
 
