@@ -123,7 +123,10 @@ class CompressedData(types.TypeDecorator):
         return zlib.compress(json.dumps(value))
 
     def process_result_value(self, value, dialect):
-        return json.loads(zlib.decompress(value))
+        if value is not None:
+            return json.loads(zlib.decompress(value))
+        else:
+            return value
 
     def copy(self, **kwargs):
         return CompressedData(self.impl.length)
@@ -143,7 +146,10 @@ class CompressedText(types.TypeDecorator):
         return zlib.compress(value if value else '')
 
     def process_result_value(self, value, dialect):
-        return zlib.decompress(value)
+        if value is not None:
+            return zlib.decompress(value)
+        else:
+            return value
 
     def copy(self, **kwargs):
         return CompressedText(self.impl.length)
