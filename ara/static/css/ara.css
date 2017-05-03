@@ -121,32 +121,36 @@
 }
 
 .link-report {
-  float: left;
-  padding-top: 3px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 1;
+    float: left;
+    padding-top: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
 }
 .link-modal {
-  float: right;
-  margin-right: 12px;
-  padding-top: 3px;
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 1;
+    float: right;
+    margin-right: 12px;
+    padding-top: 3px;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .link:hover,
 .link:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
 }
 button.link {
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  -webkit-appearance: none;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+.help-icon {
+    font-size: 18px;
 }

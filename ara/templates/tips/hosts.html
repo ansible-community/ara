@@ -1,0 +1,15 @@
+<h3>Tips: Hosts</h3>
+<hr>
+<p>This panel contains all the hosts involved in the playbook, their tasks statistics and, if available, their host facts.</p>
+<p>
+    If host facts have been gathered, a summary will be available if you hover the host name. For the complete list of facts, click on the host.
+    Note that host facts are not in real time: they are saved at the time where facts are gathered.
+</p>
+<p>
+    The search box searches through both the host name and the host fact summary, for example:
+    <ul>
+        <li><strong>localhost</strong> would match only '<i>localhost</i>' (provided by default: the Ansible inventory hostname)</li>
+        <li><strong>fedora</strong> would match all '<i>fedora</i>' hosts (provided by the <i>ansible_distribution</i> fact)</li>
+        <li><strong>192.168.1</strong> would match all hosts with an IP in the '<i>192.168.1</i>' range (provided by the <i>ansible_all_ipv4_addresses</i> fact)</li>
+    </ul>
+</p>
