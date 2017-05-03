@@ -347,7 +347,7 @@
             "search": "Search: ",
             "loadingRecords": "<br><div class='row'>Loading host stats...</div><div class='spinner table-spinner'></div>"
         },
-        "fnInitComplete": function(oSettings, json) {
+        "drawCallback": function(oSettings, json) {
             $('[data-toggle="tooltip"]').tooltip();
         },
         {{ macros.result_page_length(result_per_page) }}
