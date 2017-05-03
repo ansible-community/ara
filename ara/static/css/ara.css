@@ -1,14 +1,14 @@
 /* Main container layout size and offset */
 .col-md-custom {
     -webkit-box-flex: 0;
-    -webkit-flex: 0 0 95%;
-        -ms-flex: 0 0 95%;
-            flex: 0 0 95%;
-    max-width: 95%;
+    -webkit-flex: 0 0 84%;
+        -ms-flex: 0 0 84%;
+            flex: 0 0 84%;
+    max-width: 84%;
 }
 
 .col-md-offset-custom {
-    margin-left: 2.5%;
+    margin-left: 8%;
 }
 
 /* Home stat highlight badges */
