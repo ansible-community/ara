@@ -148,11 +148,11 @@ class CallbackModule(CallbackBase):
         'TaskResult' record to the database.
         """
         LOG.debug('logging task result for task %s (%s), host %s',
-                  self.task.name, self.task.id, result._host.name)
+                  self.task.name, self.task.id, result._host.get_name())
 
         result.task_start = self.task.time_start
         result.task_end = datetime.now()
-        host = self.get_or_create_host(result._host.name)
+        host = self.get_or_create_host(result._host.get_name())
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal
         # keys, respect no_log directive, etc.
@@ -216,7 +216,9 @@ class CallbackModule(CallbackBase):
         Marks the completion time of the currently active task.
         """
         if self.task is not None:
-            LOG.debug('closing task %s (%s)', self.task.name, self.task.id)
+            LOG.debug('closing task %s (%s)',
+                      self.task.name,
+                      self.task.id)
             self.task.stop()
             db.session.add(self.task)
 
@@ -285,7 +287,7 @@ class CallbackModule(CallbackBase):
             file_ = None
 
         self.task = models.Task(
-            name=task.name,
+            name=task.get_name(),
             sortkey=next(self.task_counter),
             action=task.action,
             play=self.play,

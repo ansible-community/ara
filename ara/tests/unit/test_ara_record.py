@@ -21,7 +21,8 @@ import ara.plugins.actions.ara_record as ara_record
 
 from ara.tests.unit.common import TestAra
 
-from mock import Mock, MagicMock
+from mock import Mock
+from mock import MagicMock
 
 
 class Playbook(object):
@@ -44,7 +45,12 @@ class Task(object):
         self._attributes = {'tags': []}
 
     def get_path(self):
+        """ Callback specific method """
         return self.path
+
+    def get_name(self):
+        """ Callback specific method """
+        return self.name
 
 
 class TaskResult(object):
@@ -53,8 +59,8 @@ class TaskResult(object):
 
         self.task = task
         self.status = status
-        self._host = Mock()
-        self._host.name = host
+        self._host = MagicMock()
+        self._host.get_name.return_value = host
         self._result = {
             'changed': changed,
             'failed': status == 'failed',

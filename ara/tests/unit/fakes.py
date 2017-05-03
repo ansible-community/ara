@@ -18,7 +18,7 @@ import hashlib
 import random
 
 from ansible import __version__ as ansible_version
-from mock import Mock
+from mock import MagicMock
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests
@@ -91,6 +91,10 @@ class Host(object):
         if playbook is None:
             playbook = Playbook().model
         self.playbook = playbook
+
+    def get_name(self):
+        """ Callback specific method """
+        return self.name
 
     @property
     def model(self):
@@ -174,6 +178,10 @@ class Task(object):
         """ Callback specific method """
         return self.path
 
+    def get_name(self):
+        """ Callback specific method """
+        return self.name
+
     @property
     def model(self):
         return m.Task(action=self.action,
@@ -207,8 +215,8 @@ class TaskResult(object):
         self.result = result
 
         # Callback specific parameters
-        self._host = Mock()
-        self._host.name = self.host
+        self._host = MagicMock()
+        self._host.get_name.return_value = host
         self._result = {
             'changed': self.changed,
             'failed': self.failed,
