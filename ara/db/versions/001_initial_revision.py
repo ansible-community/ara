@@ -24,7 +24,7 @@ Create Date: 2016-11-01 17:52:04.170217
 revision = 'da9459a1f71c'
 down_revision = None
 
-import ara
+from ara import models
 from alembic import op
 import sqlalchemy as sa
 
@@ -32,7 +32,7 @@ import sqlalchemy as sa
 def upgrade():
     op.create_table('file_contents',
     sa.Column('id', sa.String(length=40), nullable=False),
-    sa.Column('content', ara.models.CompressedText((2 ** 32) - 1), nullable=True),
+    sa.Column('content', models.CompressedText((2 ** 32) - 1), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('playbooks',
@@ -121,7 +121,7 @@ def upgrade():
     sa.Column('skipped', sa.Boolean(), nullable=True),
     sa.Column('unreachable', sa.Boolean(), nullable=True),
     sa.Column('ignore_errors', sa.Boolean(), nullable=True),
-    sa.Column('result', ara.models.CompressedText((2 ** 32) - 1), nullable=True),
+    sa.Column('result', models.CompressedText((2 ** 32) - 1), nullable=True),
     sa.Column('time_start', sa.DateTime(), nullable=True),
     sa.Column('time_end', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['host_id'], ['hosts.id'], ondelete='RESTRICT'),
