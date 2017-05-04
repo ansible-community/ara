@@ -125,7 +125,7 @@
                     </thead>
                 </table>
                 {% else -%}
-                <div class="text-center">
+                <div class="text-center fa-border">
                     <h2>There is no host statistics for this playbook.</h2>
                     <h3>Either no hosts were selected for the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
@@ -158,7 +158,7 @@
                     </thead>
                 </table>
                 {% else -%}
-                <div class="text-center">
+                <div class="text-center fa-border">
                     <h2>There is no play information for this playbook.</h2>
                     <h3>Either there was no play in the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
@@ -182,7 +182,7 @@
                 {% if file_count -%}
                 <div id="files_{{ playbook.id }}" class="fa-border"></div>
                 {% else -%}
-                <div class="text-center">
+                <div class="text-center fa-border">
                 <h2>There is no recorded file for this playbook.</h2>
                 <h3>Either there was a problem or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
@@ -217,7 +217,7 @@
                     </thead>
                 </table>
                 {% else -%}
-                <div class="text-center">
+                <div class="text-center fa-border">
                     <h2>There is no task data for this playbook.</h2>
                     <h3>Either no tasks ran for the playbook or the playbook execution was interrupted and the data is incomplete.</h3>
                 </div>
@@ -248,7 +248,7 @@
                     </thead>
                 </table>
                 {% else -%}
-                <div class="text-center">
+                <div class="text-center fa-border">
                     <h2>There is no recorded data for this playbook.</h2>
                     <h3>The <a href="https://ara.readthedocs.io/en/latest/usage.html#ara-record" target="_blank">ara_record</a> Ansible module helps you record arbitrary persistent data that is displayed here.</h3>
                     <h3>It provides the ability to save strings, lists, dicts, json or urls and each will be rendered accordingly. Try it out!</h3>
