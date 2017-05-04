@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content -%}
-<!-- Begin home -->
+<!-- Begin about -->
 <div class="container-fluid">
     <div class="col-md-custom col-md-offset-custom">
         <div class="row text-center">
@@ -10,7 +10,7 @@
             <h1><strong>ARA - Ansible Run Analysis</strong></h1>
             <h2><a href="https://github.com/openstack/ara" target="_blank">ARA</a> records <a href="https://www.ansible.com/" target="_blank">Ansible</a> playbook runs seamlessly to make them easier to visualize, understand and troubleshoot.</h2>
             {% if playbooks and playbooks > 0 -%}
-            <h2>Here's the data that ARA is making available to help you:</h2>
+            <h2>ARA makes the following available:</h2>
             <br>
             <ul class="list-group stat-highlight col-md-2 col-md-offset-5">
                 <li class="list-group-item">
@@ -48,7 +48,7 @@
             {% else -%}
             <h2><strong>The ARA database is empty or the web application is not configured properly to find your playbook data.</strong></h2>
             <h2>Get started by <a href="https://ara.readthedocs.io/en/latest/configuration.html">configuring Ansible to use ARA</a>.</h2>
-            <h2>Your data will be available in the interface as soon as you've ran an <code>ansible-playbook</code> at least once after configuring Ansible to use ARA.</h2>
+            <h2>Your data will be available in the interface after an <code>ansible-playbook</code> is run after configuring Ansible to use ARA.</h2>
             <br>
             <br>
             <h3>Need help ? Look at the <a href="https://ara.readthedocs.io/en/latest/">documentation</a> or come chat with users and developers on IRC in #ara on the freenode network.</h3>
@@ -56,5 +56,5 @@
         </div>
     </div>
 </div>
-<!-- End home -->
+<!-- End about -->
 {% endblock %}

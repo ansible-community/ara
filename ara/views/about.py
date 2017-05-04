@@ -18,12 +18,12 @@ from flask import Blueprint
 from flask import current_app
 from flask import render_template
 
-home = Blueprint('home', __name__)
+about = Blueprint('about', __name__)
 
 
-@home.route('/')
+@about.route('/')
 def main():
-    """ Returns the home page """
+    """ Returns the about page """
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
         files = (models.File.query
@@ -51,8 +51,8 @@ def main():
         tasks = models.Task.query
         task_results = models.TaskResult.query
 
-    return render_template('home.html',
-                           active='home',
+    return render_template('about.html',
+                           active='about',
                            files=fast_count(files),
                            host_facts=fast_count(host_facts),
                            hosts=fast_count(hosts),

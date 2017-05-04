@@ -26,14 +26,18 @@ class TestApp(TestAra):
     def tearDown(self):
         super(TestApp, self).tearDown()
 
-    def test_home_with_data(self):
+    def test_about_with_data(self):
         ansible_run()
-        res = self.client.get('/')
+        res = self.client.get('/about/')
         self.assertEqual(res.status_code, 200)
 
-    def test_home_without_data(self):
-        res = self.client.get('/')
+    def test_about_without_data(self):
+        res = self.client.get('/about/')
         self.assertEqual(res.status_code, 200)
+
+    def test_reports_without_data_at_root(self):
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 302)
 
     def test_reports_without_data(self):
         res = self.client.get('/reports/')
