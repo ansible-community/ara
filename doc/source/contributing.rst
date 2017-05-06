@@ -12,7 +12,7 @@ from the code review and testing infrastructure on which hundreds of
 developers contribute to hundreds of projects every day.
 
 This proven infrastructure brings with it a robust contribution workflow to
-be able to contribute, review, test and merge code easy and efficiently.
+be able to contribute, review, test and merge code easily and efficiently.
 
 The end result is higher standards, better code, more testing, less regressions
 and more stability.
