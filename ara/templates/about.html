@@ -9,39 +9,50 @@
             <img src="{{ url_for('static', filename='images/logo-main.svg') }}" width="287" height="226" alt="ARA: Ansible Run Analysis" />
             <h1><strong>ARA - Ansible Run Analysis</strong></h1>
             <h2><a href="https://github.com/openstack/ara" target="_blank">ARA</a> records <a href="https://www.ansible.com/" target="_blank">Ansible</a> playbook runs seamlessly to make them easier to visualize, understand and troubleshoot.</h2>
-            {% if playbooks and playbooks > 0 -%}
-            <h2>ARA makes the following available:</h2>
+            <h3>
+                ARA doesn't run your playbooks for you: it integrates with Ansible as a callback plugin wherever it is.<br>
+                Whether you are running Ansible from your personal laptop, workstation or a server,
+                all you need to do is to <a href="https://ara.readthedocs.io/en/latest/installation.html" target="_blank">install ARA</a>,
+                <a href="https://ara.readthedocs.io/en/latest/configuration.html">configure Ansible to use ARA</a> and you're good to go.
+            </h3>
+            <h3>
+                The ARA project puts a lot of emphasis on being simple to install and use without requiring you change your existing Ansible workflows.<br>
+                You can read about the project's core values and principles in the <a href="https://ara.readthedocs.io/en/latest/manifesto.html">project manifesto</a>.
+            </h3>
             <br>
-            <ul class="list-group stat-highlight col-md-2 col-md-offset-5">
-                <li class="list-group-item">
+            {% if playbooks and playbooks > 0 -%}
+            <h2>ARA makes the following data available:</h2>
+            <br>
+            <div class="list-group stat-highlight col-md-4 col-md-offset-4">
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ playbooks }}</span>
                     Playbook runs
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ tasks }}</span>
                     Tasks
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ task_results }}</span>
                     Task results
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ hosts }}</span>
                     Hosts
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ host_facts }}</span>
                     Hosts with gathered facts
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ files }}</span>
                     Playbook, role and task files
-                </li>
-                <li class="list-group-item">
+                </button>
+                <button type="button" class="list-group-item list-group-item-action">
                     <span class="badge">{{ records }}</span>
-                    Records
-                </li>
-            </ul>
+                    Recorded key/values
+                </button>
+            </div>
         </div>
         <div class="row text-center">
             <h2>Get started by looking at your <a href="{{ url_for('reports.report_list') }}">playbook reports</a>.</h2>
@@ -56,5 +67,7 @@
         </div>
     </div>
 </div>
+<br>
+<br>
 <!-- End about -->
 {% endblock %}
