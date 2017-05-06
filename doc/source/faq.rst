@@ -50,7 +50,7 @@ What does the web interface look like ?
 A video preview and explanation of the web interface is available on
 YouTube_, featuring playbook runs from the OpenStack-Ansible_ project.
 
-.. _YouTube: https://www.youtube.com/watch?v=aQiN5wBXZ4g
+.. _YouTube: https://www.youtube.com/watch?v=k3i8VPCanGo
 .. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
 
 Otherwise, here's some screenshots highlighting some of ARA's features:

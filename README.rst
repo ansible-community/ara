@@ -43,7 +43,7 @@ YouTube_, featuring playbook runs from the OpenStack-Ansible_ project.
 Otherwise, screenshots highlighting some of ARA's features are available in
 `the frequently asked questions`_
 
-.. _YouTube: https://www.youtube.com/watch?v=aQiN5wBXZ4g
+.. _YouTube: https://www.youtube.com/watch?v=k3i8VPCanGo
 .. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
 .. _the frequently asked questions: http://ara.readthedocs.io/en/latest/faq.html#interface-preview
 
