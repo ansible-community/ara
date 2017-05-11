@@ -16,10 +16,7 @@
 - name: Deferred setup
   setup:
 
-- include: file-ops.yml
-  static: no
-- include: pkg-ops.yml
-- include: blk-ops.yml
-  static: no
 - include: ara-ops.yml
+  static: no
+- include: test-ops.yml
   static: no

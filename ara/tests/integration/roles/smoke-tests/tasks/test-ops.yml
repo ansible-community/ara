@@ -32,3 +32,18 @@
     - name: Task that should always run
       debug:
         msg: "This should always be printed"
+
+- name: Test a skipped task
+  debug:
+    msg: "This is skipped"
+  when: false
+
+- name: Test with_items
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ list_items }}"
+
+- name: Test with_dict
+  debug:
+    msg: "{{ item.value.name }}: {{ item.value.value }}"
+  with_dict: "{{ dict_items }}"

@@ -24,7 +24,7 @@ class TestJunitGeneration(unittest.TestCase):
 
     def test_skipped_elem(self):
         remove_a_file = self.tree.xpath(
-            "//testcase [@name='smoke-tests : Remove a file if it exists']")[0]
+            "//testcase [@name='smoke-tests : Test a skipped task']")[0]
         skipped = remove_a_file[0]
         self.assertEqual(skipped.tag, "skipped")
         self.assertEqual(skipped.get("type"), "skipped")
