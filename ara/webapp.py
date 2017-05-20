@@ -115,7 +115,8 @@ def configure_db(app):
             head = script.get_current_head()
 
             # Get current revision, if available
-            context = MigrationContext.configure(db.engine)
+            connection = db.engine.connect()
+            context = MigrationContext.configure(connection)
             current = context.get_current_revision()
 
             if not current:
