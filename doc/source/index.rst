@@ -14,5 +14,4 @@ Table of Contents
     Web Server configuration <webserver>
     Usage <usage>
     Contributing <contributing>
-    Developer notes <developer>
     Manifesto: Project core values <manifesto>
