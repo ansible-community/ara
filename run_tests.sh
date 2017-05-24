@@ -92,7 +92,8 @@ do
 done
 
 # Run test playbooks
-ansible-playbook -vv ara/tests/integration/smoke.yml
+# smoke.yml run output will be re-used later
+ansible-playbook -vv ara/tests/integration/smoke.yml | tee ${LOGDIR}/smoke.yml.txt
 ansible-playbook -vv ara/tests/integration/hosts.yml
 
 # This playbook is meant to fail
@@ -124,6 +125,10 @@ ara stats show $(ara stats list -c ID -f value |head -n1)
 ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
+
+# Test adhoc ara_record and ara_read
+ansible localhost -m ara_record -a "playbook=${pbid} key=output value={{ lookup('file', '${LOGDIR}/smoke.yml.txt') }}"
+ansible localhost -m ara_read -a "playbook=${pbid} key=output"
 
 # We want to test pagination in html generation
 export ARA_PLAYBOOK_PER_PAGE=3

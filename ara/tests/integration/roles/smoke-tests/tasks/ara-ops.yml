@@ -41,6 +41,26 @@
       - notype.value == "text"
       - notype.type == "text"
 
+- name: Update notype key with specified playbook
+  ara_record:
+    playbook: "{{ notype.playbook_id }}"
+    key: "notype"
+    value: "updated text"
+    type: "text"
+
+- name: Read notype key with specified playbook
+  ara_read:
+    playbook: "{{ notype.playbook_id }}"
+    key: "notype"
+  register: notype_update
+
+- name: Validate notype key
+  assert:
+    that:
+      - notype_update.key == "notype"
+      - notype_update.value == "updated text"
+      - notype_update.type == "text"
+
 - name: Record data with text type
   ara_record:
     key: "foo"

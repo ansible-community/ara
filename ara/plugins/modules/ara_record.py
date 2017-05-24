@@ -27,6 +27,11 @@ author: "RDO Community <rdo-list@redhat.com>"
 description:
     - Ansible module to record persistent data with ARA.
 options:
+    playbook:
+        description:
+            - uuid of the playbook to write the key to
+        required: false
+        version_added: 0.13.2
     key:
         description:
             - Name of the key to write data to
@@ -51,6 +56,14 @@ EXAMPLES = """
 - ara_record:
     key: "foo"
     value: "bar"
+
+# Write data to a specific (previously run) playbook
+# (Retrieve playbook uuid's with 'ara playbook list')
+- ara_record:
+    playbook: uuuu-iiii-dddd-0000
+    key: logs
+    value: "{{ lookup('file', '/var/log/ansible.log') }}"
+    type: text
 
 # Write dynamic data
 - shell: cd dev && git rev-parse HEAD

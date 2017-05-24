@@ -147,6 +147,35 @@ class TestRecord(TestAra):
         self.cb.v2_playbook_on_task_start(task, False)
         return task
 
+    def test_create_text_record_with_playbook(self):
+        """
+        Create a new record with ara_record on a specified playbook
+        """
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'playbook': r_playbook.id,
+            'key': 'test-text',
+            'value': 'test-with-playbook',
+            'type': 'text'
+        }
+
+        action = ara_record.ActionModule(task, self.connection,
+                                         self.play_context, loader=None,
+                                         templar=None, shared_loader_obj=None)
+        action.run()
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-text').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-text')
+        self.assertEqual(r_data.value, 'test-with-playbook')
+        self.assertEqual(r_data.type, 'text')
+
     def test_create_text_record(self):
         """
         Create a new record with ara_record.

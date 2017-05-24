@@ -27,6 +27,11 @@ author: "RDO Community <rdo-list@redhat.com>"
 description:
     - Ansible module to read recorded persistent data with ARA.
 options:
+    playbook:
+        description:
+            - uuid of the playbook to read the key from
+        required: false
+        version_added: 0.13.2
     key:
         description:
             - Name of the key to read from
@@ -47,6 +52,13 @@ EXAMPLES = """
 - ara_read:
     key: "foo"
   register: foo
+
+# Read data from a specific playbook
+# (Retrieve playbook uuid's with 'ara playbook list')
+- ara_read:
+    playbook: uuuu-iiii-dddd-0000
+    key: logs
+  register: logs
 
 # Use data
 - debug:

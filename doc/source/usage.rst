@@ -52,6 +52,24 @@ Example usage::
         - { key: "somelist", value: ['one', 'two'], type: "list" }
         - { key: "somedict", value: {'key': 'value' }, type: "dict" }
 
+It is also possible to run an ``ara_record`` task on a specific playbook that
+might already be completed. This is particularly useful for recording data that
+might only be available or computed after your playbook run has been completed::
+
+    ---
+    # Write data to a specific (previously run) playbook
+    # (Retrieve playbook uuid's with 'ara playbook list')
+    - ara_record:
+        playbook: uuuu-iiii-dddd-0000
+        key: logs
+        value: "{{ lookup('file', '/var/log/ansible.log') }}"
+        type: text
+
+Or as an ad-hoc command::
+
+    ansible localhost -m ara_record \
+        -a "playbook=uuuu-iiii-dddd-0000 key=logs value={{ lookup('file', '/var/log/ansible.log') }}"
+
 This data will be recorded inside ARA's database and associated with the
 particular playbook run that was executed.
 
@@ -93,6 +111,29 @@ re-used across plays or roles if necessary, for example::
 
           - name: Compare md5sum of files
             shell: diff <(md5sum file) <(echo "{{ mdfive.value }}")
+
+It is also possible to run an ``ara_read`` task on a specific playbook that
+might already be completed. This is particularly useful for reading data that
+might only be available or computed after your playbook run has been completed::
+
+    ---
+    # Read data from a specific (previously run) playbook
+    # (Retrieve playbook uuid's with 'ara playbook list')
+    - ara_read:
+        playbook: uuuu-iiii-dddd-0000
+        key: logs
+      register: logs
+
+Or as an ad-hoc command::
+
+    ansible localhost -m ara_read -a "playbook=uuuu-iiii-dddd-0000 key=logs"
+
+
+.. note::
+    ``ara_read`` on a specific playbook id should only be used if you need to
+    tie data back into Ansible for other tasks.
+    If you just need to browse or view recorded data on the command line, you
+    should probably be using the ARA CLI: ``ara data show``.
 
 Looking at the data
 -------------------

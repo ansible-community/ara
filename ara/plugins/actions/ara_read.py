@@ -20,7 +20,7 @@ from ansible.plugins.action import ActionBase
 try:
     from ara import models
     from ara.webapp import create_app
-    app = create_app()
+    from flask import current_app
     HAS_ARA = True
 except ImportError:
     HAS_ARA = False
@@ -34,6 +34,11 @@ author: "RDO Community <rdo-list@redhat.com>"
 description:
     - Ansible module to read recorded persistent data with ARA.
 options:
+    playbook:
+        description:
+            - uuid of the playbook to read the key from
+        required: false
+        version_added: 0.13.2
     key:
         description:
             - Name of the key to read from
@@ -55,6 +60,13 @@ EXAMPLES = """
     key: "foo"
   register: foo
 
+# Read data from a specific playbook
+# (Retrieve playbook uuid's with 'ara playbook list')
+- ara_read:
+    playbook: uuuu-iiii-dddd-0000
+    key: logs
+  register: logs
+
 # Use data
 - debug:
     msg: "{{ item }}"
@@ -70,7 +82,7 @@ class ActionModule(ActionBase):
     """ Read from recorded persistent data as key/value pairs in ARA """
 
     TRANSFERS_FILES = False
-    VALID_ARGS = frozenset(('key',))
+    VALID_ARGS = frozenset(('playbook', 'key'))
 
     def get_key(self, playbook_id, key):
         try:
@@ -94,6 +106,11 @@ class ActionModule(ActionBase):
             }
             return result
 
+        app = create_app()
+        if not current_app:
+            context = app.app_context()
+            context.push()
+
         for arg in self._task.args:
             if arg not in self.VALID_ARGS:
                 result = {
@@ -104,6 +121,7 @@ class ActionModule(ActionBase):
 
         result = super(ActionModule, self).run(tmp, task_vars)
 
+        playbook_id = self._task.args.get('playbook', None)
         key = self._task.args.get('key', None)
 
         required = ['key']
@@ -113,11 +131,12 @@ class ActionModule(ActionBase):
                 result['msg'] = '{0} parameter is required'.format(parameter)
                 return result
 
-        # Retrieve the persisted playbook_id from tmpfile
-        tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
-        with open(tmpfile) as file:
-            data = json.load(file)
-        playbook_id = data['playbook']['id']
+        if playbook_id is None:
+            # Retrieve the persisted playbook_id from tmpfile
+            tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
+            with open(tmpfile) as file:
+                data = json.load(file)
+            playbook_id = data['playbook']['id']
 
         try:
             data = self.get_key(playbook_id, key)

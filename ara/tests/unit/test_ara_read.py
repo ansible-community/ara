@@ -162,6 +162,38 @@ class TestRead(TestAra):
         self.cb.v2_playbook_on_task_start(task, False)
         return task
 
+    def test_read_record_with_playbook(self):
+        """
+        Read an existing record with ara_read for a specified playbook
+        """
+        r_playbook = m.Playbook.query.first()
+        self.assertIsNotNone(r_playbook)
+
+        task = MagicMock(Task)
+        task.async = MagicMock()
+        task.args = {
+            'playbook': r_playbook.id,
+            'key': 'test-key',
+        }
+
+        action = ara_read.ActionModule(task, self.connection,
+                                       self.play_context, loader=None,
+                                       templar=None, shared_loader_obj=None)
+        data = action.run()
+
+        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
+                                        key='test-key').one()
+        self.assertIsNotNone(r_data)
+        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.type, 'text')
+
+        self.assertEqual(data['playbook_id'], r_data.playbook_id)
+        self.assertEqual(data['key'], r_data.key)
+        self.assertEqual(data['value'], r_data.value)
+        self.assertEqual(data['type'], r_data.type)
+
     def test_read_record(self):
         """
         Read an existing record with ara_read
