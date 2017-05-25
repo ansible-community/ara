@@ -28,10 +28,6 @@
   ara_record:
     key: "notype"
     value: "text"
-
-- name: Read notype key
-  ara_read:
-    key: "notype"
   register: notype
 
 - name: Validate notype key

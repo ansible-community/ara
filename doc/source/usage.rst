@@ -31,10 +31,17 @@ order to register whatever you'd like in a key/value format, for example::
           command: git rev-parse HEAD
           register: git_version
 
+        # Registering the result of an ara_record tasks is equivalent to
+        # doing an ara_read on the key
         - name: Record git version
           ara_record:
             key: "git_version"
             value: "{{ git_version.stdout }}"
+          register: version
+
+        - name: Print recorded data
+          debug:
+            msg: "{{ version.playbook_id}} - {{ version.key }}: {{ version.value }}
 
 It also supports data types which will have an impact on how the value will be
 displayed in the web interface. The default type if not specified is "text".

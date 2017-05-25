@@ -78,9 +78,16 @@ EXAMPLES = """
   register: git_version
   delegate_to: localhost
 
+# Registering the result of an ara_record task is equivalent to doing an
+# ara_read on the key
 - ara_record:
     key: "git_version"
     value: "{{ git_version.stdout }}"
+  register: version
+
+- name: Print recorded data
+  debug:
+    msg: "{{ version.playbook_id}} - {{ version.key }}: {{ version.value }}
 
 # Write data with a type (otherwise defaults to "text")
 # This changes the behavior on how the value is presented in the web interface
@@ -177,6 +184,10 @@ class ActionModule(ActionBase):
 
         try:
             self.create_or_update_key(playbook_id, key, value, type)
+            result['key'] = key
+            result['value'] = value
+            result['type'] = type
+            result['playbook_id'] = playbook_id
             result['msg'] = 'Data recorded in ARA for this playbook.'
         except Exception as e:
             result['failed'] = True
