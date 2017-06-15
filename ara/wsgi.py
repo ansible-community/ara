@@ -19,7 +19,8 @@ import os
 
 
 def application(environ, start_response):
-    os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
+    if 'ANSIBLE_CONFIG' in environ:
+        os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
     from ara.webapp import create_app
     app = create_app()
     return app(environ, start_response)
