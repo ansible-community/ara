@@ -48,11 +48,11 @@ SHOW_FIELDS = (
 
 SHOW_FIELDS_LONG = SHOW_FIELDS + (
     Field('Result', 'result|from_json',
-          template='{{value|to_nice_json|safe}}'),
+          template='{{ value | to_nice_json | safe }}'),
 )
 
 SHOW_FIELDS_RAW = SHOW_FIELDS + (
-    Field('Result', 'result|from_json'),
+    Field('Result', 'result | from_json'),
 )
 
 

@@ -4,9 +4,9 @@
     <div class="row">
         <div class="col-md-12">
           <h2>File: <strong>{{ file_.path }}</strong></h2>
-          <p>Last updated: {{ file_.playbook.time_end |datefmt }}</p>
+          <p>Last updated: {{ file_.playbook.time_end | datefmt }}</p>
           <p>Ansible version: <strong>{{ file_.playbook.ansible_version }}</strong></p>
-          {{ file_.content.content | yamlhighlight | safe }}
+          {{ file_.content.content | yamlhighlight | escape }}
         </div>
     </div>
 </div>

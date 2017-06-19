@@ -4,7 +4,7 @@
     {% if result is mapping -%}
         {% if 'item' in result -%}
             <{{ hdr }}>Item</{{ hdr }}>
-            <pre>{{ result.item |to_nice_json |safe }}</pre>
+            <pre>{{ result.item | to_nice_json | escape }}</pre>
         {% endif %}
 
         {% for attr in result.keys()|sort if attr not in ['item', 'changed', 'stdout_lines'] -%}
@@ -13,15 +13,15 @@
                 {% if result[attr] is string -%}
                     <pre>{{ result[attr] }}</pre>
                 {% elif result[attr] is mapping or result[attr] is iterable -%}
-                    <pre>{{ result[attr] |to_nice_json |safe }}</pre>
+                    <pre>{{ result[attr] | to_nice_json | escape }}</pre>
                 {% else -%}
-                    <pre>{{ result |to_nice_json |safe }}</pre>
+                    <pre>{{ result | to_nice_json | escape }}</pre>
                 {% endif -%}
             {% endif -%}
         {% endfor -%}
     {% elif result is iterable and result is not string %}
         {% for item in result -%}
-            {% set item = item|from_json %}
+            {% set item = item | from_json %}
             <div class="panel panel-default">
                 <div class="panel-body">
                     {{ display_result(item, 'h2') }}
@@ -29,7 +29,7 @@
             </div>
         {% endfor %}
     {% else -%}
-        <pre>{{ result |to_nice_json |safe }}</pre>
+        <pre>{{ result | to_nice_json | escape }}</pre>
     {% endif -%}
 {% endmacro %}
 
@@ -41,9 +41,9 @@
           <h2>Tags: <strong>{{ task_result.task.tags | from_json | join(', ') }}</strong></h2>
           {% endif -%}
           <h2>Host: <strong>{{ task_result.host.name }}</strong></h2>
-          <p>Time: <strong>{{ task_result.time_start |datefmt }}</strong></p>
+          <p>Time: <strong>{{ task_result.time_start | datefmt }}</strong></p>
           <p>Ansible version: <strong>{{ task_result.task.playbook.ansible_version }}</strong></p>
-          {% set result = task_result.result|from_json %}
+          {% set result = task_result.result | from_json %}
           {% if 'results' in result -%}
               {% for item in result.results -%}
                   <h2>Result {{loop.index}}</h2>

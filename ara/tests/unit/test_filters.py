@@ -55,20 +55,33 @@ class TestFilters(TestAra):
 
         self.assertEqual(res, 'n/a')
 
-    def test_from_json(self):
+    def test_from_json_safe(self):
         data = '{"key": "value"}'
         t = self.env.from_string('{{ data | from_json | safe }}')
         res = t.render(data=data)
 
         self.assertEqual(res, u"{u'key': u'value'}")
 
-    def test_to_json(self):
+    def test_from_json_escape(self):
+        data = '{"key": "value"}'
+        t = self.env.from_string('{{ data | from_json | escape }}')
+        res = t.render(data=data)
+
+        self.assertEqual(res, u"{u&#39;key&#39;: u&#39;value&#39;}")
+
+    def test_to_json_safe(self):
         data = {'key': 'value'}
         t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
-        self.assertEqual(res,
-                         u'{\n    "key": "value"\n}')
+        self.assertEqual(res, u'{\n    "key": "value"\n}')
+
+    def test_to_json_escape(self):
+        data = {'key': 'value'}
+        t = self.env.from_string('{{ data | to_nice_json | escape }}')
+        res = t.render(data=data)
+
+        self.assertEqual(res, u'{\n    &#34;key&#34;: &#34;value&#34;\n}')
 
     def test_to_json_fails(self):
         data = datetime.datetime.now()
@@ -96,15 +109,15 @@ class TestFilters(TestAra):
 
     def test_jinja_yamlhighlight(self):
         data = """- name: Test thing
-  hosts: localhost
-  tasks:
-    - debug:
-        msg: "foo"""
-        t = self.env.from_string('{{ data | yamlhighlight | safe }}')
+    hosts: localhost
+    tasks:
+      - debug:
+          msg: "foo"""
+        t = self.env.from_string('{{ data | yamlhighlight | escape }}')
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#line-1">1</a>\n<a href="#line-2">2</a>\n<a href="#line-3">3</a>\n<a href="#line-4">4</a>\n<a href="#line-5">5</a></pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span id="line-1"><a name="line-1"></a><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Test thing</span>\n</span><span id="line-2"><a name="line-2"></a>  <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>\n</span><span id="line-3"><a name="line-3"></a>  <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>\n</span><span id="line-4"><a name="line-4"></a>    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">debug</span><span class="p p-Indicator">:</span>\n</span><span id="line-5"><a name="line-5"></a>        <span class="l l-Scalar l-Scalar-Plain">msg</span><span class="p p-Indicator">:</span> <span class="s">&quot;foo</span>\n</span></pre></div>\n</td></tr></table>''' # flake8: noqa
+        expected = '''&lt;table class=&#34;codehilitetable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;linenos&#34;&gt;&lt;div class=&#34;linenodiv&#34;&gt;&lt;pre&gt;&lt;a href=&#34;#line-1&#34;&gt;1&lt;/a&gt;\n&lt;a href=&#34;#line-2&#34;&gt;2&lt;/a&gt;\n&lt;a href=&#34;#line-3&#34;&gt;3&lt;/a&gt;\n&lt;a href=&#34;#line-4&#34;&gt;4&lt;/a&gt;\n&lt;a href=&#34;#line-5&#34;&gt;5&lt;/a&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;div class=&#34;codehilite&#34;&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span id=&#34;line-1&#34;&gt;&lt;a name=&#34;line-1&#34;&gt;&lt;/a&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;Test thing&lt;/span&gt;\n&lt;/span&gt;&lt;span id=&#34;line-2&#34;&gt;&lt;a name=&#34;line-2&#34;&gt;&lt;/a&gt;    &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;localhost&lt;/span&gt;\n&lt;/span&gt;&lt;span id=&#34;line-3&#34;&gt;&lt;a name=&#34;line-3&#34;&gt;&lt;/a&gt;    &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;:&lt;/span&gt;\n&lt;/span&gt;&lt;span id=&#34;line-4&#34;&gt;&lt;a name=&#34;line-4&#34;&gt;&lt;/a&gt;      &lt;span class=&#34;p p-Indicator&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;:&lt;/span&gt;\n&lt;/span&gt;&lt;span id=&#34;line-5&#34;&gt;&lt;a name=&#34;line-5&#34;&gt;&lt;/a&gt;          &lt;span class=&#34;l l-Scalar l-Scalar-Plain&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p p-Indicator&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;foo&lt;/span&gt;\n&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;\n&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;'''  # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_fast_count(self):
