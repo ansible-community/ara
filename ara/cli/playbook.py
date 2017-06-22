@@ -57,7 +57,7 @@ class PlaybookList(Lister):
         parser.add_argument(
             '--complete', '-C',
             action='store_true',
-            help='Only show incomplete playbook runs',
+            help='Only show complete playbook runs',
         )
         return parser
 
