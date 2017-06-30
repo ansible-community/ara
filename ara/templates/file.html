@@ -6,7 +6,7 @@
           <h2>File: <strong>{{ file_.path }}</strong></h2>
           <p>Last updated: {{ file_.playbook.time_end | datefmt }}</p>
           <p>Ansible version: <strong>{{ file_.playbook.ansible_version }}</strong></p>
-          {{ file_.content.content | yamlhighlight | escape }}
+          {{ file_.content.content | yamlhighlight | safe }}
         </div>
     </div>
 </div>
