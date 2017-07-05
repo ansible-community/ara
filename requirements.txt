@@ -9,6 +9,7 @@ Flask-Script
 Frozen-Flask
 decorator>=4.0.0
 cliff
+python-subunit
 setuptools>=11.3
 pygments
 debtcollector>=1.2.0

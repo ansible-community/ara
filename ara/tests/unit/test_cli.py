@@ -20,8 +20,10 @@ import tempfile
 
 from distutils.version import LooseVersion
 from flask_frozen import MissingURLGeneratorWarning
+from glob import glob
 from lxml import etree
 from oslo_serialization import jsonutils
+from subunit._to_disk import to_disk
 
 import ara.shell
 import ara.cli.data
@@ -856,3 +858,67 @@ class TestCLIGenerate(TestAra):
         self.assertEqual(tree.getroot()[0].tag, "testsuite")
         self.assertEqual(tree.getroot()[0][0].tag, "testcase")
         self.assertEqual(int(tree.getroot().get('tests')), len(tasks))
+
+    def test_generate_subunit(self):
+        """ Roughly ensures the expected subunit is generated properly """
+        tdir = self.generate_dir
+
+        ansible_run()
+        cmd = ara.cli.generate.GenerateSubunit(None, None)
+        parser = cmd.get_parser('test')
+
+        subunit_file = os.path.join(tdir, 'test.subunit')
+        subunit_dir = os.path.join(tdir, 'subunit_dir')
+        args = parser.parse_args([subunit_file])
+        cmd.take_action(args)
+
+        self.assertTrue(os.path.exists(subunit_file))
+        # Dump the subunit binary stream to some files we can read and assert
+        with open(subunit_file, 'r') as f:
+            to_disk(['-d', subunit_dir], stdin=f)
+
+        # Get *.json files, load them and test them
+        data = []
+        testfiles = glob("%s/%s" % (subunit_dir, '*/*.json'))
+        for testfile in testfiles:
+            with open(testfile, 'rb') as f:
+                data.append(jsonutils.load(f))
+
+        keys = ['status', 'tags', 'stop', 'start', 'details', 'id']
+        for result in data:
+            # Test that we have the expected keys, no more, no less
+            for key in keys:
+                self.assertTrue(key in result.keys())
+            for key in result.keys():
+                self.assertTrue(key in keys)
+
+        # Get non-json files, load them and test them
+        data = []
+        testfiles = [fn for fn in glob("%s/%s" % (subunit_dir, '*/*'))
+                     if not os.path.basename(fn).endswith('json')]
+        for testfile in testfiles:
+            with open(testfile, 'rb') as f:
+                data.append(jsonutils.load(f))
+
+        keys = ['host', 'playbook_id', 'playbook_path', 'play_name',
+                'task_action', 'task_action_lineno', 'task_id', 'task_name',
+                'task_path']
+        for result in data:
+            # Test that we have the expected keys, no more, no less
+            for key in keys:
+                self.assertTrue(key in result.keys())
+            for key in result.keys():
+                self.assertTrue(key in keys)
+
+            # Test that we have matching data for playbook records
+            playbook = m.Playbook.query.get(result['playbook_id'])
+            self.assertEqual(playbook.id, result['playbook_id'])
+            self.assertEqual(playbook.path, result['playbook_path'])
+
+            # Test that we have matchin gdata for task records
+            task = m.Task.query.get(result['task_id'])
+            self.assertEqual(task.id, result['task_id'])
+            self.assertEqual(task.action, result['task_action'])
+            self.assertEqual(task.file.path, result['task_path'])
+            self.assertEqual(task.lineno, result['task_action_lineno'])
+            self.assertEqual(task.name, result['task_name'])

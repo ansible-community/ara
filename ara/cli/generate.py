@@ -12,12 +12,14 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import datetime
 import logging
 import os
 import six
 import sys
 
 from ara import models
+from ara import utils
 from cliff.command import Command
 from flask_frozen import Freezer, walk_directory
 from flask_frozen import MissingURLGeneratorWarning
@@ -25,6 +27,8 @@ from junit_xml import TestCase
 from junit_xml import TestSuite
 from oslo_utils import encodeutils
 from oslo_serialization import jsonutils
+from subunit import iso8601
+from subunit.v2 import StreamResultToBytes
 from warnings import filterwarnings
 
 
@@ -149,3 +153,121 @@ class GenerateJunit(Command):
         else:
             with open(args.output_file, 'wb') as f:
                 f.write(encodeutils.safe_encode(xml_string))
+
+
+class GenerateSubunit(Command):
+    """ Generate subunit binary stream from ARA data """
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(GenerateSubunit, self).get_parser(prog_name)
+        parser.add_argument(
+            'output_file',
+            metavar='<output file>',
+            help='The file to write the subunit binary stream to. '
+                 'Use "-" for stdout.',
+        )
+        parser.add_argument(
+            '--playbook',
+            metavar='<playbook>',
+            nargs='+',
+            help='Only include the specified playbooks in the generation.',
+            required=False,
+            default=None,
+        )
+
+        return parser
+
+    def take_action(self, args):
+        # Setup where the output stream must go
+        if args.output_file == '-':
+            output_stream = sys.stdout
+        else:
+            output_stream = open(args.output_file, 'wb')
+
+        # Create the output stream
+        output = StreamResultToBytes(output_stream)
+
+        # Create the test run
+        output.startTestRun()
+
+        if args.playbook is not None:
+            playbooks = args.playbook
+            results = (models.TaskResult().query
+                       .join(models.Task)
+                       .filter(models.TaskResult.task_id == models.Task.id)
+                       .filter(models.Task.playbook_id.in_(playbooks)))
+        else:
+            results = models.TaskResult().query.all()
+
+        for result in results:
+            # Generate a fixed length identifier for the task
+            test_id = utils.generate_identifier(result)
+
+            # Assign the test_status value
+            if result.status in ('failed', 'unreachable'):
+                if result.ignore_errors is False:
+                    test_status = 'xfail'
+                else:
+                    test_status = 'fail'
+            elif result.status == 'skipped':
+                test_status = 'skip'
+            else:
+                test_status = 'success'
+
+            # Determine the play file path
+            if result.task.playbook and result.task.playbook.path:
+                playbook_path = result.task.playbook.path
+            else:
+                playbook_path = ''
+
+            # Determine the task file path
+            if result.task.file and result.task.file.path:
+                task_path = result.task.file.path
+            else:
+                task_path = ''
+
+            # Assign the file_bytes value
+            test_data = {
+                'host': result.host.name,
+                'playbook_id': result.task.playbook.id,
+                'playbook_path': playbook_path,
+                'play_name': result.task.play.name,
+                'task_action': result.task.action,
+                'task_action_lineno': result.task.lineno,
+                'task_id': result.task.id,
+                'task_name': result.task.name,
+                'task_path': task_path
+            }
+            file_bytes = encodeutils.safe_encode(jsonutils.dumps(test_data))
+
+            # Assign the start_time and stop_time value
+            # The timestamp needs to be an epoch, so we need
+            # to convert it.
+            start_time = datetime.datetime.fromtimestamp(
+                float(result.time_start.strftime('%s'))
+            ).replace(tzinfo=iso8601.UTC)
+            end_time = datetime.datetime.fromtimestamp(
+                float(result.time_end.strftime('%s'))
+            ).replace(tzinfo=iso8601.UTC)
+
+            # Output the start of the event
+            output.status(
+                test_id=test_id,
+                timestamp=start_time
+            )
+
+            # Output the end of the event
+            output.status(
+                test_id=test_id,
+                test_status=test_status,
+                test_tags=None,
+                runnable=False,
+                file_name=test_id,
+                file_bytes=file_bytes,
+                timestamp=end_time,
+                eof=True,
+                mime_type='text/plain; charset=UTF8'
+            )
+
+        output.stopTestRun()
