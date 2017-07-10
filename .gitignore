@@ -3,9 +3,7 @@
 __pycache__/
 _build/
 build/
-*.egg
-*.eggs
-*.egg-info
+*.egg*
 dist
 build
 eggs
