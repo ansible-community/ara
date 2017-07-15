@@ -13,7 +13,7 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-function usage() {
+function usage {
     cat << EOF
 usage: ./run-tests.sh [-a|--ansible ANSIBLE_VERSION] [-a|--python PYTHON_VERSION] [-h|--help]
 
@@ -30,8 +30,8 @@ EOF
 
 # Some tests only work on certain versions of Ansible.
 # Use Ansible's pseudo semver to determine if we can run something.
-function semver_compare() {
-    cat <<EOF |python
+function semver_compare {
+    cat << EOF | python
 from __future__ import print_function
 import sys
 from distutils.version import LooseVersion
@@ -41,7 +41,7 @@ EOF
 }
 
 # Cleanup from any previous runs if necessary
-function cleanup() {
+function cleanup {
     [[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
     [[ -e ".tox/${python_version}" ]] && rm -rf .tox/${python_version}
     mkdir -p "${LOGDIR}"
@@ -80,13 +80,13 @@ export CONSTRAINTS_FILE="${LOGDIR}/constraints.txt"
 cleanup
 
 if [[ $ARA_TEST_PGSQL == "1" ]]; then
-  if [[ -z $ARA_TEST_PGSQL_USER || -z $ARA_TEST_PGSQL_PASSWORD ]]; then
-    echo 'Please set $ARA_TEST_PGSQL_USER and $ARA_TEST_PGSQL_PASSWORD'
-    exit 1
-  fi
-  DATABASE="postgresql+psycopg2://$ARA_TEST_PGSQL_USER:$ARA_TEST_PGSQL_PASSWORD@localhost:5432/ara"
+    if [[ -z $ARA_TEST_PGSQL_USER || -z $ARA_TEST_PGSQL_PASSWORD ]]; then
+        echo 'Please set $ARA_TEST_PGSQL_USER and $ARA_TEST_PGSQL_PASSWORD'
+        exit 1
+    fi
+    DATABASE="postgresql+psycopg2://$ARA_TEST_PGSQL_USER:$ARA_TEST_PGSQL_PASSWORD@localhost:5432/ara"
 else
-  DATABASE="sqlite:///${LOGDIR}/ansible.sqlite"
+    DATABASE="sqlite:///${LOGDIR}/ansible.sqlite"
 fi
 
 # Ensure we're running from the script directory
@@ -112,8 +112,8 @@ python --version
 # But it requires pgsql development headers, and pg8000 won't
 # meet our needs here.
 if [[ $ARA_TEST_PGSQL == 1 ]]; then
-  command -v pg_config >/dev/null 2>&1 || { echo >&2 'pg_config is missing in $PATH, please install postgresql development headers.'; exit 1; }
-  pip install psycopg2
+    command -v pg_config >/dev/null 2>&1 || { echo >&2 'pg_config is missing in $PATH, please install postgresql development headers.'; exit 1; }
+    pip install psycopg2
 fi
 
 # Setup ARA
@@ -126,12 +126,10 @@ export ARA_DATABASE="${DATABASE}"
 # failed.yml does not work with lint due to unicode error
 # https://github.com/willthames/ansible-lint/issues/242
 # include_role is excluded because it is only applied on >2.2 later
-for file in $(find ara/tests/integration ! -path '*failed.yml' ! -path '*include_role.yml' -regex '.*.y[a]?ml')
-do
+for file in $(find ara/tests/integration ! -path '*failed.yml' ! -path '*include_role.yml' -regex '.*.y[a]?ml'); do
     ansible-lint ${file}
 done
-for file in $(find ara/tests/integration -maxdepth 1 ! -path '*include_role.yml' -regex '.*.y[a]?ml')
-do
+for file in $(find ara/tests/integration -maxdepth 1 ! -path '*include_role.yml' -regex '.*.y[a]?ml'); do
     ansible-playbook --syntax-check ${file}
 done
 
