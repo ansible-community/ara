@@ -24,6 +24,8 @@ from os import path
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
+from pygments.lexers import JsonLexer
+from pygments.lexers.special import TextLexer
 
 
 def configure_template_filters(app):
@@ -86,6 +88,26 @@ def configure_template_filters(app):
         return highlight(Markup(code.rstrip()).unescape(),
                          YamlLexer(),
                          formatter)
+
+    @app.template_filter('pygments_formatter')
+    def jinja_pygments_formatter(data):
+        formatter = HtmlFormatter(cssclass='codehilite')
+
+        if isinstance(data, str) or isinstance(data, unicode):
+            data.rstrip()
+            try:
+                data = json.loads(data)
+                data = json.dumps(data, indent=4, sort_keys=True)
+                lexer = JsonLexer()
+            except (ValueError, TypeError):
+                lexer = TextLexer()
+        elif isinstance(data, dict) or isinstance(data, list):
+            data = json.dumps(data, indent=4, sort_keys=True)
+            lexer = JsonLexer()
+        else:
+            lexer = TextLexer()
+
+        return highlight(Markup(data).unescape(), lexer, formatter)
 
     @app.template_filter('fast_count')
     def jinja_fast_count(query):
