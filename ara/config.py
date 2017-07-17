@@ -60,6 +60,7 @@ def _ara_config(config, key, env_var, default=None, section='ara',
 
 DEFAULTS = {
     'ARA_AUTOCREATE_DATABASE': True,
+    'ARA_CONTEXT_PATH': '/',
     'ARA_DIR': os.path.expanduser('~/.ara'),
     'ARA_ENABLE_DEBUG_VIEW': False,
     'ARA_HOST': '127.0.0.1',
@@ -91,6 +92,7 @@ DEFAULTS.update({
 ARA_AUTOCREATE_DATABASE = _ara_config(config, 'autocreate_database',
                                       'ARA_AUTOCREATE_DATABASE',
                                       value_type='boolean')
+ARA_CONTEXT_PATH = _ara_config(config, 'context_path', 'ARA_CONTEXT_PATH')
 ARA_ENABLE_DEBUG_VIEW = _ara_config(config, 'enable_debug_view',
                                     'ARA_ENABLE_DEBUG_VIEW',
                                     value_type='boolean')

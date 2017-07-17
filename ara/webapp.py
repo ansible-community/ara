@@ -53,6 +53,7 @@ def create_app(config=None, app_name=None):
     app = Flask(app_name)
 
     configure_app(app, config)
+    configure_context_path(app, config)
     configure_dirs(app)
     configure_logging(app)
     configure_errorhandlers(app)
@@ -64,6 +65,9 @@ def create_app(config=None, app_name=None):
 
     return app
 
+def configure_context_path(app):
+    if app.config['ARA_CONTEXT_PATH']:
+        app.wsgi_app = PrefixMiddleware(app.wsgi_app, prefix=app.config['ARA_CONTEXT_PATH'])
 
 def configure_blueprints(app):
     for view, prefix in views:
@@ -170,3 +174,20 @@ def configure_static_route(app):
             return send_from_directory(xstatic[module], filename)
         else:
             abort(404)
+
+class PrefixMiddleware:
+
+    def __init__(self, app, prefix=''):
+        self.app = app
+        self.prefix = prefix
+
+    def __call__(self, environ, start_response):
+
+        if environ['PATH_INFO'].startswith(self.prefix):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(self.prefix):]
+            environ['SCRIPT_NAME'] = self.prefix
+            return self.app(environ, start_response)
+        else:
+            start_response('404', [('Content-Type', 'text/plain')])
+            return ["This url does not belong to the app.".encode()]
+
