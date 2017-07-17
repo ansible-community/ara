@@ -13,6 +13,21 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+function usage() {
+    cat << EOF
+usage: ./run-tests.sh [-a|--ansible ANSIBLE_VERSION] [-a|--python PYTHON_VERSION] [-h|--help]
+
+Runs ARA integration tests
+
+optional arguments:
+-a, --ansible      Ansible version to test with (ex: '2.3.1.0', 'devel')
+                   Defaults to version in requirements.txt (latest version of Ansible)
+-p, --python       Python version from a tox environment to test with (ex: 'py27', 'py35')
+                   Defaults to py27
+-h, --help         Prints this help dialog.
+EOF
+}
+
 # Some tests only work on certain versions of Ansible.
 # Use Ansible's pseudo semver to determine if we can run something.
 function semver_compare() {
@@ -25,13 +40,44 @@ print(LooseVersion('${1}') ${2} LooseVersion('${3}'))
 EOF
 }
 
+# Cleanup from any previous runs if necessary
+function cleanup() {
+    [[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
+    [[ -e ".tox/${python_version}" ]] && rm -rf .tox/${python_version}
+    mkdir -p "${LOGDIR}"
+    touch ${CONSTRAINTS_FILE}
+}
+
+# Get args
+ansible_version="latest"
+python_version="py27"
+while [ "$1" != "" ]; do
+    case $1 in
+        -a | --ansible )        shift
+                                ansible_version=$1
+                                ;;
+        -p | --python )         shift
+                                python_version=$1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+echo "Running ARA integration tests with Ansible ${ansible_version} on ${python_version}..."
+
 set -ex
-# This script runs ara-specific integration tests.
 export PATH=$PATH:/usr/local/sbin:/usr/sbin
-LOGROOT=${WORKSPACE:-/tmp}
+LOGROOT=${WORKSPACE:-/tmp/ara_tests}
 LOGDIR="${LOGROOT}/logs"
 SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 export ANSIBLE_TMP_DIR="${LOGDIR}/ansible"
+export CONSTRAINTS_FILE="${LOGDIR}/constraints.txt"
+
+cleanup
 
 if [[ $ARA_TEST_PGSQL == "1" ]]; then
   if [[ -z $ARA_TEST_PGSQL_USER || -z $ARA_TEST_PGSQL_PASSWORD ]]; then
@@ -46,21 +92,19 @@ fi
 # Ensure we're running from the script directory
 pushd "${SCRIPT_DIR}"
 
-# Cleanup from any previous runs if necessary
-git checkout requirements.txt
-[[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
-[[ -e ".tox/venv" ]] && rm -rf .tox/venv
-mkdir -p "${LOGDIR}"
-
-# We might want to test with a particular version of Ansible
-# To specify a version, use "./run_tests.sh ansible==2.x.x.x"
-if [[ -n "${1}" && "${1}" != "ansible==latest" ]]; then
-    sed -i.tmp -e "s/ansible.*/${1}/" requirements.txt
+if ! [[ "${ansible_version}" =~ "latest" ]]; then
+    current_version=$(grep "ansible" requirements.txt)
+    echo "Will use Ansible ${ansible_version} instead of ${current_version} in tests..."
+    if [[ "${ansible_version}" =~ "devel" ]]; then
+        echo "git+https://github.com/ansible/ansible@devel#egg=ansible" > ${CONSTRAINTS_FILE}
+    else
+        echo "ansible==${ansible_version}" > ${CONSTRAINTS_FILE}
+    fi
 fi
 
 # Install ARA so it can be used from a virtual environment
-tox -e venv --notest
-source .tox/venv/bin/activate
+tox -e ${python_version} --notest
+source .tox/${python_version}/bin/activate
 ansible --version
 python --version
 
