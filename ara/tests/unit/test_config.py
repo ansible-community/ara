@@ -29,6 +29,7 @@ class TestConfig(TestAra):
         """ Ensure we have expected default parameters """
         keys = [
             'ARA_AUTOCREATE_DATABASE',
+            'ARA_CONTEXT_PATH',
             'ARA_DIR',
             'ARA_ENABLE_DEBUG_VIEW',
             'ARA_HOST',

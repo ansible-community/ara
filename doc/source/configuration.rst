@@ -99,6 +99,8 @@ Parameters and their defaults
 +===============================+============================+===========================================+
 | ARA_DIR_                      | dir                        | ~/.ara                                    |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_CONTEXT_PATH              | context_path               | /                                         |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_DATABASE_                 | database                   | sqlite:///~/.ara/ansible.sqlite           |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_HOST_                     | host                       | 127.0.0.1                                 |
@@ -131,6 +133,13 @@ ARA_DIR
 
 Base directory where ARA will store it's log file and sqlite database, unless
 specified otherwise.
+
+ARA_CONTEXT_PATH
+~~~~~~~
+
+Specify the context path for ARA web server.
+
+``http://{ip}:{port}/{ARA_CONTEXT_PATH}``
 
 .. _ara_database:
 
