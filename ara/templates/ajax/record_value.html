@@ -1,5 +1,5 @@
 {% if record.type == 'json' or record.type == 'dict' -%}
-    <pre>{{ record.value | to_nice_json | escape }}</pre>
+    {{ record.value | pygments_formatter | safe }}
 {% elif record.type == 'list' -%}
     <ul class="text-left">
     {% for item in record.value -%}

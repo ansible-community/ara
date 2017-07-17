@@ -57,7 +57,7 @@
 
 /* Table styling */
 /* Wrap pre tags so they don't print endlessly horizontally */
-.table pre, .results pre {
+.records pre, .facts pre, .results .codehilite pre {
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;

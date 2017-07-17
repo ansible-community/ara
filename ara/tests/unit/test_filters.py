@@ -107,6 +107,69 @@ class TestFilters(TestAra):
 
         self.assertEqual(res, u'"definitely not json"')
 
+    def test_jinja_pygments_formatter_string_simple(self):
+        data = "string"
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_string_json(self):
+        data = '{"one": "value", "two": "value"}'
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_unicode(self):
+        data = u"string"
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_list(self):
+        data = ['one', 'two']
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span> \n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_dict(self):
+        data = {'one': 'value', 'two': 'value'}
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_integer(self):
+        data = 1
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span>1\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
+    def test_jinja_pygments_formatter_boolean(self):
+        data = True
+        t = self.env.from_string('{{ data | pygments_formatter | safe }}')
+        res = t.render(data=data)
+
+        # This is ugly, sorry
+        expected = u'''<div class="codehilite"><pre><span></span>True\n</pre></div>\n''' # flake8: noqa
+        self.assertEqual(res, expected)
+
     def test_jinja_yamlhighlight(self):
         data = """- name: Test thing
     hosts: localhost
