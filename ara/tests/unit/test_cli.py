@@ -14,11 +14,13 @@
 
 import json
 import os
+import pytest
 import shutil
 import six
-import sys
 import tempfile
 
+from distutils.version import LooseVersion
+from flask_frozen import MissingURLGeneratorWarning
 from lxml import etree
 
 import ara.shell
@@ -656,18 +658,10 @@ class TestCLIGenerate(TestAra):
         # Create a temporary directory for ara generate tests
         self.generate_dir = tempfile.mkdtemp(prefix='ara')
 
-        # Buffer stderr for warning tests
-        self.stderr = sys.stderr
-        self.buffer = six.StringIO()
-        sys.stderr = self.buffer
-
     def tearDown(self):
         super(TestCLIGenerate, self).tearDown()
         # Remove the temporary ara generate directory
         shutil.rmtree(self.generate_dir)
-
-        # Reset stderr back to default
-        sys.stderr = self.stderr
 
     def test_generate_empty_html(self):
         """ Ensures the application is still rendered gracefully """
@@ -678,10 +672,18 @@ class TestCLIGenerate(TestAra):
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([dir])
-        cmd.take_action(args)
 
-        output = self.buffer.getvalue().strip()
-        self.assertIn('MissingURLGeneratorWarning', output)
+        with pytest.warns(MissingURLGeneratorWarning) as warnings:
+            cmd.take_action(args)
+
+        # pytest 3.0 through 3.1 are backwards incompatible here
+        if LooseVersion(pytest.__version__) >= LooseVersion('3.1.0'):
+            cat = [item._category_name for item in warnings]
+            self.assertTrue(any('MissingURLGeneratorWarning' in c
+                                for c in cat))
+        else:
+            self.assertTrue(any(MissingURLGeneratorWarning == w.category
+                                for w in warnings))
 
         paths = [
             os.path.join(dir, 'index.html'),
