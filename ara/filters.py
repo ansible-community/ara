@@ -13,14 +13,14 @@
 #   under the License.
 
 import datetime
-import json
 import logging
+import six
 
 from ara.utils import fast_count
 from ara.utils import playbook_treeview
 from jinja2 import Markup
-from jinja2 import UndefinedError
 from os import path
+from oslo_serialization import jsonutils
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
@@ -52,10 +52,12 @@ def configure_template_filters(app):
     def jinja_to_nice_json(result):
         """ Tries to format a result as a pretty printed JSON. """
         try:
-            return json.dumps(json.loads(result), indent=4, sort_keys=True)
+            return jsonutils.dumps(jsonutils.loads(result),
+                                   indent=4,
+                                   sort_keys=True)
         except (ValueError, TypeError):
             try:
-                return json.dumps(result, indent=4, sort_keys=True)
+                return jsonutils.dumps(result, indent=4, sort_keys=True)
             except TypeError as err:
                 log.error('failed to dump json: %s', err)
                 return result
@@ -63,7 +65,7 @@ def configure_template_filters(app):
     @app.template_filter('from_json')
     def jinja_from_json(val):
         try:
-            return json.loads(val)
+            return jsonutils.loads(val)
         except ValueError as err:
             log.error('failed to load json: %s', err)
             return val
@@ -76,37 +78,32 @@ def configure_template_filters(app):
                                   linespans='line',
                                   cssclass='codehilite')
 
-        # We have little control over the content of the files we're
-        # formatting. This can lead into UnicodeDecodeError raised by Jinja
-        # due to breaking whitespace characters or other possibly encoded
-        # characters.
-        try:
-            code = code.decode('utf-8')
-        except UndefinedError:
+        if not code:
             code = ''
 
-        return highlight(Markup(code.rstrip()).unescape(),
-                         YamlLexer(),
+        return highlight(Markup(code).unescape(),
+                         YamlLexer(stripall=True),
                          formatter)
 
     @app.template_filter('pygments_formatter')
     def jinja_pygments_formatter(data):
         formatter = HtmlFormatter(cssclass='codehilite')
 
-        if isinstance(data, str) or isinstance(data, unicode):
-            data.rstrip()
+        if isinstance(data, dict) or isinstance(data, list):
+            data = jsonutils.dumps(data, indent=4, sort_keys=True)
+            lexer = JsonLexer()
+        elif six.string_types or six.text_type:
             try:
-                data = json.loads(data)
-                data = json.dumps(data, indent=4, sort_keys=True)
+                data = jsonutils.dumps(jsonutils.loads(data),
+                                       indent=4,
+                                       sort_keys=True)
                 lexer = JsonLexer()
             except (ValueError, TypeError):
                 lexer = TextLexer()
-        elif isinstance(data, dict) or isinstance(data, list):
-            data = json.dumps(data, indent=4, sort_keys=True)
-            lexer = JsonLexer()
         else:
             lexer = TextLexer()
 
+        lexer.stripall = True
         return highlight(Markup(data).unescape(), lexer, formatter)
 
     @app.template_filter('fast_count')

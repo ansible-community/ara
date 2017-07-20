@@ -12,20 +12,17 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-from collections import defaultdict
 import random
 import os
-import json
 
-from ara.webapp import create_app
 import ara.models as m
 import ara.utils as u
 import ara.plugins.callbacks.log_ara as l
 
 from ara.tests.unit.common import TestAra
 from ara.tests.unit import fakes
-
-a = create_app()
+from collections import defaultdict
+from oslo_serialization import jsonutils
 
 
 class TestCallback(TestAra):
@@ -54,7 +51,7 @@ class TestCallback(TestAra):
 
         self.task = fakes.Task(name='task-%s' % self.tag,
                                playbook=self.playbook.model,
-                               path=self.playbook.path)
+                               path='/task-%s.yml')
         self.cb.v2_playbook_on_task_start(self.task, False)
 
         self.host_one = fakes.Host(name='host1', playbook=self.playbook.model)
@@ -88,10 +85,10 @@ class TestCallback(TestAra):
 
     def test_playbook_persistence(self):
         r_playbook = m.Playbook.query.first()
-        tmpfile = os.path.join(a.config['ARA_TMP_DIR'], 'ara.json')
+        tmpfile = os.path.join(self.app.config['ARA_TMP_DIR'], 'ara.json')
 
-        with open(tmpfile) as file:
-            data = json.load(file)
+        with open(tmpfile, 'rb') as file:
+            data = jsonutils.load(file)
         self.assertEqual(r_playbook.id, data['playbook']['id'])
 
     def test_callback_play(self):

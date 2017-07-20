@@ -16,9 +16,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import decorator
 import flask
-import hashlib
 import itertools
-import json
 import logging
 import os
 
@@ -29,6 +27,7 @@ from ara.models import db
 from ara.webapp import create_app
 from datetime import datetime
 from distutils.version import LooseVersion
+from oslo_serialization import jsonutils
 
 # To retrieve Ansible CLI options
 try:
@@ -129,8 +128,7 @@ class CallbackModule(CallbackBase):
         try:
             with open(path, 'r') as fd:
                 data = fd.read()
-
-            sha1 = hashlib.sha1(data).hexdigest()
+            sha1 = models.content_sha1(data)
             content = models.FileContent.query.get(sha1)
 
             if content is None:
@@ -166,16 +164,16 @@ class CallbackModule(CallbackBase):
             results = [self._dump_results(result._result)]
             for item in self.loop_items:
                 results.append(self._dump_results(item._result))
-            results = json.loads(json.dumps(results))
+            results = jsonutils.loads(jsonutils.dumps(results))
         else:
-            results = json.loads(self._dump_results(result._result))
+            results = jsonutils.loads(self._dump_results(result._result))
 
         self.taskresult = models.TaskResult(
             task=self.task,
             host=host,
             time_start=result.task_start,
             time_end=result.task_end,
-            result=json.dumps(results),
+            result=jsonutils.dumps(results),
             status=status,
             changed=result._result.get('changed', False),
             failed=result._result.get('failed', False),
@@ -187,7 +185,7 @@ class CallbackModule(CallbackBase):
         db.session.add(self.taskresult)
 
         if self.task.action == 'setup' and 'ansible_facts' in result._result:
-            values = json.dumps(result._result['ansible_facts'])
+            values = jsonutils.dumps(result._result['ansible_facts'])
             facts = models.HostFacts(values=values)
             host.facts = facts
 
@@ -293,7 +291,7 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play,
             playbook=self.playbook,
-            tags=json.dumps(task._attributes['tags']),
+            tags=jsonutils.dumps(task._attributes['tags']),
             file=file_,
             lineno=lineno,
             is_handler=is_handler)
@@ -338,7 +336,7 @@ class CallbackModule(CallbackBase):
         }
         tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
         with open(tmpfile, 'w') as file:
-            file.write(json.dumps(data))
+            file.write(jsonutils.dumps(data))
 
     def v2_playbook_on_play_start(self, play):
         self.close_task()

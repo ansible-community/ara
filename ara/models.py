@@ -14,12 +14,13 @@
 
 import functools
 import hashlib
-import json
 import uuid
 import zlib
 
 from datetime import datetime
 from datetime import timedelta
+from oslo_utils import encodeutils
+from oslo_serialization import jsonutils
 
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
@@ -42,10 +43,14 @@ def mkuuid():
 
 def content_sha1(context):
     """
-    Used by the FileContent class to automatically compute the sha1
+    Used by the FileContent model to automatically compute the sha1
     hash of content before storing it to the database.
     """
-    return hashlib.sha1(context.current_parameters['content']).hexdigest()
+    try:
+        content = context.current_parameters['content']
+    except AttributeError:
+        content = context
+    return hashlib.sha1(encodeutils.to_utf8(content)).hexdigest()
 
 
 # Primary key columns are of these type.
@@ -120,11 +125,11 @@ class CompressedData(types.TypeDecorator):
     impl = types.Binary
 
     def process_bind_param(self, value, dialect):
-        return zlib.compress(json.dumps(value))
+        return zlib.compress(encodeutils.to_utf8(jsonutils.dumps(value)))
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            return json.loads(zlib.decompress(value))
+            return jsonutils.loads(zlib.decompress(value))
         else:
             return value
 
@@ -143,13 +148,10 @@ class CompressedText(types.TypeDecorator):
     impl = types.Binary
 
     def process_bind_param(self, value, dialect):
-        return zlib.compress(value if value else '')
+        return zlib.compress(encodeutils.to_utf8(value))
 
     def process_result_value(self, value, dialect):
-        if value is not None:
-            return zlib.decompress(value)
-        else:
-            return value
+        return encodeutils.safe_decode(zlib.decompress(value))
 
     def copy(self, **kwargs):
         return CompressedText(self.impl.length)

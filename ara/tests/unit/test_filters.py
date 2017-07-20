@@ -13,10 +13,12 @@
 #   under the License.
 
 import datetime
+import six
 import ara.models as m
 
 from ara.tests.unit.common import TestAra
 from ara.tests.unit.common import ansible_run
+from oslo_utils import encodeutils
 
 
 class TestFilters(TestAra):
@@ -60,43 +62,46 @@ class TestFilters(TestAra):
         t = self.env.from_string('{{ data | from_json | safe }}')
         res = t.render(data=data)
 
-        self.assertEqual(res, u"{u'key': u'value'}")
+        # TODO: Figure out the difference between py2 and py3
+        if six.PY2:
+            expected = "{u'key': u'value'}"
+        else:
+            expected = "{'key': 'value'}"
+        self.assertEqual(res, expected)
 
     def test_from_json_escape(self):
         data = '{"key": "value"}'
         t = self.env.from_string('{{ data | from_json | escape }}')
         res = t.render(data=data)
 
-        self.assertEqual(res, u"{u&#39;key&#39;: u&#39;value&#39;}")
+        # TODO: Figure out the difference between py2 and py3
+        if six.PY2:
+            expected = "{u&#39;key&#39;: u&#39;value&#39;}"
+        else:
+            expected = "{&#39;key&#39;: &#39;value&#39;}"
+
+        self.assertEqual(res, expected)
 
     def test_to_json_safe(self):
         data = {'key': 'value'}
         t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
-        self.assertEqual(res, u'{\n    "key": "value"\n}')
+        self.assertEqual(res, '{\n    "key": "value"\n}')
 
     def test_to_json_escape(self):
         data = {'key': 'value'}
         t = self.env.from_string('{{ data | to_nice_json | escape }}')
         res = t.render(data=data)
 
-        self.assertEqual(res, u'{\n    &#34;key&#34;: &#34;value&#34;\n}')
-
-    def test_to_json_fails(self):
-        data = datetime.datetime.now()
-        t = self.env.from_string('{{ data | to_nice_json }}')
-        res = t.render(data=data)
-
-        self.assertEqual(res, str(data))
+        self.assertEqual(res, '{\n    &#34;key&#34;: &#34;value&#34;\n}')
 
     def test_to_json_from_string(self):
         data = '{"key": "value"}'
         t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
-        self.assertEqual(res,
-                         u'{\n    "key": "value"\n}')
+        self.assertEqual(res, '{\n    "key": "value"\n}')
 
     def test_to_json_from_invalid_string(self):
         # json.dumps does not raise exception on a non-json string,
@@ -105,7 +110,7 @@ class TestFilters(TestAra):
         t = self.env.from_string('{{ data | to_nice_json | safe }}')
         res = t.render(data=data)
 
-        self.assertEqual(res, u'"definitely not json"')
+        self.assertEqual(res, '"definitely not json"')
 
     def test_jinja_pygments_formatter_string_simple(self):
         data = "string"
@@ -113,7 +118,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_string_json(self):
@@ -122,7 +127,10 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        if six.PY2:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        else:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_unicode(self):
@@ -131,7 +139,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_list(self):
@@ -140,7 +148,10 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span> \n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n''' # flake8: noqa
+        if six.PY2:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span> \n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n''' # flake8: noqa
+        else:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span>\n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n'''  # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_dict(self):
@@ -149,7 +160,10 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        if six.PY2:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+        else:
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_integer(self):
@@ -158,7 +172,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span>1\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>1\n</pre></div>\n''' # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_boolean(self):
@@ -167,7 +181,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = u'''<div class="codehilite"><pre><span></span>True\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>True\n</pre></div>\n''' # flake8: noqa
         self.assertEqual(res, expected)
 
     def test_jinja_yamlhighlight(self):

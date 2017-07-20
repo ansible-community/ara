@@ -13,12 +13,11 @@
 #   under the License.
 
 import ara.models as m
-import json
-import hashlib
 import random
 
 from ansible import __version__ as ansible_version
 from mock import MagicMock
+from oslo_serialization import jsonutils
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests
@@ -74,7 +73,7 @@ class FileContent(object):
 
     @property
     def model(self):
-        sha1 = hashlib.sha1(self.content).hexdigest()
+        sha1 = m.content_sha1(self.content)
         content = m.FileContent.query.get(sha1)
 
         if content is None:
@@ -185,7 +184,7 @@ class Task(object):
     @property
     def model(self):
         return m.Task(action=self.action,
-                      tags=json.dumps(self.tags),
+                      tags=jsonutils.dumps(self.tags),
                       lineno=self.lineno,
                       name=self.name,
                       playbook=self.playbook,
