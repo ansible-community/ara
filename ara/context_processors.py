@@ -12,6 +12,8 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import sys
+
 from ansible import __version__ as ansible_version
 from ara import __release__ as ara_release
 
@@ -22,5 +24,10 @@ def configure_context_processors(app):
         """
         Returns standard data that will be available in every template view.
         """
+
+        # Get python version info
+        major, minor, micro, release, serial = sys.version_info
+
         return dict(ara_version=ara_release,
-                    ansible_version=ansible_version)
+                    ansible_version=ansible_version,
+                    python_version="{0}.{1}".format(major, minor))
