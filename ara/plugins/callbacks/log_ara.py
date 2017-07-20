@@ -19,6 +19,7 @@ import flask
 import itertools
 import logging
 import os
+import six
 
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
@@ -34,8 +35,6 @@ try:
     from __main__ import cli
 except ImportError:
     cli = None
-
-__metaclass__ = type
 
 LOG = logging.getLogger('ara.callback')
 app = create_app()
@@ -67,12 +66,11 @@ class IncludeResult(object):
         self._result = {'included_file': path}
 
 
+@six.add_metaclass(CommitAfter)
 class CallbackModule(CallbackBase):
     """
     Saves data from an Ansible run into a database
     """
-    __metaclass__ = CommitAfter
-
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'notification'
     CALLBACK_NAME = 'ara'
