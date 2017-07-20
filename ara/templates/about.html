@@ -20,7 +20,7 @@
                 You can read about the project's core values and principles in the <a href="https://ara.readthedocs.io/en/latest/manifesto.html">project manifesto</a>.
             </h3>
             <br>
-            {% if playbooks and playbooks > 0 -%}
+            {% if not empty_database -%}
             <h2>ARA makes the following data available:</h2>
             <br>
             <div class="list-group stat-highlight col-md-4 col-md-offset-4">

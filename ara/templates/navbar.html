@@ -19,7 +19,7 @@
             <li><a><strong>Python</strong> {{ python_version }}</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-primary">
-            {% if (playbooks and playbooks > 0) or playbook -%}
+            {% if not empty_database -%}
             {% if active and active == 'reports' -%}
             <li class="active">
             {% else -%}
