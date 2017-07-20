@@ -12,7 +12,6 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
 import os
 import pytest
 import shutil
@@ -22,6 +21,7 @@ import tempfile
 from distutils.version import LooseVersion
 from flask_frozen import MissingURLGeneratorWarning
 from lxml import etree
+from oslo_serialization import jsonutils
 
 import ara.shell
 import ara.cli.data
@@ -185,8 +185,9 @@ class TestCLIHost(TestAra):
         args = parser.parse_args([ctx['host'].id])
         res = cmd.take_action(args)
 
-        facts = json.loads(ctx['facts'].values)
-        self.assertEqual(res, zip(*sorted(six.iteritems(facts))))
+        facts = jsonutils.loads(ctx['facts'].values)
+        expected = six.moves.zip(*sorted(six.iteritems(facts)))
+        self.assertSequenceEqual(list(res), list(expected))
 
     def test_host_fact_by_name(self):
         ctx = ansible_run()
@@ -197,8 +198,9 @@ class TestCLIHost(TestAra):
             '-b', ctx['host'].playbook.id, ctx['host'].name])
         res = cmd.take_action(args)
 
-        facts = json.loads(ctx['facts'].values)
-        self.assertEqual(res, zip(*sorted(six.iteritems(facts))))
+        facts = jsonutils.loads(ctx['facts'].values)
+        expected = six.moves.zip(*sorted(six.iteritems(facts)))
+        self.assertSequenceEqual(list(res), list(expected))
 
     def test_host_fact_non_existing_host(self):
         ansible_run()
@@ -520,7 +522,7 @@ class TestCLIResult(TestAra):
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
-        self.assertEqual(res[1][-1], json.dumps(ctx['result'].result))
+        self.assertEqual(res[1][-1], jsonutils.dumps(ctx['result'].result))
 
     def test_result_show_long_non_existing(self):
         ansible_run()

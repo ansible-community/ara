@@ -16,6 +16,9 @@ junit-xml>=1.7
 pyfakefs
 six
 
+oslo.serialization>=1.10.0 # Apache-2.0
+oslo.utils>=3.20.0 # Apache-2.0
+
 XStatic>=1.0.0 # MIT License
 XStatic-Bootstrap-SCSS>=3.3.7.1 # Apache 2.0 License
 XStatic-DataTables>=1.10.15 # MIT License

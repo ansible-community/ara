@@ -12,7 +12,6 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
 import logging
 import six
 
@@ -20,6 +19,7 @@ from ara import models
 from ara.fields import Field
 from cliff.lister import Lister
 from cliff.show import ShowOne
+from oslo_serialization import jsonutils
 
 LIST_FIELDS = (
     Field('ID'),
@@ -140,7 +140,7 @@ class HostFacts(ShowOne):
             raise RuntimeError('No facts available for host %s' % args.host)
 
         facts = ((k, v) for k, v in
-                 six.iteritems(json.loads(host.facts.values))
+                 six.iteritems(jsonutils.loads(host.facts.values))
                  if not args.fact or k in args.fact
                  )
-        return zip(*sorted(facts))
+        return six.moves.zip(*sorted(facts))

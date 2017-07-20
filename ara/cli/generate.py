@@ -12,9 +12,9 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
 import logging
 import os
+import six
 import sys
 
 from ara import models
@@ -23,6 +23,8 @@ from flask_frozen import Freezer, walk_directory
 from flask_frozen import MissingURLGeneratorWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
+from oslo_utils import encodeutils
+from oslo_serialization import jsonutils
 from warnings import filterwarnings
 
 
@@ -116,7 +118,7 @@ class GenerateJunit(Command):
                 'host': result.host.name,
                 'playbook_path': result.task.playbook.path
             }
-            result_str = json.dumps(additional_results)
+            result_str = jsonutils.dumps(additional_results)
             test_path = \
                 u'{playbook_file}.{play_name}'.format(
                     playbook_file=os.path.basename(result.task.playbook.path),
@@ -134,9 +136,16 @@ class GenerateJunit(Command):
             test_cases.append(test_case)
         test_suite = TestSuite('Ansible Tasks', test_cases)
 
-        xml_string = test_suite.to_xml_string([test_suite])
+        # TODO: junit_xml doesn't order the TestCase parameters.
+        # This makes it so the order of the parameters for the same exact
+        # TestCase is not guaranteed to be the same and thus results in a
+        # different stdout (or file). This is easily reproducible on Py3.
+        xml_string = six.text_type(test_suite.to_xml_string([test_suite]))
         if args.output_file == '-':
-            sys.stdout.write(xml_string.encode(sys.stdout.encoding or 'utf-8'))
+            if six.PY2:
+                sys.stdout.write(encodeutils.safe_encode(xml_string))
+            else:
+                sys.stdout.buffer.write(encodeutils.safe_encode(xml_string))
         else:
-            with open(args.output_file, 'w') as f:
-                f.write(xml_string.encode('utf-8'))
+            with open(args.output_file, 'wb') as f:
+                f.write(encodeutils.safe_encode(xml_string))
