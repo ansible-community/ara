@@ -25,6 +25,7 @@ from oslo_serialization import jsonutils
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.exc import *  # NOQA
+from sqlalchemy.orm import backref
 import sqlalchemy.types as types
 
 db = SQLAlchemy()
@@ -223,6 +224,8 @@ class File(db.Model):
     content_id = db.Column(db.String(40),
                            db.ForeignKey('file_contents.id'))
 
+    tasks = many_to_one('Task', backref=backref('file', uselist=False))
+
     # is_playbook is true for playbooks referenced directly on the
     # ansible-playbook command line.
     is_playbook = db.Column(db.Boolean, default=False)
@@ -292,7 +295,6 @@ class Task(db.Model, TimedEntity):
     tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
 
-    file = many_to_one('File', backref='tasks')
     file_id = std_fkey('files.id')
     lineno = db.Column(db.Integer)
 
