@@ -12,7 +12,6 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
 import six
 
 from ara import models
@@ -20,6 +19,7 @@ from flask import abort
 from flask import Blueprint
 from flask import current_app
 from flask import render_template
+from oslo_serialization import jsonutils
 
 host = Blueprint('host', __name__)
 
@@ -51,7 +51,7 @@ def show_host(id):
         abort(404)
 
     if host and host.facts:
-        facts = sorted(six.iteritems(json.loads(host.facts.values)))
+        facts = sorted(six.iteritems(jsonutils.loads(host.facts.values)))
     else:
         abort(404)
 
