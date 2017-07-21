@@ -14,10 +14,10 @@
 
 import ara.utils as u
 import ara.models as m
-import json
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
+from oslo_serialization import jsonutils
 
 
 class TestUtils(TestAra):
@@ -76,7 +76,7 @@ class TestUtils(TestAra):
 
     def test_playbook_treeview(self):
         ctx = ansible_run()
-        treeview = json.loads(u.playbook_treeview(ctx['playbook'].id))
+        treeview = jsonutils.loads(u.playbook_treeview(ctx['playbook'].id))
 
         # ansible_run provides two fake files:
         # /some/path/main.yml and /playbook.yml

@@ -13,8 +13,9 @@
 #   under the License.
 
 from ara import models
+from oslo_serialization import jsonutils
 from sqlalchemy import func
-import json
+
 import pyfakefs.fake_filesystem as fake_filesystem
 
 
@@ -122,6 +123,6 @@ def playbook_treeview(playbook):
         fs.CreateFile(file.path)
         paths[file.path] = file.id
 
-    return json.dumps(generate_tree('/', paths, mock_os),
-                      sort_keys=True,
-                      indent=2)
+    return jsonutils.dumps(generate_tree('/', paths, mock_os),
+                           sort_keys=True,
+                           indent=2)
