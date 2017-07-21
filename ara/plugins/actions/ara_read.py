@@ -12,10 +12,10 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
-import json
 import os
 
 from ansible.plugins.action import ActionBase
+from oslo_serialization import jsonutils
 
 try:
     from ara import models
@@ -134,8 +134,8 @@ class ActionModule(ActionBase):
         if playbook_id is None:
             # Retrieve the persisted playbook_id from tmpfile
             tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
-            with open(tmpfile) as file:
-                data = json.load(file)
+            with open(tmpfile, 'rb') as file:
+                data = jsonutils.load(file)
             playbook_id = data['playbook']['id']
 
         try:
