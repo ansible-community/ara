@@ -32,7 +32,7 @@ Required dependencies
 
 ::
 
-    apt-get -y install gcc python-dev libffi-dev libssl-dev
+    apt-get -y install gcc python-dev python-setuptools libffi-dev libssl-dev
 
 Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
