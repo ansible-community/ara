@@ -18,14 +18,14 @@ where they have been installed in order to let Ansible know where they are locat
 
    The location where ARA will be depends on your operating system and how it
    is installed.
-   Here's an example of some common locations:
+   Here's some examples of where ARA can be found:
 
    - ``/usr/lib/python2.7/site-packages/ara``
-   - ``/usr/local/lib/python2.7/dist-packages/ara``
+   - ``/usr/lib/python3.5/site-packages/ara``
    - ``$VIRTUAL_ENV/lib/python2.7/site-packages/ara``
 
-   If you're not sure where ARA has ended up being installed, you can use this
-   snippet to print it's location::
+   If you're not sure where ARA will end up being installed, you can use this
+   snippet to print its location. It works in both Python 2 and Python 3::
 
       python -c "import os,ara; print(os.path.dirname(ara.__file__))"
 
