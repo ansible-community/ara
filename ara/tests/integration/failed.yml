@@ -18,3 +18,5 @@
   tasks:
     - fail:
         msg: "This is a failed playbook"
+      tags:
+        - skip_ansible_lint
