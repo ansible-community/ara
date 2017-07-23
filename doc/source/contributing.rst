@@ -155,7 +155,7 @@ Unit tests::
    # Python 3.5
    tox -e py35
 
-pep8/flake8/bandit tests::
+pep8/flake8/bandit/bashate tests::
 
    tox -e pep8
 
@@ -166,20 +166,40 @@ Documentation tests::
 
 Integration tests:
 
-.. warning:: Integration tests requires superuser privileges. They will create
-   files, install and uninstall test packages. For more details, look at the
-   ``tests/integration`` directory.
-
 ::
 
-   # When not run inside a Jenkins-based environment, this will create an ARA
-   # database at /tmp/logs/ansible.sqlite, ARA logs at /tmp/logs and the ARA static
-   # website will be generated at /tmp/logs/build.
-   ./run_tests.sh
+At the root of the ARA source, you'll find the ``run_tests.sh`` script that
+allows you to easily run integration tests across a range of different
+configurations.
+
+ARA's integration tests do not require superuser privileges, are all
+self-contained in temporary directories and python virtual environments.
+They are designed to safely and easily run either on your local machine or in
+a CI environment such as Jenkins.
+
+Here's how you would ``run_tests.sh`` to run integration tests::
+
+   $ ./run_tests.sh -h
+   usage: ./run-tests.sh [-a|--ansible ANSIBLE_VERSION] [-a|--python PYTHON_VERSION] [-h|--help]
+
+   Runs ARA integration tests
+
+   optional arguments:
+   -a, --ansible      Ansible version to test with (ex: '2.3.1.0', 'devel')
+                      Defaults to version in requirements.txt (latest version of Ansible)
+   -p, --python       Python version from a tox environment to test with (ex: 'py27', 'py35')
+                      Defaults to py27
+   -h, --help         Prints this help dialog.
+
+   # With the default configuration (latest release of Ansible and py27)
+   $ ./run_tests.sh
+   # or.. with the devel version of Ansible with py35
+   $ ./run_tests.sh -a devel -p py35
 
 PostgreSQL integration tests:
 
-In order to test integration with PostgreSQL, you'll need to set a few environment variables:
+In order to get ``run_tests.sh`` to run PostgreSQL integration tests, you'll
+need to set a few environment variables:
 
 ::
 
@@ -187,23 +207,19 @@ In order to test integration with PostgreSQL, you'll need to set a few environme
    export ARA_TEST_PGSQL_USER=ara
    export ARA_TEST_PGSQL_PASSWORD=password
 
-You'll also need development headers for PostgreSQL to build psycopg2, the defacto pgsql adapter for Python.
+You'll also need development headers for PostgreSQL to build psycopg2,
+the defacto pgsql adapter for Python.
 
-Ubuntu/Debian provides them by:
-
-::
+To install the package on Ubuntu/Debian::
 
    sudo apt install postgresql-server-dev-9.5
 
-RHEL/CentOS/Fedora provides them by:
-
-::
+To install the package on RHEL/CentOS/Fedora::
 
    sudo yum -y install postgresql-devel
 
-If you need a quick and dirty PostgreSQL server to test against, you can use docker to spin one up:
-
-::
+If you need an ephemeral PostgreSQL server to test against, you can spin one
+up with Docker easily::
 
    docker run --name ara_pgsql \
         -e POSTGRES_USER=${ARA_TEST_PGSQL_USER} \
@@ -212,9 +228,8 @@ If you need a quick and dirty PostgreSQL server to test against, you can use doc
         -p 5432:5432 \
         -d postgres:alpine
 
-Then, just invoke tests as normal:
-
-::
+Once the PostgreSQL is up and the environment variables are set, you're ready
+to run integration tests as usual::
 
    ./run_tests.sh
 
