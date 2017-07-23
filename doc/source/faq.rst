@@ -18,30 +18,6 @@ ARA provides four things:
 .. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
 
-What versions of Ansible are supported ?
-----------------------------------------
-
-The minimum required version of Ansible to run ARA is 2.1.0.0.
-
-ARA is developed and tested against the latest versions of Ansible:
-2.1.x and 2.2.x.
-
-Ansible 2.0.x is `no longer supported`_.
-
-.. _no longer supported: https://groups.google.com/forum/#!topic/ansible-devel/6-6FdxZ94kc
-
-.. _faq_callback:
-
-What's an Ansible callback ?
-----------------------------
-
-`Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
-send an event and you can react to it with a callback.
-You could use a callback to do things like print additional details or, in the
-case of ARA, record the playbook run data in a database.
-
-.. _Ansible Callbacks: https://docs.ansible.com/ansible/dev_guide/developing_plugins.html
-
 .. _interface_preview:
 
 What does the web interface look like ?
@@ -115,13 +91,51 @@ available in the web interface:
 
 .. image:: _static/record.png
 
+What versions of Ansible are supported ?
+----------------------------------------
+
+The upstream Ansible community and maintainers provide support for the latest
+two major stable releases and ARA follows the same support cycle.
+
+At this time, the minimum required version of Ansible to run the latest version
+of ARA is **2.2.0.0**.
+New development is tested against the latest versions of **2.2**, **2.3** as
+well as ``devel`` which is currently the future version of Ansible, **2.4**.
+
+If you are using a release of Ansible that is no longer supported, we strongly
+encourage you to upgrade as soon as possible in order to benefit from the
+latest features and security fixes.
+
+Older unsupported versions of Ansible can contain unfixed security
+vulnerabilities (*CVE*).
+
+Does ARA support running on Python 3 ?
+--------------------------------------
+
+Yes.
+
+The support for running ARA on a python 3 environment landed in ARA 0.14.0.
+Previous versions would not work on python 3.
+
+.. _faq_callback:
+
+What's an Ansible callback ?
+----------------------------
+
+`Ansible Callbacks`_ are essentially hooks provided by Ansible. Ansible will
+send an event and you can react to it with a callback.
+You could use a callback to do things like print additional details or, in the
+case of ARA, record the playbook run data in a database.
+
+.. _Ansible Callbacks: https://docs.ansible.com/ansible/dev_guide/developing_plugins.html
+
 Why is ARA being developed ?
 ----------------------------
 Ansible is an awesome tool. It can be used for a lot of things.
 
-Reading and interpreting the output of an ansible-playbook run, especially one
-that is either long running, involves a lot of hosts or prints a lot of output
-can be tedious.
+Reading and interpreting the output of an ``ansible-playbook`` run, especially
+one that is either long running, involves a lot of hosts or prints a lot of
+output can be tedious.
 This is especially true when you happen to be running Ansible hundreds of times
 during the day, through automated means -- for example when doing continuous
 integration or continuous delivery.
