@@ -16,15 +16,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from flask_script import commands
-from flask_script import Manager
-from flask_script import prompt_bool
+from ara.db.models import db
+from ara.webapp import create_app
 from flask_migrate import Migrate
 from flask_migrate import MigrateCommand
-
-from ara.webapp import create_app
-from ara.models import db
+from flask_script import Manager
+from flask_script import commands
+from flask_script import prompt_bool
 
 app = create_app()
 manager = Manager(app)

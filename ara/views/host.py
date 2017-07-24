@@ -16,13 +16,13 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import six
-
-from ara import models
-from flask import abort
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import render_template
 from oslo_serialization import jsonutils
+
+from ara.db import models
 
 host = Blueprint('host', __name__)
 

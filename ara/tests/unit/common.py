@@ -17,10 +17,9 @@
 
 import unittest
 
+import ara.db.models as m
 import ara.webapp as w
-import ara.models as m
-from ara.models import db
-
+from ara.db.models import db
 from ara.tests.unit import fakes
 
 

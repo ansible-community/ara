@@ -26,8 +26,8 @@ import six
 
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
-from ara import models
-from ara.models import db
+from ara.db import models
+from ara.db.models import db
 from ara.webapp import create_app
 from datetime import datetime
 from distutils.version import LooseVersion

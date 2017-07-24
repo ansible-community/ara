@@ -15,10 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import ara.models as m
+import ara.db.models as m
 
-from ara.tests.unit.common import TestAra
 from ara.tests.unit import fakes
+from ara.tests.unit.common import TestAra
 
 
 class TestModels(TestAra):

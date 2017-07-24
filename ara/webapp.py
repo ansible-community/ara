@@ -17,23 +17,22 @@
 
 import ara.config
 import ara.views
-import flask_migrate
 import logging
+import flask_migrate
 import os
 
-from alembic.migration import MigrationContext
-from alembic.script import ScriptDirectory
 from ara.context_processors import configure_context_processors
+from ara.db.models import db
 from ara.errorhandlers import configure_errorhandlers
 from ara.filters import configure_template_filters
-from ara.models import db
+from alembic.migration import MigrationContext
+from alembic.script import ScriptDirectory
+from flask import Flask
 from flask import abort
 from flask import current_app
-from flask import Flask
 from flask import logging as flask_logging
 from flask import send_from_directory
 from sqlalchemy.engine.reflection import Inspector
-
 
 DEFAULT_APP_NAME = 'ara'
 

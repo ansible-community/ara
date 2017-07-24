@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import ara.models as m
+import ara.db.models as m
 import random
 
 from ansible import __version__ as ansible_version

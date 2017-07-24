@@ -15,12 +15,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import ara.utils as u
-import ara.models as m
-
-from ara.tests.unit.common import ansible_run
-from ara.tests.unit.common import TestAra
 from oslo_serialization import jsonutils
+
+import ara.db.models as m
+import ara.utils as u
+
+from ara.tests.unit.common import TestAra
+from ara.tests.unit.common import ansible_run
 
 
 class TestUtils(TestAra):
