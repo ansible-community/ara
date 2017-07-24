@@ -36,19 +36,19 @@ def index():
     """
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        results = (models.TaskResult.query
+        results = (models.Result.query
                    .join(models.Task)
                    .filter(models.Task.playbook_id.in_(override)))
     else:
-        results = models.TaskResult.query.all()
+        results = models.Result.query.all()
 
-    return render_template('task_result_index.html', results=results)
+    return render_template('result_index.html', results=results)
 
 
-@result.route('/<task_result>/')
-def show_result(task_result):
-    task_result = models.TaskResult.query.get(task_result)
-    if task_result is None:
+@result.route('/<item>/')
+def show_result(item):
+    result = models.Result.query.get(item)
+    if result is None:
         abort(404)
 
-    return render_template('task_result.html', task_result=task_result)
+    return render_template('result.html', result=result)

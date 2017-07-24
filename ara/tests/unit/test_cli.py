@@ -383,7 +383,7 @@ class TestCLIPlaybook(TestAra):
         self.assertNotEqual(p.count(), 0)
         t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
         self.assertNotEqual(t.count(), 0)
-        tr = m.TaskResult.query.count()  # compared later
+        tr = m.Result.query.count()  # compared later
         h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
         self.assertNotEqual(h.count(), 0)
         hf = m.HostFacts.query
@@ -410,7 +410,7 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(p.count(), 0)
         t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
         self.assertEqual(t.count(), 0)
-        new_tr = m.TaskResult.query.count()  # compare before and after
+        new_tr = m.Result.query.count()  # compare before and after
         self.assertNotEqual(tr, new_tr)
         h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
         self.assertEqual(h.count(), 0)
@@ -500,10 +500,11 @@ class TestCLIResult(TestAra):
 
     def test_result_show(self):
         ctx = ansible_run()
+        id = six.text_type(ctx['result'].id)
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['result'].id])
+        args = parser.parse_args([id])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
@@ -520,10 +521,11 @@ class TestCLIResult(TestAra):
 
     def test_result_show_long(self):
         ctx = ansible_run()
+        id = six.text_type(ctx['result'].id)
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['result'].id, '--long'])
+        args = parser.parse_args([id, '--long'])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)

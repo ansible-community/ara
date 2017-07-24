@@ -110,12 +110,12 @@ class GenerateJunit(Command):
         test_cases = []
         if args.playbook is not None:
             playbooks = args.playbook
-            results = (models.TaskResult().query
+            results = (models.Result().query
                        .join(models.Task)
-                       .filter(models.TaskResult.task_id == models.Task.id)
+                       .filter(models.Result.task_id == models.Task.id)
                        .filter(models.Task.playbook_id.in_(playbooks)))
         else:
-            results = models.TaskResult().query.all()
+            results = models.Result().query.all()
 
         for result in results:
             task_name = result.task.name
@@ -196,12 +196,12 @@ class GenerateSubunit(Command):
 
         if args.playbook is not None:
             playbooks = args.playbook
-            results = (models.TaskResult().query
+            results = (models.Result().query
                        .join(models.Task)
-                       .filter(models.TaskResult.task_id == models.Task.id)
+                       .filter(models.Result.task_id == models.Task.id)
                        .filter(models.Task.playbook_id.in_(playbooks)))
         else:
-            results = models.TaskResult().query.all()
+            results = models.Result().query.all()
 
         for result in results:
             # Generate a fixed length identifier for the task
