@@ -109,7 +109,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
 
     record_task = fakes.Task(play=play,
                              playbook=playbook,
-                             action='ara_record').model
+                             action='ara_record',
+                             file=task_file,
+                             file_id=task_file.id).model
     tasks.append(record_task)
 
     ctx = dict(
@@ -152,7 +154,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
 
     failed_task = fakes.Task(play=play,
                              playbook=playbook,
-                             action='fail').model
+                             action='fail',
+                             file=task_file,
+                             file_id=task_file.id).model
     tasks.append(failed_task)
     if failed:
         msg = 'FAILED!'
