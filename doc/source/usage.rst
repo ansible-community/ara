@@ -415,3 +415,42 @@ This is done by retrieving the playbook IDs you are interested in with
             <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Remove a file if it doesn't exist"/>
             <testcase classname="localhost._home_dev_ara_ara_tests_integration_smoke_yml.ARA_Tasks_test_play" name="Remove a file if it exists">
     [...]
+
+Generating a static subunit version of the task results
+-------------------------------------------------------
+
+ARA is able to generate a subunit report that contains task results and their
+status.
+
+This is done with the ``ara generate subunit`` command.
+
+By default, ARA will generate a report on all task results across all the
+recorded playbook runs in it's database.
+It is also possible to generate a report for one or many specific playbooks.
+This is done by retrieving the playbook IDs you are interested in with
+``ara playbook list`` and then using the ``ara generate subunit`` command with the
+``--playbook`` parameter::
+
+    $ ara help generate subunit
+    usage: ara generate subunit [-h] [--playbook <playbook> [<playbook> ...]]
+                                <output file>
+
+    Generate subunit binary stream from ARA data
+
+    positional arguments:
+      <output file>         The file to write the subunit binary stream to. Use
+                            "-" for stdout.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --playbook <playbook> [<playbook> ...]
+                            Only include the specified playbooks in the
+                            generation.
+
+    $ ara generate subunit - | subunit2csv
+    test,status,start_time,stop_time
+    50d4e04fe034bea7479bc4a3fa3703254298baa8,success,2017-07-28 03:07:21+00:00,2017-07-28 03:07:21+00:00
+    a62f7a36683972efe1ef6e51e389417521502153,success,2017-07-28 03:07:22+00:00,2017-07-28 03:07:22+00:00
+    8902778f958439806aee2a22c26d8b79dc61c964,success,2017-07-28 03:07:22+00:00,2017-07-28 03:07:22+00:00
+    fd2d199b22b635ed82b41d5edf8c1774f64484dc,success,2017-07-28 03:07:22+00:00,2017-07-28 03:07:22+00:00
+    [...]

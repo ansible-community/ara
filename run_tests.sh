@@ -173,10 +173,16 @@ export ARA_PLAYBOOK_PER_PAGE=3
 export ARA_RESULT_PER_PAGE=20
 ara generate html ${LOGDIR}/build
 ara generate html ${LOGDIR}/build-playbook --playbook $pbid
+
 ara generate junit ${LOGDIR}/junit.xml
 ara generate junit ${LOGDIR}/junit-playbook.xml --playbook $pbid
 ara generate junit -
 python ara/tests/integration/helpers/junit_check.py ${LOGDIR}/junit.xml
+
+ara generate subunit ${LOGDIR}/results.subunit
+ara generate subunit ${LOGDIR}/results-playbook.subunit --playbook $pbid
+ara generate subunit - > ${LOGDIR}/results-stdout.subunit
+subunit2pyunit ${LOGDIR}/results.subunit 2>&1 | cat > ${LOGDIR}/subunit2pyunit.txt
 
 # It's important that ARA behaves well when gzipped
 gzip --best --recursive ${LOGDIR}/build

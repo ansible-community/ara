@@ -17,9 +17,40 @@
 
 from ara import models
 from oslo_serialization import jsonutils
+from oslo_utils import encodeutils
 from sqlalchemy import func
 
+import hashlib
 import pyfakefs.fake_filesystem as fake_filesystem
+
+
+def generate_identifier(result):
+    """
+    Returns a fixed length identifier based on a hash of a combined set of
+    playbook/task values which are as close as we can guess to unique for each
+    task.
+    """
+    # Determine the playbook file path to use for the ID
+    if result.task.playbook and result.task.playbook.path:
+        playbook_file = result.task.playbook.path
+    else:
+        playbook_file = ''
+    play_path = u'%s.%s' % (playbook_file, result.task.play.name)
+
+    # Determine the task file path to use for the ID
+    if result.task.file and result.task.file.path:
+        task_file = result.task.file.path
+    else:
+        task_file = ''
+    task_path = u'%s.%s' % (task_file, result.task.name)
+
+    # Combine both of the above for a full path
+    identifier_path = u'%s.%s' % (play_path, task_path)
+
+    # Assign the identifier as a hash of the fully unique path.
+    identifier = hashlib.sha1(encodeutils.to_utf8(identifier_path)).hexdigest()
+
+    return identifier
 
 
 def get_summary_stats(items, attr):
