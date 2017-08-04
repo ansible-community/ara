@@ -28,6 +28,7 @@ from oslo_serialization import jsonutils
 # This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import *  # NOQA
 from sqlalchemy.orm import backref
 import sqlalchemy.types as types
@@ -171,7 +172,13 @@ class CompressedText(types.TypeDecorator):
         return CompressedText(self.impl.length)
 
 
-class Base(db.Model):
+class PlaybookMixin(object):
+    @declared_attr
+    def playbook_id(cls):
+        return db.Column(db.Integer(), db.ForeignKey(Playbook.id))
+
+
+class Base(db.Model, PlaybookMixin):
     __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True)
@@ -193,7 +200,7 @@ class Playbook(db.Model, TimedEntity):
     """
     __tablename__ = 'playbooks'
 
-    id = std_pkey()
+    id = db.Column(db.Integer(), primary_key=True)
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
     options = db.Column(CompressedData((2 ** 32) - 1))
@@ -220,7 +227,7 @@ class Playbook(db.Model, TimedEntity):
         return '<Playbook %s>' % self.path
 
 
-class File(db.Model):
+class File(Base):
     """
     Represents a task list (role or playbook or included file) referenced by
     an Ansible run.
@@ -230,9 +237,6 @@ class File(db.Model):
         db.UniqueConstraint('playbook_id', 'path'),
     )
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
-
     # This has to be a String instead of Text because of
     # http://stackoverflow.com/questions/1827063/
     # and it must have a max length smaller than PATH_MAX because MySQL is
@@ -240,8 +244,7 @@ class File(db.Model):
     # from the fact that we are using this column in a UNIQUE constraint.
     path = db.Column(db.String(255))
     content = many_to_one('FileContent', backref='files')
-    content_id = db.Column(db.String(40),
-                           db.ForeignKey('file_contents.id'))
+    content_id = db.Column(db.Integer(), db.ForeignKey('file_contents.id'))
 
     tasks = many_to_one('Task', backref=backref('file', uselist=False))
 
@@ -259,11 +262,12 @@ class FileContent(db.Model):
     """
     __tablename__ = 'file_contents'
 
-    id = db.Column(db.String(40), primary_key=True, default=content_sha1)
+    id = db.Column(db.Integer(), primary_key=True)
+    sha1 = db.Column(db.String(40), default=content_sha1)
     content = db.Column(CompressedText((2**32) - 1))
 
 
-class Play(db.Model, TimedEntity):
+class Play(Base, TimedEntity):
     """
     The 'Play' class represents a play in an ansible playbook.
 
@@ -274,8 +278,6 @@ class Play(db.Model, TimedEntity):
     """
     __tablename__ = 'plays'
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
     name = db.Column(db.Text)
     sortkey = db.Column(db.Integer)
     tasks = one_to_many('Task', backref='play')
@@ -291,7 +293,7 @@ class Play(db.Model, TimedEntity):
         return self.time_start - self.playbook.time_start
 
 
-class Task(db.Model, TimedEntity):
+class Task(Base, TimedEntity):
     """
     The 'Task' class represents a single task defined in an Ansible playbook.
 
@@ -304,8 +306,6 @@ class Task(db.Model, TimedEntity):
     """
     __tablename__ = 'tasks'
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
     play_id = std_fkey('plays.id')
 
     name = db.Column(db.Text)
@@ -374,7 +374,7 @@ class Result(Base, TimedEntity):
         return '<Result %s>' % self.host.name
 
 
-class Host(db.Model):
+class Host(Base):
     """
     The 'Host' object represents a host reference by an Ansible inventory.
 
@@ -390,8 +390,6 @@ class Host(db.Model):
         db.UniqueConstraint('playbook_id', 'name'),
     )
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
     name = db.Column(db.String(255), index=True)
 
     facts = one_to_one('HostFacts', backref='host')
@@ -402,7 +400,7 @@ class Host(db.Model):
         return '<Host %s>' % self.name
 
 
-class HostFacts(db.Model):
+class HostFacts(Base):
     """
     The 'HostFacts' object represents a host reference by an Ansible
     inventory. It is meant to record facts when a setup task is run for a host.
@@ -412,7 +410,6 @@ class HostFacts(db.Model):
     """
     __tablename__ = 'host_facts'
 
-    id = std_pkey()
     host_id = std_fkey('hosts.id')
     timestamp = db.Column(db.DateTime, default=datetime.now)
     values = db.Column(db.Text(16777215))
@@ -421,7 +418,7 @@ class HostFacts(db.Model):
         return '<HostFacts %s>' % self.host.name
 
 
-class Stats(db.Model):
+class Stats(Base):
     """
     A 'Stats' object contains statistics for a single host from a single
     Ansible playbook run.
@@ -434,8 +431,6 @@ class Stats(db.Model):
     """
     __tablename__ = 'stats'
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
     host_id = std_fkey('hosts.id')
 
     changed = db.Column(db.Integer, default=0)
@@ -448,7 +443,7 @@ class Stats(db.Model):
         return '<Stats for %s>' % self.host.name
 
 
-class Data(db.Model):
+class Data(Base):
     """
     The 'Data' object represents a recorded key/value pair provided by the
     ara_record module.
@@ -461,11 +456,9 @@ class Data(db.Model):
         db.UniqueConstraint('playbook_id', 'key'),
     )
 
-    id = std_pkey()
-    playbook_id = std_fkey('playbooks.id')
     key = db.Column(db.String(255))
     value = db.Column(CompressedData((2 ** 32) - 1))
     type = db.Column(db.String(255))
 
     def __repr__(self):
-        return '<Data %s:%s>' % (self.data.playbook_id, self.data.key)
+        return '<Data %s:%s>' % (self.playbook_id, self.key)

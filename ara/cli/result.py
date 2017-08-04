@@ -70,14 +70,17 @@ class ResultList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Playbook from which to list results')
         g.add_argument(
             '--play', '-p',
             metavar='<play-id>',
+            type=int,
             help='Play from which to list results')
         g.add_argument(
             '--task', '-t',
             metavar='<task-id>',
+            type=int,
             help='Task from which to list results')
         g.add_argument(
             '--all', '-a',
@@ -135,6 +138,7 @@ class ResultShow(ShowOne):
         parser.add_argument(
             'result_id',
             metavar='<result-id>',
+            type=int,
             help='Result to show',
         )
         return parser

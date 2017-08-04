@@ -66,7 +66,10 @@ class TestCLIData(TestAra):
 
         cmd = ara.cli.data.DataList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['data'].id)
@@ -76,7 +79,7 @@ class TestCLIData(TestAra):
 
         cmd = ara.cli.data.DataList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', 'foo'])
+        args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -86,7 +89,7 @@ class TestCLIData(TestAra):
 
         cmd = ara.cli.data.DataShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['data'].id])
+        args = parser.parse_args([six.text_type(ctx['data'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['data'].id)
@@ -97,7 +100,10 @@ class TestCLIData(TestAra):
         cmd = ara.cli.data.DataShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
-            '-b', ctx['data'].playbook.id, ctx['data'].key])
+            '-b',
+            six.text_type(ctx['data'].playbook.id),
+            ctx['data'].key
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['data'].id)
@@ -107,7 +113,7 @@ class TestCLIData(TestAra):
 
         cmd = ara.cli.data.DataShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -136,7 +142,10 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['host'].id)
@@ -146,7 +155,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', 'foo'])
+        args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -156,7 +165,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['host'].id])
+        args = parser.parse_args([six.text_type(ctx['host'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['host'].id)
@@ -167,7 +176,10 @@ class TestCLIHost(TestAra):
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
-            '-b', ctx['host'].playbook.id, ctx['host'].name])
+            '-b',
+            six.text_type(ctx['host'].playbook.id),
+            ctx['host'].name
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['host'].id)
@@ -177,7 +189,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -187,7 +199,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['host'].id])
+        args = parser.parse_args([six.text_type(ctx['host'].id)])
         res = cmd.take_action(args)
 
         facts = jsonutils.loads(ctx['facts'].values)
@@ -200,7 +212,10 @@ class TestCLIHost(TestAra):
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
-            '-b', ctx['host'].playbook.id, ctx['host'].name])
+            '-b',
+            six.text_type(ctx['host'].playbook.id),
+            ctx['host'].name
+        ])
         res = cmd.take_action(args)
 
         facts = jsonutils.loads(ctx['facts'].values)
@@ -212,7 +227,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args('foo')
+        args = parser.parse_args([six.text_type(9)])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -222,7 +237,7 @@ class TestCLIHost(TestAra):
 
         cmd = ara.cli.host.HostFacts(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['host'].id])
+        args = parser.parse_args([six.text_type(ctx['host'].id)])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -251,7 +266,10 @@ class TestCLIPlay(TestAra):
 
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['play'].id)
@@ -261,7 +279,7 @@ class TestCLIPlay(TestAra):
 
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', 'foo'])
+        args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -271,7 +289,7 @@ class TestCLIPlay(TestAra):
 
         cmd = ara.cli.play.PlayShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['play'].id])
+        args = parser.parse_args([six.text_type(ctx['play'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['play'].id)
@@ -281,7 +299,7 @@ class TestCLIPlay(TestAra):
 
         cmd = ara.cli.play.PlayShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -350,7 +368,7 @@ class TestCLIPlaybook(TestAra):
 
         cmd = ara.cli.playbook.PlaybookShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['playbook'].id])
+        args = parser.parse_args([six.text_type(ctx['playbook'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['playbook'].id)
@@ -360,7 +378,7 @@ class TestCLIPlaybook(TestAra):
 
         cmd = ara.cli.playbook.PlaybookShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -394,7 +412,7 @@ class TestCLIPlaybook(TestAra):
         # Delete the first playbook
         cmd = ara.cli.playbook.PlaybookDelete(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['playbook'].id])
+        args = parser.parse_args([six.text_type(ctx['playbook'].id)])
         cmd.take_action(args)
 
         # Assert that we only have one playbook left and that records have been
@@ -443,7 +461,10 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['result'].id)
@@ -453,7 +474,7 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', 'foo'])
+        args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -463,7 +484,7 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', ctx['play'].id])
+        args = parser.parse_args(['--play', six.text_type(ctx['play'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['result'].id)
@@ -473,7 +494,7 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', 'foo'])
+        args = parser.parse_args(['--play', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -483,7 +504,7 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--task', ctx['task'].id])
+        args = parser.parse_args(['--task', six.text_type(ctx['task'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['result'].id)
@@ -493,18 +514,17 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--task', 'foo'])
+        args = parser.parse_args(['--task', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
 
     def test_result_show(self):
         ctx = ansible_run()
-        id = six.text_type(ctx['result'].id)
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([id])
+        args = parser.parse_args([six.text_type(ctx['result'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
@@ -514,18 +534,17 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
     def test_result_show_long(self):
         ctx = ansible_run()
-        id = six.text_type(ctx['result'].id)
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([id, '--long'])
+        args = parser.parse_args([six.text_type(ctx['result'].id), '--long'])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['result'].id)
@@ -536,7 +555,7 @@ class TestCLIResult(TestAra):
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo', '--long'])
+        args = parser.parse_args([0, '--long'])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -565,7 +584,7 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', ctx['play'].id])
+        args = parser.parse_args(['--play', six.text_type(ctx['play'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['task'].id)
@@ -575,7 +594,7 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', 'foo'])
+        args = parser.parse_args(['--play', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -585,7 +604,10 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0][0], ctx['task'].id)
@@ -595,7 +617,7 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--playbook', 'foo'])
+        args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
@@ -605,7 +627,7 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['task'].id])
+        args = parser.parse_args([six.text_type(ctx['task'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['task'].id)
@@ -615,7 +637,7 @@ class TestCLITask(TestAra):
 
         cmd = ara.cli.task.TaskShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -644,7 +666,7 @@ class TestCLIStats(TestAra):
 
         cmd = ara.cli.stats.StatsShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([ctx['stats'].id])
+        args = parser.parse_args([six.text_type(ctx['stats'].id)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1][0], ctx['stats'].id)
@@ -654,7 +676,7 @@ class TestCLIStats(TestAra):
 
         cmd = ara.cli.stats.StatsShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['foo'])
+        args = parser.parse_args([0])
 
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
@@ -778,7 +800,11 @@ class TestCLIGenerate(TestAra):
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
 
-        args = parser.parse_args([dir, '--playbook', ctx['playbook'].id])
+        args = parser.parse_args([
+            dir,
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         cmd.take_action(args)
 
         file_id = ctx['task'].file_id
@@ -844,8 +870,11 @@ class TestCLIGenerate(TestAra):
         parser = cmd.get_parser('test')
 
         junit_file = "{tdir}/junit-playbook.xml".format(tdir=tdir)
-        playbook = ctx['playbook'].id
-        args = parser.parse_args([junit_file, '--playbook', playbook])
+        args = parser.parse_args([
+            junit_file,
+            '--playbook',
+            six.text_type(ctx['playbook'].id)
+        ])
         cmd.take_action(args)
 
         # Test that we effectively have two playbooks

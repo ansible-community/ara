@@ -74,6 +74,7 @@ class StatsShow(ShowOne):
         parser.add_argument(
             'stats_id',
             metavar='<stats-id>',
+            type=int,
             help='Statistic to show',
         )
         return parser

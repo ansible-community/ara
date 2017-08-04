@@ -130,9 +130,9 @@ class CallbackModule(CallbackBase):
             with open(path, 'r') as fd:
                 data = fd.read()
             sha1 = models.content_sha1(data)
-            content = models.FileContent.query.get(sha1)
-
-            if content is None:
+            try:
+                content = models.FileContent.query.filter_by(sha1=sha1).one()
+            except models.NoResultFound:
                 content = models.FileContent(content=data)
 
             file_.content = content

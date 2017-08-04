@@ -59,10 +59,12 @@ class TaskList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Playbook from which to list tasks')
         g.add_argument(
             '--play', '-p',
             metavar='<play-id>',
+            type=int,
             help='Play from which to list tasks')
         g.add_argument(
             '--all', '-a',
@@ -97,6 +99,7 @@ class TaskShow(ShowOne):
         parser.add_argument(
             'task_id',
             metavar='<task-id>',
+            type=int,
             help='Task to show',
         )
         return parser

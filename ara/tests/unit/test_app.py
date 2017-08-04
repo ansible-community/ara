@@ -88,8 +88,7 @@ class TestApp(TestAra):
 
     def test_reports_single_bad_playbook(self):
         ansible_run()
-        uuid = 'uuuu-iiii-dddd-0000'
-        res = self.client.get('/reports/{0}.html'.format(uuid))
+        res = self.client.get('/reports/0.html')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_parameters(self):
@@ -100,7 +99,7 @@ class TestApp(TestAra):
 
     def test_report_ajax_no_parameters(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/parameters/uuid.txt')
+        res = self.client.get('/reports/ajax/parameters/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_plays(self):
@@ -111,7 +110,7 @@ class TestApp(TestAra):
 
     def test_report_ajax_no_plays(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/plays/uuid.txt')
+        res = self.client.get('/reports/ajax/plays/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_records(self):
@@ -122,7 +121,7 @@ class TestApp(TestAra):
 
     def test_report_ajax_no_records(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/records/uuid.txt')
+        res = self.client.get('/reports/ajax/records/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_results(self):
@@ -133,7 +132,7 @@ class TestApp(TestAra):
 
     def test_report_ajax_no_results(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/results/uuid.txt')
+        res = self.client.get('/reports/ajax/results/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_stats(self):
@@ -144,7 +143,7 @@ class TestApp(TestAra):
 
     def test_report_ajax_no_stats(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/stats/uuid.txt')
+        res = self.client.get('/reports/ajax/stats/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_show_file(self):

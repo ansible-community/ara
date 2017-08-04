@@ -39,6 +39,7 @@ class FileList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Show files associated with a specified playbook',
         )
         g.add_argument(

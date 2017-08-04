@@ -86,6 +86,7 @@ class PlaybookShow(ShowOne):
         parser.add_argument(
             'playbook_id',
             metavar='<playbook-id>',
+            type=int,
             help='Playbook to show',
         )
         return parser
@@ -118,6 +119,7 @@ class PlaybookDelete(Command):
             'playbook_id',
             nargs='*',
             metavar='<playbook-id>',
+            type=int,
             help='Playbook(s) to delete',
         )
         return parser
