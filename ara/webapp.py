@@ -18,21 +18,17 @@
 import ara.config
 import ara.views
 import logging
-import flask_migrate
 import os
 
 from ara.context_processors import configure_context_processors
 from ara.db.models import db
 from ara.errorhandlers import configure_errorhandlers
 from ara.filters import configure_template_filters
-from alembic.migration import MigrationContext
-from alembic.script import ScriptDirectory
 from flask import Flask
 from flask import abort
 from flask import current_app
 from flask import logging as flask_logging
 from flask import send_from_directory
-from sqlalchemy.engine.reflection import Inspector
 
 DEFAULT_APP_NAME = 'ara'
 
@@ -90,45 +86,11 @@ def configure_dirs(app):
 
 
 def configure_db(app):
-    """
-    0.10 is the first version of ARA that ships with a stable database schema.
-    We can identify a database that originates from before this by checking if
-    there is an alembic revision available.
-    If there is no alembic revision available, assume we are running the first
-    revision which contains the latest state of the database prior to this.
-    """
     db.init_app(app)
-    log = logging.getLogger(app.logger_name)
 
     if app.config.get('ARA_AUTOCREATE_DATABASE'):
         with app.app_context():
-            migrations = app.config['DB_MIGRATIONS']
-            flask_migrate.Migrate(app, db, directory=migrations)
-            config = app.extensions['migrate'].migrate.get_config(migrations)
-
-            # Verify if the database tables have been created at all
-            inspector = Inspector.from_engine(db.engine)
-            if len(inspector.get_table_names()) == 0:
-                log.info('Initializing new DB from scratch')
-                flask_migrate.upgrade(directory=migrations)
-
-            # Get current alembic head revision
-            script = ScriptDirectory.from_config(config)
-            head = script.get_current_head()
-
-            # Get current revision, if available
-            connection = db.engine.connect()
-            context = MigrationContext.configure(connection)
-            current = context.get_current_revision()
-
-            if not current:
-                log.info('Unstable DB schema, stamping original revision')
-                flask_migrate.stamp(directory=migrations,
-                                    revision='da9459a1f71c')
-
-            if head != current:
-                log.info('DB schema out of date, upgrading')
-                flask_migrate.upgrade(directory=migrations)
+            db.create_all()
 
 
 def configure_logging(app):
@@ -142,12 +104,6 @@ def configure_logging(app):
         logger.setLevel(app.config['ARA_LOG_LEVEL'])
         del logger.handlers[:]
         logger.addHandler(handler)
-
-        # TODO: Log things from Alembic to ARA_LOG_FILE properly
-        alembic_logger = logging.getLogger('alembic')
-        alembic_logger.setLevel(logging.WARNING)
-        del alembic_logger.handlers[:]
-        alembic_logger.addHandler(handler)
 
 
 def configure_static_route(app):
