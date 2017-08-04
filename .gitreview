@@ -2,3 +2,4 @@
 host=review.openstack.org
 port=29418
 project=openstack/ara.git
+defaultbranch=feature/1.0
