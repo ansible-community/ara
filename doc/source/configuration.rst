@@ -21,7 +21,7 @@ where they have been installed in order to let Ansible know where they are locat
    Here's some examples of where ARA can be found:
 
    - ``/usr/lib/python2.7/site-packages/ara``
-   - ``/usr/lib/python3.5/site-packages/ara``
+   - ``/usr/lib/python3.5/site-packages/ara``
    - ``$VIRTUAL_ENV/lib/python2.7/site-packages/ara``
 
    If you're not sure where ARA will end up being installed, you can use this
