@@ -172,7 +172,7 @@ class Playbook(db.Model, TimedEntity):
     id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
-    options = db.Column(CompressedData((2 ** 32) - 1))
+    parameters = db.Column(CompressedData((2 ** 32) - 1))
 
     records = one_to_many('Record', backref='playbook')
     files = one_to_many('File', backref='playbook')

@@ -301,21 +301,21 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_start(self, playbook):
         path = os.path.abspath(playbook._file_name)
         if self._options is not None:
-            options = self._options.__dict__.copy()
+            parameters = self._options.__dict__.copy()
         else:
-            options = {}
+            parameters = {}
 
         # Potentially sanitize some user-specified keys
         for parameter in app.config['ARA_IGNORE_PARAMETERS']:
-            if parameter in options:
+            if parameter in parameter:
                 msg = "Parameter not saved by ARA due to configuration"
-                options[parameter] = msg
+                parameters[parameter] = msg
 
         LOG.debug('starting playbook %s', path)
         self.playbook = models.Playbook(
             ansible_version=ansible_version,
             path=path,
-            options=options
+            parameters=parameters
         )
 
         self.playbook.start()

@@ -121,10 +121,10 @@ class HostFacts(object):
 
 class Playbook(object):
     def __init__(self, complete=True, path='playbook.yml',
-                 options={'fake': 'yes'}):
+                 parameters={'fake': 'yes'}):
         self.ansible_version = ansible_version
         self.complete = complete
-        self.options = options
+        self.parameters = parameters
         self.path = path
 
         # Callback specific parameter
@@ -134,7 +134,7 @@ class Playbook(object):
     def model(self):
         return m.Playbook(ansible_version=ansible_version,
                           complete=self.complete,
-                          options=self.options,
+                          parameters=self.parameters,
                           path=self.path)
 
 

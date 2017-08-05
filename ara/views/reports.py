@@ -108,9 +108,9 @@ def ajax_parameters(playbook):
     results['data'].append(['playbook_path', playbook.path])
     results['data'].append(['ansible_version', playbook.ansible_version])
 
-    if playbook.options:
-        for option in playbook.options:
-            results['data'].append([option, playbook.options[option]])
+    if playbook.parameters:
+        for parameter in playbook.parameters:
+            results['data'].append([parameter, playbook.parameters[parameter]])
 
     return jsonify(results)
 
