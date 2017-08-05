@@ -182,8 +182,8 @@ class TestRead(TestAra):
                                        templar=None, shared_loader_obj=None)
         data = action.run()
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-key').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-key')
@@ -213,8 +213,8 @@ class TestRead(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-key').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-key').one()
 
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
@@ -249,7 +249,8 @@ class TestRead(TestAra):
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be returned so we can catch this.
         with self.assertRaises(Exception):
-            m.Data.query.filter_by(playbook_id=r_playbook.id, key='key').one()
+            m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                     key='key').one()
 
         self.assertEqual(data['failed'], True)
         self.assertEqual(data['playbook_id'], None)

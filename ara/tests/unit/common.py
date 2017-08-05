@@ -140,9 +140,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                                      changed=True,
                                      result=msg).model
 
-        data = fakes.Data(playbook=playbook).model
-        ctx['data'] = data
-        items.append(data)
+        record = fakes.Record(playbook=playbook).model
+        ctx['record'] = record
+        items.append(record)
     else:
         skipped = True
         msg = 'Conditional check failed'

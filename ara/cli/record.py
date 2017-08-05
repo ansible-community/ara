@@ -40,12 +40,12 @@ SHOW_FIELDS = (
 )
 
 
-class DataList(Lister):
+class RecordList(Lister):
     """ Returns a list of recorded key/value pairs """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(DataList, self).get_parser(prog_name)
+        parser = super(RecordList, self).get_parser(prog_name)
         g = parser.add_mutually_exclusive_group(required=True)
         g.add_argument(
             '--playbook', '-b',
@@ -60,7 +60,7 @@ class DataList(Lister):
         return parser
 
     def take_action(self, args):
-        data = models.Data.query.order_by(models.Data.key)
+        data = models.Record.query.order_by(models.Record.key)
 
         if args.playbook:
             data = data.filter_by(playbook_id=args.playbook)
@@ -70,12 +70,12 @@ class DataList(Lister):
                  for key in data]]
 
 
-class DataShow(ShowOne):
+class RecordShow(ShowOne):
     """ Show details of a recorded key/value pair """
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(DataShow, self).get_parser(prog_name)
+        parser = super(RecordShow, self).get_parser(prog_name)
         parser.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
@@ -91,12 +91,12 @@ class DataShow(ShowOne):
     def take_action(self, args):
         try:
             if args.playbook:
-                data = (models.Data.query
+                data = (models.Record.query
                         .filter_by(playbook_id=args.playbook)
-                        .filter((models.Data.id == args.key) |
-                                (models.Data.key == args.key)).one())
+                        .filter((models.Record.id == args.key) |
+                                (models.Record.key == args.key)).one())
             else:
-                data = models.Data.query.filter_by(id=args.key).one()
+                data = models.Record.query.filter_by(id=args.key).one()
         except (models.NoResultFound, models.MultipleResultsFound):
             raise RuntimeError('Key %s could not be found' % args.key)
 
