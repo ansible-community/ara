@@ -147,7 +147,7 @@ class CallbackModule(CallbackBase):
                   self.task.name, self.task.id, result._host.get_name())
 
         result.task_start = self.task.time_start
-        result.task_end = datetime.now()
+        result.task_end = datetime.utcnow()
         host = self.get_or_create_host(result._host.get_name())
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal

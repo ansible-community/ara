@@ -89,13 +89,13 @@ class TimedEntity(object):
         """
         Explicitly sets 'self.time_start'
         """
-        self.time_start = datetime.now()
+        self.time_start = datetime.utcnow()
 
     def stop(self):
         """
         Explicitly sets 'self.time_end'
         """
-        self.time_end = datetime.now()
+        self.time_end = datetime.utcnow()
 
 
 class CompressedData(types.TypeDecorator):
@@ -181,7 +181,7 @@ class Playbook(db.Model, TimedEntity):
     stats = one_to_many('Stats', backref='playbook')
     hosts = one_to_many('Host', backref='playbook')
 
-    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
 
     complete = db.Column(db.Boolean, default=False)
@@ -251,7 +251,7 @@ class Play(Base, TimedEntity):
     name = db.Column(db.Text)
     tasks = one_to_many('Task', backref='play')
 
-    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -284,7 +284,7 @@ class Task(Base, TimedEntity):
     tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
 
-    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
 
     results = one_to_many('Result', backref='task')
@@ -325,7 +325,7 @@ class Result(Base, TimedEntity):
     ignore_errors = db.Column(db.Boolean, default=False)
     result = db.Column(CompressedText((2**32) - 1))
 
-    time_start = db.Column(db.DateTime, default=datetime.now)
+    time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
 
     @property
@@ -378,7 +378,7 @@ class HostFacts(Base):
     __tablename__ = 'host_facts'
 
     host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     values = db.Column(db.Text(16777215))
 
     def __repr__(self):
