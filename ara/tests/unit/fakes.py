@@ -40,7 +40,7 @@ DEFAULT_CONTENT = """---
 # YAML should be here"""
 
 
-class Data(object):
+class Record(object):
     def __init__(self, playbook=None, key='test key', value='test value'):
         if playbook is None:
             playbook = Playbook().model
@@ -50,9 +50,9 @@ class Data(object):
 
     @property
     def model(self):
-        return m.Data(playbook=self.playbook,
-                      key=self.key,
-                      value=self.value)
+        return m.Record(playbook=self.playbook,
+                        key=self.key,
+                        value=self.value)
 
 
 class File(object):

@@ -116,17 +116,17 @@ class ActionModule(ActionBase):
 
     def create_or_update_key(self, playbook_id, key, value, type):
         try:
-            data = (models.Data.query
+            data = (models.Record.query
                     .filter_by(key=key)
                     .filter_by(playbook_id=playbook_id)
                     .one())
             data.value = value
             data.type = type
         except models.NoResultFound:
-            data = models.Data(playbook_id=playbook_id,
-                               key=key,
-                               value=value,
-                               type=type)
+            data = models.Record(playbook_id=playbook_id,
+                                 key=key,
+                                 value=value,
+                                 type=type)
         db.session.add(data)
         db.session.commit()
 

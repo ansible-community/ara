@@ -39,8 +39,8 @@ def main():
                  .filter(models.Host.playbook_id.in_(override)))
         playbooks = (models.Playbook.query
                      .filter(models.Playbook.id.in_(override)))
-        records = (models.Data.query
-                   .filter(models.Data.playbook_id.in_(override)))
+        records = (models.Record.query
+                   .filter(models.Record.playbook_id.in_(override)))
         tasks = (models.Task.query
                  .filter(models.Task.playbook_id.in_(override)))
         results = (models.Result.query
@@ -51,7 +51,7 @@ def main():
         host_facts = models.HostFacts.query
         hosts = models.Host.query
         playbooks = models.Playbook.query
-        records = models.Data.query
+        records = models.Record.query
         tasks = models.Task.query
         results = models.Result.query
 

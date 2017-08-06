@@ -2,7 +2,7 @@
 {% set play_count = playbook.plays | fast_count -%}
 {% set file_count = playbook.files | fast_count -%}
 {% set task_count = playbook.tasks | fast_count -%}
-{% set record_count = playbook.data | fast_count -%}
+{% set record_count = playbook.records | fast_count -%}
 {% set stats_count = playbook.stats | fast_count -%}
 <div class="list-group-item">
     <div class="list-view-pf-left">
@@ -227,7 +227,7 @@
     </div>
     <!-- End playbook task details -->
 
-    <!-- Begin playbook data details -->
+    <!-- Begin playbook record details -->
     <div class="list-group-item-container container-fluid hidden">
         <div class="close">
             <span class="pficon pficon-close"></span>
@@ -257,7 +257,7 @@
             </div>
         </div>
     </div>
-    <!-- End playbook data details -->
+    <!-- End playbook record details -->
     <!-- End playbook details -->
 </div>
 

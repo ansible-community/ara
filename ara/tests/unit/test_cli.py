@@ -29,7 +29,7 @@ from oslo_serialization import jsonutils
 from subunit._to_disk import to_disk
 
 import ara.shell
-import ara.cli.data
+import ara.cli.record
 import ara.cli.generate
 import ara.cli.host
 import ara.cli.play
@@ -43,28 +43,28 @@ from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 
 
-class TestCLIData(TestAra):
-    """ Tests for the ARA CLI data commands """
+class TestCLIRecord(TestAra):
+    """ Tests for the ARA CLI record commands """
     def setUp(self):
-        super(TestCLIData, self).setUp()
+        super(TestCLIRecord, self).setUp()
 
     def tearDown(self):
-        super(TestCLIData, self).tearDown()
+        super(TestCLIRecord, self).tearDown()
 
-    def test_data_list(self):
+    def test_record_list(self):
         ctx = ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataList(None, None)
+        cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['-a'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['data'].id)
+        self.assertEqual(res[1][0][0], ctx['record'].id)
 
-    def test_data_list_for_playbook(self):
+    def test_record_list_for_playbook(self):
         ctx = ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataList(None, None)
+        cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
@@ -72,46 +72,46 @@ class TestCLIData(TestAra):
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['data'].id)
+        self.assertEqual(res[1][0][0], ctx['record'].id)
 
-    def test_data_list_for_non_existing_playbook(self):
+    def test_record_list_for_non_existing_playbook(self):
         ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataList(None, None)
+        cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
         res = cmd.take_action(args)
 
         self.assertEqual(res[1], [])
 
-    def test_data_show_by_id(self):
+    def test_record_show_by_id(self):
         ctx = ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataShow(None, None)
+        cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['data'].id)])
+        args = parser.parse_args([six.text_type(ctx['record'].id)])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['data'].id)
+        self.assertEqual(res[1][0], ctx['record'].id)
 
-    def test_data_show_by_key(self):
+    def test_record_show_by_key(self):
         ctx = ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataShow(None, None)
+        cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '-b',
-            six.text_type(ctx['data'].playbook.id),
-            ctx['data'].key
+            six.text_type(ctx['record'].playbook.id),
+            ctx['record'].key
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['data'].id)
+        self.assertEqual(res[1][0], ctx['record'].id)
 
-    def test_data_show_for_non_existing_data(self):
+    def test_record_show_for_non_existing_data(self):
         ansible_run(ara_record=True)
 
-        cmd = ara.cli.data.DataShow(None, None)
+        cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
 
@@ -393,7 +393,9 @@ class TestCLIPlaybook(TestAra):
         playbooks = m.Playbook.query.all()
         self.assertTrue(len(playbooks) == 2)
 
-        d = m.Data.query.filter(m.Data.playbook_id.in_([ctx['playbook'].id]))
+        d = m.Record.query.filter(
+            m.Record.playbook_id.in_([ctx['playbook'].id])
+        )
         self.assertNotEqual(d.count(), 0)
         f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
         self.assertNotEqual(f.count(), 0)
@@ -420,7 +422,9 @@ class TestCLIPlaybook(TestAra):
         playbooks = m.Playbook.query.all()
         self.assertTrue(len(playbooks) == 1)
 
-        d = m.Data.query.filter(m.Data.playbook_id.in_([ctx['playbook'].id]))
+        d = m.Record.query.filter(
+            m.Record.playbook_id.in_([ctx['playbook'].id])
+        )
         self.assertEqual(d.count(), 0)
         f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
         self.assertEqual(f.count(), 0)

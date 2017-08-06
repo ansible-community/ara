@@ -89,7 +89,7 @@ class ActionModule(ActionBase):
 
     def get_key(self, playbook_id, key):
         try:
-            data = (models.Data.query
+            data = (models.Record.query
                     .filter_by(key=key)
                     .filter_by(playbook_id=playbook_id)
                     .one())

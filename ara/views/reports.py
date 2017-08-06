@@ -141,8 +141,8 @@ def ajax_plays(playbook):
 
 @reports.route('/reports/ajax/records/<playbook>.txt')
 def ajax_records(playbook):
-    records = (models.Data.query
-               .filter(models.Data.playbook_id.in_([playbook])))
+    records = (models.Record.query
+               .filter(models.Record.playbook_id.in_([playbook])))
     if not utils.fast_count(records):
         abort(404)
 

@@ -39,9 +39,9 @@ class TestModels(TestAra):
                                play=self.play,
                                playbook=self.playbook,
                                tags=['just', 'testing']).model
-        self.data = fakes.Data(playbook=self.playbook,
-                               key='test key',
-                               value='test value').model
+        self.record = fakes.Record(playbook=self.playbook,
+                                   key='test key',
+                                   value='test value').model
         self.host = fakes.Host(name='localhost',
                                playbook=self.playbook).model
         self.host_facts = fakes.HostFacts(host=self.host).model
@@ -57,7 +57,7 @@ class TestModels(TestAra):
                                  ok=0).model
 
         for obj in [self.playbook, self.file, self.file_content, self.play,
-                    self.task, self.data, self.host, self.host_facts,
+                    self.task, self.record, self.host, self.host_facts,
                     self.result, self.stats]:
             m.db.session.add(obj)
 
@@ -86,19 +86,19 @@ class TestModels(TestAra):
         assert task in self.playbook.tasks
         assert task in self.play.tasks
 
-    def test_data(self):
-        data = m.Data.query.get(self.data.id)
-        self.assertEqual(data.playbook_id, self.playbook.id)
-        self.assertEqual(data.key, 'test key')
-        self.assertEqual(data.value, 'test value')
+    def test_record(self):
+        record = m.Record.query.get(self.record.id)
+        self.assertEqual(record.playbook_id, self.playbook.id)
+        self.assertEqual(record.key, 'test key')
+        self.assertEqual(record.value, 'test value')
 
-    def test_duplicate_data(self):
-        data = m.Data(
+    def test_duplicate_record(self):
+        record = m.Record(
             playbook=self.playbook,
             key='test key',
             value='another value'
         )
-        m.db.session.add(data)
+        m.db.session.add(record)
 
         with self.assertRaises(Exception):
             m.db.session.commit()

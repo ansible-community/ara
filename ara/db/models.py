@@ -174,7 +174,7 @@ class Playbook(db.Model, TimedEntity):
     ansible_version = db.Column(db.String(255))
     options = db.Column(CompressedData((2 ** 32) - 1))
 
-    data = one_to_many('Data', backref='playbook')
+    records = one_to_many('Record', backref='playbook')
     files = one_to_many('File', backref='playbook')
     plays = one_to_many('Play', backref='playbook')
     tasks = one_to_many('Task', backref='playbook')
@@ -410,15 +410,15 @@ class Stats(Base):
         return '<Stats for %s>' % self.host.name
 
 
-class Data(Base):
+class Record(Base):
     """
-    The 'Data' object represents a recorded key/value pair provided by the
+    The 'Record' object represents a recorded key/value pair provided by the
     ara_record module.
 
-    A 'Data' entity has the following relationships:
+    A 'Record' entity has the following relationships:
     - 'playbook' -- the playbook this key/value pair was recorded in
     """
-    __tablename__ = 'data'
+    __tablename__ = 'records'
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'key'),
     )

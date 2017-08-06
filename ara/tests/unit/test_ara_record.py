@@ -169,8 +169,8 @@ class TestRecord(TestAra):
                                          templar=None, shared_loader_obj=None)
         action.run()
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-text').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-text').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-text')
@@ -197,8 +197,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-text').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-text').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-text')
@@ -225,8 +225,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-url').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-url').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-url')
@@ -253,8 +253,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-json').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-json').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-json')
@@ -281,8 +281,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-list').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-list').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-list')
@@ -309,8 +309,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-dict').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-dict').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-dict')
@@ -336,8 +336,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-notype').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-notype').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-notype')
@@ -364,8 +364,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-wrongtype').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-wrongtype').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-wrongtype')
@@ -393,8 +393,8 @@ class TestRecord(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-update').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-update').one()
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-update')
@@ -411,8 +411,8 @@ class TestRecord(TestAra):
                                          templar=None, shared_loader_obj=None)
         action.run()
 
-        r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
-                                        key='test-update').one()
+        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+                                          key='test-update').one()
 
         self.assertEqual(r_data.value, 'http://another-value')
         self.assertEqual(r_data.type, 'url')
@@ -439,7 +439,7 @@ class TestRecord(TestAra):
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be recorded so we can catch this.
         with self.assertRaises(Exception):
-            m.Data.query.filter_by(playbook_id=r_playbook.id).one()
+            m.Record.query.filter_by(playbook_id=r_playbook.id).one()
 
     def test_record_with_no_value(self):
         """
@@ -463,4 +463,4 @@ class TestRecord(TestAra):
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be recorded so we can catch this.
         with self.assertRaises(Exception):
-            m.Data.query.filter_by(playbook_id=r_playbook.id).one()
+            m.Record.query.filter_by(playbook_id=r_playbook.id).one()
