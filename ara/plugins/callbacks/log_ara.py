@@ -19,7 +19,6 @@ from __future__ import (absolute_import, division, print_function)
 
 import decorator
 import flask
-import itertools
 import logging
 import os
 import six
@@ -91,9 +90,6 @@ class CallbackModule(CallbackBase):
         self.playbook = None
         self.stats = None
         self.loop_items = []
-
-        self.play_counter = itertools.count()
-        self.task_counter = itertools.count()
 
         if cli:
             self._options = cli.options
@@ -288,7 +284,6 @@ class CallbackModule(CallbackBase):
 
         self.task = models.Task(
             name=task.get_name(),
-            sortkey=next(self.task_counter),
             action=task.action,
             play=self.play,
             playbook=self.playbook,
@@ -349,7 +344,6 @@ class CallbackModule(CallbackBase):
 
         self.play = models.Play(
             name=play.name,
-            sortkey=next(self.play_counter),
             playbook=self.playbook
         )
 
