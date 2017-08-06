@@ -77,8 +77,7 @@ class TaskList(Lister):
                  .join(models.Play)
                  .join(models.Playbook)
                  .filter(models.Task.play_id == models.Play.id)
-                 .filter(models.Task.playbook_id == models.Playbook.id)
-                 .order_by(models.Task.time_start, models.Task.sortkey))
+                 .filter(models.Task.playbook_id == models.Playbook.id))
 
         if args.play:
             tasks = tasks.filter(models.Task.play_id == args.play)

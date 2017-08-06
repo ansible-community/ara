@@ -279,7 +279,6 @@ class Play(Base, TimedEntity):
     __tablename__ = 'plays'
 
     name = db.Column(db.Text)
-    sortkey = db.Column(db.Integer)
     tasks = one_to_many('Task', backref='play')
 
     time_start = db.Column(db.DateTime, default=datetime.now)
@@ -309,7 +308,6 @@ class Task(Base, TimedEntity):
     play_id = std_fkey('plays.id')
 
     name = db.Column(db.Text)
-    sortkey = db.Column(db.Integer)
     action = db.Column(db.Text)
     tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
