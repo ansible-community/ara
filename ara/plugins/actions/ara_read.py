@@ -148,6 +148,8 @@ class ActionModule(ActionBase):
                 result['value'] = data.value
                 result['type'] = data.type
                 result['playbook_id'] = data.playbook_id
+                print("read")
+                print(result)
             msg = 'Sucessfully read data for the key {0}'.format(data.key)
             result['msg'] = msg
         # TODO: Do a better job for handling exception

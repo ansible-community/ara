@@ -186,11 +186,11 @@ class ActionModule(ActionBase):
             playbook_id = data['playbook']['id']
 
         try:
-            self.create_or_update_key(playbook_id, key, value, type)
-            result['key'] = key
-            result['value'] = value
-            result['type'] = type
-            result['playbook_id'] = playbook_id
+            data = self.create_or_update_key(playbook_id, key, value, type)
+            result['key'] = data.key
+            result['value'] = data.value
+            result['type'] = data.type
+            result['playbook_id'] = data.playbook_id
             result['msg'] = 'Data recorded in ARA for this playbook.'
         except Exception as e:
             result['failed'] = True

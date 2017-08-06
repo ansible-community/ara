@@ -49,6 +49,7 @@ class GenerateHtml(Command):
         parser.add_argument(
             '--playbook',
             metavar='<playbook>',
+            type=int,
             nargs='+',
             help='Only include the specified playbooks in the generation.',
             required=False,
@@ -98,6 +99,7 @@ class GenerateJunit(Command):
         parser.add_argument(
             '--playbook',
             metavar='<playbook>',
+            type=int,
             nargs='+',
             help='Only include the specified playbooks in the generation.',
             required=False,
@@ -173,6 +175,7 @@ class GenerateSubunit(Command):
         parser.add_argument(
             '--playbook',
             metavar='<playbook>',
+            type=int,
             nargs='+',
             help='Only include the specified playbooks in the generation.',
             required=False,

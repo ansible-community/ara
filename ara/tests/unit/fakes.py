@@ -77,12 +77,12 @@ class FileContent(object):
     @property
     def model(self):
         sha1 = m.content_sha1(self.content)
-        content = m.FileContent.query.get(sha1)
 
-        if content is None:
-            return m.FileContent(content=self.content)
-        else:
+        try:
+            content = m.FileContent.query.filter_by(sha1=sha1).one()
             return content
+        except m.NoResultFound:
+            return m.FileContent(content=self.content)
 
 
 class Host(object):

@@ -50,6 +50,7 @@ class HostList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Show hosts associated with a specified playbook',
         )
         g.add_argument(
@@ -78,6 +79,7 @@ class HostShow(ShowOne):
         parser.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Show host associated with the given playbook',
         )
         parser.add_argument(
@@ -112,6 +114,7 @@ class HostFacts(ShowOne):
         parser.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Find host associated with the given playbook',
         )
         parser.add_argument(

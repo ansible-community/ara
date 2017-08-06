@@ -215,6 +215,7 @@ class TestRead(TestAra):
 
         r_data = m.Data.query.filter_by(playbook_id=r_playbook.id,
                                         key='test-key').one()
+
         self.assertIsNotNone(r_data)
         self.assertEqual(r_data.playbook_id, r_playbook.id)
         self.assertEqual(r_data.key, 'test-key')

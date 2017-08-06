@@ -51,6 +51,7 @@ class PlayList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Show plays from specified playbook',
         )
         g.add_argument(
@@ -82,6 +83,7 @@ class PlayShow(ShowOne):
         parser.add_argument(
             'play_id',
             metavar='<play-id>',
+            type=int,
             help='Play to show',
         )
         return parser

@@ -50,6 +50,7 @@ class DataList(Lister):
         g.add_argument(
             '--playbook', '-b',
             metavar='<playbook-id>',
+            type=int,
             help='Show key/value pairs associated with a specified playbook',
         )
         g.add_argument(
