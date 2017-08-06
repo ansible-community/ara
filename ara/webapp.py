@@ -18,6 +18,7 @@
 import ara.config
 import ara.views
 import ara.api.v1.playbooks
+import ara.api.v1.plays
 import logging
 import os
 
@@ -43,6 +44,7 @@ views = (
 
 endpoints = (
     (ara.api.v1.playbooks.blueprint, '/api/v1/playbooks'),
+    (ara.api.v1.plays.blueprint, '/api/v1/plays'),
 )
 
 
