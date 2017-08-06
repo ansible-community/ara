@@ -41,8 +41,7 @@ SHOW_FIELDS = (
     Field('Duration'),
     Field('Complete'),
     Field('Ansible Version'),
-    Field('Parameters', 'options',
-          template='{{ value | to_nice_json | safe }}')
+    Field('Parameters', template='{{ value | to_nice_json | safe }}')
 )
 
 

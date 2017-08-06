@@ -30,7 +30,7 @@ class Playbook(object):
     def __init__(self, path):
         self._file_name = path
         self.path = path
-        self.options = {'fake': 'yes'}
+        self.parameters = {'fake': 'yes'}
 
 
 class Play(object):

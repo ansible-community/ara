@@ -27,7 +27,7 @@ class TestModels(TestAra):
         super(TestModels, self).setUp()
 
         self.playbook = fakes.Playbook(path='testing.yml',
-                                       options={'option': 'test'}).model
+                                       parameters={'option': 'test'}).model
         self.file = fakes.File(path=self.playbook.path,
                                playbook=self.playbook,
                                is_playbook=True).model
