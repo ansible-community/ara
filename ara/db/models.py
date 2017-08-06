@@ -17,7 +17,6 @@
 
 import functools
 import hashlib
-import uuid
 import zlib
 
 from datetime import datetime
@@ -25,10 +24,10 @@ from datetime import timedelta
 from oslo_utils import encodeutils
 from oslo_serialization import jsonutils
 
-# This makes all the exceptions available as "models.<exception_name>".
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declared_attr
+# This makes all the exceptions available as "models.<exception_name>".
 from sqlalchemy.orm.exc import *  # NOQA
 from sqlalchemy.orm import backref
 import sqlalchemy.types as types
@@ -45,17 +44,6 @@ metadata = MetaData(
 db = SQLAlchemy(metadata=metadata)
 
 
-def mkuuid():
-    """
-    This is used to generate primary keys in the database tables.
-    We were simply passing `default=uuid.uuid4` to `db.Column`, but it turns
-    out that while some database drivers seem to implicitly call `str()`,
-    others may be calling `repr()` which resulted in SQLIte trying to
-    use keys like `UUID('a496d538-c819-4f7c-8926-e3abe317239d')`.
-    """
-    return str(uuid.uuid4())
-
-
 def content_sha1(context):
     """
     Used by the FileContent model to automatically compute the sha1
@@ -67,14 +55,6 @@ def content_sha1(context):
         content = context
     return hashlib.sha1(encodeutils.to_utf8(content)).hexdigest()
 
-
-# Primary key columns are of these type.
-pkey_type = db.String(36)
-
-# This defines the standard primary key column used in our tables.
-std_pkey = functools.partial(
-    db.Column, pkey_type, primary_key=True,
-    nullable=False, default=mkuuid)
 
 # Common options for one-to-one relationships in our database.
 one_to_one = functools.partial(
@@ -91,17 +71,6 @@ many_to_one = functools.partial(
     db.relationship, passive_deletes=False,
     cascade='all, delete-orphan',
     single_parent=True)
-
-# Common options for many-to-many relationships in our database.
-many_to_many = functools.partial(
-    db.relationship, passive_deletes=False,
-    cascade='all, delete',
-    lazy='dynamic')
-
-
-# Common options for foreign key relationships.
-def std_fkey(col):
-    return db.Column(pkey_type, db.ForeignKey(col, ondelete='RESTRICT'))
 
 
 class TimedEntity(object):
@@ -175,7 +144,7 @@ class CompressedText(types.TypeDecorator):
 class PlaybookMixin(object):
     @declared_attr
     def playbook_id(cls):
-        return db.Column(db.Integer(), db.ForeignKey(Playbook.id))
+        return db.Column(db.Integer, db.ForeignKey(Playbook.id))
 
 
 class Base(db.Model, PlaybookMixin):
@@ -200,7 +169,7 @@ class Playbook(db.Model, TimedEntity):
     """
     __tablename__ = 'playbooks'
 
-    id = db.Column(db.Integer(), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
     options = db.Column(CompressedData((2 ** 32) - 1))
@@ -237,6 +206,8 @@ class File(Base):
         db.UniqueConstraint('playbook_id', 'path'),
     )
 
+    content_id = db.Column(db.Integer, db.ForeignKey('file_contents.id'))
+
     # This has to be a String instead of Text because of
     # http://stackoverflow.com/questions/1827063/
     # and it must have a max length smaller than PATH_MAX because MySQL is
@@ -244,7 +215,6 @@ class File(Base):
     # from the fact that we are using this column in a UNIQUE constraint.
     path = db.Column(db.String(255))
     content = many_to_one('FileContent', backref='files')
-    content_id = db.Column(db.Integer(), db.ForeignKey('file_contents.id'))
 
     tasks = many_to_one('Task', backref=backref('file', uselist=False))
 
@@ -262,7 +232,7 @@ class FileContent(db.Model):
     """
     __tablename__ = 'file_contents'
 
-    id = db.Column(db.Integer(), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     sha1 = db.Column(db.String(40), default=content_sha1)
     content = db.Column(CompressedText((2**32) - 1))
 
@@ -305,15 +275,14 @@ class Task(Base, TimedEntity):
     """
     __tablename__ = 'tasks'
 
-    play_id = std_fkey('plays.id')
+    play_id = db.Column(db.Integer, db.ForeignKey('plays.id'))
+    file_id = db.Column(db.Integer, db.ForeignKey('files.id'))
 
     name = db.Column(db.Text)
     action = db.Column(db.Text)
+    lineno = db.Column(db.Integer)
     tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
-
-    file_id = std_fkey('files.id')
-    lineno = db.Column(db.Integer)
 
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
@@ -408,7 +377,7 @@ class HostFacts(Base):
     """
     __tablename__ = 'host_facts'
 
-    host_id = std_fkey('hosts.id')
+    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
     timestamp = db.Column(db.DateTime, default=datetime.now)
     values = db.Column(db.Text(16777215))
 
@@ -429,7 +398,7 @@ class Stats(Base):
     """
     __tablename__ = 'stats'
 
-    host_id = std_fkey('hosts.id')
+    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
 
     changed = db.Column(db.Integer, default=0)
     failed = db.Column(db.Integer, default=0)
