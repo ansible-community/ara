@@ -55,7 +55,7 @@ class Task(object):
         return self.name
 
 
-class TaskResult(object):
+class Result(object):
     def __init__(self, task, host, status, changed=False):
         assert status in ['ok', 'failed', 'skipped', 'unreachable']
 
@@ -140,7 +140,7 @@ class TestRead(TestAra):
         return stats
 
     def _test_result(self, task, host, status='ok', changed=False):
-        result = TaskResult(task, host, status, changed)
+        result = Result(task, host, status, changed)
         func = getattr(self.cb, 'v2_runner_on_%s' % status)
         func(result)
         return result

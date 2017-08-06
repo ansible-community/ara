@@ -164,10 +164,10 @@ def ajax_records(playbook):
 
 @reports.route('/reports/ajax/results/<playbook>.txt')
 def ajax_results(playbook):
-    task_results = (models.TaskResult.query
-                    .join(models.Task)
-                    .filter(models.Task.playbook_id.in_([playbook])))
-    if not utils.fast_count(task_results):
+    results = (models.Result.query
+               .join(models.Task)
+               .filter(models.Task.playbook_id.in_([playbook])))
+    if not utils.fast_count(results):
         abort(404)
 
     jinja = current_app.jinja_env
@@ -176,10 +176,10 @@ def ajax_results(playbook):
     name_cell = jinja.get_template('ajax/task_name.html')
     task_status_link = jinja.get_template('ajax/task_status.html')
 
-    results = dict()
-    results['data'] = list()
+    ajax = dict()
+    ajax['data'] = list()
 
-    for result in task_results:
+    for result in results:
         name = name_cell.render(result=result)
         host = result.host.name
         action = action_link.render(result=result)
@@ -187,8 +187,8 @@ def ajax_results(playbook):
         duration = time.render(time=result.duration)
         status = task_status_link.render(result=result)
 
-        results['data'].append([name, host, action, elapsed, duration, status])
-    return jsonify(results)
+        ajax['data'].append([name, host, action, elapsed, duration, status])
+    return jsonify(ajax)
 
 
 @reports.route('/reports/ajax/stats/<playbook>.txt')

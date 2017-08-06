@@ -43,9 +43,9 @@ def main():
                    .filter(models.Data.playbook_id.in_(override)))
         tasks = (models.Task.query
                  .filter(models.Task.playbook_id.in_(override)))
-        task_results = (models.TaskResult.query
-                        .join(models.Task)
-                        .filter(models.Task.playbook_id.in_(override)))
+        results = (models.Result.query
+                   .join(models.Task)
+                   .filter(models.Task.playbook_id.in_(override)))
     else:
         files = models.File.query
         host_facts = models.HostFacts.query
@@ -53,7 +53,7 @@ def main():
         playbooks = models.Playbook.query
         records = models.Data.query
         tasks = models.Task.query
-        task_results = models.TaskResult.query
+        results = models.Result.query
 
     return render_template('about.html',
                            active='about',
@@ -63,4 +63,4 @@ def main():
                            playbooks=fast_count(playbooks),
                            records=fast_count(records),
                            tasks=fast_count(tasks),
-                           task_results=fast_count(task_results))
+                           results=fast_count(results))

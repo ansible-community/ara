@@ -90,7 +90,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     host = fakes.Host(playbook=playbook).model
 
     tasks = []
-    task_results = []
+    results = []
 
     task_file = fakes.File(playbook=playbook,
                            is_playbook=False,
@@ -102,12 +102,12 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                       file=task_file,
                       file_id=task_file.id).model
     tasks.append(task)
-    task_result = fakes.TaskResult(task=task,
-                                   host=host,
-                                   status='ok',
-                                   changed=True,
-                                   result='fake action result').model
-    task_results.append(task_result)
+    result = fakes.Result(task=task,
+                          host=host,
+                          status='ok',
+                          changed=True,
+                          result='fake action result').model
+    results.append(result)
 
     record_task = fakes.Task(play=play,
                              playbook=playbook,
@@ -125,7 +125,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
         task=task,
         task_file=task_file,
         task_content=task_content,
-        result=task_result,
+        result=result,
     )
 
     items = [playbook, pb_file, pb_content,
@@ -134,11 +134,11 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     skipped = False
     if ara_record:
         msg = 'Data recorded in ARA for this playbook.'
-        record_result = fakes.TaskResult(task=record_task,
-                                         host=host,
-                                         status='ok',
-                                         changed=True,
-                                         result=msg).model
+        record_result = fakes.Result(task=record_task,
+                                     host=host,
+                                     status='ok',
+                                     changed=True,
+                                     result=msg).model
 
         data = fakes.Data(playbook=playbook).model
         ctx['data'] = data
@@ -146,13 +146,13 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     else:
         skipped = True
         msg = 'Conditional check failed'
-        record_result = fakes.TaskResult(task=record_task,
-                                         host=host,
-                                         status='skipped',
-                                         changed=False,
-                                         skipped=True,
-                                         result=msg).model
-    task_results.append(record_result)
+        record_result = fakes.Result(task=record_task,
+                                     host=host,
+                                     status='skipped',
+                                     changed=False,
+                                     skipped=True,
+                                     result=msg).model
+    results.append(record_result)
 
     failed_task = fakes.Task(play=play,
                              playbook=playbook,
@@ -162,29 +162,29 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     tasks.append(failed_task)
     if failed:
         msg = 'FAILED!'
-        failed_result = fakes.TaskResult(task=failed_task,
-                                         host=host,
-                                         status='failed',
-                                         changed=False,
-                                         failed=True,
-                                         result=msg).model
+        failed_result = fakes.Result(task=failed_task,
+                                     host=host,
+                                     status='failed',
+                                     changed=False,
+                                     failed=True,
+                                     result=msg).model
     else:
         skipped = True
         msg = 'Conditional check failed'
-        failed_result = fakes.TaskResult(task=failed_task,
-                                         host=host,
-                                         status='skipped',
-                                         changed=False,
-                                         skipped=True,
-                                         result=msg).model
-    task_results.append(failed_result)
+        failed_result = fakes.Result(task=failed_task,
+                                     host=host,
+                                     status='skipped',
+                                     changed=False,
+                                     skipped=True,
+                                     result=msg).model
+    results.append(failed_result)
 
     if gather_facts:
         facts = fakes.HostFacts(host=host).model
         ctx['facts'] = facts
         items.append(facts)
 
-    for item in items + tasks + task_results:
+    for item in items + tasks + results:
         if hasattr(item, 'start'):
             item.start()
 
@@ -197,11 +197,11 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
         ctx['stats'] = stats
         items.append(stats)
 
-        for item in items + tasks + task_results:
+        for item in items + tasks + results:
             if hasattr(item, 'stop'):
                 item.stop()
 
-    for item in items + tasks + task_results:
+    for item in items + tasks + results:
         db.session.add(item)
     db.session.commit()
 

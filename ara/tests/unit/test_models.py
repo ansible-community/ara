@@ -45,9 +45,9 @@ class TestModels(TestAra):
         self.host = fakes.Host(name='localhost',
                                playbook=self.playbook).model
         self.host_facts = fakes.HostFacts(host=self.host).model
-        self.task_result = fakes.TaskResult(task=self.task,
-                                            status='ok',
-                                            host=self.host).model
+        self.result = fakes.Result(task=self.task,
+                                   status='ok',
+                                   host=self.host).model
         self.stats = fakes.Stats(playbook=self.playbook,
                                  host=self.host,
                                  changed=0,
@@ -58,7 +58,7 @@ class TestModels(TestAra):
 
         for obj in [self.playbook, self.file, self.file_content, self.play,
                     self.task, self.data, self.host, self.host_facts,
-                    self.task_result, self.stats]:
+                    self.result, self.stats]:
             m.db.session.add(obj)
 
         m.db.session.commit()
@@ -103,9 +103,9 @@ class TestModels(TestAra):
         with self.assertRaises(Exception):
             m.db.session.commit()
 
-    def test_task_result(self):
-        result = m.TaskResult.query.get(self.task_result.id)
-        self.assertIn(result, self.task.task_results)
+    def test_result(self):
+        result = m.Result.query.get(self.result.id)
+        self.assertIn(result, self.task.results)
 
     def test_host(self):
         host1 = m.Host.query.filter_by(name='localhost').one()

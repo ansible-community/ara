@@ -85,7 +85,7 @@ class CallbackModule(CallbackBase):
             ctx = app.app_context()
             ctx.push()
 
-        self.taskresult = None
+        self.result = None
         self.task = None
         self.play = None
         self.playbook = None
@@ -145,7 +145,7 @@ class CallbackModule(CallbackBase):
         """
         'log_task' is called when an individual task instance on a single
         host completes. It is responsible for logging a single
-        'TaskResult' record to the database.
+        'Result' record to the database.
         """
         LOG.debug('logging task result for task %s (%s), host %s',
                   self.task.name, self.task.id, result._host.get_name())
@@ -169,7 +169,7 @@ class CallbackModule(CallbackBase):
         else:
             results = jsonutils.loads(self._dump_results(result._result))
 
-        self.taskresult = models.TaskResult(
+        self.result = models.Result(
             task=self.task,
             host=host,
             time_start=result.task_start,
@@ -183,7 +183,7 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get('ignore_errors', False),
         )
 
-        db.session.add(self.taskresult)
+        db.session.add(self.result)
 
         if self.task.action == 'setup' and 'ansible_facts' in result._result:
             values = jsonutils.dumps(result._result['ansible_facts'])

@@ -171,6 +171,12 @@ class CompressedText(types.TypeDecorator):
         return CompressedText(self.impl.length)
 
 
+class Base(db.Model):
+    __abstract__ = True
+
+    id = db.Column(db.Integer, primary_key=True)
+
+
 class Playbook(db.Model, TimedEntity):
     """
     The 'Playbook' class represents a single run of 'ansible-playbook'.
@@ -263,8 +269,8 @@ class Play(db.Model, TimedEntity):
 
     'Play' entities have the following relationships:
     - 'tasks' -- a list of tasks in this play
-    - 'task_results' -- a list of task results in this play (via the
-      'tasks' relationship defined by 'TaskResult').
+    - 'results' -- a list of task results in this play (via the
+      'tasks' relationship defined by 'Result').
     """
     __tablename__ = 'plays'
 
@@ -294,7 +300,7 @@ class Task(db.Model, TimedEntity):
       relationship defined by 'Playbook')
     - 'play' -- the play containing this task (via the 'tasks' relationship
       defined by 'Play')
-    - 'task_results' -- a list of results for each host targeted by this task.
+    - 'results' -- a list of results for each host targeted by this task.
     """
     __tablename__ = 'tasks'
 
@@ -314,7 +320,7 @@ class Task(db.Model, TimedEntity):
     time_start = db.Column(db.DateTime, default=datetime.now)
     time_end = db.Column(db.DateTime)
 
-    task_results = one_to_many('TaskResult', backref='task')
+    results = one_to_many('Result', backref='task')
 
     def __repr__(self):
         return '<Task %s>' % (self.name or self.id)
@@ -328,22 +334,21 @@ class Task(db.Model, TimedEntity):
         return self.time_start - self.play.time_start
 
 
-class TaskResult(db.Model, TimedEntity):
+class Result(Base, TimedEntity):
     """
-    The 'TaskResult' class represents the result of running a single task on
+    The 'Result' class represents the result of running a single task on
     a single host.
 
-    A 'TaskResult' entity has the following relationships:
-    - 'task' -- the task for which this is a result (via the 'task_results'
+    A 'Result' entity has the following relationships:
+    - 'task' -- the task for which this is a result (via the 'results'
       relationship defined by 'Task').
-    - 'host' -- the host associated with this result (via the 'task_results'
+    - 'host' -- the host associated with this result (via the 'results'
       relationship defined by 'Host')
     """
-    __tablename__ = 'task_results'
+    __tablename__ = 'results'
 
-    id = std_pkey()
-    task_id = std_fkey('tasks.id')
-    host_id = std_fkey('hosts.id')
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
+    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
 
     status = db.Column(db.Enum('ok', 'failed', 'skipped', 'unreachable'))
     changed = db.Column(db.Boolean, default=False)
@@ -366,7 +371,7 @@ class TaskResult(db.Model, TimedEntity):
             return self.status
 
     def __repr__(self):
-        return '<TaskResult %s>' % self.host.name
+        return '<Result %s>' % self.host.name
 
 
 class Host(db.Model):
@@ -374,7 +379,7 @@ class Host(db.Model):
     The 'Host' object represents a host reference by an Ansible inventory.
 
     A 'Host' entity has the following relationships:
-    - 'task_results' -- a list of 'TaskResult' objects associated with this
+    - 'results' -- a list of 'Result' objects associated with this
       host.
     - 'stats' -- a list of 'Stats' objects resulting from playbook runs
       against this host.
@@ -390,7 +395,7 @@ class Host(db.Model):
     name = db.Column(db.String(255), index=True)
 
     facts = one_to_one('HostFacts', backref='host')
-    task_results = one_to_many('TaskResult', backref='host')
+    results = one_to_many('Result', backref='host')
     stats = one_to_one('Stats', backref='host')
 
     def __repr__(self):

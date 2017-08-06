@@ -86,11 +86,11 @@ class ResultList(Lister):
         return parser
 
     def take_action(self, args):
-        results = (models.TaskResult.query
+        results = (models.Result.query
                    .join(models.Task)
                    .join(models.Host)
-                   .filter(models.TaskResult.task_id == models.Task.id)
-                   .filter(models.TaskResult.host_id == models.Host.id)
+                   .filter(models.Result.task_id == models.Task.id)
+                   .filter(models.Result.host_id == models.Host.id)
                    .order_by(models.Task.time_start, models.Task.sortkey))
 
         if args.playbook:
@@ -98,7 +98,7 @@ class ResultList(Lister):
         elif args.play:
             results = results.filter(models.Task.play_id == args.play)
         elif args.task:
-            results = results.filter(models.TaskResult.task_id == args.task)
+            results = results.filter(models.Result.task_id == args.task)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(result) for field in LIST_FIELDS]
@@ -140,7 +140,7 @@ class ResultShow(ShowOne):
         return parser
 
     def take_action(self, args):
-        result = models.TaskResult.query.get(args.result_id)
+        result = models.Result.query.get(args.result_id)
         if result is None:
             raise RuntimeError('Result %s could not be found' % args.result_id)
 

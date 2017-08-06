@@ -196,7 +196,7 @@ class Task(object):
                       file_id=self.file_id)
 
 
-class TaskResult(object):
+class Result(object):
     def __init__(self, task=None, host=None, status='ok', ignore_errors=False,
                  changed=True, failed=False, skipped=False, unreachable=False,
                  result='Task result <here>'):
@@ -228,15 +228,15 @@ class TaskResult(object):
 
     @property
     def model(self):
-        return m.TaskResult(task=self.task,
-                            host=self.host,
-                            status=self.status,
-                            ignore_errors=self.ignore_errors,
-                            changed=self.changed,
-                            failed=self.failed,
-                            skipped=self.skipped,
-                            unreachable=self.unreachable,
-                            result=self.result)
+        return m.Result(task=self.task,
+                        host=self.host,
+                        status=self.status,
+                        ignore_errors=self.ignore_errors,
+                        changed=self.changed,
+                        failed=self.failed,
+                        skipped=self.skipped,
+                        unreachable=self.unreachable,
+                        result=self.result)
 
 
 class Stats(object):

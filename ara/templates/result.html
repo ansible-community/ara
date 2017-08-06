@@ -31,14 +31,14 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12 results">
-          <h2>Task: <strong>{{ task_result.task.name }}</strong></h2>
-          {% if task_result.task.tags and task_result.task.tags | from_json | length > 0 -%}
-          <h2>Tags: <strong>{{ task_result.task.tags | from_json | join(', ') }}</strong></h2>
+          <h2>Task: <strong>{{ result.task.name }}</strong></h2>
+          {% if result.task.tags and result.task.tags | from_json | length > 0 -%}
+          <h2>Tags: <strong>{{ result.task.tags | from_json | join(', ') }}</strong></h2>
           {% endif -%}
-          <h2>Host: <strong>{{ task_result.host.name }}</strong></h2>
-          <p>Time: <strong>{{ task_result.time_start | datefmt }}</strong></p>
-          <p>Ansible version: <strong>{{ task_result.task.playbook.ansible_version }}</strong></p>
-          {% set result = task_result.result | from_json %}
+          <h2>Host: <strong>{{ result.host.name }}</strong></h2>
+          <p>Time: <strong>{{ result.time_start | datefmt }}</strong></p>
+          <p>Ansible version: <strong>{{ result.task.playbook.ansible_version }}</strong></p>
+          {% set result = result.result | from_json %}
           {% if 'results' in result %}
               {% for item in result.results %}
                   <h2>Result #{{ loop.index }}</h2>

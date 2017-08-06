@@ -72,10 +72,10 @@ class TestCallback(TestAra):
         self.cb.v2_playbook_on_stats(self.stats)
 
     def _test_result(self, host, status='ok', changed=False):
-        result = fakes.TaskResult(task=self.task.model,
-                                  host=host.model.name,
-                                  status=status,
-                                  changed=changed)
+        result = fakes.Result(task=self.task.model,
+                              host=host.model.name,
+                              status=status,
+                              changed=changed)
         func = getattr(self.cb, 'v2_runner_on_%s' % status)
         func(result)
         return result
@@ -109,7 +109,7 @@ class TestCallback(TestAra):
         self.assertEqual(r_task.playbook.path, self.playbook.path)
 
     def test_callback_result(self):
-        r_results = m.TaskResult.query.all()
+        r_results = m.Result.query.all()
         self.assertIsNotNone(r_results)
 
         for res in r_results:
