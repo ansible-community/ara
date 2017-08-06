@@ -21,7 +21,7 @@ import os
 import six
 import sys
 
-from ara import models
+from ara.db import models
 from ara import utils
 from cliff.command import Command
 from flask_frozen import Freezer, walk_directory

@@ -37,7 +37,7 @@ import ara.cli.playbook
 import ara.cli.result
 import ara.cli.task
 import ara.cli.stats
-import ara.models as m
+import ara.db.models as m
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra

@@ -21,8 +21,8 @@ from ansible.plugins.action import ActionBase
 from oslo_serialization import jsonutils
 
 try:
-    from ara import models
-    from ara.models import db
+    from ara.db import models
+    from ara.db.models import db
     from ara.webapp import create_app
     from flask import current_app
     HAS_ARA = True

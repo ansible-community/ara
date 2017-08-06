@@ -15,18 +15,16 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import defaultdict
+import ara.db.models as m
+import ara.plugins.actions.ara_read as ara_read
+import ara.plugins.actions.ara_record as ara_record
+import ara.plugins.callbacks.log_ara as l
 import random
 
-import ara.models as m
-import ara.plugins.callbacks.log_ara as l
-import ara.plugins.actions.ara_record as ara_record
-import ara.plugins.actions.ara_read as ara_read
-
-from ara.tests.unit.common import TestAra
-
-from mock import Mock
+from collections import defaultdict
 from mock import MagicMock
+from mock import Mock
+from ara.tests.unit.common import TestAra
 
 
 class Playbook(object):

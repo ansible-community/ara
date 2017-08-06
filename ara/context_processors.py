@@ -19,7 +19,7 @@ import sys
 
 from ansible import __version__ as ansible_version
 from ara import __release__ as ara_release
-from ara import models
+from ara.db import models
 
 
 def configure_context_processors(app):

@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara import models
+from ara.db import models
 from oslo_serialization import jsonutils
 from oslo_utils import encodeutils
 from sqlalchemy import func

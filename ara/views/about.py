@@ -15,11 +15,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara import models
-from ara.utils import fast_count
 from flask import Blueprint
 from flask import current_app
 from flask import render_template
+
+from ara.db import models
+from ara.utils import fast_count
 
 about = Blueprint('about', __name__)
 

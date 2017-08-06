@@ -27,9 +27,10 @@ Create Date: 2017-05-02 13:34:41.150156
 revision = '5716083d63f5'
 down_revision = '22aa8072d705'
 
-from ara import models
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
+
+from ara.db import models
 
 
 def upgrade():

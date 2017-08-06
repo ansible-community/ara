@@ -15,15 +15,16 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara import models
-from ara import utils
-from flask import abort
 from flask import Blueprint
+from flask import abort
 from flask import current_app
 from flask import jsonify
 from flask import redirect
 from flask import render_template
 from flask import url_for
+
+from ara import utils
+from ara.db import models
 
 reports = Blueprint('reports', __name__)
 

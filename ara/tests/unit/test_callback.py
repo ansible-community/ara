@@ -15,15 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import random
-import os
-
-import ara.models as m
-import ara.utils as u
+import ara.db.models as m
 import ara.plugins.callbacks.log_ara as l
+import ara.utils as u
+import os
+import random
 
-from ara.tests.unit.common import TestAra
 from ara.tests.unit import fakes
+from ara.tests.unit.common import TestAra
 from collections import defaultdict
 from oslo_serialization import jsonutils
 

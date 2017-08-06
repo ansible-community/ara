@@ -18,7 +18,7 @@
 import logging
 import six
 
-from ara import models
+from ara.db import models
 from ara.fields import Field
 from cliff.lister import Lister
 from cliff.show import ShowOne
