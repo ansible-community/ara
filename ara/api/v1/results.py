@@ -50,7 +50,8 @@ class ResultRestApi(Resource):
             'result': fields.Raw,
             'started': fields.DateTime(attribute='time_start',
                                        dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end', dt_format='iso8601')
+            'ended': fields.DateTime(attribute='time_end',
+                                     dt_format='iso8601')
         }
 
         parser = self._get_parser()

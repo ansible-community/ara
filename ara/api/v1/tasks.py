@@ -32,7 +32,7 @@ api = Api(blueprint)
 
 class TaskRestApi(Resource):
     """
-    REST API for Taskbooks: api.v1.tasks
+    REST API for Tasks: api.v1.tasks
     """
     def get(self):
         task_fields = {
@@ -47,7 +47,8 @@ class TaskRestApi(Resource):
             'handler': fields.Boolean(attribute='is_handler'),
             'started': fields.DateTime(attribute='time_start',
                                        dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end', dt_format='iso8601')
+            'ended': fields.DateTime(attribute='time_end',
+                                     dt_format='iso8601')
         }
 
         parser = self._get_parser()

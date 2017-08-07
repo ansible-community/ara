@@ -130,8 +130,6 @@ def _find_playbooks(**kwargs):
         )
 
     if 'completed' in kwargs and kwargs['completed'] is not None:
-        print('got completed')
-        print(kwargs['completed'])
         query = query.filter_by(complete=kwargs['completed'])
 
     if 'before' in kwargs and kwargs['before'] is not None:

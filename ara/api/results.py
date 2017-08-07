@@ -21,7 +21,7 @@ from flask import current_app
 
 class ResultApi(object):
     """
-    Internal API passthrough to the REST API: api.v1.plays
+    Internal API passthrough to the REST API: api.v1.results
     """
     def __init__(self):
         if not current_app:

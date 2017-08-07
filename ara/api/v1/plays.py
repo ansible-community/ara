@@ -32,7 +32,7 @@ api = Api(blueprint)
 
 class PlayRestApi(Resource):
     """
-    REST API for Playbooks: api.v1.plays
+    REST API for Plays: api.v1.plays
     """
     def get(self):
         play_fields = {
@@ -41,7 +41,8 @@ class PlayRestApi(Resource):
             'name': fields.String,
             'started': fields.DateTime(attribute='time_start',
                                        dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end', dt_format='iso8601')
+            'ended': fields.DateTime(attribute='time_end',
+                                     dt_format='iso8601')
         }
 
         parser = self._get_parser()
@@ -71,7 +72,7 @@ class PlayRestApi(Resource):
         )
         parser.add_argument(
             'playbook_id', dest='playbook_id',
-            type=str,
+            type=int,
             location='values',
             required=False,
             help='Search plays for a playbook id'

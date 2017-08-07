@@ -202,7 +202,7 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one play we want back
+        # Ensure we only get the one result we want back
         self.assertEqual(len(data), 1)
         self.assertEqual(ctx['result'].id, 1)
 
@@ -247,7 +247,7 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
+        # Ensure we only get the one result we want back
         self.assertEqual(len(data), 1)
         self.assertEqual(ctx['result'].id, 1)
 
