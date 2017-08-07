@@ -67,13 +67,13 @@ def get_summary_stats(items, attr):
     """
     data = {}
     for item in items:
-        stats = models.Stats.query.filter_by(**{attr: item.id})
+        hosts = models.Host.query.filter_by(**{attr: item.id})
         data[item.id] = {
-            'ok': sum([int(stat.ok) for stat in stats]),
-            'changed': sum([int(stat.changed) for stat in stats]),
-            'failed': sum([int(stat.failed) for stat in stats]),
-            'skipped': sum([int(stat.skipped) for stat in stats]),
-            'unreachable': sum([int(stat.unreachable) for stat in stats])
+            'ok': sum([int(host.ok) for host in hosts]),
+            'changed': sum([int(host.changed) for host in hosts]),
+            'failed': sum([int(host.failed) for host in hosts]),
+            'skipped': sum([int(host.skipped) for host in hosts]),
+            'unreachable': sum([int(host.unreachable) for host in hosts])
         }
 
         # If we're aggregating stats for a playbook, also infer status

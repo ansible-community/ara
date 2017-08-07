@@ -67,8 +67,7 @@ class TestCallback(TestAra):
             self.host_one.name: defaultdict(int, ok=1, changed=1),
             self.host_two.name: defaultdict(int, failed=1)
         }
-        self.stats = fakes.Stats(playbook=self.playbook.model,
-                                 processed=processed_stats)
+        self.stats = fakes.Stats(processed_stats)
         self.cb.v2_playbook_on_stats(self.stats)
 
     def _test_result(self, host, status='ok', changed=False):
@@ -118,19 +117,19 @@ class TestCallback(TestAra):
             self.assertEqual(res.task.name, self.task.name)
 
     def test_callback_stats(self):
-        r_stats = m.Stats.query.all()
-        self.assertIsNotNone(r_stats)
+        r_hosts = m.Host.query.all()
+        self.assertIsNotNone(r_hosts)
 
-        for stat in r_stats:
-            self.assertEqual(stat.playbook.path, self.playbook.path)
+        for host in r_hosts:
+            self.assertEqual(host.playbook.path, self.playbook.path)
             for status in ['ok', 'changed', 'failed',
                            'skipped', 'unreachable']:
-                self.assertEqual(getattr(stat, status),
-                                 self.stats.processed[stat.host.name][status])
+                self.assertEqual(getattr(host, status),
+                                 self.stats.processed[host.name][status])
 
     def test_summary_stats(self):
         r_hosts = m.Host.query.all()
-        summary = u.get_summary_stats(r_hosts, 'host_id')
+        summary = u.get_summary_stats(r_hosts, 'id')
         for host in r_hosts:
             for status in ['ok', 'changed', 'failed',
                            'skipped', 'unreachable']:

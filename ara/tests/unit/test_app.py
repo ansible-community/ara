@@ -135,15 +135,15 @@ class TestApp(TestAra):
         res = self.client.get('/reports/ajax/results/0.txt')
         self.assertEqual(res.status_code, 404)
 
-    def test_report_ajax_stats(self):
+    def test_report_ajax_hosts(self):
         ctx = ansible_run()
         pbid = ctx['playbook'].id
-        res = self.client.get('/reports/ajax/stats/{0}.txt'.format(pbid))
+        res = self.client.get('/reports/ajax/hosts/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
-    def test_report_ajax_no_stats(self):
+    def test_report_ajax_no_hosts(self):
         ansible_run()
-        res = self.client.get('/reports/ajax/stats/0.txt')
+        res = self.client.get('/reports/ajax/hosts/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_show_file(self):

@@ -26,13 +26,22 @@ from cliff.show import ShowOne
 LIST_FIELDS = (
     Field('ID'),
     Field('Name'),
-    Field('Playbook ID', 'playbook.id'),
+    Field('Changed'),
+    Field('Failed'),
+    Field('Ok'),
+    Field('Skipped'),
+    Field('Unreachable'),
     Field('Latest facts', 'facts.timestamp')
 )
 
 SHOW_FIELDS = (
     Field('ID'),
     Field('Name'),
+    Field('Changed'),
+    Field('Failed'),
+    Field('Ok'),
+    Field('Skipped'),
+    Field('Unreachable'),
     Field('Playbook ID', 'playbook.id'),
     Field('Playbook Path', 'playbook.path'),
     Field('Latest facts', 'facts.timestamp')

@@ -159,7 +159,6 @@ ara record list -b $pbid -f csv
 ara record show -b $pbid foo
 ara play show $(ara play list -a -c ID -f value |head -n1)
 ara result show $(ara result list -a -c ID -f value |tail -n1) --long
-ara stats show $(ara stats list -c ID -f value |head -n1)
 ara task show $(ara task list -a -c ID -f value |head -n1)
 ara file list -b $pbid
 ara file show $(ara file list -b $pbid -c ID -f value|head -n1)

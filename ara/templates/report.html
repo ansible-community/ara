@@ -3,7 +3,7 @@
 {% set file_count = playbook.files | fast_count -%}
 {% set task_count = playbook.tasks | fast_count -%}
 {% set record_count = playbook.records | fast_count -%}
-{% set stats_count = playbook.stats | fast_count -%}
+{% set host_count = playbook.hosts | fast_count -%}
 <div class="list-group-item">
     <div class="list-view-pf-left">
         <button type="button" class="link link-report" aria-hidden="true">
@@ -75,7 +75,7 @@
     </div>
     <!-- End playbook entry in the list -->
 
-    <!-- Begin playbook details -->
+    <!-- Begin playbook -->
     <!-- Begin playbook parameters  -->
     <div class="list-group-item-container container-fluid hidden">
         <div class="close">
@@ -98,9 +98,9 @@
             </div>
         </div>
     </div>
-    <!-- End playbook host stats details -->
+    <!-- End playbook parameters -->
 
-    <!-- Begin playbook host stats details -->
+    <!-- Begin playbook host stats -->
     <div class="list-group-item-container container-fluid hidden">
         <div class="close">
             <span class="pficon pficon-close"></span>
@@ -111,8 +111,8 @@
                     <strong>Hosts</strong>
                     <span class="pficon pficon-help pull-right" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{% include "tips/hosts.html" %}"></span>
                 </h3>
-                {% if stats_count -%}
-                <table class="table table-striped table-bordered table-hover table-condensed" id="stats_{{ playbook.id }}">
+                {% if host_count -%}
+                <table class="table table-striped table-bordered table-hover table-condensed" id="hosts_{{ playbook.id }}">
                     <thead>
                         <tr>
                             <th><span class="pull-left">Host</span></th>
@@ -133,7 +133,7 @@
             </div>
         </div>
     </div>
-    <!-- End playbook host stats details -->
+    <!-- End playbook host stats -->
 
     <!-- Begin playbook play details -->
     <div class="list-group-item-container container-fluid hidden">
@@ -335,11 +335,11 @@
         },
         "paging": false
     });
-    {% if stats_count -%}
-    $("#stats_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
+    {% if host_count -%}
+    $("#hosts_{{ playbook.id }}").on( 'error.dt', function ( e, settings, techNote, message ) {
         console.log( 'An error has been reported by DataTables: ', message );
     }).DataTable({
-        "ajax": "{{ url_for('reports.ajax_stats', playbook=playbook.id) }}",
+        "ajax": "{{ url_for('reports.ajax_hosts', playbook=playbook.id) }}",
         "deferRender": true,
         "processing": true,
         "order": [[ 0, "asc" ]],

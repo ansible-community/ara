@@ -198,15 +198,11 @@ class CallbackModule(CallbackBase):
         for hostname in hosts:
             host = self.get_or_create_host(hostname)
             host_stats = stats.summarize(hostname)
-            db.session.add(models.Stats(
-                playbook=self.playbook,
-                host=host,
-                changed=host_stats['changed'],
-                unreachable=host_stats['unreachable'],
-                failed=host_stats['failures'],
-                ok=host_stats['ok'],
-                skipped=host_stats['skipped']
-            ))
+            host.changed = host_stats['changed']
+            host.unreachable = host_stats['unreachable']
+            host.failed = host_stats['failures']
+            host.ok = host_stats['ok']
+            host.skipped = host_stats['skipped']
 
     def close_task(self):
         """

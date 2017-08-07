@@ -195,13 +195,10 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
             item.start()
 
     if complete:
-        stats = fakes.Stats(playbook=playbook,
-                            host=host,
-                            ok=1,
-                            skipped=int(skipped),
-                            failed=int(failed)).model
-        ctx['stats'] = stats
-        items.append(stats)
+        ctx['host'].ok = 1
+        ctx['host'].changed = 1
+        ctx['host'].skipped = int(skipped)
+        ctx['host'].failed = int(failed)
 
         for item in items + tasks + results:
             if hasattr(item, 'stop'):

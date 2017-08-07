@@ -36,7 +36,6 @@ import ara.cli.play
 import ara.cli.playbook
 import ara.cli.result
 import ara.cli.task
-import ara.cli.stats
 import ara.db.models as m
 
 from ara.tests.unit.common import ansible_run
@@ -408,8 +407,6 @@ class TestCLIPlaybook(TestAra):
         self.assertNotEqual(h.count(), 0)
         hf = m.HostFacts.query
         self.assertNotEqual(hf.count(), 0)
-        s = m.Stats.query.filter(m.Stats.playbook_id.in_([ctx['playbook'].id]))
-        self.assertNotEqual(s.count(), 0)
 
         # Delete the first playbook
         cmd = ara.cli.playbook.PlaybookDelete(None, None)
@@ -438,8 +435,6 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(h.count(), 0)
         hf = m.HostFacts.query
         self.assertEqual(hf.count(), 0)
-        s = m.Stats.query.filter(m.Stats.playbook_id.in_([ctx['playbook'].id]))
-        self.assertEqual(s.count(), 0)
 
 
 class TestCLIResult(TestAra):
@@ -647,45 +642,6 @@ class TestCLITask(TestAra):
             cmd.take_action(args)
 
 
-class TestCLIStats(TestAra):
-    """ Tests for the ARA CLI stats commands """
-    def setUp(self):
-        super(TestCLIStats, self).setUp()
-
-    def tearDown(self):
-        super(TestCLIStats, self).tearDown()
-
-    def test_stats_list(self):
-        ctx = ansible_run()
-
-        cmd = ara.cli.stats.StatsList(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([])
-        res = cmd.take_action(args)
-
-        self.assertEqual(res[1][0][0], ctx['stats'].id)
-
-    def test_stats_show(self):
-        ctx = ansible_run()
-
-        cmd = ara.cli.stats.StatsShow(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['stats'].id)])
-        res = cmd.take_action(args)
-
-        self.assertEqual(res[1][0], ctx['stats'].id)
-
-    def test_stats_show_non_existing(self):
-        ansible_run()
-
-        cmd = ara.cli.stats.StatsShow(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([0])
-
-        with self.assertRaises(RuntimeError):
-            cmd.take_action(args)
-
-
 class TestCLIGenerate(TestAra):
     """ Tests for the ARA CLI generate commands """
     def setUp(self):
@@ -861,7 +817,7 @@ class TestCLIGenerate(TestAra):
         self.assertEqual(tree.getroot()[0][0].tag, "testcase")
         self.assertEqual(int(tree.getroot().get('tests')), len(tasks))
         self.assertEqual(int(tree.getroot().get('failures')),
-                         ctx['stats'].failed)
+                         ctx['host'].failed)
 
     def test_generate_junit_for_playbook(self):
         """ Roughly ensures the expected xml is generated properly """

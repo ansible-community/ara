@@ -191,28 +191,28 @@ def ajax_results(playbook):
     return jsonify(ajax)
 
 
-@reports.route('/reports/ajax/stats/<playbook>.txt')
-def ajax_stats(playbook):
-    stats = (models.Stats.query
-             .filter(models.Stats.playbook_id.in_([playbook])))
-    if not utils.fast_count(stats):
+@reports.route('/reports/ajax/hosts/<playbook>.txt')
+def ajax_hosts(playbook):
+    hosts = (models.Host.query
+             .filter(models.Host.playbook_id.in_([playbook])))
+    if not utils.fast_count(hosts):
         abort(404)
 
     jinja = current_app.jinja_env
-    host_link = jinja.get_template('ajax/stats.html')
+    host_link = jinja.get_template('ajax/host.html')
 
     results = dict()
     results['data'] = list()
 
-    for stat in stats:
-        host = host_link.render(stat=stat)
-        ok = stat.ok if stat.ok >= 1 else 0
-        changed = stat.changed if stat.changed >= 1 else 0
-        failed = stat.failed if stat.failed >= 1 else 0
-        skipped = stat.skipped if stat.skipped >= 1 else 0
-        unreachable = stat.unreachable if stat.unreachable >= 1 else 0
+    for host in hosts:
+        host_render = host_link.render(host=host)
+        ok = host.ok if host.ok >= 1 else 0
+        changed = host.changed if host.changed >= 1 else 0
+        failed = host.failed if host.failed >= 1 else 0
+        skipped = host.skipped if host.skipped >= 1 else 0
+        unreachable = host.unreachable if host.unreachable >= 1 else 0
 
-        data = [host, ok, changed, failed, skipped, unreachable]
+        data = [host_render, ok, changed, failed, skipped, unreachable]
         results['data'].append(data)
 
     return jsonify(results)

@@ -58,7 +58,12 @@ class TestModels(TestAra):
                                    value='test value').model
 
         self.host = fakes.Host(name='localhost',
-                               playbook=self.playbook).model
+                               playbook=self.playbook,
+                               changed=0,
+                               failed=0,
+                               skipped=0,
+                               unreachable=0,
+                               ok=0).model
         self.host_facts = fakes.HostFacts(host=self.host).model
 
         self.result = fakes.Result(playbook=self.playbook,
@@ -67,17 +72,9 @@ class TestModels(TestAra):
                                    status='ok',
                                    host=self.host).model
 
-        self.stats = fakes.Stats(playbook=self.playbook,
-                                 host=self.host,
-                                 changed=0,
-                                 failed=0,
-                                 skipped=0,
-                                 unreachable=0,
-                                 ok=0).model
-
         for obj in [self.playbook, self.playbook_file, self.play,
                     self.task, self.record, self.host, self.host_facts,
-                    self.result, self.stats]:
+                    self.result]:
             m.db.session.add(obj)
 
         m.db.session.commit()
@@ -167,7 +164,6 @@ class TestModels(TestAra):
 
         self.assertEqual(host1, self.host)
         self.assertEqual(host2, self.host)
-        self.assertIn(self.stats.host_id, [host1.id, host2.id])
 
     def test_host_facts(self):
         host = m.Host.query.filter_by(name='localhost').one()
@@ -185,8 +181,3 @@ class TestModels(TestAra):
 
         with self.assertRaises(Exception):
             m.db.session.commit()
-
-    def test_stats(self):
-        stats = m.Stats.query.get(self.stats.id)
-        self.assertEqual(stats.host, self.host)
-        self.assertEqual(stats.playbook, self.playbook)

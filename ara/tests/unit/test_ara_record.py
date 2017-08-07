@@ -20,6 +20,7 @@ import ara.plugins.actions.ara_record as ara_record
 import ara.plugins.callbacks.log_ara as l
 import random
 
+from ara.tests.unit import fakes
 from ara.tests.unit.common import TestAra
 from collections import defaultdict
 from mock import MagicMock
@@ -70,20 +71,6 @@ class Result(object):
         }
 
 
-class Stats(object):
-    def __init__(self, processed):
-        self.processed = processed
-
-    def summarize(self, name):
-        return {
-            'failures': self.processed[name]['failed'],
-            'ok': self.processed[name]['ok'],
-            'changed': self.processed[name]['changed'],
-            'skipped': self.processed[name]['skipped'],
-            'unreachable': self.processed[name]['unreachable'],
-        }
-
-
 class TestRecord(TestAra):
     '''Tests for the Ansible ara_record module'''
     def setUp(self):
@@ -116,7 +103,7 @@ class TestRecord(TestAra):
         self.stats = self._test_stats()
 
     def _test_stats(self):
-        stats = Stats({
+        stats = fakes.Stats({
             'host1': defaultdict(int, ok=1, changed=1),
             'host2': defaultdict(int, failed=1),
         })

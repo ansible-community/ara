@@ -158,14 +158,12 @@ class Playbook(db.Model, TimedEntity):
     The 'Playbook' class represents a single run of 'ansible-playbook'.
 
     'Playbook' entities have the following relationships:
-    - 'data' -- a list of k/v pairs recorded in this playbook run
-    - 'plays' -- a list of plays encountered in this playbook run
-    - 'tasks' -- a list of tasks encountered in this playbook run
-    - 'stats' -- a list of  statistic records, one for each host
-      involved in this playbook
-    - 'hosts' -- a list of hosts involved in this playbook
-    - 'files' -- a list of files encountered by this playbook
-      (via include or role directives).
+    - files = files involved in this playbook
+    - hosts = hosts involved in this playbook
+    - plays = plays involved in this playbook
+    - records = key/values recorded in this playbook
+    - results = task results for this playbook
+    - tasks = tasks involved in this playbook
     """
     __tablename__ = 'playbooks'
     files = one_to_many('File', backref='playbook')
@@ -173,7 +171,6 @@ class Playbook(db.Model, TimedEntity):
     plays = one_to_many('Play', backref='playbook')
     records = one_to_many('Record', backref='playbook')
     results = one_to_many('Result', backref='playbook')
-    stats = one_to_many('Stats', backref='playbook')
     tasks = one_to_many('Task', backref='playbook')
 
     id = db.Column(db.Integer, primary_key=True)
@@ -344,7 +341,6 @@ class Host(Base):
     A 'Host' entity has the following relationships:
     - 'results' -- a list of 'Result' objects associated with this
       host.
-    - 'stats' -- a list of 'Stats' objects resulting from playbook runs
       against this host.
     """
     __tablename__ = 'hosts'
@@ -353,7 +349,12 @@ class Host(Base):
     )
     facts = one_to_one('HostFacts', backref='host')
     results = one_to_many('Result', backref='host')
-    stats = one_to_one('Stats', backref='host')
+
+    changed = db.Column(db.Integer, default=0)
+    failed = db.Column(db.Integer, default=0)
+    ok = db.Column(db.Integer, default=0)
+    skipped = db.Column(db.Integer, default=0)
+    unreachable = db.Column(db.Integer, default=0)
 
     name = db.Column(db.String(255), index=True)
 
@@ -377,30 +378,6 @@ class HostFacts(Base):
 
     def __repr__(self):
         return '<HostFacts %s>' % self.host.name
-
-
-class Stats(Base):
-    """
-    A 'Stats' object contains statistics for a single host from a single
-    Ansible playbook run.
-
-    A 'Stats' entity has the following relationships:
-    - 'playbook' -- the playbook associated with these statistics (via the
-      'stats' relationship defined in `Playbook`)
-    - 'host' -- The host associated with these statistics (via the
-      'stats' relationship defined in 'Host')
-    """
-    __tablename__ = 'stats'
-    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
-
-    changed = db.Column(db.Integer, default=0)
-    failed = db.Column(db.Integer, default=0)
-    ok = db.Column(db.Integer, default=0)
-    skipped = db.Column(db.Integer, default=0)
-    unreachable = db.Column(db.Integer, default=0)
-
-    def __repr__(self):
-        return '<Stats for %s>' % self.host.name
 
 
 class Record(Base):

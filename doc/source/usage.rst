@@ -204,8 +204,6 @@ Example commands::
       playbook show  Show details of a playbook
       result list    Returns a list of results
       result show    Show details of a result
-      stats list     Returns a list of statistics
-      stats show     Show details of a statistic
       task list      Returns a list of tasks
       task show      Show details of a task
 

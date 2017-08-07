@@ -91,13 +91,20 @@ class FileContent(object):
 
 
 class Host(object):
-    def __init__(self, name=None, playbook=None):
+    def __init__(self, name=None, playbook=None, changed=1, failed=0, ok=1,
+                 skipped=1, unreachable=0):
         if name is None:
             name = 'host-%04d' % random.randint(0, 9999)
         self.name = name
         if playbook is None:
             playbook = Playbook().model
         self.playbook = playbook
+
+        self.changed = changed
+        self.failed = failed
+        self.ok = ok
+        self.skipped = skipped
+        self.unreachable = unreachable
 
     def get_name(self):
         """ Callback specific method """
@@ -254,26 +261,14 @@ class Result(object):
 
 
 class Stats(object):
-    def __init__(self, playbook=None, host=None, changed=1, failed=0, ok=1,
-                 skipped=1, unreachable=0, processed=None):
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-        if host is None:
-            host = Host(playbook=self.playbook).model
-        self.host = host
-        self.changed = changed
-        self.failed = failed
-        self.ok = ok
-        self.skipped = skipped
-        self.unreachable = unreachable
-
-        # Callback specific parameter
-        if processed is not None:
-            self.processed = processed
+    """
+    This is only used for testing the callback since it expects "processed"
+    and "summarize" to exist.
+    """
+    def __init__(self, processed):
+        self.processed = processed
 
     def summarize(self, name):
-        """ Callback specific method """
         return {
             'failures': self.processed[name]['failed'],
             'ok': self.processed[name]['ok'],
@@ -281,13 +276,3 @@ class Stats(object):
             'skipped': self.processed[name]['skipped'],
             'unreachable': self.processed[name]['unreachable'],
         }
-
-    @property
-    def model(self):
-        return m.Stats(playbook=self.playbook,
-                       host=self.host,
-                       changed=self.changed,
-                       failed=self.failed,
-                       ok=self.ok,
-                       skipped=self.skipped,
-                       unreachable=self.unreachable)

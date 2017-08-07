@@ -24,6 +24,7 @@ import random
 from collections import defaultdict
 from mock import MagicMock
 from mock import Mock
+from ara.tests.unit import fakes
 from ara.tests.unit.common import TestAra
 
 
@@ -72,20 +73,6 @@ class Result(object):
         }
 
 
-class Stats(object):
-    def __init__(self, processed):
-        self.processed = processed
-
-    def summarize(self, name):
-        return {
-            'failures': self.processed[name]['failed'],
-            'ok': self.processed[name]['ok'],
-            'changed': self.processed[name]['changed'],
-            'skipped': self.processed[name]['skipped'],
-            'unreachable': self.processed[name]['unreachable'],
-        }
-
-
 class TestRead(TestAra):
     """ Tests for the Ansible ara_read module """
     def setUp(self):
@@ -131,7 +118,7 @@ class TestRead(TestAra):
         action.run()
 
     def _test_stats(self):
-        stats = Stats({
+        stats = fakes.Stats({
             'host1': defaultdict(int, ok=1, changed=1),
             'host2': defaultdict(int, failed=1),
         })
