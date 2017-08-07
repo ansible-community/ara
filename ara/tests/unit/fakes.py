@@ -110,7 +110,7 @@ class HostFacts(object):
             host = Host().model
         self.host = host
         if values is None:
-            values = '{"fact": "value"}'
+            values = {"fact": "value"}
         self.values = values
 
     @property

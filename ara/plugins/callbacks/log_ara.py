@@ -184,8 +184,7 @@ class CallbackModule(CallbackBase):
         db.session.add(self.result)
 
         if self.task.action == 'setup' and 'ansible_facts' in result._result:
-            values = jsonutils.dumps(result._result['ansible_facts'])
-            facts = models.HostFacts(values=values)
+            facts = models.HostFacts(values=result._result['ansible_facts'])
             host.facts = facts
 
             db.session.add(facts)

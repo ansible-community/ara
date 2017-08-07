@@ -22,7 +22,6 @@ from ara.db import models
 from ara.fields import Field
 from cliff.lister import Lister
 from cliff.show import ShowOne
-from oslo_serialization import jsonutils
 
 LIST_FIELDS = (
     Field('ID'),
@@ -146,7 +145,7 @@ class HostFacts(ShowOne):
             raise RuntimeError('No facts available for host %s' % args.host)
 
         facts = ((k, v) for k, v in
-                 six.iteritems(jsonutils.loads(host.facts.values))
+                 six.iteritems(host.facts.values)
                  if not args.fact or k in args.fact
                  )
         return six.moves.zip(*sorted(facts))

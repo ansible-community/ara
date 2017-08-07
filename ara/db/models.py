@@ -373,7 +373,7 @@ class HostFacts(Base):
 
     host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    values = db.Column(db.Text(16777215))
+    values = db.Column(CompressedData((2 ** 32) - 1))
 
     def __repr__(self):
         return '<HostFacts %s>' % self.host.name

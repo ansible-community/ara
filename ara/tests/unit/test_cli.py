@@ -202,7 +202,7 @@ class TestCLIHost(TestAra):
         args = parser.parse_args([six.text_type(ctx['host'].id)])
         res = cmd.take_action(args)
 
-        facts = jsonutils.loads(ctx['facts'].values)
+        facts = ctx['facts'].values
         expected = six.moves.zip(*sorted(six.iteritems(facts)))
         self.assertSequenceEqual(list(res), list(expected))
 
@@ -218,7 +218,7 @@ class TestCLIHost(TestAra):
         ])
         res = cmd.take_action(args)
 
-        facts = jsonutils.loads(ctx['facts'].values)
+        facts = ctx['facts'].values
         expected = six.moves.zip(*sorted(six.iteritems(facts)))
         self.assertSequenceEqual(list(res), list(expected))
 
