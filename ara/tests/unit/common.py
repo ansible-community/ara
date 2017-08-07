@@ -102,7 +102,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                       file=task_file,
                       file_id=task_file.id).model
     tasks.append(task)
-    result = fakes.Result(task=task,
+    result = fakes.Result(playbook=playbook,
+                          play=play,
+                          task=task,
                           host=host,
                           status='ok',
                           changed=True,
@@ -134,7 +136,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     skipped = False
     if ara_record:
         msg = 'Data recorded in ARA for this playbook.'
-        record_result = fakes.Result(task=record_task,
+        record_result = fakes.Result(playbook=playbook,
+                                     play=play,
+                                     task=record_task,
                                      host=host,
                                      status='ok',
                                      changed=True,
@@ -146,7 +150,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     else:
         skipped = True
         msg = 'Conditional check failed'
-        record_result = fakes.Result(task=record_task,
+        record_result = fakes.Result(playbook=playbook,
+                                     play=play,
+                                     task=record_task,
                                      host=host,
                                      status='skipped',
                                      changed=False,
@@ -162,7 +168,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     tasks.append(failed_task)
     if failed:
         msg = 'FAILED!'
-        failed_result = fakes.Result(task=failed_task,
+        failed_result = fakes.Result(playbook=playbook,
+                                     play=play,
+                                     task=failed_task,
                                      host=host,
                                      status='failed',
                                      changed=False,
@@ -171,7 +179,9 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     else:
         skipped = True
         msg = 'Conditional check failed'
-        failed_result = fakes.Result(task=failed_task,
+        failed_result = fakes.Result(playbook=playbook,
+                                     play=play,
+                                     task=failed_task,
                                      host=host,
                                      status='skipped',
                                      changed=False,

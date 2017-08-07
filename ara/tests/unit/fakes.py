@@ -197,11 +197,18 @@ class Task(object):
 
 
 class Result(object):
-    def __init__(self, task=None, host=None, status='ok', ignore_errors=False,
-                 changed=True, failed=False, skipped=False, unreachable=False,
+    def __init__(self, playbook=None, play=None, task=None, host=None,
+                 status='ok', ignore_errors=False, changed=True, failed=False,
+                 skipped=False, unreachable=False,
                  result='Task result <here>'):
         assert status in ['ok', 'failed', 'skipped', 'unreachable']
 
+        if playbook is None:
+            playbook = Playbook().model
+        self.playbook = playbook
+        if play is None:
+            play = Play().model
+        self.play = play
         if task is None:
             task = Task().model
         self.task = task
@@ -228,7 +235,9 @@ class Result(object):
 
     @property
     def model(self):
-        return m.Result(task=self.task,
+        return m.Result(playbook=self.playbook,
+                        play=self.play,
+                        task=self.task,
                         host=self.host,
                         status=self.status,
                         ignore_errors=self.ignore_errors,

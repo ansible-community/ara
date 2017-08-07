@@ -166,6 +166,8 @@ class CallbackModule(CallbackBase):
             results = jsonutils.loads(self._dump_results(result._result))
 
         self.result = models.Result(
+            playbook=self.playbook,
+            play=self.play,
             task=self.task,
             host=host,
             time_start=result.task_start,

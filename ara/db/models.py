@@ -168,23 +168,22 @@ class Playbook(db.Model, TimedEntity):
       (via include or role directives).
     """
     __tablename__ = 'playbooks'
+    files = one_to_many('File', backref='playbook')
+    hosts = one_to_many('Host', backref='playbook')
+    plays = one_to_many('Play', backref='playbook')
+    records = one_to_many('Record', backref='playbook')
+    results = one_to_many('Result', backref='playbook')
+    stats = one_to_many('Stats', backref='playbook')
+    tasks = one_to_many('Task', backref='playbook')
 
     id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
     parameters = db.Column(CompressedData((2 ** 32) - 1))
-
-    records = one_to_many('Record', backref='playbook')
-    files = one_to_many('File', backref='playbook')
-    plays = one_to_many('Play', backref='playbook')
-    tasks = one_to_many('Task', backref='playbook')
-    stats = one_to_many('Stats', backref='playbook')
-    hosts = one_to_many('Host', backref='playbook')
+    complete = db.Column(db.Boolean, default=False)
 
     time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
-
-    complete = db.Column(db.Boolean, default=False)
 
     @property
     def file(self):
@@ -205,8 +204,9 @@ class File(Base):
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'path'),
     )
-
     content_id = db.Column(db.Integer, db.ForeignKey('file_contents.id'))
+    content = many_to_one('FileContent', backref='files')
+    tasks = many_to_one('Task', backref=backref('file', uselist=False))
 
     # This has to be a String instead of Text because of
     # http://stackoverflow.com/questions/1827063/
@@ -214,9 +214,6 @@ class File(Base):
     # limited to a maximum key length of 3072 bytes. These restrictions stem
     # from the fact that we are using this column in a UNIQUE constraint.
     path = db.Column(db.String(255))
-    content = many_to_one('FileContent', backref='files')
-
-    tasks = many_to_one('Task', backref=backref('file', uselist=False))
 
     # is_playbook is true for playbooks referenced directly on the
     # ansible-playbook command line.
@@ -247,9 +244,10 @@ class Play(Base, TimedEntity):
       'tasks' relationship defined by 'Result').
     """
     __tablename__ = 'plays'
+    results = one_to_many('Result', backref='play')
+    tasks = one_to_many('Task', backref='play')
 
     name = db.Column(db.Text)
-    tasks = one_to_many('Task', backref='play')
 
     time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
@@ -274,9 +272,9 @@ class Task(Base, TimedEntity):
     - 'results' -- a list of results for each host targeted by this task.
     """
     __tablename__ = 'tasks'
-
-    play_id = db.Column(db.Integer, db.ForeignKey('plays.id'))
     file_id = db.Column(db.Integer, db.ForeignKey('files.id'))
+    play_id = db.Column(db.Integer, db.ForeignKey('plays.id'))
+    results = one_to_many('Result', backref='task')
 
     name = db.Column(db.Text)
     action = db.Column(db.Text)
@@ -286,8 +284,6 @@ class Task(Base, TimedEntity):
 
     time_start = db.Column(db.DateTime, default=datetime.utcnow)
     time_end = db.Column(db.DateTime)
-
-    results = one_to_many('Result', backref='task')
 
     def __repr__(self):
         return '<Task %s>' % (self.name or self.id)
@@ -313,9 +309,9 @@ class Result(Base, TimedEntity):
       relationship defined by 'Host')
     """
     __tablename__ = 'results'
-
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
     host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
+    play_id = db.Column(db.Integer, db.ForeignKey('plays.id'))
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
 
     status = db.Column(db.Enum('ok', 'failed', 'skipped', 'unreachable'))
     changed = db.Column(db.Boolean, default=False)
@@ -350,18 +346,16 @@ class Host(Base):
       host.
     - 'stats' -- a list of 'Stats' objects resulting from playbook runs
       against this host.
-    - 'playbooks' -- a list of 'Playbook' runs that have included this host.
     """
     __tablename__ = 'hosts'
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'name'),
     )
-
-    name = db.Column(db.String(255), index=True)
-
     facts = one_to_one('HostFacts', backref='host')
     results = one_to_many('Result', backref='host')
     stats = one_to_one('Stats', backref='host')
+
+    name = db.Column(db.String(255), index=True)
 
     def __repr__(self):
         return '<Host %s>' % self.name
@@ -397,7 +391,6 @@ class Stats(Base):
       'stats' relationship defined in 'Host')
     """
     __tablename__ = 'stats'
-
     host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
 
     changed = db.Column(db.Integer, default=0)

@@ -45,7 +45,9 @@ class TestModels(TestAra):
         self.host = fakes.Host(name='localhost',
                                playbook=self.playbook).model
         self.host_facts = fakes.HostFacts(host=self.host).model
-        self.result = fakes.Result(task=self.task,
+        self.result = fakes.Result(playbook=self.playbook,
+                                   play=self.play,
+                                   task=self.task,
                                    status='ok',
                                    host=self.host).model
         self.stats = fakes.Stats(playbook=self.playbook,
@@ -105,6 +107,8 @@ class TestModels(TestAra):
 
     def test_result(self):
         result = m.Result.query.get(self.result.id)
+        self.assertIn(result, self.playbook.results)
+        self.assertIn(result, self.play.results)
         self.assertIn(result, self.task.results)
 
     def test_host(self):
