@@ -17,6 +17,7 @@
 
 import ara.config
 import ara.views
+import ara.api.v1.playbooks
 import logging
 import os
 
@@ -40,6 +41,10 @@ views = (
     (ara.views.result, '/result'),
 )
 
+endpoints = (
+    (ara.api.v1.playbooks.blueprint, '/api/v1/playbooks'),
+)
+
 
 def create_app(config=None, app_name=None):
     if app_name is None:
@@ -57,10 +62,16 @@ def create_app(config=None, app_name=None):
     configure_template_filters(app)
     configure_context_processors(app)
     configure_blueprints(app)
+    configure_api(app)
     configure_static_route(app)
     configure_db(app)
 
     return app
+
+
+def configure_api(app):
+    for endpoint, prefix in endpoints:
+        app.register_blueprint(endpoint, url_prefix=prefix)
 
 
 def configure_blueprints(app):
