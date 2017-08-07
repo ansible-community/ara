@@ -56,22 +56,27 @@ class Record(object):
 
 
 class File(object):
-    def __init__(self, is_playbook=False, path='main.yml', playbook=None):
+    def __init__(self, is_playbook=False, path='main.yml', playbook=None,
+                 content=None):
         self.is_playbook = is_playbook
         self.path = path
         if playbook is None:
             playbook = Playbook(path=self.path).model
         self.playbook = playbook
+        if content is None:
+            content = FileContent().model
+        self.content = content
 
     @property
     def model(self):
         return m.File(is_playbook=self.is_playbook,
                       path=self.path,
-                      playbook=self.playbook)
+                      playbook=self.playbook,
+                      content=self.content)
 
 
 class FileContent(object):
-    def __init__(self, content=DEFAULT_CONTENT):
+    def __init__(self, content=FAKE_PLAYBOOK_CONTENT):
         self.content = content
 
     @property

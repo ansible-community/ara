@@ -85,6 +85,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                          is_playbook=True,
                          path=playbook.path).model
     pb_content = fakes.FileContent(content=fakes.FAKE_PLAYBOOK_CONTENT).model
+    pb_file.content = pb_content
 
     play = fakes.Play(playbook=playbook).model
     host = fakes.Host(playbook=playbook).model
@@ -92,15 +93,16 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     tasks = []
     results = []
 
+    task_content = fakes.FileContent(content=fakes.FAKE_TASK_CONTENT).model
     task_file = fakes.File(playbook=playbook,
                            is_playbook=False,
-                           path='/some/path/main.yml').model
-    task_content = fakes.FileContent(content=fakes.FAKE_TASK_CONTENT).model
+                           path='/some/path/main.yml',
+                           content=task_content).model
+
     task = fakes.Task(play=play,
                       playbook=playbook,
                       action='fake_action',
-                      file=task_file,
-                      file_id=task_file.id).model
+                      file=task_file).model
     tasks.append(task)
     result = fakes.Result(playbook=playbook,
                           play=play,
@@ -114,24 +116,19 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     record_task = fakes.Task(play=play,
                              playbook=playbook,
                              action='ara_record',
-                             file=task_file,
-                             file_id=task_file.id).model
+                             file=task_file).model
     tasks.append(record_task)
 
     ctx = dict(
         playbook=playbook,
         pb_file=pb_file,
-        pb_content=pb_content,
         play=play,
         host=host,
         task=task,
-        task_file=task_file,
-        task_content=task_content,
         result=result,
     )
 
-    items = [playbook, pb_file, pb_content,
-             task_file, task_content, play, host]
+    items = [playbook, pb_file, pb_content, task, play, host]
 
     skipped = False
     if ara_record:
@@ -163,8 +160,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     failed_task = fakes.Task(play=play,
                              playbook=playbook,
                              action='fail',
-                             file=task_file,
-                             file_id=task_file.id).model
+                             file=task_file).model
     tasks.append(failed_task)
     if failed:
         msg = 'FAILED!'

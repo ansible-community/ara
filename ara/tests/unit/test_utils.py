@@ -92,7 +92,8 @@ class TestUtils(TestAra):
                 child = child['nodes'][0]
                 self.assertEqual(child['text'], 'main.yml')
                 self.assertEqual(child['dataAttr']['load'],
-                                 ctx['task_file'].id)
+                                 ctx['task'].file.id)
             else:
                 self.assertEqual(f['text'], 'playbook.yml')
-                self.assertEqual(f['dataAttr']['load'], ctx['pb_file'].id)
+                self.assertEqual(f['dataAttr']['load'],
+                                 ctx['playbook'].file.id)

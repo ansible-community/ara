@@ -230,7 +230,7 @@ class FileContent(db.Model):
     __tablename__ = 'file_contents'
 
     id = db.Column(db.Integer, primary_key=True)
-    sha1 = db.Column(db.String(40), default=content_sha1)
+    sha1 = db.Column(db.String(40), default=content_sha1, unique=True)
     content = db.Column(CompressedText((2**32) - 1))
 
 
