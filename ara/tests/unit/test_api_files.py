@@ -125,6 +125,10 @@ class TestApiFiles(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
+        self.assertEqual(ctx['playbook'].file.content.content,
+                         data['content'])
+        self.assertEqual(ctx['playbook'].file.content.sha1,
+                         data['sha1'])
         self.assertEqual(ctx['playbook'].file.is_playbook,
                          data['is_playbook'])
 
@@ -141,6 +145,10 @@ class TestApiFiles(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
+        self.assertEqual(ctx['playbook'].file.content.content,
+                         data['content'])
+        self.assertEqual(ctx['playbook'].file.content.sha1,
+                         data['sha1'])
         self.assertEqual(ctx['playbook'].file.is_playbook,
                          data['is_playbook'])
 
@@ -171,6 +179,10 @@ class TestApiFiles(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
+        self.assertEqual(ctx['playbook'].file.content.content,
+                         data['content'])
+        self.assertEqual(ctx['playbook'].file.content.sha1,
+                         data['sha1'])
         self.assertEqual(ctx['playbook'].file.is_playbook,
                          data['is_playbook'])
 
@@ -194,6 +206,10 @@ class TestApiFiles(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
+        self.assertEqual(ctx['playbook'].file.content.content,
+                         data['content'])
+        self.assertEqual(ctx['playbook'].file.content.sha1,
+                         data['sha1'])
         self.assertEqual(ctx['playbook'].file.is_playbook,
                          data['is_playbook'])
 

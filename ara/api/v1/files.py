@@ -39,6 +39,8 @@ class FileRestApi(Resource):
             'id': fields.Integer,
             'playbook_id': fields.Integer,
             'path': fields.String,
+            'content': fields.String(attribute='content.content'),
+            'sha1': fields.String(attribute='content.sha1'),
             'is_playbook': fields.Boolean,
         }
 
