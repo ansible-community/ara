@@ -29,38 +29,38 @@ from flask_restful import inputs
 blueprint = Blueprint('results', __name__)
 api = Api(blueprint)
 
+RESULT_FIELDS = {
+    'id': fields.Integer,
+    'playbook_id': fields.Integer,
+    'play_id': fields.Integer,
+    'task_id': fields.Integer,
+    'host_id': fields.Integer,
+    'status': fields.String,
+    'changed': fields.Boolean,
+    'failed': fields.Boolean,
+    'skipped': fields.Boolean,
+    'unreachable': fields.Boolean,
+    'ignore_errors': fields.Boolean,
+    'result': fields.Raw,
+    'started': fields.DateTime(attribute='time_start',
+                               dt_format='iso8601'),
+    'ended': fields.DateTime(attribute='time_end',
+                             dt_format='iso8601')
+}
+
 
 class ResultRestApi(Resource):
     """
     REST API for Results: api.v1.results
     """
     def get(self):
-        result_fields = {
-            'id': fields.Integer,
-            'playbook_id': fields.Integer,
-            'play_id': fields.Integer,
-            'task_id': fields.Integer,
-            'host_id': fields.Integer,
-            'status': fields.String,
-            'changed': fields.Boolean,
-            'failed': fields.Boolean,
-            'skipped': fields.Boolean,
-            'unreachable': fields.Boolean,
-            'ignore_errors': fields.Boolean,
-            'result': fields.Raw,
-            'started': fields.DateTime(attribute='time_start',
-                                       dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end',
-                                     dt_format='iso8601')
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, result_fields)
+            return api_utils.help(parser.args, RESULT_FIELDS)
 
         results = _find_results(**args)
-        return marshal(results, result_fields), 200
+        return marshal(results, RESULT_FIELDS), 200
 
     @staticmethod
     def _get_parser():

@@ -29,33 +29,33 @@ from flask_restful import inputs
 blueprint = Blueprint('hosts', __name__)
 api = Api(blueprint)
 
+HOST_FIELDS = {
+    'id': fields.Integer,
+    'playbook_id': fields.Integer,
+    'facts': fields.Raw(attribute='facts.values'),
+    'timestamp': fields.DateTime(attribute='facts.timestamp',
+                                 dt_format='iso8601'),
+    'name': fields.String,
+    'changed': fields.Integer,
+    'failed': fields.Integer,
+    'ok': fields.Integer,
+    'skipped': fields.Integer,
+    'unreachable': fields.Integer
+}
+
 
 class HostRestApi(Resource):
     """
     REST API for Hosts: api.v1.hosts
     """
     def get(self):
-        host_fields = {
-            'id': fields.Integer,
-            'playbook_id': fields.Integer,
-            'facts': fields.Raw(attribute='facts.values'),
-            'timestamp': fields.DateTime(attribute='facts.timestamp',
-                                         dt_format='iso8601'),
-            'name': fields.String,
-            'changed': fields.Integer,
-            'failed': fields.Integer,
-            'ok': fields.Integer,
-            'skipped': fields.Integer,
-            'unreachable': fields.Integer
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, host_fields)
+            return api_utils.help(parser.args, HOST_FIELDS)
 
         hosts = _find_hosts(**args)
-        return marshal(hosts, host_fields), 200
+        return marshal(hosts, HOST_FIELDS), 200
 
     @staticmethod
     def _get_parser():

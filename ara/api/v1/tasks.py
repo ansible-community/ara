@@ -29,35 +29,35 @@ from flask_restful import inputs
 blueprint = Blueprint('tasks', __name__)
 api = Api(blueprint)
 
+TASK_FIELDS = {
+    'id': fields.Integer,
+    'playbook_id': fields.Integer,
+    'play_id': fields.Integer,
+    'file_id': fields.Integer,
+    'name': fields.String,
+    'action': fields.String,
+    'lineno': fields.Integer,
+    'tags': fields.String,
+    'handler': fields.Boolean(attribute='is_handler'),
+    'started': fields.DateTime(attribute='time_start',
+                               dt_format='iso8601'),
+    'ended': fields.DateTime(attribute='time_end',
+                             dt_format='iso8601')
+}
+
 
 class TaskRestApi(Resource):
     """
     REST API for Tasks: api.v1.tasks
     """
     def get(self):
-        task_fields = {
-            'id': fields.Integer,
-            'playbook_id': fields.Integer,
-            'play_id': fields.Integer,
-            'file_id': fields.Integer,
-            'name': fields.String,
-            'action': fields.String,
-            'lineno': fields.Integer,
-            'tags': fields.String,
-            'handler': fields.Boolean(attribute='is_handler'),
-            'started': fields.DateTime(attribute='time_start',
-                                       dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end',
-                                     dt_format='iso8601')
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, task_fields)
+            return api_utils.help(parser.args, TASK_FIELDS)
 
         tasks = _find_tasks(**args)
-        return marshal(tasks, task_fields), 200
+        return marshal(tasks, TASK_FIELDS), 200
 
     @staticmethod
     def _get_parser():

@@ -29,29 +29,29 @@ from flask_restful import inputs
 blueprint = Blueprint('plays', __name__)
 api = Api(blueprint)
 
+PLAY_FIELDS = {
+    'id': fields.Integer,
+    'playbook_id': fields.Integer,
+    'name': fields.String,
+    'started': fields.DateTime(attribute='time_start',
+                               dt_format='iso8601'),
+    'ended': fields.DateTime(attribute='time_end',
+                             dt_format='iso8601')
+}
+
 
 class PlayRestApi(Resource):
     """
     REST API for Plays: api.v1.plays
     """
     def get(self):
-        play_fields = {
-            'id': fields.Integer,
-            'playbook_id': fields.Integer,
-            'name': fields.String,
-            'started': fields.DateTime(attribute='time_start',
-                                       dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end',
-                                     dt_format='iso8601')
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, play_fields)
+            return api_utils.help(parser.args, PLAY_FIELDS)
 
         plays = _find_plays(**args)
-        return marshal(plays, play_fields), 200
+        return marshal(plays, PLAY_FIELDS), 200
 
     @staticmethod
     def _get_parser():

@@ -29,28 +29,28 @@ from flask_restful import inputs
 blueprint = Blueprint('files', __name__)
 api = Api(blueprint)
 
+FILE_FIELDS = {
+    'id': fields.Integer,
+    'playbook_id': fields.Integer,
+    'path': fields.String,
+    'content': fields.String(attribute='content.content'),
+    'sha1': fields.String(attribute='content.sha1'),
+    'is_playbook': fields.Boolean,
+}
+
 
 class FileRestApi(Resource):
     """
     REST API for Files: api.v1.files
     """
     def get(self):
-        file_fields = {
-            'id': fields.Integer,
-            'playbook_id': fields.Integer,
-            'path': fields.String,
-            'content': fields.String(attribute='content.content'),
-            'sha1': fields.String(attribute='content.sha1'),
-            'is_playbook': fields.Boolean,
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, file_fields)
+            return api_utils.help(parser.args, FILE_FIELDS)
 
         files = _find_files(**args)
-        return marshal(files, file_fields), 200
+        return marshal(files, FILE_FIELDS), 200
 
     @staticmethod
     def _get_parser():

@@ -16,6 +16,11 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.api.v1.files import FILE_FIELDS
+from ara.api.v1.hosts import HOST_FIELDS
+from ara.api.v1.plays import PLAY_FIELDS
+from ara.api.v1.results import RESULT_FIELDS
+from ara.api.v1.tasks import TASK_FIELDS
 from ara.db.models import Playbook
 
 from flask import Blueprint
@@ -29,31 +34,36 @@ from flask_restful import inputs
 blueprint = Blueprint('playbooks', __name__)
 api = Api(blueprint)
 
+PLAYBOOK_FIELDS = {
+    'id': fields.Integer,
+    'path': fields.String,
+    'ansible_version': fields.String,
+    'completed': fields.Boolean(attribute='complete'),
+    'started': fields.DateTime(attribute='time_start',
+                               dt_format='iso8601'),
+    'ended': fields.DateTime(attribute='time_end',
+                             dt_format='iso8601'),
+    'parameters': fields.Raw,
+    'files': fields.List(fields.Nested(FILE_FIELDS)),
+    'hosts': fields.List(fields.Nested(HOST_FIELDS)),
+    'plays': fields.List(fields.Nested(PLAY_FIELDS)),
+    'results': fields.List(fields.Nested(RESULT_FIELDS)),
+    'tasks': fields.List(fields.Nested(TASK_FIELDS))
+}
+
 
 class PlaybookRestApi(Resource):
     """
     REST API for Playbooks: api.v1.playbooks
     """
     def get(self):
-        playbook_fields = {
-            'id': fields.Integer,
-            'path': fields.String,
-            'ansible_version': fields.String,
-            'completed': fields.Boolean(attribute='complete'),
-            'started': fields.DateTime(attribute='time_start',
-                                       dt_format='iso8601'),
-            'ended': fields.DateTime(attribute='time_end',
-                                     dt_format='iso8601'),
-            'parameters': fields.Raw
-        }
-
         parser = self._get_parser()
         args = parser.parse_args()
         if args.help:
-            return api_utils.help(parser.args, playbook_fields)
+            return api_utils.help(parser.args, PLAYBOOK_FIELDS)
 
         playbooks = _find_playbooks(**args)
-        return marshal(playbooks, playbook_fields), 200
+        return marshal(playbooks, PLAYBOOK_FIELDS), 200
 
     @staticmethod
     def _get_parser():
