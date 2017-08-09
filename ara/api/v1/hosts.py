@@ -38,6 +38,9 @@ class HostRestApi(Resource):
         host_fields = {
             'id': fields.Integer,
             'playbook_id': fields.Integer,
+            'facts': fields.Raw(attribute='facts.values'),
+            'timestamp': fields.DateTime(attribute='facts.timestamp',
+                                         dt_format='iso8601'),
             'name': fields.String,
             'changed': fields.Integer,
             'failed': fields.Integer,

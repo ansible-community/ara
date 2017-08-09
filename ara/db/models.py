@@ -279,7 +279,7 @@ class Task(Base, TimedEntity):
     tags = db.Column(db.Text)
     is_handler = db.Column(db.Boolean)
 
-    time_start = db.Column(db.DateTime, default=datetime.utcnow)
+    time_start = db.Column(db.DateTime, default=datetime.utcnow())
     time_end = db.Column(db.DateTime)
 
     def __repr__(self):

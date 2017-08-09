@@ -125,6 +125,10 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
+        self.assertEqual(ctx['host'].facts.values,
+                         data['facts'])
+        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+                         data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
         self.assertEqual(ctx['host'].failed,
@@ -149,6 +153,10 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
+        self.assertEqual(ctx['host'].facts.values,
+                         data['facts'])
+        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+                         data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
         self.assertEqual(ctx['host'].failed,
@@ -189,6 +197,10 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
+        self.assertEqual(ctx['host'].facts.values,
+                         data['facts'])
+        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+                         data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
         self.assertEqual(ctx['host'].failed,
@@ -222,6 +234,10 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
+        self.assertEqual(ctx['host'].facts.values,
+                         data['facts'])
+        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+                         data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
         self.assertEqual(ctx['host'].failed,
