@@ -4,7 +4,9 @@
 gcc
 libffi-devel [platform:rpm]
 openssl-devel [platform:rpm]
-python-devel [platform:rpm]
+python-devel [platform:redhat !platform:fedora]
+python2-devel [platform:fedora]
+python3-devel [platform:fedora]
 libselinux-python [platform:rpm]
 libxml2-devel [platform:rpm]
 libxslt-devel [platform:rpm]
