@@ -26,6 +26,7 @@ from ara import utils
 from cliff.command import Command
 from flask_frozen import Freezer, walk_directory
 from flask_frozen import MissingURLGeneratorWarning
+from flask_frozen import NotFoundWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
 from oslo_utils import encodeutils
@@ -63,6 +64,7 @@ class GenerateHtml(Command):
             self.app.ara.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
 
         self.log.warn('Generating static files at %s...', args.path)
+        filterwarnings('ignore', '.*', NotFoundWarning)
         if self.app.ara.config['ARA_IGNORE_EMPTY_GENERATION']:
             filterwarnings('ignore', '.*', MissingURLGeneratorWarning)
         freezer = Freezer(self.app.ara)
