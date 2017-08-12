@@ -40,10 +40,6 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_post_internal_unimplemented(self):
-        res = PlaybookApi().post()
-        self.assertEqual(res.status_code, 405)
-
-    def test_post_equivalence(self):
         http = self.client.post('/api/v1/playbooks')
         internal = PlaybookApi().post()
         self.assertEqual(http.status_code, internal.status_code)
@@ -58,10 +54,6 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_put_internal_unimplemented(self):
-        res = PlaybookApi().put()
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_equivalence(self):
         http = self.client.put('/api/v1/playbooks')
         internal = PlaybookApi().put()
         self.assertEqual(http.status_code, internal.status_code)
@@ -76,10 +68,6 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_delete_internal_unimplemented(self):
-        res = PlaybookApi().delete()
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_equivalence(self):
         http = self.client.delete('/api/v1/playbooks')
         internal = PlaybookApi().delete()
         self.assertEqual(http.status_code, internal.status_code)
@@ -95,6 +83,13 @@ class TestApiPlaybooks(TestAra):
         # TODO: Improve this
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_help(self):
+        http = self.client.get('/api/v1/playbooks',
+                               query_string=dict(help=True))
+        internal = PlaybookApi().get(help=True)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_bad_params_404_help(self):
         res = self.client.get('/api/v1/playbooks',
@@ -119,13 +114,6 @@ class TestApiPlaybooks(TestAra):
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
-        res = PlaybookApi().get()
-        self.assertEqual(res.status_code, 404)
-        # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
-
-    def test_get_equivalence_without_parameters_and_data(self):
         http = self.client.get('/api/v1/playbooks')
         internal = PlaybookApi().get()
         self.assertEqual(http.status_code, internal.status_code)
@@ -154,28 +142,6 @@ class TestApiPlaybooks(TestAra):
                          data['ansible_version'])
 
     def test_get_internal_without_parameters(self):
-        ctx = ansible_run()
-        res = PlaybookApi().get()
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)[0]
-
-        self.assertEqual(ctx['playbook'].id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].complete,
-                         data['completed'])
-        self.assertEqual(ctx['playbook'].time_start.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['playbook'].time_end.isoformat(),
-                         data['ended'])
-        self.assertEqual(ctx['playbook'].parameters,
-                         data['parameters'])
-        self.assertEqual(ctx['playbook'].ansible_version,
-                         data['ansible_version'])
-
-    def test_get_equivalence_without_parameters(self):
         ansible_run()
         http = self.client.get('/api/v1/playbooks')
         internal = PlaybookApi().get()

@@ -40,10 +40,6 @@ class TestApiHosts(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_post_internal_unimplemented(self):
-        res = HostApi().post()
-        self.assertEqual(res.status_code, 405)
-
-    def test_post_equivalence(self):
         http = self.client.post('/api/v1/hosts')
         internal = HostApi().post()
         self.assertEqual(http.status_code, internal.status_code)
@@ -58,10 +54,6 @@ class TestApiHosts(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_put_internal_unimplemented(self):
-        res = HostApi().put()
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_equivalence(self):
         http = self.client.put('/api/v1/hosts')
         internal = HostApi().put()
         self.assertEqual(http.status_code, internal.status_code)
@@ -76,10 +68,6 @@ class TestApiHosts(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_delete_internal_unimplemented(self):
-        res = HostApi().delete()
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_equivalence(self):
         http = self.client.delete('/api/v1/hosts')
         internal = HostApi().delete()
         self.assertEqual(http.status_code, internal.status_code)
@@ -96,17 +84,19 @@ class TestApiHosts(TestAra):
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
+    def test_get_internal_help(self):
+        http = self.client.get('/api/v1/hosts',
+                               query_string=dict(help=True))
+        internal = HostApi().get(help=True)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/hosts')
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data, b"[]\n")
 
     def test_get_internal_without_parameters_and_data(self):
-        res = HostApi().get()
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
-
-    def test_get_equivalence_without_parameters_and_data(self):
         http = self.client.get('/api/v1/hosts')
         internal = HostApi().get()
         self.assertEqual(http.status_code, internal.status_code)
@@ -141,34 +131,6 @@ class TestApiHosts(TestAra):
                          data['unreachable'])
 
     def test_get_internal_without_parameters(self):
-        ctx = ansible_run()
-        res = HostApi().get()
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)[0]
-
-        self.assertEqual(ctx['host'].id,
-                         data['id'])
-        self.assertEqual(ctx['host'].playbook_id,
-                         data['playbook_id'])
-        self.assertEqual(ctx['host'].name,
-                         data['name'])
-        self.assertEqual(ctx['host'].facts.values,
-                         data['facts'])
-        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
-                         data['timestamp'])
-        self.assertEqual(ctx['host'].changed,
-                         data['changed'])
-        self.assertEqual(ctx['host'].failed,
-                         data['failed'])
-        self.assertEqual(ctx['host'].ok,
-                         data['ok'])
-        self.assertEqual(ctx['host'].skipped,
-                         data['skipped'])
-        self.assertEqual(ctx['host'].unreachable,
-                         data['unreachable'])
-
-    def test_get_equivalence_without_parameters(self):
         ansible_run()
         http = self.client.get('/api/v1/hosts')
         internal = HostApi().get()
@@ -213,43 +175,6 @@ class TestApiHosts(TestAra):
                          data['unreachable'])
 
     def test_get_internal_with_id(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
-        res = HostApi().get(id=1)
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['host'].id, 1)
-
-        data = data[0]
-        self.assertEqual(ctx['host'].id,
-                         data['id'])
-        self.assertEqual(ctx['host'].playbook_id,
-                         data['playbook_id'])
-        self.assertEqual(ctx['host'].name,
-                         data['name'])
-        self.assertEqual(ctx['host'].facts.values,
-                         data['facts'])
-        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
-                         data['timestamp'])
-        self.assertEqual(ctx['host'].changed,
-                         data['changed'])
-        self.assertEqual(ctx['host'].failed,
-                         data['failed'])
-        self.assertEqual(ctx['host'].ok,
-                         data['ok'])
-        self.assertEqual(ctx['host'].skipped,
-                         data['skipped'])
-        self.assertEqual(ctx['host'].unreachable,
-                         data['unreachable'])
-
-    def test_get_equivalence_with_id(self):
         ansible_run()
         # Run twice to get a second playbook
         ansible_run()

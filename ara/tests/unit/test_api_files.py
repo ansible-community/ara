@@ -40,10 +40,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_post_internal_unimplemented(self):
-        res = FileApi().post()
-        self.assertEqual(res.status_code, 405)
-
-    def test_post_equivalence(self):
         http = self.client.post('/api/v1/files')
         internal = FileApi().post()
         self.assertEqual(http.status_code, internal.status_code)
@@ -58,10 +54,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_put_internal_unimplemented(self):
-        res = FileApi().put()
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_equivalence(self):
         http = self.client.put('/api/v1/files')
         internal = FileApi().put()
         self.assertEqual(http.status_code, internal.status_code)
@@ -76,10 +68,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 405)
 
     def test_delete_internal_unimplemented(self):
-        res = FileApi().delete()
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_equivalence(self):
         http = self.client.delete('/api/v1/files')
         internal = FileApi().delete()
         self.assertEqual(http.status_code, internal.status_code)
@@ -96,17 +84,19 @@ class TestApiFiles(TestAra):
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
+    def test_get_internal_help(self):
+        http = self.client.get('/api/v1/files',
+                               query_string=dict(help=True))
+        internal = FileApi().get(help=True)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/files')
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data, b"[]\n")
 
     def test_get_internal_without_parameters_and_data(self):
-        res = FileApi().get()
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
-
-    def test_get_equivalence_without_parameters_and_data(self):
         http = self.client.get('/api/v1/files')
         internal = FileApi().get()
         self.assertEqual(http.status_code, internal.status_code)
@@ -133,26 +123,6 @@ class TestApiFiles(TestAra):
                          data['is_playbook'])
 
     def test_get_internal_without_parameters(self):
-        ctx = ansible_run()
-        res = FileApi().get()
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)[1]
-
-        self.assertEqual(ctx['playbook'].file.id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook_id'])
-        self.assertEqual(ctx['playbook'].file.path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].file.content.content,
-                         data['content'])
-        self.assertEqual(ctx['playbook'].file.content.sha1,
-                         data['sha1'])
-        self.assertEqual(ctx['playbook'].file.is_playbook,
-                         data['is_playbook'])
-
-    def test_get_equivalence_without_parameters(self):
         ansible_run()
         http = self.client.get('/api/v1/files')
         internal = FileApi().get()
@@ -187,33 +157,6 @@ class TestApiFiles(TestAra):
                          data['is_playbook'])
 
     def test_get_internal_with_id(self):
-        ctx = ansible_run()
-        files = models.File.query.all()
-        self.assertEqual(len(files), 2)
-
-        res = FileApi().get(id=1)
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['playbook'].file.id, 1)
-
-        data = data[0]
-        self.assertEqual(ctx['playbook'].file.id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook_id'])
-        self.assertEqual(ctx['playbook'].file.path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].file.content.content,
-                         data['content'])
-        self.assertEqual(ctx['playbook'].file.content.sha1,
-                         data['sha1'])
-        self.assertEqual(ctx['playbook'].file.is_playbook,
-                         data['is_playbook'])
-
-    def test_get_equivalence_with_id(self):
         ansible_run()
         files = models.File.query.all()
         self.assertEqual(len(files), 2)
