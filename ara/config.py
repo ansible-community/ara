@@ -130,6 +130,7 @@ FREEZER_IGNORE_MIMETYPE_WARNINGS = _ara_config(config,
                                                'ARA_IGNORE_MIMETYPE_WARNINGS',
                                                value_type='boolean')
 FREEZER_RELATIVE_URLS = True
+FREEZER_IGNORE_404_NOT_FOUND = True
 
 # SQLAlchemy/Alembic settings
 SQLALCHEMY_DATABASE_URI = _ara_config(config, 'database', 'ARA_DATABASE')
