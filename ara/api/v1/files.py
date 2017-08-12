@@ -20,6 +20,7 @@ from ara.db.models import File
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -43,13 +44,26 @@ class FileRestApi(Resource):
     """
     REST API for Files: api.v1.files
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            file_ = _find_files(id=id)
+            if file_ is None:
+                abort(404, message="File {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, FILE_FIELDS))
+
+            return marshal(file_, FILE_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, FILE_FIELDS)
 
         files = _find_files(**args)
+        if not files:
+            abort(404, message='No files found for this query',
+                  help=api_utils.help(parser.args, FILE_FIELDS))
+
         return marshal(files, FILE_FIELDS), 200
 
     @staticmethod
@@ -95,7 +109,7 @@ class FileRestApi(Resource):
 
 def _find_files(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [File.query.get(kwargs['id'])]
+        return File.query.get(kwargs['id'])
 
     query = File.query
     if 'playbook_id' in kwargs and kwargs['playbook_id'] is not None:
@@ -114,4 +128,4 @@ def _find_files(**kwargs):
     return query.order_by(File.id.desc()).all()
 
 
-api.add_resource(FileRestApi, '')
+api.add_resource(FileRestApi, '', '/<int:id>')

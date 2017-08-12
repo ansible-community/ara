@@ -91,10 +91,27 @@ class TestApiFiles(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
+    def test_get_http_with_bad_params_404_help(self):
+        res = self.client.get('/api/v1/files',
+                              query_string=dict(id=0))
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_with_bad_params_404_help(self):
+        http = self.client.get('/api/v1/files',
+                               query_string=dict(id=0))
+        internal = FileApi().get(id=0)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/files')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
         http = self.client.get('/api/v1/files')
@@ -129,7 +146,7 @@ class TestApiFiles(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
-    def test_get_http_with_id(self):
+    def test_get_http_with_id_parameter(self):
         ctx = ansible_run()
         files = models.File.query.all()
         self.assertEqual(len(files), 2)
@@ -138,11 +155,38 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one play we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['playbook'].file.id, 1)
+        self.assertEqual(ctx['playbook'].file.id,
+                         data['id'])
+        self.assertEqual(ctx['playbook'].file.playbook_id,
+                         data['playbook_id'])
+        self.assertEqual(ctx['playbook'].file.path,
+                         data['path'])
+        self.assertEqual(ctx['playbook'].file.content.content,
+                         data['content'])
+        self.assertEqual(ctx['playbook'].file.content.sha1,
+                         data['sha1'])
+        self.assertEqual(ctx['playbook'].file.is_playbook,
+                         data['is_playbook'])
 
-        data = data[0]
+    def test_get_internal_with_id_parameter(self):
+        ansible_run()
+        files = models.File.query.all()
+        self.assertEqual(len(files), 2)
+
+        http = self.client.get('/api/v1/files', query_string=dict(id=1))
+        internal = FileApi().get(id=1)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    def test_get_http_with_id_url(self):
+        ctx = ansible_run()
+        files = models.File.query.all()
+        self.assertEqual(len(files), 2)
+
+        res = self.client.get('/api/v1/files/1')
+        self.assertEqual(res.status_code, 200)
+
+        data = jsonutils.loads(res.data)
         self.assertEqual(ctx['playbook'].file.id,
                          data['id'])
         self.assertEqual(ctx['playbook'].file.playbook_id,
@@ -161,7 +205,7 @@ class TestApiFiles(TestAra):
         files = models.File.query.all()
         self.assertEqual(len(files), 2)
 
-        http = self.client.get('/api/v1/files', query_string=dict(id=1))
+        http = self.client.get('/api/v1/files/1')
         internal = FileApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
