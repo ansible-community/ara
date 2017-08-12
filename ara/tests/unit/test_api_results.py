@@ -91,10 +91,27 @@ class TestApiResults(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
+    def test_get_http_with_bad_params_404_help(self):
+        res = self.client.get('/api/v1/results',
+                              query_string=dict(id=0))
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_with_bad_params_404_help(self):
+        http = self.client.get('/api/v1/results',
+                               query_string=dict(id=0))
+        internal = ResultApi().get(id=0)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/results')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
         http = self.client.get('/api/v1/results')
@@ -145,7 +162,7 @@ class TestApiResults(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
-    def test_get_http_with_id(self):
+    def test_get_http_with_id_parameter(self):
         ctx = ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -156,11 +173,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one result we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['result'].id, 1)
-
-        data = data[0]
         self.assertEqual(ctx['result'].id,
                          data['id'])
         self.assertEqual(ctx['result'].playbook_id,
@@ -190,7 +202,7 @@ class TestApiResults(TestAra):
         self.assertEqual(ctx['result'].time_end.isoformat(),
                          data['ended'])
 
-    def test_get_internal_with_id(self):
+    def test_get_internal_with_id_parameter(self):
         ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -198,6 +210,58 @@ class TestApiResults(TestAra):
         self.assertEqual(len(playbooks), 2)
 
         http = self.client.get('/api/v1/results', query_string=dict(id=1))
+        internal = ResultApi().get(id=1)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    def test_get_http_with_id_url(self):
+        ctx = ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        playbooks = models.Playbook.query.all()
+        self.assertEqual(len(playbooks), 2)
+
+        res = self.client.get('/api/v1/results/1')
+        self.assertEqual(res.status_code, 200)
+
+        data = jsonutils.loads(res.data)
+        self.assertEqual(ctx['result'].id,
+                         data['id'])
+        self.assertEqual(ctx['result'].playbook_id,
+                         data['playbook_id'])
+        self.assertEqual(ctx['result'].play_id,
+                         data['play_id'])
+        self.assertEqual(ctx['result'].task_id,
+                         data['task_id'])
+        self.assertEqual(ctx['result'].host_id,
+                         data['host_id'])
+        self.assertEqual(ctx['result'].status,
+                         data['status'])
+        self.assertEqual(ctx['result'].changed,
+                         data['changed'])
+        self.assertEqual(ctx['result'].failed,
+                         data['failed'])
+        self.assertEqual(ctx['result'].skipped,
+                         data['skipped'])
+        self.assertEqual(ctx['result'].unreachable,
+                         data['unreachable'])
+        self.assertEqual(ctx['result'].ignore_errors,
+                         data['ignore_errors'])
+        self.assertEqual(ctx['result'].result,
+                         data['result'])
+        self.assertEqual(ctx['result'].time_start.isoformat(),
+                         data['started'])
+        self.assertEqual(ctx['result'].time_end.isoformat(),
+                         data['ended'])
+
+    def test_get_internal_with_id_url(self):
+        ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        playbooks = models.Playbook.query.all()
+        self.assertEqual(len(playbooks), 2)
+
+        http = self.client.get('/api/v1/results/1')
         internal = ResultApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

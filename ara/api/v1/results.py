@@ -20,6 +20,7 @@ from ara.db.models import Result
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -53,13 +54,26 @@ class ResultRestApi(Resource):
     """
     REST API for Results: api.v1.results
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            result = _find_results(id=id)
+            if result is None:
+                abort(404, message="Result {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, RESULT_FIELDS))
+
+            return marshal(result, RESULT_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, RESULT_FIELDS)
 
         results = _find_results(**args)
+        if not results:
+            abort(404, message="Result {} doesn't exist".format(id),
+                  help=api_utils.help(parser.args, RESULT_FIELDS))
+
         return marshal(results, RESULT_FIELDS), 200
 
     @staticmethod
@@ -170,7 +184,7 @@ class ResultRestApi(Resource):
 
 def _find_results(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [Result.query.get(kwargs['id'])]
+        return Result.query.get(kwargs['id'])
 
     query = Result.query
     if 'playbook_id' in kwargs and kwargs['playbook_id'] is not None:
@@ -216,4 +230,4 @@ def _find_results(**kwargs):
     return query.order_by(Result.id.desc()).all()
 
 
-api.add_resource(ResultRestApi, '')
+api.add_resource(ResultRestApi, '', '/<int:id>')
