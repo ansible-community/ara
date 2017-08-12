@@ -25,6 +25,7 @@ from ara.db.models import Playbook
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -56,13 +57,26 @@ class PlaybookRestApi(Resource):
     """
     REST API for Playbooks: api.v1.playbooks
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            playbook = _find_playbooks(id=id)
+            if playbook is None:
+                abort(404, message="Playbook {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
+
+            return marshal(playbook, PLAYBOOK_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, PLAYBOOK_FIELDS)
 
         playbooks = _find_playbooks(**args)
+        if not playbooks:
+            abort(404, message='No playbooks found for this query',
+                  help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
+
         return marshal(playbooks, PLAYBOOK_FIELDS), 200
 
     @staticmethod
@@ -122,7 +136,7 @@ class PlaybookRestApi(Resource):
 
 def _find_playbooks(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [Playbook.query.get(kwargs['id'])]
+        return Playbook.query.get(kwargs['id'])
 
     query = Playbook.query
     if 'path' in kwargs and kwargs['path'] is not None:
@@ -155,4 +169,4 @@ def _find_playbooks(**kwargs):
     return query.order_by(Playbook.id.desc()).all()
 
 
-api.add_resource(PlaybookRestApi, '')
+api.add_resource(PlaybookRestApi, '', '/<int:id>')

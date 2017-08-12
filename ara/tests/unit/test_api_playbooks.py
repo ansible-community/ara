@@ -96,15 +96,34 @@ class TestApiPlaybooks(TestAra):
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
+    def test_get_http_with_bad_params_404_help(self):
+        res = self.client.get('/api/v1/playbooks',
+                              query_string=dict(id=0))
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_with_bad_params_404_help(self):
+        http = self.client.get('/api/v1/playbooks',
+                               query_string=dict(id=0))
+        internal = PlaybookApi().get(id=0)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/playbooks')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
         res = PlaybookApi().get()
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_equivalence_without_parameters_and_data(self):
         http = self.client.get('/api/v1/playbooks')
@@ -163,7 +182,7 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
-    def test_get_http_with_id(self):
+    def test_get_http_with_id_parameter(self):
         ctx = ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -174,11 +193,6 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['playbook'].id, 1)
-
-        data = data[0]
         self.assertEqual(ctx['playbook'].id,
                          data['id'])
         self.assertEqual(ctx['playbook'].path,
@@ -194,38 +208,7 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(ctx['playbook'].ansible_version,
                          data['ansible_version'])
 
-    def test_get_internal_with_id(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
-        res = PlaybookApi().get(id=1)
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['playbook'].id, 1)
-
-        data = data[0]
-        self.assertEqual(ctx['playbook'].id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].complete,
-                         data['completed'])
-        self.assertEqual(ctx['playbook'].time_start.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['playbook'].time_end.isoformat(),
-                         data['ended'])
-        self.assertEqual(ctx['playbook'].parameters,
-                         data['parameters'])
-        self.assertEqual(ctx['playbook'].ansible_version,
-                         data['ansible_version'])
-
-    def test_get_equivalence_with_id(self):
+    def test_get_internal_with_id_parameter(self):
         ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -233,6 +216,44 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(len(playbooks), 2)
 
         http = self.client.get('/api/v1/playbooks', query_string=dict(id=1))
+        internal = PlaybookApi().get(id=1)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    def test_get_http_with_id_url(self):
+        ctx = ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        playbooks = models.Playbook.query.all()
+        self.assertEqual(len(playbooks), 2)
+
+        res = self.client.get('/api/v1/playbooks/1')
+        self.assertEqual(res.status_code, 200)
+
+        data = jsonutils.loads(res.data)
+        self.assertEqual(ctx['playbook'].id,
+                         data['id'])
+        self.assertEqual(ctx['playbook'].path,
+                         data['path'])
+        self.assertEqual(ctx['playbook'].complete,
+                         data['completed'])
+        self.assertEqual(ctx['playbook'].time_start.isoformat(),
+                         data['started'])
+        self.assertEqual(ctx['playbook'].time_end.isoformat(),
+                         data['ended'])
+        self.assertEqual(ctx['playbook'].parameters,
+                         data['parameters'])
+        self.assertEqual(ctx['playbook'].ansible_version,
+                         data['ansible_version'])
+
+    def test_get_internal_with_id_url(self):
+        ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        playbooks = models.Playbook.query.all()
+        self.assertEqual(len(playbooks), 2)
+
+        http = self.client.get('/api/v1/playbooks/1')
         internal = PlaybookApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
