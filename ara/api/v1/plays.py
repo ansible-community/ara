@@ -20,6 +20,7 @@ from ara.db.models import Play
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -44,13 +45,26 @@ class PlayRestApi(Resource):
     """
     REST API for Plays: api.v1.plays
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            play = _find_plays(id=id)
+            if play is None:
+                abort(404, message="Play {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, PLAY_FIELDS))
+
+            return marshal(play, PLAY_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, PLAY_FIELDS)
 
         plays = _find_plays(**args)
+        if not plays:
+            abort(404, message="Play {} doesn't exist".format(id),
+                  help=api_utils.help(parser.args, PLAY_FIELDS))
+
         return marshal(plays, PLAY_FIELDS), 200
 
     @staticmethod
@@ -103,7 +117,7 @@ class PlayRestApi(Resource):
 
 def _find_plays(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [Play.query.get(kwargs['id'])]
+        return Play.query.get(kwargs['id'])
 
     query = Play.query
     if 'playbook_id' in kwargs and kwargs['playbook_id'] is not None:
@@ -129,4 +143,4 @@ def _find_plays(**kwargs):
     return query.order_by(Play.id.desc()).all()
 
 
-api.add_resource(PlayRestApi, '')
+api.add_resource(PlayRestApi, '', '/<int:id>')
