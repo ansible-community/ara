@@ -91,10 +91,27 @@ class TestApiTasks(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
+    def test_get_http_with_bad_params_404_help(self):
+        res = self.client.get('/api/v1/tasks',
+                              query_string=dict(id=0))
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_with_bad_params_404_help(self):
+        http = self.client.get('/api/v1/tasks',
+                               query_string=dict(id=0))
+        internal = TaskApi().get(id=0)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/tasks')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
         http = self.client.get('/api/v1/tasks')
@@ -139,18 +156,13 @@ class TestApiTasks(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
-    def test_get_http_with_id(self):
+    def test_get_http_with_id_parameter(self):
         ctx = ansible_run()
 
         res = self.client.get('/api/v1/tasks', query_string=dict(id=1))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one play we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['task'].id, 1)
-
-        data = data[0]
         self.assertEqual(ctx['task'].id,
                          data['id'])
         self.assertEqual(ctx['task'].playbook_id,
@@ -174,7 +186,7 @@ class TestApiTasks(TestAra):
         self.assertEqual(ctx['task'].time_end.isoformat(),
                          data['ended'])
 
-    def test_get_internal_with_id(self):
+    def test_get_internal_with_id_parameter(self):
         ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -182,6 +194,48 @@ class TestApiTasks(TestAra):
         self.assertEqual(len(playbooks), 2)
 
         http = self.client.get('/api/v1/tasks', query_string=dict(id=1))
+        internal = TaskApi().get(id=1)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    def test_get_http_with_id_url(self):
+        ctx = ansible_run()
+
+        res = self.client.get('/api/v1/tasks/1')
+        self.assertEqual(res.status_code, 200)
+
+        data = jsonutils.loads(res.data)
+        self.assertEqual(ctx['task'].id,
+                         data['id'])
+        self.assertEqual(ctx['task'].playbook_id,
+                         data['playbook_id'])
+        self.assertEqual(ctx['task'].play_id,
+                         data['play_id'])
+        self.assertEqual(ctx['task'].file_id,
+                         data['file_id'])
+        self.assertEqual(ctx['task'].name,
+                         data['name'])
+        self.assertEqual(ctx['task'].action,
+                         data['action'])
+        self.assertEqual(ctx['task'].lineno,
+                         data['lineno'])
+        self.assertEqual(ctx['task'].tags,
+                         data['tags'])
+        self.assertEqual(ctx['task'].is_handler,
+                         data['handler'])
+        self.assertEqual(ctx['task'].time_start.isoformat(),
+                         data['started'])
+        self.assertEqual(ctx['task'].time_end.isoformat(),
+                         data['ended'])
+
+    def test_get_internal_with_id_url(self):
+        ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        playbooks = models.Playbook.query.all()
+        self.assertEqual(len(playbooks), 2)
+
+        http = self.client.get('/api/v1/tasks/1')
         internal = TaskApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

@@ -20,6 +20,7 @@ from ara.db.models import Task
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -50,13 +51,26 @@ class TaskRestApi(Resource):
     """
     REST API for Tasks: api.v1.tasks
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            task = _find_tasks(id=id)
+            if task is None:
+                abort(404, message="Task {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, TASK_FIELDS))
+
+            return marshal(task, TASK_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, TASK_FIELDS)
 
         tasks = _find_tasks(**args)
+        if not tasks:
+            abort(404, message="Task {} doesn't exist".format(id),
+                  help=api_utils.help(parser.args, TASK_FIELDS))
+
         return marshal(tasks, TASK_FIELDS), 200
 
     @staticmethod
@@ -151,7 +165,7 @@ class TaskRestApi(Resource):
 
 def _find_tasks(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [Task.query.get(kwargs['id'])]
+        return Task.query.get(kwargs['id'])
 
     query = Task.query
     if 'playbook_id' in kwargs and kwargs['playbook_id'] is not None:
@@ -203,4 +217,4 @@ def _find_tasks(**kwargs):
     return query.order_by(Task.id.desc()).all()
 
 
-api.add_resource(TaskRestApi, '')
+api.add_resource(TaskRestApi, '', '/<int:id>')
