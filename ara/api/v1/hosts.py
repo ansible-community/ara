@@ -20,6 +20,7 @@ from ara.db.models import Host
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_restful import abort
 from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
@@ -48,13 +49,26 @@ class HostRestApi(Resource):
     """
     REST API for Hosts: api.v1.hosts
     """
-    def get(self):
+    def get(self, id=None):
         parser = self._get_parser()
+
+        if id is not None:
+            host = _find_hosts(id=id)
+            if host is None:
+                abort(404, message="Host {} doesn't exist".format(id),
+                      help=api_utils.help(parser.args, HOST_FIELDS))
+
+            return marshal(host, HOST_FIELDS), 200
+
         args = parser.parse_args()
         if args.help:
             return api_utils.help(parser.args, HOST_FIELDS)
 
         hosts = _find_hosts(**args)
+        if not hosts:
+            abort(404, message='No hosts found for this query',
+                  help=api_utils.help(parser.args, HOST_FIELDS))
+
         return marshal(hosts, HOST_FIELDS), 200
 
     @staticmethod
@@ -93,7 +107,7 @@ class HostRestApi(Resource):
 
 def _find_hosts(**kwargs):
     if 'id' in kwargs and kwargs['id'] is not None:
-        return [Host.query.get(kwargs['id'])]
+        return Host.query.get(kwargs['id'])
 
     query = Host.query
     if 'playbook_id' in kwargs and kwargs['playbook_id'] is not None:
@@ -109,4 +123,4 @@ def _find_hosts(**kwargs):
     return query.order_by(Host.id.desc()).all()
 
 
-api.add_resource(HostRestApi, '')
+api.add_resource(HostRestApi, '', '/<int:id>')

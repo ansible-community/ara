@@ -91,10 +91,27 @@ class TestApiHosts(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
+    def test_get_http_with_bad_params_404_help(self):
+        res = self.client.get('/api/v1/hosts',
+                              query_string=dict(id=0))
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
+
+    def test_get_internal_with_bad_params_404_help(self):
+        http = self.client.get('/api/v1/hosts',
+                               query_string=dict(id=0))
+        internal = HostApi().get(id=0)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
     def test_get_http_without_parameters_and_data(self):
         res = self.client.get('/api/v1/hosts')
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, b"[]\n")
+        self.assertEqual(res.status_code, 404)
+        # TODO: Improve this
+        self.assertTrue(b'result_output' in res.data)
+        self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
         http = self.client.get('/api/v1/hosts')
@@ -137,7 +154,7 @@ class TestApiHosts(TestAra):
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
-    def test_get_http_with_id(self):
+    def test_get_http_with_id_parameter(self):
         ctx = ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -148,11 +165,6 @@ class TestApiHosts(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        # Ensure we only get the one playbook we want back
-        self.assertEqual(len(data), 1)
-        self.assertEqual(ctx['host'].id, 1)
-
-        data = data[0]
         self.assertEqual(ctx['host'].id,
                          data['id'])
         self.assertEqual(ctx['host'].playbook_id,
@@ -174,7 +186,7 @@ class TestApiHosts(TestAra):
         self.assertEqual(ctx['host'].unreachable,
                          data['unreachable'])
 
-    def test_get_internal_with_id(self):
+    def test_get_internal_with_id_parameter(self):
         ansible_run()
         # Run twice to get a second playbook
         ansible_run()
@@ -182,6 +194,50 @@ class TestApiHosts(TestAra):
         self.assertEqual(len(hosts), 2)
 
         http = self.client.get('/api/v1/hosts', query_string=dict(id=1))
+        internal = HostApi().get(id=1)
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    def test_get_http_with_id_url(self):
+        ctx = ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        hosts = models.Host.query.all()
+        self.assertEqual(len(hosts), 2)
+
+        res = self.client.get('/api/v1/hosts/1')
+        self.assertEqual(res.status_code, 200)
+
+        data = jsonutils.loads(res.data)
+        self.assertEqual(ctx['host'].id,
+                         data['id'])
+        self.assertEqual(ctx['host'].playbook_id,
+                         data['playbook_id'])
+        self.assertEqual(ctx['host'].name,
+                         data['name'])
+        self.assertEqual(ctx['host'].facts.values,
+                         data['facts'])
+        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+                         data['timestamp'])
+        self.assertEqual(ctx['host'].changed,
+                         data['changed'])
+        self.assertEqual(ctx['host'].failed,
+                         data['failed'])
+        self.assertEqual(ctx['host'].ok,
+                         data['ok'])
+        self.assertEqual(ctx['host'].skipped,
+                         data['skipped'])
+        self.assertEqual(ctx['host'].unreachable,
+                         data['unreachable'])
+
+    def test_get_internal_with_id_url(self):
+        ansible_run()
+        # Run twice to get a second playbook
+        ansible_run()
+        hosts = models.Host.query.all()
+        self.assertEqual(len(hosts), 2)
+
+        http = self.client.get('/api/v1/hosts/1')
         internal = HostApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
