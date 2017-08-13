@@ -157,6 +157,10 @@ class TestApiPlays(TestAra):
                          data['started'])
         self.assertEqual(ctx['play'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['play'].results.all()),
+                         len(data['results']))
+        self.assertEqual(len(ctx['play'].tasks.all()),
+                         len(data['tasks']))
 
     def test_get_internal_without_parameters(self):
         ansible_run()
@@ -186,6 +190,10 @@ class TestApiPlays(TestAra):
                          data['started'])
         self.assertEqual(ctx['play'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['play'].results.all()),
+                         len(data['results']))
+        self.assertEqual(len(ctx['play'].tasks.all()),
+                         len(data['tasks']))
 
     def test_get_internal_with_id_parameter(self):
         ansible_run()
@@ -220,6 +228,10 @@ class TestApiPlays(TestAra):
                          data['started'])
         self.assertEqual(ctx['play'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['play'].results.all()),
+                         len(data['results']))
+        self.assertEqual(len(ctx['play'].tasks.all()),
+                         len(data['tasks']))
 
     def test_get_internal_with_id_url(self):
         ansible_run()

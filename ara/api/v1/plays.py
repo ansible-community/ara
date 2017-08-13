@@ -37,7 +37,15 @@ PLAY_FIELDS = {
     'started': fields.DateTime(attribute='time_start',
                                dt_format='iso8601'),
     'ended': fields.DateTime(attribute='time_end',
-                             dt_format='iso8601')
+                             dt_format='iso8601'),
+    'results': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('results.resultrestapi')
+    })),
+    'tasks': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('tasks.taskrestapi')
+    }))
 }
 
 
