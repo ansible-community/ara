@@ -347,9 +347,10 @@ class Host(Base):
     __table_args__ = (
         db.UniqueConstraint('playbook_id', 'name'),
     )
-    facts = one_to_one('HostFacts', backref='host')
     results = one_to_many('Result', backref='host')
 
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
+    facts = db.Column(CompressedData((2 ** 32) - 1), default={})
     changed = db.Column(db.Integer, default=0)
     failed = db.Column(db.Integer, default=0)
     ok = db.Column(db.Integer, default=0)
@@ -360,24 +361,6 @@ class Host(Base):
 
     def __repr__(self):
         return '<Host %s>' % self.name
-
-
-class HostFacts(Base):
-    """
-    The 'HostFacts' object represents a host reference by an Ansible
-    inventory. It is meant to record facts when a setup task is run for a host.
-
-    A 'HostFacts' entity has the following relationship:
-    - 'hosts' -- the host owner of the facts
-    """
-    __tablename__ = 'host_facts'
-
-    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    values = db.Column(CompressedData((2 ** 32) - 1))
-
-    def __repr__(self):
-        return '<HostFacts %s>' % self.host.name
 
 
 class Record(Base):

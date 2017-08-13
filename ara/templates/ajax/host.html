@@ -1,6 +1,6 @@
 {% macro render_host_facts(host) -%}
-    {% if host.facts.values -%}
-        {% set facts = host.facts.values -%}
+    {% if host.facts -%}
+        {% set facts = host.facts -%}
         {% set items = ['ansible_fqdn',
                         'ansible_processor_cores',
                         'ansible_processor_vcpus',

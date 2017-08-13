@@ -154,7 +154,6 @@ pbid=$(ara playbook list -c ID -f value |head -n1)
 ara playbook show $pbid -f json
 ara host list -b $pbid -f yaml
 ara host show -b $pbid localhost
-ara host facts -b $pbid localhost
 ara record list -b $pbid -f csv
 ara record show -b $pbid foo
 ara play show $(ara play list -a -c ID -f value |head -n1)

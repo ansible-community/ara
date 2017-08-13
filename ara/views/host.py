@@ -15,7 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import six
 from flask import Blueprint
 from flask import abort
 from flask import current_app
@@ -52,11 +51,7 @@ def show_host(id):
     except models.NoResultFound:
         abort(404)
 
-    if host and host.facts:
-        facts = sorted(six.iteritems(host.facts.values))
-    else:
+    if host is None or not host.facts:
         abort(404)
 
-    return render_template('host.html',
-                           host=host,
-                           facts=facts)
+    return render_template('host.html', host=host)

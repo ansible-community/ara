@@ -59,12 +59,12 @@ class TestModels(TestAra):
 
         self.host = fakes.Host(name='localhost',
                                playbook=self.playbook,
+                               facts={'fact', 'value'},
                                changed=0,
                                failed=0,
                                skipped=0,
                                unreachable=0,
                                ok=0).model
-        self.host_facts = fakes.HostFacts(host=self.host).model
 
         self.result = fakes.Result(playbook=self.playbook,
                                    play=self.play,
@@ -73,8 +73,7 @@ class TestModels(TestAra):
                                    host=self.host).model
 
         for obj in [self.playbook, self.playbook_file, self.play,
-                    self.task, self.record, self.host, self.host_facts,
-                    self.result]:
+                    self.task, self.record, self.host, self.result]:
             m.db.session.add(obj)
 
         m.db.session.commit()
@@ -164,13 +163,6 @@ class TestModels(TestAra):
 
         self.assertEqual(host1, self.host)
         self.assertEqual(host2, self.host)
-
-    def test_host_facts(self):
-        host = m.Host.query.filter_by(name='localhost').one()
-        facts = m.HostFacts.query.filter_by(host_id=host.id).one()
-        facts_from_host = host.facts
-
-        self.assertEqual(facts.values, facts_from_host.values)
 
     def test_duplicate_host(self):
         host = m.Host(

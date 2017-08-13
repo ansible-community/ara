@@ -16,7 +16,6 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import six
 
 from ara.db import models
 from ara.fields import Field
@@ -31,7 +30,7 @@ LIST_FIELDS = (
     Field('Ok'),
     Field('Skipped'),
     Field('Unreachable'),
-    Field('Latest facts', 'facts.timestamp')
+    Field('Latest facts', 'timestamp')
 )
 
 SHOW_FIELDS = (
@@ -44,7 +43,9 @@ SHOW_FIELDS = (
     Field('Unreachable'),
     Field('Playbook ID', 'playbook.id'),
     Field('Playbook Path', 'playbook.path'),
-    Field('Latest facts', 'facts.timestamp')
+    Field('Latest facts', 'timestamp'),
+    # TODO: Make this readable
+    Field('facts', template="{{ value.items() | sort | to_nice_json | safe }}")
 )
 
 
@@ -111,50 +112,3 @@ class HostShow(ShowOne):
 
         return [[field.name for field in SHOW_FIELDS],
                 [field(host) for field in SHOW_FIELDS]]
-
-
-class HostFacts(ShowOne):
-    """ Show facts for a host """
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(HostFacts, self).get_parser(prog_name)
-        parser.add_argument(
-            '--playbook', '-b',
-            metavar='<playbook-id>',
-            type=int,
-            help='Find host associated with the given playbook',
-        )
-        parser.add_argument(
-            'host',
-            metavar='<host>',
-            help='Host id (or name when using --playbook) to show facts for',
-        )
-        parser.add_argument(
-            'fact',
-            nargs='*',
-            metavar='<fact>',
-            help='Show only named fact(s)',
-        )
-        return parser
-
-    def take_action(self, args):
-        try:
-            if args.playbook:
-                host = (models.Host.query
-                        .filter_by(playbook_id=args.playbook)
-                        .filter((models.Host.id == args.host) |
-                                (models.Host.name == args.host)).one())
-            else:
-                host = models.Host.query.filter_by(id=args.host).one()
-        except (models.NoResultFound, models.MultipleResultsFound):
-            raise RuntimeError('Host %s could not be found' % args.host)
-
-        if not host.facts:
-            raise RuntimeError('No facts available for host %s' % args.host)
-
-        facts = ((k, v) for k, v in
-                 six.iteritems(host.facts.values)
-                 if not args.fact or k in args.fact
-                 )
-        return six.moves.zip(*sorted(facts))

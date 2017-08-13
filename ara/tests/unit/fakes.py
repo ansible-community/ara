@@ -91,14 +91,15 @@ class FileContent(object):
 
 
 class Host(object):
-    def __init__(self, name=None, playbook=None, changed=1, failed=0, ok=1,
-                 skipped=1, unreachable=0):
+    def __init__(self, name=None, playbook=None, facts=None, changed=0,
+                 failed=0, ok=0, skipped=0, unreachable=0):
         if name is None:
             name = 'host-%04d' % random.randint(0, 9999)
         self.name = name
         if playbook is None:
             playbook = Playbook().model
         self.playbook = playbook
+        self.facts = facts
 
         self.changed = changed
         self.failed = failed
@@ -113,22 +114,13 @@ class Host(object):
     @property
     def model(self):
         return m.Host(name=self.name,
-                      playbook=self.playbook)
-
-
-class HostFacts(object):
-    def __init__(self, host=None, values=None):
-        if host is None:
-            host = Host().model
-        self.host = host
-        if values is None:
-            values = {"fact": "value"}
-        self.values = values
-
-    @property
-    def model(self):
-        return m.HostFacts(host=self.host,
-                           values=self.values)
+                      playbook=self.playbook,
+                      facts=self.facts,
+                      changed=self.changed,
+                      failed=self.failed,
+                      ok=self.ok,
+                      skipped=self.skipped,
+                      unreachable=self.unreachable)
 
 
 class Playbook(object):

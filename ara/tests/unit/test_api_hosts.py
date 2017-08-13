@@ -153,9 +153,9 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
-        self.assertEqual(ctx['host'].facts.values,
+        self.assertEqual(ctx['host'].facts,
                          data['facts'])
-        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+        self.assertEqual(ctx['host'].timestamp.isoformat(),
                          data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
@@ -192,9 +192,9 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
-        self.assertEqual(ctx['host'].facts.values,
+        self.assertEqual(ctx['host'].facts,
                          data['facts'])
-        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+        self.assertEqual(ctx['host'].timestamp.isoformat(),
                          data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])
@@ -236,9 +236,9 @@ class TestApiHosts(TestAra):
                          data['playbook_id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
-        self.assertEqual(ctx['host'].facts.values,
+        self.assertEqual(ctx['host'].facts,
                          data['facts'])
-        self.assertEqual(ctx['host'].facts.timestamp.isoformat(),
+        self.assertEqual(ctx['host'].timestamp.isoformat(),
                          data['timestamp'])
         self.assertEqual(ctx['host'].changed,
                          data['changed'])

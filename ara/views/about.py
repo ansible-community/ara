@@ -32,9 +32,6 @@ def main():
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
         files = (models.File.query
                  .filter(models.File.playbook_id.in_(override)))
-        host_facts = (models.HostFacts.query
-                      .join(models.Host)
-                      .filter(models.Host.playbook_id.in_(override)))
         hosts = (models.Host.query
                  .filter(models.Host.playbook_id.in_(override)))
         playbooks = (models.Playbook.query
@@ -48,7 +45,6 @@ def main():
                    .filter(models.Task.playbook_id.in_(override)))
     else:
         files = models.File.query
-        host_facts = models.HostFacts.query
         hosts = models.Host.query
         playbooks = models.Playbook.query
         records = models.Record.query
@@ -58,7 +54,6 @@ def main():
     return render_template('about.html',
                            active='about',
                            files=fast_count(files),
-                           host_facts=fast_count(host_facts),
                            hosts=fast_count(hosts),
                            playbooks=fast_count(playbooks),
                            records=fast_count(records),

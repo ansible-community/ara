@@ -186,9 +186,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     results.append(failed_result)
 
     if gather_facts:
-        facts = fakes.HostFacts(host=host).model
-        ctx['facts'] = facts
-        items.append(facts)
+        ctx['host'].facts = {'fact': 'value'}
 
     for item in items + tasks + results:
         if hasattr(item, 'start'):

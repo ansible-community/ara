@@ -193,54 +193,6 @@ class TestCLIHost(TestAra):
         with self.assertRaises(RuntimeError):
             cmd.take_action(args)
 
-    def test_host_fact_by_id(self):
-        ctx = ansible_run()
-
-        cmd = ara.cli.host.HostFacts(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['host'].id)])
-        res = cmd.take_action(args)
-
-        facts = ctx['facts'].values
-        expected = six.moves.zip(*sorted(six.iteritems(facts)))
-        self.assertSequenceEqual(list(res), list(expected))
-
-    def test_host_fact_by_name(self):
-        ctx = ansible_run()
-
-        cmd = ara.cli.host.HostFacts(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([
-            '-b',
-            six.text_type(ctx['host'].playbook.id),
-            ctx['host'].name
-        ])
-        res = cmd.take_action(args)
-
-        facts = ctx['facts'].values
-        expected = six.moves.zip(*sorted(six.iteritems(facts)))
-        self.assertSequenceEqual(list(res), list(expected))
-
-    def test_host_fact_non_existing_host(self):
-        ansible_run()
-
-        cmd = ara.cli.host.HostFacts(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(9)])
-
-        with self.assertRaises(RuntimeError):
-            cmd.take_action(args)
-
-    def test_host_fact_existing_host_non_existing_facts(self):
-        ctx = ansible_run(gather_facts=False)
-
-        cmd = ara.cli.host.HostFacts(None, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['host'].id)])
-
-        with self.assertRaises(RuntimeError):
-            cmd.take_action(args)
-
 
 class TestCLIPlay(TestAra):
     """ Tests for the ARA CLI play commands """
@@ -405,8 +357,6 @@ class TestCLIPlaybook(TestAra):
         tr = m.Result.query.count()  # compared later
         h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
         self.assertNotEqual(h.count(), 0)
-        hf = m.HostFacts.query
-        self.assertNotEqual(hf.count(), 0)
 
         # Delete the first playbook
         cmd = ara.cli.playbook.PlaybookDelete(None, None)
@@ -433,8 +383,6 @@ class TestCLIPlaybook(TestAra):
         self.assertNotEqual(tr, new_tr)
         h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
         self.assertEqual(h.count(), 0)
-        hf = m.HostFacts.query
-        self.assertEqual(hf.count(), 0)
 
 
 class TestCLIResult(TestAra):
