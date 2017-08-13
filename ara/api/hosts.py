@@ -32,17 +32,17 @@ class HostApi(object):
         self.client = current_app.test_client()
 
     def get(self, **kwargs):
-        data = self.client.get('/api/v1/hosts', query_string=kwargs)
+        data = self.client.get('/api/v1/hosts/', query_string=kwargs)
         return data
 
     def post(self, **kwargs):
-        data = self.client.post('/api/v1/hosts', data=kwargs)
+        data = self.client.post('/api/v1/hosts/', data=kwargs)
         return data
 
     def put(self, **kwargs):
-        data = self.client.put('/api/v1/hosts', data=kwargs)
+        data = self.client.put('/api/v1/hosts/', data=kwargs)
         return data
 
     def delete(self, **kwargs):
-        data = self.client.delete('/api/v1/hosts', data=kwargs)
+        data = self.client.delete('/api/v1/hosts/', data=kwargs)
         return data

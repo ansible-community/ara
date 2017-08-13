@@ -19,8 +19,10 @@ from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.files import FileApi
 import ara.db.models as models
+import pytest
 
 from oslo_serialization import jsonutils
+from werkzeug.routing import RequestRedirect
 
 
 class TestApiFiles(TestAra):
@@ -34,13 +36,18 @@ class TestApiFiles(TestAra):
     ###########
     # POST
     ###########
+    def test_post_http_redirect(self):
+        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
+        with pytest.raises(RequestRedirect):
+            self.client.post('/api/v1/files')
+
     # Not implemented yet
     def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/files')
+        res = self.client.post('/api/v1/files/')
         self.assertEqual(res.status_code, 405)
 
     def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/files')
+        http = self.client.post('/api/v1/files/')
         internal = FileApi().post()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -48,13 +55,18 @@ class TestApiFiles(TestAra):
     ###########
     # PUT
     ###########
+    def test_put_http_redirect(self):
+        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
+        with pytest.raises(RequestRedirect):
+            self.client.put('/api/v1/files')
+
     # Not implemented yet
     def test_put_http_unimplemented(self):
-        res = self.client.put('/api/v1/files')
+        res = self.client.put('/api/v1/files/')
         self.assertEqual(res.status_code, 405)
 
     def test_put_internal_unimplemented(self):
-        http = self.client.put('/api/v1/files')
+        http = self.client.put('/api/v1/files/')
         internal = FileApi().put()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -62,13 +74,18 @@ class TestApiFiles(TestAra):
     ###########
     # DELETE
     ###########
+    def test_delete_http_redirect(self):
+        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
+        with pytest.raises(RequestRedirect):
+            self.client.delete('/api/v1/files')
+
     # Not implemented yet
     def test_delete_http_unimplemented(self):
-        res = self.client.delete('/api/v1/files')
+        res = self.client.delete('/api/v1/files/')
         self.assertEqual(res.status_code, 405)
 
     def test_delete_internal_unimplemented(self):
-        http = self.client.delete('/api/v1/files')
+        http = self.client.delete('/api/v1/files/')
         internal = FileApi().delete()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -76,8 +93,12 @@ class TestApiFiles(TestAra):
     ###########
     # GET
     ###########
+    def test_get_http_redirect(self):
+        res = self.client.get('/api/v1/files')
+        self.assertEqual(res.status_code, 301)
+
     def test_get_http_help(self):
-        res = self.client.get('/api/v1/files',
+        res = self.client.get('/api/v1/files/',
                               query_string=dict(help=True))
         self.assertEqual(res.status_code, 200)
         # TODO: Improve this
@@ -85,14 +106,14 @@ class TestApiFiles(TestAra):
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_help(self):
-        http = self.client.get('/api/v1/files',
+        http = self.client.get('/api/v1/files/',
                                query_string=dict(help=True))
         internal = FileApi().get(help=True)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_bad_params_404_help(self):
-        res = self.client.get('/api/v1/files',
+        res = self.client.get('/api/v1/files/',
                               query_string=dict(id=0))
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
@@ -100,28 +121,28 @@ class TestApiFiles(TestAra):
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_with_bad_params_404_help(self):
-        http = self.client.get('/api/v1/files',
+        http = self.client.get('/api/v1/files/',
                                query_string=dict(id=0))
         internal = FileApi().get(id=0)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/files')
+        res = self.client.get('/api/v1/files/')
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/files')
+        http = self.client.get('/api/v1/files/')
         internal = FileApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
         ctx = ansible_run()
-        res = self.client.get('/api/v1/files')
+        res = self.client.get('/api/v1/files/')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)[1]
@@ -141,7 +162,7 @@ class TestApiFiles(TestAra):
 
     def test_get_internal_without_parameters(self):
         ansible_run()
-        http = self.client.get('/api/v1/files')
+        http = self.client.get('/api/v1/files/')
         internal = FileApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -151,7 +172,7 @@ class TestApiFiles(TestAra):
         files = models.File.query.all()
         self.assertEqual(len(files), 2)
 
-        res = self.client.get('/api/v1/files', query_string=dict(id=1))
+        res = self.client.get('/api/v1/files/', query_string=dict(id=1))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
@@ -173,7 +194,7 @@ class TestApiFiles(TestAra):
         files = models.File.query.all()
         self.assertEqual(len(files), 2)
 
-        http = self.client.get('/api/v1/files', query_string=dict(id=1))
+        http = self.client.get('/api/v1/files/', query_string=dict(id=1))
         internal = FileApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

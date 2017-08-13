@@ -16,11 +16,6 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
-from ara.api.v1.files import FILE_FIELDS
-from ara.api.v1.hosts import HOST_FIELDS
-from ara.api.v1.plays import PLAY_FIELDS
-from ara.api.v1.results import RESULT_FIELDS
-from ara.api.v1.tasks import TASK_FIELDS
 from ara.db.models import Playbook
 
 from flask import Blueprint
@@ -45,11 +40,26 @@ PLAYBOOK_FIELDS = {
     'ended': fields.DateTime(attribute='time_end',
                              dt_format='iso8601'),
     'parameters': fields.Raw,
-    'files': fields.List(fields.Nested(FILE_FIELDS)),
-    'hosts': fields.List(fields.Nested(HOST_FIELDS)),
-    'plays': fields.List(fields.Nested(PLAY_FIELDS)),
-    'results': fields.List(fields.Nested(RESULT_FIELDS)),
-    'tasks': fields.List(fields.Nested(TASK_FIELDS))
+    'files': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('files.filerestapi')
+    })),
+    'hosts': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('hosts.hostrestapi')
+    })),
+    'plays': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('plays.playrestapi')
+    })),
+    'results': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('results.resultrestapi')
+    })),
+    'tasks': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('tasks.taskrestapi')
+    }))
 }
 
 
@@ -169,4 +179,10 @@ def _find_playbooks(**kwargs):
     return query.order_by(Playbook.id.desc()).all()
 
 
-api.add_resource(PlaybookRestApi, '', '/<int:id>')
+# Note (dmsimard)
+# We are (unfortunately) routing /api/v1/<resource>/ instead of
+# /api/v1/<resource> so that flask-frozen creates a <resource> directory
+# instead of a <resource> file.
+# In practice, the endpoint <resource> returns a 301 redirection to <resource>/
+# when used on a live HTTP server.
+api.add_resource(PlaybookRestApi, '/', '', '/<int:id>')
