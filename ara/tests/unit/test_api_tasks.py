@@ -169,6 +169,8 @@ class TestApiTasks(TestAra):
                          data['started'])
         self.assertEqual(ctx['task'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['task'].results.all()),
+                         len(data['results']))
 
     def test_get_internal_without_parameters(self):
         ansible_run()
@@ -206,6 +208,8 @@ class TestApiTasks(TestAra):
                          data['started'])
         self.assertEqual(ctx['task'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['task'].results.all()),
+                         len(data['results']))
 
     def test_get_internal_with_id_parameter(self):
         ansible_run()
@@ -248,6 +252,8 @@ class TestApiTasks(TestAra):
                          data['started'])
         self.assertEqual(ctx['task'].time_end.isoformat(),
                          data['ended'])
+        self.assertEqual(len(ctx['task'].results.all()),
+                         len(data['results']))
 
     def test_get_internal_with_id_url(self):
         ansible_run()
