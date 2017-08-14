@@ -21,6 +21,7 @@ import ara.api.v1.hosts
 import ara.api.v1.files
 import ara.api.v1.playbooks
 import ara.api.v1.plays
+import ara.api.v1.records
 import ara.api.v1.results
 import ara.api.v1.tasks
 import logging
@@ -51,6 +52,7 @@ endpoints = (
     (ara.api.v1.files.blueprint, '/api/v1/files'),
     (ara.api.v1.playbooks.blueprint, '/api/v1/playbooks'),
     (ara.api.v1.plays.blueprint, '/api/v1/plays'),
+    (ara.api.v1.records.blueprint, '/api/v1/records'),
     (ara.api.v1.results.blueprint, '/api/v1/results'),
     (ara.api.v1.tasks.blueprint, '/api/v1/tasks'),
 )

@@ -52,6 +52,10 @@ PLAYBOOK_FIELDS = {
         'id': fields.Integer,
         'href': fields.Url('plays.playrestapi')
     })),
+    'records': fields.List(fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('records.recordrestapi')
+    })),
     'results': fields.List(fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('results.resultrestapi')

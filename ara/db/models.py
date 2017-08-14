@@ -381,4 +381,4 @@ class Record(Base):
     type = db.Column(db.String(255))
 
     def __repr__(self):
-        return '<Data %s:%s>' % (self.playbook_id, self.key)
+        return '<Record %s:%s>' % (self.playbook_id, self.key)

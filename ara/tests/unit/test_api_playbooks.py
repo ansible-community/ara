@@ -258,6 +258,8 @@ class TestApiPlaybooks(TestAra):
                          len(data['hosts']))
         self.assertEqual(len(ctx['playbook'].plays.all()),
                          len(data['plays']))
+        self.assertEqual(len(ctx['playbook'].records.all()),
+                         len(data['records']))
         self.assertEqual(len(ctx['playbook'].results.all()),
                          len(data['results']))
         self.assertEqual(len(ctx['playbook'].tasks.all()),
