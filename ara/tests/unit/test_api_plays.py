@@ -53,6 +53,25 @@ class TestApiPlays(TestAra):
         self.assertEqual(http.data, internal.data)
 
     ###########
+    # PATCH
+    ###########
+    def test_patch_http_redirect(self):
+        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
+        with pytest.raises(RequestRedirect):
+            self.client.patch('/api/v1/plays')
+
+    # Not implemented yet
+    def test_patch_http_unimplemented(self):
+        res = self.client.patch('/api/v1/plays/')
+        self.assertEqual(res.status_code, 405)
+
+    def test_patch_internal_unimplemented(self):
+        http = self.client.patch('/api/v1/plays/')
+        internal = PlayApi().patch()
+        self.assertEqual(http.status_code, internal.status_code)
+        self.assertEqual(http.data, internal.data)
+
+    ###########
     # PUT
     ###########
     def test_put_http_redirect(self):
