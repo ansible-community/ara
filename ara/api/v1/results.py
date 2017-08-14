@@ -71,7 +71,7 @@ class ResultRestApi(Resource):
 
         results = _find_results(**args)
         if not results:
-            abort(404, message="Result {} doesn't exist".format(id),
+            abort(404, message="No results found for this query",
                   help=api_utils.help(parser.args, RESULT_FIELDS))
 
         return marshal(results, RESULT_FIELDS), 200

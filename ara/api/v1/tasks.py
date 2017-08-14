@@ -72,7 +72,7 @@ class TaskRestApi(Resource):
 
         tasks = _find_tasks(**args)
         if not tasks:
-            abort(404, message="Task {} doesn't exist".format(id),
+            abort(404, message="No tasks found for this query",
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
         return marshal(tasks, TASK_FIELDS), 200

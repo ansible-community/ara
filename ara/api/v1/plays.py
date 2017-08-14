@@ -70,7 +70,7 @@ class PlayRestApi(Resource):
 
         plays = _find_plays(**args)
         if not plays:
-            abort(404, message="Play {} doesn't exist".format(id),
+            abort(404, message="No plays found for this query",
                   help=api_utils.help(parser.args, PLAY_FIELDS))
 
         return marshal(plays, PLAY_FIELDS), 200
