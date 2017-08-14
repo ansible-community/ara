@@ -43,10 +43,8 @@ RESULT_FIELDS = {
     'unreachable': fields.Boolean,
     'ignore_errors': fields.Boolean,
     'result': fields.Raw,
-    'started': fields.DateTime(attribute='time_start',
-                               dt_format='iso8601'),
-    'ended': fields.DateTime(attribute='time_end',
-                             dt_format='iso8601')
+    'started': fields.DateTime(dt_format='iso8601'),
+    'ended': fields.DateTime(dt_format='iso8601')
 }
 
 
@@ -219,12 +217,12 @@ def _find_results(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Result.time_end
+            kwargs['before'] < Result.ended
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Result.time_end
+            kwargs['after'] > Result.ended
         )
 
     return query.order_by(Result.id.desc()).all()

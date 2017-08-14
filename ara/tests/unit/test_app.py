@@ -52,7 +52,7 @@ class TestApp(TestAra):
         self.assertEqual(res.status_code, 200)
 
     def test_reports_with_incomplete(self):
-        ansible_run(complete=False)
+        ansible_run(completed=False)
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
@@ -198,6 +198,6 @@ class TestApp(TestAra):
 
     @pytest.mark.incomplete
     def test_show_result_incomplete(self):
-        ctx = ansible_run(complete=False)
+        ctx = ansible_run(completed=False)
         res = self.client.get('/result/{}/'.format(ctx['result'].id))
         self.assertEqual(res.status_code, 200)

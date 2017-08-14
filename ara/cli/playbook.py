@@ -29,17 +29,17 @@ LIST_FIELDS = (
     Field('Path'),
     Field('Time Start'),
     Field('Duration'),
-    Field('Complete'),
+    Field('Completed'),
     Field('Ansible Version'),
 )
 
 SHOW_FIELDS = (
     Field('ID'),
     Field('Path'),
-    Field('Time Start'),
-    Field('Time End'),
+    Field('Started'),
+    Field('Ended'),
     Field('Duration'),
-    Field('Complete'),
+    Field('Completed'),
     Field('Ansible Version'),
     Field('Parameters', template='{{ value | to_nice_json | safe }}')
 )
@@ -64,12 +64,12 @@ class PlaybookList(Lister):
         return parser
 
     def take_action(self, args):
-        playbooks = models.Playbook.query.order_by(models.Playbook.time_start)
+        playbooks = models.Playbook.query.order_by(models.Playbook.started)
 
         if args.incomplete:
-            playbooks = playbooks.filter_by(complete=False)
+            playbooks = playbooks.filter_by(completed=False)
         if args.complete:
-            playbooks = playbooks.filter_by(complete=True)
+            playbooks = playbooks.filter_by(completed=True)
 
         return [[field.name for field in LIST_FIELDS],
                 [[field(playbook) for field in LIST_FIELDS]
@@ -133,7 +133,7 @@ class PlaybookDelete(Command):
 
         if args.incomplete:
             pids = (playbook.id for playbook in
-                    models.Playbook.query.filter_by(complete=False))
+                    models.Playbook.query.filter_by(completed=False))
         else:
             pids = []
             for pid in args.playbook_id:

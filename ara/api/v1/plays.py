@@ -34,10 +34,8 @@ PLAY_FIELDS = {
     'id': fields.Integer,
     'playbook_id': fields.Integer,
     'name': fields.String,
-    'started': fields.DateTime(attribute='time_start',
-                               dt_format='iso8601'),
-    'ended': fields.DateTime(attribute='time_end',
-                             dt_format='iso8601'),
+    'started': fields.DateTime(dt_format='iso8601'),
+    'ended': fields.DateTime(dt_format='iso8601'),
     'results': fields.List(fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('results.resultrestapi')
@@ -140,12 +138,12 @@ def _find_plays(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Play.time_end
+            kwargs['before'] < Play.ended
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Play.time_end
+            kwargs['after'] > Play.ended
         )
 
     return query.order_by(Play.id.desc()).all()

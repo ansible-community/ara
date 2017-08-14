@@ -46,7 +46,7 @@ class TestUtils(TestAra):
         self.assertEqual('success', res[playbook]['status'])
 
     def test_get_summary_stats_incomplete(self):
-        ctx = ansible_run(complete=False)
+        ctx = ansible_run(completed=False)
         playbook = ctx['playbook'].id
         res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
 

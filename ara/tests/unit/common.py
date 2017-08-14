@@ -47,7 +47,7 @@ class TestAra(unittest.TestCase):
         self.app_context.pop()
 
 
-def ansible_run(complete=True, failed=False, gather_facts=True,
+def ansible_run(completed=True, failed=False, gather_facts=True,
                 ara_record=False):
     """
     Simulates an Ansible run by creating the expected database objects.
@@ -80,7 +80,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     Set the 'ara_record' parameter to 'True' to simulate a run with an
     ara_record task.
     """
-    playbook = fakes.Playbook(complete=complete, path='/playbook.yml').model
+    playbook = fakes.Playbook(completed=completed, path='/playbook.yml').model
     pb_file = fakes.File(playbook=playbook,
                          is_playbook=True,
                          path=playbook.path).model
@@ -192,7 +192,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
         if hasattr(item, 'start'):
             item.start()
 
-    if complete:
+    if completed:
         ctx['host'].ok = 1
         ctx['host'].changed = 1
         ctx['host'].skipped = int(skipped)

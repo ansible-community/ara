@@ -36,7 +36,7 @@
           <h2>Tags: <strong>{{ result.task.tags | from_json | join(', ') }}</strong></h2>
           {% endif -%}
           <h2>Host: <strong>{{ result.host.name }}</strong></h2>
-          <p>Time: <strong>{{ result.time_start | datefmt }}</strong></p>
+          <p>Time: <strong>{{ result.started | datefmt }}</strong></p>
           <p>Ansible version: <strong>{{ result.task.playbook.ansible_version }}</strong></p>
           {% set result = result.result | from_json %}
           {% if 'results' in result %}

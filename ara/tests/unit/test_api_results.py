@@ -171,9 +171,9 @@ class TestApiResults(TestAra):
                          data['ignore_errors'])
         self.assertEqual(ctx['result'].result,
                          data['result'])
-        self.assertEqual(ctx['result'].time_start.isoformat(),
+        self.assertEqual(ctx['result'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['result'].time_end.isoformat(),
+        self.assertEqual(ctx['result'].ended.isoformat(),
                          data['ended'])
 
     def test_get_internal_without_parameters(self):
@@ -218,9 +218,9 @@ class TestApiResults(TestAra):
                          data['ignore_errors'])
         self.assertEqual(ctx['result'].result,
                          data['result'])
-        self.assertEqual(ctx['result'].time_start.isoformat(),
+        self.assertEqual(ctx['result'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['result'].time_end.isoformat(),
+        self.assertEqual(ctx['result'].ended.isoformat(),
                          data['ended'])
 
     def test_get_internal_with_id_parameter(self):
@@ -270,9 +270,9 @@ class TestApiResults(TestAra):
                          data['ignore_errors'])
         self.assertEqual(ctx['result'].result,
                          data['result'])
-        self.assertEqual(ctx['result'].time_start.isoformat(),
+        self.assertEqual(ctx['result'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['result'].time_end.isoformat(),
+        self.assertEqual(ctx['result'].ended.isoformat(),
                          data['ended'])
 
     def test_get_internal_with_id_url(self):

@@ -151,11 +151,11 @@ class TestApiPlaybooks(TestAra):
                          data['id'])
         self.assertEqual(ctx['playbook'].path,
                          data['path'])
-        self.assertEqual(ctx['playbook'].complete,
+        self.assertEqual(ctx['playbook'].completed,
                          data['completed'])
-        self.assertEqual(ctx['playbook'].time_start.isoformat(),
+        self.assertEqual(ctx['playbook'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['playbook'].time_end.isoformat(),
+        self.assertEqual(ctx['playbook'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(ctx['playbook'].parameters,
                          data['parameters'])
@@ -194,11 +194,11 @@ class TestApiPlaybooks(TestAra):
                          data['id'])
         self.assertEqual(ctx['playbook'].path,
                          data['path'])
-        self.assertEqual(ctx['playbook'].complete,
+        self.assertEqual(ctx['playbook'].completed,
                          data['completed'])
-        self.assertEqual(ctx['playbook'].time_start.isoformat(),
+        self.assertEqual(ctx['playbook'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['playbook'].time_end.isoformat(),
+        self.assertEqual(ctx['playbook'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(ctx['playbook'].parameters,
                          data['parameters'])
@@ -242,11 +242,11 @@ class TestApiPlaybooks(TestAra):
                          data['id'])
         self.assertEqual(ctx['playbook'].path,
                          data['path'])
-        self.assertEqual(ctx['playbook'].complete,
+        self.assertEqual(ctx['playbook'].completed,
                          data['completed'])
-        self.assertEqual(ctx['playbook'].time_start.isoformat(),
+        self.assertEqual(ctx['playbook'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['playbook'].time_end.isoformat(),
+        self.assertEqual(ctx['playbook'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(ctx['playbook'].parameters,
                          data['parameters'])
