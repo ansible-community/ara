@@ -64,9 +64,6 @@ class ResultRestApi(Resource):
             return marshal(result, RESULT_FIELDS)
 
         args = parser.parse_args()
-        if args.help:
-            return api_utils.help(parser.args, RESULT_FIELDS)
-
         results = _find_results(**args)
         if not results:
             abort(404, message="No results found for this query",
@@ -77,13 +74,6 @@ class ResultRestApi(Resource):
     @staticmethod
     def _get_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'help', dest='help',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Returns list of arguments for this endpoint'
-        )
         parser.add_argument(
             'id', dest='id',
             type=int,
