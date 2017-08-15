@@ -40,6 +40,15 @@ class TestApiPlaybooks(TestAra):
         res = self.client.post('/api/v1/playbooks')
         self.assertEqual(res.status_code, 301)
 
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/playbooks/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_no_data(self):
+        res = PlaybookApi().post()
+        self.assertEqual(res.status_code, 400)
+
     def test_post_http_with_correct_data(self):
         # Create a new playbook
         data = {
@@ -151,6 +160,15 @@ class TestApiPlaybooks(TestAra):
     def test_patch_http_redirect(self):
         res = self.client.patch('/api/v1/playbooks')
         self.assertEqual(res.status_code, 301)
+
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/playbooks/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_patch_internal_with_no_data(self):
+        res = PlaybookApi().patch()
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
