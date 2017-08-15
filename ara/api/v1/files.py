@@ -16,7 +16,11 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import content_sha1
+from ara.db.models import db
 from ara.db.models import File
+from ara.db.models import FileContent
+from ara.db.models import NoResultFound
 
 from flask import Blueprint
 from flask_restful import Api
@@ -34,7 +38,7 @@ FILE_FIELDS = {
     'id': fields.Integer,
     'playbook_id': fields.Integer,
     'path': fields.String,
-    'content': fields.String(attribute='content.content'),
+    'content': api_utils.Encoded(attribute='content.content'),
     'sha1': fields.String(attribute='content.sha1'),
     'is_playbook': fields.Boolean,
 }
@@ -44,7 +48,72 @@ class FileRestApi(Resource):
     """
     REST API for Files: api.v1.files
     """
+    def post(self):
+        """
+        Creates a file with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        # Files are stored uniquely by sha1, get it or create it
+        sha1 = content_sha1(args.content)
+        try:
+            content = FileContent.query.filter_by(sha1=sha1).one()
+        except NoResultFound:
+            content = FileContent(content=args.content)
+
+        file_ = File(
+            playbook_id=args.playbook_id,
+            path=args.path,
+            is_playbook=args.is_playbook,
+            content=content
+        )
+
+        db.session.add(file_)
+        db.session.commit()
+
+        return self.get(id=file_.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a file
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        file_ = File.query.get(args.id)
+        if not file_:
+            abort(404, message="File {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, FILE_FIELDS))
+
+        keys = ['playbook_id', 'path', 'is_playbook', 'content']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                if key == 'content':
+                    # Files are stored uniquely by sha1, get it or create it
+                    sha1 = content_sha1(args.content)
+                    try:
+                        content = FileContent.query.filter_by(sha1=sha1).one()
+                    except NoResultFound:
+                        content = FileContent(content=args.content)
+                    file_.content = content
+                else:
+                    setattr(file_, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, FILE_FIELDS))
+
+        db.session.add(file_)
+        db.session.commit()
+
+        return self.get(id=file_.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many files based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -62,6 +131,80 @@ class FileRestApi(Resource):
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
         return marshal(files, FILE_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id of the file'
+        )
+        parser.add_argument(
+            'path', dest='path',
+            type=str,
+            location='json',
+            required=True,
+            help='The path of the file'
+        )
+        parser.add_argument(
+            'content', dest='content',
+            type=api_utils.encoded_input,
+            location='json',
+            required=True,
+            help='The content of the file'
+        )
+        parser.add_argument(
+            'is_playbook', dest='is_playbook',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='Whether or not the file is a playbook file'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the file'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id of the file'
+        )
+        parser.add_argument(
+            'path', dest='path',
+            type=str,
+            location='json',
+            required=False,
+            help='The path of the file'
+        )
+        parser.add_argument(
+            'content', dest='content',
+            type=api_utils.encoded_input,
+            location='json',
+            required=False,
+            help='The content of the file'
+        )
+        parser.add_argument(
+            'is_playbook', dest='is_playbook',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='Whether or not the file is a playbook file'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():

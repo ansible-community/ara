@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #  Copyright (c) 2017 Red Hat, Inc.
 #
 #  This file is part of ARA: Ansible Run Analysis.
@@ -37,39 +38,209 @@ class TestApiFiles(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/files')
+        res = self.client.post('/api/v1/files')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/files/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/files/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/files/')
-        internal = FileApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_post_internal_with_no_data(self):
+        res = FileApi().post()
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_correct_data(self):
+        # Create fake playbook data and create a file in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "path": "/root/playbook.yml",
+            "content": "---\n- name: A task from ünit tests"
+        }
+        res = self.client.post('/api/v1/files/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full file object ("data")
+        # and that the file was really created properly by fetching it
+        # ("file")
+        file_ = self.client.get('/api/v1/files/',
+                                content_type='application/json',
+                                query_string=dict(id=data['id']))
+        file_ = jsonutils.loads(file_.data)
+        self.assertEquals(data['id'], file_['id'])
+        self.assertEquals(data['playbook_id'], file_['playbook_id'])
+        self.assertEquals(data['path'], file_['path'])
+        self.assertEquals(data['content'], file_['content'])
+        self.assertEquals(data['sha1'], file_['sha1'])
+
+    def test_post_internal_with_correct_data(self):
+        # Create fake playbook data and create a file in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "path": "/root/playbook.yml",
+            "content": "---\n- name: A task from ünit tests"
+        }
+        res = FileApi().post(data)
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full file object ("data")
+        # and that the file was really created properly by fetching it
+        # ("file")
+        file_ = FileApi().get(id=data['id'])
+        file_ = jsonutils.loads(file_.data)
+        self.assertEquals(data['id'], file_['id'])
+        self.assertEquals(data['playbook_id'], file_['playbook_id'])
+        self.assertEquals(data['path'], file_['path'])
+        self.assertEquals(data['content'], file_['content'])
+        self.assertEquals(data['sha1'], file_['sha1'])
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "path": False,
+            "content": 1,
+        }
+
+        res = self.client.post('/api/v1/files/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "path": False,
+            "content": 1,
+        }
+
+        res = FileApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "path": "/root/playbook.yml",
+            "content": """
+                    ---
+                    - name: A task from ünit tests
+                      debug:
+                        msg: "hello world"
+                    """
+        }
+        res = self.client.post('/api/v1/files/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "path": "/root/playbook.yml",
+            "content": """
+                    ---
+                    - name: A task from ünit tests
+                      debug:
+                        msg: "hello world"
+                    """
+        }
+        res = FileApi().post(data)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PATCH
     ###########
     def test_patch_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.patch('/api/v1/files')
+        res = self.client.patch('/api/v1/files')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_patch_http_unimplemented(self):
-        res = self.client.patch('/api/v1/files/')
-        self.assertEqual(res.status_code, 405)
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/files/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_patch_internal_unimplemented(self):
-        http = self.client.patch('/api/v1/files/')
-        internal = FileApi().patch()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_patch_internal_with_no_data(self):
+        res = FileApi().patch()
+        self.assertEqual(res.status_code, 400)
+
+    def test_patch_http_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['playbook'].file.id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_content = "# Empty file !"
+        self.assertNotEquals(ctx['playbook'].file.content, new_content)
+
+        data = {
+            "id": ctx['playbook'].file.id,
+            "content": new_content
+        }
+        res = self.client.patch('/api/v1/files/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['content'], new_content)
+
+        # Confirm by re-fetching file
+        updated = self.client.get('/api/v1/files/',
+                                  content_type='application/json',
+                                  query_string=dict(
+                                      id=ctx['playbook'].file.id)
+                                  )
+        updated_file = jsonutils.loads(updated.data)
+        self.assertEquals(updated_file['content'], new_content)
+
+    def test_patch_internal_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['playbook'].file.id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_content = "# Empty file !"
+        self.assertNotEquals(ctx['playbook'].file.content, new_content)
+
+        data = {
+            "id": ctx['playbook'].file.id,
+            "content": new_content
+        }
+        res = FileApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['content'], new_content)
+
+        # Confirm by re-fetching file
+        updated = FileApi().get(id=ctx['playbook'].file.id)
+        updated_file = jsonutils.loads(updated.data)
+        self.assertEquals(updated_file['content'], new_content)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "path": "/updated/path.yml"
+        }
+        res = self.client.patch('/api/v1/files/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "path": "/updated/path.yml"
+        }
+        res = FileApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # PUT

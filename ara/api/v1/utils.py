@@ -15,6 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
+from flask_restful import fields
+from oslo_utils import encodeutils
+
 
 def help(args, fields):
     arguments = {
@@ -34,6 +38,20 @@ def help(args, fields):
         'query_parameters': arguments,
         'result_output': output,
     }
+
+
+class Encoded(fields.Raw):
+    def format(self, value):
+        return encodeutils.safe_decode(value)
+
+
+def encoded_input(value, argument='argument'):
+    """ Returns an input safely encoded """
+    if not isinstance(value, six.text_type):
+        error = 'Invalid {arg}: {value}. {arg} must be a string.'
+        raise ValueError(error.format(arg=argument, value=value))
+    value = encodeutils.to_utf8(value)
+    return value
 
 
 def _field_to_string(field):
