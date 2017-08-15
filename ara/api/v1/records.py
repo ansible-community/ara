@@ -25,7 +25,6 @@ from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
 from flask_restful import Resource
-from flask_restful import inputs
 
 blueprint = Blueprint('records', __name__)
 api = Api(blueprint)
@@ -55,9 +54,6 @@ class RecordRestApi(Resource):
             return marshal(record, RECORD_FIELDS)
 
         args = parser.parse_args()
-        if args.help:
-            return api_utils.help(parser.args, RECORD_FIELDS)
-
         records = _find_records(**args)
         if not records:
             abort(404, message="No records found for this query",
@@ -68,13 +64,6 @@ class RecordRestApi(Resource):
     @staticmethod
     def _get_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'help', dest='help',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Returns list of arguments for this endpoint'
-        )
         parser.add_argument(
             'id', dest='id',
             type=int,

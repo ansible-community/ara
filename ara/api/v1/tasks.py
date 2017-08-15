@@ -65,9 +65,6 @@ class TaskRestApi(Resource):
             return marshal(task, TASK_FIELDS)
 
         args = parser.parse_args()
-        if args.help:
-            return api_utils.help(parser.args, TASK_FIELDS)
-
         tasks = _find_tasks(**args)
         if not tasks:
             abort(404, message="No tasks found for this query",
@@ -78,13 +75,6 @@ class TaskRestApi(Resource):
     @staticmethod
     def _get_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'help', dest='help',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Returns list of arguments for this endpoint'
-        )
         parser.add_argument(
             'id', dest='id',
             type=int,

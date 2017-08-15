@@ -25,7 +25,6 @@ from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
 from flask_restful import Resource
-from flask_restful import inputs
 
 blueprint = Blueprint('hosts', __name__)
 api = Api(blueprint)
@@ -60,9 +59,6 @@ class HostRestApi(Resource):
             return marshal(host, HOST_FIELDS)
 
         args = parser.parse_args()
-        if args.help:
-            return api_utils.help(parser.args, HOST_FIELDS)
-
         hosts = _find_hosts(**args)
         if not hosts:
             abort(404, message='No hosts found for this query',
@@ -73,13 +69,6 @@ class HostRestApi(Resource):
     @staticmethod
     def _get_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'help', dest='help',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Returns list of arguments for this endpoint'
-        )
         parser.add_argument(
             'id', dest='id',
             type=int,

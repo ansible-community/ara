@@ -116,21 +116,6 @@ class TestApiTasks(TestAra):
         res = self.client.get('/api/v1/tasks')
         self.assertEqual(res.status_code, 301)
 
-    def test_get_http_help(self):
-        res = self.client.get('/api/v1/tasks/',
-                              query_string=dict(help=True))
-        self.assertEqual(res.status_code, 200)
-        # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
-
-    def test_get_internal_help(self):
-        http = self.client.get('/api/v1/tasks/',
-                               query_string=dict(help=True))
-        internal = TaskApi().get(help=True)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
     def test_get_http_with_bad_params_404_help(self):
         res = self.client.get('/api/v1/tasks/',
                               query_string=dict(id=0))

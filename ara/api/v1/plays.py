@@ -63,9 +63,6 @@ class PlayRestApi(Resource):
             return marshal(play, PLAY_FIELDS)
 
         args = parser.parse_args()
-        if args.help:
-            return api_utils.help(parser.args, PLAY_FIELDS)
-
         plays = _find_plays(**args)
         if not plays:
             abort(404, message="No plays found for this query",
@@ -76,13 +73,6 @@ class PlayRestApi(Resource):
     @staticmethod
     def _get_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'help', dest='help',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Returns list of arguments for this endpoint'
-        )
         parser.add_argument(
             'id', dest='id',
             type=int,
