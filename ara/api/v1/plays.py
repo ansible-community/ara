@@ -60,7 +60,7 @@ class PlayRestApi(Resource):
                 abort(404, message="Play {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, PLAY_FIELDS))
 
-            return marshal(play, PLAY_FIELDS), 200
+            return marshal(play, PLAY_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -71,7 +71,7 @@ class PlayRestApi(Resource):
             abort(404, message="No plays found for this query",
                   help=api_utils.help(parser.args, PLAY_FIELDS))
 
-        return marshal(plays, PLAY_FIELDS), 200
+        return marshal(plays, PLAY_FIELDS)
 
     @staticmethod
     def _get_parser():

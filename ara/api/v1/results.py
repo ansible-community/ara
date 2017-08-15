@@ -61,7 +61,7 @@ class ResultRestApi(Resource):
                 abort(404, message="Result {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, RESULT_FIELDS))
 
-            return marshal(result, RESULT_FIELDS), 200
+            return marshal(result, RESULT_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -72,7 +72,7 @@ class ResultRestApi(Resource):
             abort(404, message="No results found for this query",
                   help=api_utils.help(parser.args, RESULT_FIELDS))
 
-        return marshal(results, RESULT_FIELDS), 200
+        return marshal(results, RESULT_FIELDS)
 
     @staticmethod
     def _get_parser():

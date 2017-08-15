@@ -88,7 +88,7 @@ class PlaybookRestApi(Resource):
         db.session.add(playbook)
         db.session.commit()
 
-        return self.get(id=playbook.id), 201
+        return self.get(id=playbook.id)
 
     def patch(self):
         """
@@ -116,7 +116,7 @@ class PlaybookRestApi(Resource):
         db.session.add(playbook)
         db.session.commit()
 
-        return self.get(id=playbook.id), 200
+        return self.get(id=playbook.id)
 
     def get(self, id=None):
         """
@@ -130,7 +130,7 @@ class PlaybookRestApi(Resource):
                 abort(404, message="Playbook {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
 
-            return marshal(playbook, PLAYBOOK_FIELDS), 200
+            return marshal(playbook, PLAYBOOK_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -141,7 +141,7 @@ class PlaybookRestApi(Resource):
             abort(404, message='No playbooks found for this query',
                   help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
 
-        return marshal(playbooks, PLAYBOOK_FIELDS), 200
+        return marshal(playbooks, PLAYBOOK_FIELDS)
 
     @staticmethod
     def _post_parser():

@@ -57,7 +57,7 @@ class HostRestApi(Resource):
                 abort(404, message="Host {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, HOST_FIELDS))
 
-            return marshal(host, HOST_FIELDS), 200
+            return marshal(host, HOST_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -68,7 +68,7 @@ class HostRestApi(Resource):
             abort(404, message='No hosts found for this query',
                   help=api_utils.help(parser.args, HOST_FIELDS))
 
-        return marshal(hosts, HOST_FIELDS), 200
+        return marshal(hosts, HOST_FIELDS)
 
     @staticmethod
     def _get_parser():
