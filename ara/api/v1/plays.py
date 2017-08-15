@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Play
 
 from flask import Blueprint
@@ -51,7 +52,56 @@ class PlayRestApi(Resource):
     """
     REST API for Plays: api.v1.plays
     """
+    def post(self):
+        """
+        Creates a play with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        play = Play(
+            playbook_id=args.playbook_id,
+            name=args.name,
+            started=args.started,
+            ended=args.ended
+        )
+        db.session.add(play)
+        db.session.commit()
+
+        return self.get(id=play.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a play
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        play = Play.query.get(args.id)
+        if not play:
+            abort(404, message="Play {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, PLAY_FIELDS))
+
+        keys = ['playbook_id', 'name', 'started', 'ended']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(play, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, PLAY_FIELDS))
+
+        db.session.add(play)
+        db.session.commit()
+
+        return self.get(id=play.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many plays based on the request and the query
+        """
+
         parser = self._get_parser()
 
         if id is not None:
@@ -69,6 +119,79 @@ class PlayRestApi(Resource):
                   help=api_utils.help(parser.args, PLAY_FIELDS))
 
         return marshal(plays, PLAY_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id of the play'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=str,
+            location='json',
+            required=True,
+            help='The name of the play'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=True,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the play'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id of the play'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=str,
+            location='json',
+            required=False,
+            help='The name of the play'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():
