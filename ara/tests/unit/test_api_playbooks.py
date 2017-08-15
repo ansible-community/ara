@@ -41,6 +41,7 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 301)
 
     def test_post_http_with_correct_data(self):
+        # Create a new playbook
         data = {
             "path": "/root/playbook.yml",
             "ansible_version": "2.2.3.1",
@@ -57,17 +58,22 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 200)
         data = jsonutils.loads(res.data)
 
-        playbook = models.Playbook.query.get(data['id'])
-        self.assertIsNotNone(playbook)
-        self.assertEquals(data['id'], playbook.id)
-        self.assertEquals(data['path'], playbook.path)
-        self.assertEquals(data['ansible_version'], playbook.ansible_version)
-        self.assertEquals(data['parameters'], playbook.parameters)
-        self.assertEquals(data['completed'], playbook.completed)
-        self.assertEquals(data['started'], playbook.started.isoformat())
-        self.assertEquals(data['ended'], playbook.ended)
+        # Confirm that the POST returned the full playbook object ("data")
+        # and that the playbook was really created properly by fetching it
+        # ("playbook")
+        playbook = self.client.get('/api/v1/playbooks/',
+                                   query_string=dict(id=data['id']))
+        playbook = jsonutils.loads(playbook.data)
+        self.assertEquals(data['id'], playbook['id'])
+        self.assertEquals(data['path'], playbook['path'])
+        self.assertEquals(data['ansible_version'], playbook['ansible_version'])
+        self.assertEquals(data['parameters'], playbook['parameters'])
+        self.assertEquals(data['completed'], playbook['completed'])
+        self.assertEquals(data['started'], playbook['started'])
+        self.assertEquals(data['ended'], playbook['ended'])
 
     def test_post_internal_with_correct_data(self):
+        # Create a new playbook
         data = {
             "path": "/root/playbook.yml",
             "ansible_version": "2.2.3.1",
@@ -83,15 +89,18 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 200)
         data = jsonutils.loads(res.data)
 
-        playbook = models.Playbook.query.get(data['id'])
-        self.assertIsNotNone(playbook)
-        self.assertEquals(data['id'], playbook.id)
-        self.assertEquals(data['path'], playbook.path)
-        self.assertEquals(data['ansible_version'], playbook.ansible_version)
-        self.assertEquals(data['parameters'], playbook.parameters)
-        self.assertEquals(data['completed'], playbook.completed)
-        self.assertEquals(data['started'], playbook.started.isoformat())
-        self.assertEquals(data['ended'], playbook.ended)
+        # Confirm that the POST returned the full playbook object ("data")
+        # and that the playbook was really created properly by fetching it
+        # ("playbook")
+        playbook = PlaybookApi().get(id=data['id'])
+        playbook = jsonutils.loads(playbook.data)
+        self.assertEquals(data['id'], playbook['id'])
+        self.assertEquals(data['path'], playbook['path'])
+        self.assertEquals(data['ansible_version'], playbook['ansible_version'])
+        self.assertEquals(data['parameters'], playbook['parameters'])
+        self.assertEquals(data['completed'], playbook['completed'])
+        self.assertEquals(data['started'], playbook['started'])
+        self.assertEquals(data['ended'], playbook['ended'])
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -143,59 +152,59 @@ class TestApiPlaybooks(TestAra):
         self.assertEqual(res.status_code, 301)
 
     def test_patch_http_existing(self):
+        # Generate fake playbook data
         ctx = ansible_run()
-        new_version = "1.9.9.6"
         self.assertEquals(ctx['playbook'].id, 1)
-        self.assertNotEquals(ctx['playbook'].ansible_version,
-                             new_version)
+
+        # We'll update the ansible_version field, assert we are actually
+        # making a change
+        new_version = "1.9.9.6"
+        self.assertNotEquals(ctx['playbook'].ansible_version, new_version)
 
         data = {
             "id": ctx['playbook'].id,
             "ansible_version": new_version
         }
-
         res = self.client.patch('/api/v1/playbooks/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
         self.assertEquals(res.status_code, 200)
-        data = jsonutils.loads(res.data)
 
-        self.assertEquals(data['ansible_version'],
-                          new_version)
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['ansible_version'], new_version)
 
         # Confirm by re-fetching playbook
         updated = self.client.get('/api/v1/playbooks/',
                                   query_string=dict(id=ctx['playbook'].id))
         updated_playbook = jsonutils.loads(updated.data)
-        self.assertEquals(updated_playbook['ansible_version'],
-                          new_version)
+        self.assertEquals(updated_playbook['ansible_version'], new_version)
 
     def test_patch_internal_existing(self):
+        # Generate fake playbook data
         ctx = ansible_run()
-        new_version = "1.9.9.6"
         self.assertEquals(ctx['playbook'].id, 1)
-        self.assertNotEquals(ctx['playbook'].ansible_version,
-                             new_version)
+
+        # We'll update the ansible_version field, assert we are actually
+        # making a change
+        new_version = "1.9.9.6"
+        self.assertNotEquals(ctx['playbook'].ansible_version, new_version)
 
         data = {
             "id": ctx['playbook'].id,
             "ansible_version": new_version
         }
-
         res = PlaybookApi().patch(data)
         self.assertEquals(res.status_code, 200)
-        data = jsonutils.loads(res.data)
 
-        self.assertEquals(data['ansible_version'],
-                          new_version)
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['ansible_version'], new_version)
 
         # Confirm by re-fetching playbook
-        updated = PlaybookApi().get(
-            query_string=dict(id=ctx['playbook'].id)
-        )
-        updated_playbook = jsonutils.loads(updated.data)[0]
-        self.assertEquals(updated_playbook['ansible_version'],
-                          new_version)
+        updated = PlaybookApi().get(id=ctx['playbook'].id)
+        updated_playbook = jsonutils.loads(updated.data)
+        self.assertEquals(updated_playbook['ansible_version'], new_version)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
