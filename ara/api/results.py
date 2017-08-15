@@ -33,7 +33,9 @@ class ResultApi(object):
         self.client = current_app.test_client()
 
     def get(self, **kwargs):
-        get = self.client.get('/api/v1/results/', query_string=kwargs)
+        get = self.client.get('/api/v1/results/',
+                              content_type='application/json',
+                              query_string=kwargs)
         return get
 
     def patch(self, data=None):
