@@ -33,7 +33,9 @@ class PlayApi(object):
         self.client = current_app.test_client()
 
     def get(self, **kwargs):
-        get = self.client.get('/api/v1/plays/', query_string=kwargs)
+        get = self.client.get('/api/v1/plays/',
+                              content_type='application/json',
+                              query_string=kwargs)
         return get
 
     def patch(self, data=None):

@@ -33,7 +33,9 @@ class PlaybookApi(object):
         self.client = current_app.test_client()
 
     def get(self, **kwargs):
-        get = self.client.get('/api/v1/playbooks/', query_string=kwargs)
+        get = self.client.get('/api/v1/playbooks/',
+                              content_type='application/json',
+                              query_string=kwargs)
         return get
 
     def patch(self, data=None):

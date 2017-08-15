@@ -113,11 +113,13 @@ class TestApiHosts(TestAra):
     # GET
     ###########
     def test_get_http_redirect(self):
-        res = self.client.get('/api/v1/hosts')
+        res = self.client.get('/api/v1/hosts',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 301)
 
     def test_get_http_with_bad_params_404_help(self):
         res = self.client.get('/api/v1/hosts/',
+                              content_type='application/json',
                               query_string=dict(id=0))
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
@@ -126,27 +128,31 @@ class TestApiHosts(TestAra):
 
     def test_get_internal_with_bad_params_404_help(self):
         http = self.client.get('/api/v1/hosts/',
+                               content_type='application/json',
                                query_string=dict(id=0))
         internal = HostApi().get(id=0)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/hosts/')
+        res = self.client.get('/api/v1/hosts/',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/hosts/')
+        http = self.client.get('/api/v1/hosts/',
+                               content_type='application/json')
         internal = HostApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
         ctx = ansible_run()
-        res = self.client.get('/api/v1/hosts/')
+        res = self.client.get('/api/v1/hosts/',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)[0]
@@ -174,7 +180,8 @@ class TestApiHosts(TestAra):
 
     def test_get_internal_without_parameters(self):
         ansible_run()
-        http = self.client.get('/api/v1/hosts/')
+        http = self.client.get('/api/v1/hosts/',
+                               content_type='application/json')
         internal = HostApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -186,7 +193,9 @@ class TestApiHosts(TestAra):
         hosts = models.Host.query.all()
         self.assertEqual(len(hosts), 2)
 
-        res = self.client.get('/api/v1/hosts/', query_string=dict(id=1))
+        res = self.client.get('/api/v1/hosts/',
+                              content_type='application/json',
+                              query_string=dict(id=1))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
@@ -218,7 +227,9 @@ class TestApiHosts(TestAra):
         hosts = models.Host.query.all()
         self.assertEqual(len(hosts), 2)
 
-        http = self.client.get('/api/v1/hosts/', query_string=dict(id=1))
+        http = self.client.get('/api/v1/hosts/',
+                               content_type='application/json',
+                               query_string=dict(id=1))
         internal = HostApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -230,7 +241,8 @@ class TestApiHosts(TestAra):
         hosts = models.Host.query.all()
         self.assertEqual(len(hosts), 2)
 
-        res = self.client.get('/api/v1/hosts/1')
+        res = self.client.get('/api/v1/hosts/1',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
@@ -262,7 +274,8 @@ class TestApiHosts(TestAra):
         hosts = models.Host.query.all()
         self.assertEqual(len(hosts), 2)
 
-        http = self.client.get('/api/v1/hosts/1')
+        http = self.client.get('/api/v1/hosts/1',
+                               content_type='application/json')
         internal = HostApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

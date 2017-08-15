@@ -62,6 +62,7 @@ class TestApiPlaybooks(TestAra):
         # and that the playbook was really created properly by fetching it
         # ("playbook")
         playbook = self.client.get('/api/v1/playbooks/',
+                                   content_type='application/json',
                                    query_string=dict(id=data['id']))
         playbook = jsonutils.loads(playbook.data)
         self.assertEquals(data['id'], playbook['id'])
@@ -176,6 +177,7 @@ class TestApiPlaybooks(TestAra):
 
         # Confirm by re-fetching playbook
         updated = self.client.get('/api/v1/playbooks/',
+                                  content_type='application/json',
                                   query_string=dict(id=ctx['playbook'].id))
         updated_playbook = jsonutils.loads(updated.data)
         self.assertEquals(updated_playbook['ansible_version'], new_version)
@@ -266,11 +268,13 @@ class TestApiPlaybooks(TestAra):
     # GET
     ###########
     def test_get_http_redirect(self):
-        res = self.client.get('/api/v1/playbooks')
+        res = self.client.get('/api/v1/playbooks',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 301)
 
     def test_get_http_with_bad_params_404_help(self):
         res = self.client.get('/api/v1/playbooks/',
+                              content_type='application/json',
                               query_string=dict(id=0))
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
@@ -279,27 +283,31 @@ class TestApiPlaybooks(TestAra):
 
     def test_get_internal_with_bad_params_404_help(self):
         http = self.client.get('/api/v1/playbooks/',
+                               content_type='application/json',
                                query_string=dict(id=0))
         internal = PlaybookApi().get(id=0)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/playbooks/')
+        res = self.client.get('/api/v1/playbooks/',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 404)
         # TODO: Improve this
         self.assertTrue(b'result_output' in res.data)
         self.assertTrue(b'query_parameters' in res.data)
 
     def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/playbooks/')
+        http = self.client.get('/api/v1/playbooks/',
+                               content_type='application/json')
         internal = PlaybookApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
         ctx = ansible_run()
-        res = self.client.get('/api/v1/playbooks/')
+        res = self.client.get('/api/v1/playbooks/',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)[0]
@@ -331,7 +339,8 @@ class TestApiPlaybooks(TestAra):
 
     def test_get_internal_without_parameters(self):
         ansible_run()
-        http = self.client.get('/api/v1/playbooks/')
+        http = self.client.get('/api/v1/playbooks/',
+                               content_type='application/json')
         internal = PlaybookApi().get()
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -343,7 +352,9 @@ class TestApiPlaybooks(TestAra):
         playbooks = models.Playbook.query.all()
         self.assertEqual(len(playbooks), 2)
 
-        res = self.client.get('/api/v1/playbooks/', query_string=dict(id=1))
+        res = self.client.get('/api/v1/playbooks/',
+                              content_type='application/json',
+                              query_string=dict(id=1))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
@@ -379,7 +390,9 @@ class TestApiPlaybooks(TestAra):
         playbooks = models.Playbook.query.all()
         self.assertEqual(len(playbooks), 2)
 
-        http = self.client.get('/api/v1/playbooks/', query_string=dict(id=1))
+        http = self.client.get('/api/v1/playbooks/',
+                               content_type='application/json',
+                               query_string=dict(id=1))
         internal = PlaybookApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
@@ -391,7 +404,8 @@ class TestApiPlaybooks(TestAra):
         playbooks = models.Playbook.query.all()
         self.assertEqual(len(playbooks), 2)
 
-        res = self.client.get('/api/v1/playbooks/1')
+        res = self.client.get('/api/v1/playbooks/1',
+                              content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
@@ -429,7 +443,8 @@ class TestApiPlaybooks(TestAra):
         playbooks = models.Playbook.query.all()
         self.assertEqual(len(playbooks), 2)
 
-        http = self.client.get('/api/v1/playbooks/1')
+        http = self.client.get('/api/v1/playbooks/1',
+                               content_type='application/json')
         internal = PlaybookApi().get(id=1)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
