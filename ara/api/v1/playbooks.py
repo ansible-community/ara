@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Playbook
 
 from flask import Blueprint
@@ -69,7 +70,58 @@ class PlaybookRestApi(Resource):
     """
     REST API for Playbooks: api.v1.playbooks
     """
+    def post(self):
+        """
+        Creates a playbook with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        playbook = Playbook(
+            path=args.path,
+            ansible_version=args.ansible_version,
+            parameters=args.parameters,
+            completed=args.completed,
+            started=args.started,
+            ended=args.ended
+        )
+        db.session.add(playbook)
+        db.session.commit()
+
+        return self.get(id=playbook.id), 201
+
+    def patch(self):
+        """
+        Updates provided parameters for a playbook
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        playbook = Playbook.query.get(args.id)
+        if not playbook:
+            abort(404, message="Playbook {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
+
+        keys = ['path', 'ansible_version', 'parameters', 'completed',
+                'started', 'ended']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(playbook, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
+
+        db.session.add(playbook)
+        db.session.commit()
+
+        return self.get(id=playbook.id), 200
+
     def get(self, id=None):
+        """
+        Retrieves one or many playbooks based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -77,6 +129,7 @@ class PlaybookRestApi(Resource):
             if playbook is None:
                 abort(404, message="Playbook {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
+
             return marshal(playbook, PLAYBOOK_FIELDS), 200
 
         args = parser.parse_args()
@@ -89,6 +142,108 @@ class PlaybookRestApi(Resource):
                   help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
 
         return marshal(playbooks, PLAYBOOK_FIELDS), 200
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'path', dest='path',
+            type=str,
+            location='json',
+            required=True,
+            help='Path of the playbook'
+        )
+        parser.add_argument(
+            'ansible_version', dest='ansible_version',
+            type=str,
+            location='json',
+            required=True,
+            help='Ansible version used when running the playbook'
+        )
+        parser.add_argument(
+            'parameters', dest='parameters',
+            type=dict,
+            location='json',
+            required=True,
+            help='Ansible parameters and options when running the playbook'
+        )
+        parser.add_argument(
+            'completed', dest='completed',
+            type=inputs.boolean,
+            location='json',
+            default=False,
+            required=False,
+            help='Whether or not the playbook has completed'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=True,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the playbook run (ISO8601)'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='Id of the playbook'
+        )
+        parser.add_argument(
+            'path', dest='path',
+            type=str,
+            location='json',
+            required=False,
+            help='Path of the playbook'
+        )
+        parser.add_argument(
+            'ansible_version', dest='ansible_version',
+            type=str,
+            location='json',
+            required=False,
+            help='Ansible version used when running the playbook'
+        )
+        parser.add_argument(
+            'parameters', dest='parameters',
+            type=dict,
+            location='json',
+            required=False,
+            help='Ansible parameters and options when running the playbook'
+        )
+        parser.add_argument(
+            'completed', dest='completed',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='Whether or not the playbook has complete'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the playbook run (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the playbook run (ISO8601)'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():

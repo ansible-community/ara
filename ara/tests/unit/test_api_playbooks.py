@@ -37,20 +37,183 @@ class TestApiPlaybooks(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/playbooks')
+        res = self.client.post('/api/v1/playbooks')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/playbooks/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_correct_data(self):
+        data = {
+            "path": "/root/playbook.yml",
+            "ansible_version": "2.2.3.1",
+            "parameters": {
+                "become": False,
+                "become_user": "root"
+            },
+            "completed": False,
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/playbooks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 201)
+        data = jsonutils.loads(res.data)[0]
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/playbooks/')
-        internal = PlaybookApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+        playbook = models.Playbook.query.get(data['id'])
+        self.assertIsNotNone(playbook)
+        self.assertEquals(data['id'], playbook.id)
+        self.assertEquals(data['path'], playbook.path)
+        self.assertEquals(data['ansible_version'], playbook.ansible_version)
+        self.assertEquals(data['parameters'], playbook.parameters)
+        self.assertEquals(data['completed'], playbook.completed)
+        self.assertEquals(data['started'], playbook.started.isoformat())
+        self.assertEquals(data['ended'], playbook.ended)
+
+    def test_post_internal_with_correct_data(self):
+        data = {
+            "path": "/root/playbook.yml",
+            "ansible_version": "2.2.3.1",
+            "parameters": {
+                "become": False,
+                "become_user": "root"
+            },
+            "completed": False,
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = PlaybookApi().post(data)
+
+        self.assertEqual(res.status_code, 201)
+        data = jsonutils.loads(res.data)[0]
+
+        playbook = models.Playbook.query.get(data['id'])
+        self.assertIsNotNone(playbook)
+        self.assertEquals(data['id'], playbook.id)
+        self.assertEquals(data['path'], playbook.path)
+        self.assertEquals(data['ansible_version'], playbook.ansible_version)
+        self.assertEquals(data['parameters'], playbook.parameters)
+        self.assertEquals(data['completed'], playbook.completed)
+        self.assertEquals(data['started'], playbook.started.isoformat())
+        self.assertEquals(data['ended'], playbook.ended)
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "path": False,
+            "ansible_version": 2,
+            "parameters": ['one'],
+            "completed": "yes",
+            "started": "a long time ago"
+        }
+
+        res = self.client.post('/api/v1/playbooks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "path": False,
+            "ansible_version": 2,
+            "parameters": ['one'],
+            "completed": "yes",
+            "started": "a long time ago"
+        }
+
+        res = PlaybookApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "path": "/root/playbook.yml",
+        }
+        res = self.client.post('/api/v1/playbooks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "path": "/root/playbook.yml",
+        }
+        res = PlaybookApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    ###########
+    # PATCH
+    ###########
+    def test_patch_http_redirect(self):
+        res = self.client.patch('/api/v1/playbooks')
+        self.assertEqual(res.status_code, 301)
+
+    def test_patch_http_existing(self):
+        ctx = ansible_run()
+        new_version = "1.9.9.6"
+        self.assertEquals(ctx['playbook'].id, 1)
+        self.assertNotEquals(ctx['playbook'].ansible_version,
+                             new_version)
+
+        data = {
+            "id": ctx['playbook'].id,
+            "ansible_version": new_version
+        }
+
+        res = self.client.patch('/api/v1/playbooks/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+        data = jsonutils.loads(res.data)[0]
+
+        self.assertEquals(data['ansible_version'],
+                          new_version)
+
+        # Confirm by re-fetching playbook
+        updated = self.client.get('/api/v1/playbooks/',
+                                  query_string=dict(id=ctx['playbook'].id))
+        updated_playbook = jsonutils.loads(updated.data)
+        self.assertEquals(updated_playbook['ansible_version'],
+                          new_version)
+
+    def test_patch_internal_existing(self):
+        ctx = ansible_run()
+        new_version = "1.9.9.6"
+        self.assertEquals(ctx['playbook'].id, 1)
+        self.assertNotEquals(ctx['playbook'].ansible_version,
+                             new_version)
+
+        data = {
+            "id": ctx['playbook'].id,
+            "ansible_version": new_version
+        }
+
+        res = PlaybookApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+        data = jsonutils.loads(res.data)[0]
+
+        self.assertEquals(data['ansible_version'],
+                          new_version)
+
+        # Confirm by re-fetching playbook
+        updated = PlaybookApi().get(
+            query_string=dict(id=ctx['playbook'].id)
+        )
+        updated_playbook = jsonutils.loads(updated.data)[0]
+        self.assertEquals(updated_playbook['ansible_version'],
+                          new_version)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "ansible_version": "1.9.9.6"
+        }
+        res = self.client.patch('/api/v1/playbooks/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "ansible_version": "1.9.9.6"
+        }
+        res = PlaybookApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # PUT
