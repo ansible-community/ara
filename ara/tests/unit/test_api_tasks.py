@@ -163,11 +163,11 @@ class TestApiTasks(TestAra):
                          data['lineno'])
         self.assertEqual(ctx['task'].tags,
                          data['tags'])
-        self.assertEqual(ctx['task'].is_handler,
+        self.assertEqual(ctx['task'].handler,
                          data['handler'])
-        self.assertEqual(ctx['task'].time_start.isoformat(),
+        self.assertEqual(ctx['task'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['task'].time_end.isoformat(),
+        self.assertEqual(ctx['task'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(len(ctx['task'].results.all()),
                          len(data['results']))
@@ -202,11 +202,11 @@ class TestApiTasks(TestAra):
                          data['lineno'])
         self.assertEqual(ctx['task'].tags,
                          data['tags'])
-        self.assertEqual(ctx['task'].is_handler,
+        self.assertEqual(ctx['task'].handler,
                          data['handler'])
-        self.assertEqual(ctx['task'].time_start.isoformat(),
+        self.assertEqual(ctx['task'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['task'].time_end.isoformat(),
+        self.assertEqual(ctx['task'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(len(ctx['task'].results.all()),
                          len(data['results']))
@@ -246,11 +246,11 @@ class TestApiTasks(TestAra):
                          data['lineno'])
         self.assertEqual(ctx['task'].tags,
                          data['tags'])
-        self.assertEqual(ctx['task'].is_handler,
+        self.assertEqual(ctx['task'].handler,
                          data['handler'])
-        self.assertEqual(ctx['task'].time_start.isoformat(),
+        self.assertEqual(ctx['task'].started.isoformat(),
                          data['started'])
-        self.assertEqual(ctx['task'].time_end.isoformat(),
+        self.assertEqual(ctx['task'].ended.isoformat(),
                          data['ended'])
         self.assertEqual(len(ctx['task'].results.all()),
                          len(data['results']))

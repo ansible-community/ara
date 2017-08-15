@@ -34,11 +34,9 @@ PLAYBOOK_FIELDS = {
     'id': fields.Integer,
     'path': fields.String,
     'ansible_version': fields.String,
-    'completed': fields.Boolean(attribute='complete'),
-    'started': fields.DateTime(attribute='time_start',
-                               dt_format='iso8601'),
-    'ended': fields.DateTime(attribute='time_end',
-                             dt_format='iso8601'),
+    'completed': fields.Boolean,
+    'started': fields.DateTime(dt_format='iso8601'),
+    'ended': fields.DateTime(dt_format='iso8601'),
     'parameters': fields.Raw,
     'files': fields.List(fields.Nested({
         'id': fields.Integer,
@@ -79,7 +77,6 @@ class PlaybookRestApi(Resource):
             if playbook is None:
                 abort(404, message="Playbook {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
-
             return marshal(playbook, PLAYBOOK_FIELDS), 200
 
         args = parser.parse_args()
@@ -168,16 +165,16 @@ def _find_playbooks(**kwargs):
         )
 
     if 'completed' in kwargs and kwargs['completed'] is not None:
-        query = query.filter_by(complete=kwargs['completed'])
+        query = query.filter_by(completed=kwargs['completed'])
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Playbook.time_end
+            kwargs['before'] < Playbook.ended
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Playbook.time_end
+            kwargs['after'] > Playbook.ended
         )
 
     return query.order_by(Playbook.id.desc()).all()

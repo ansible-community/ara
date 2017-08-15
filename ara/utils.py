@@ -87,7 +87,7 @@ def _infer_status(playbook, playbook_stats):
     """
     Infer the status of a playbook run based on it's statistics or completion
     """
-    if not playbook.complete:
+    if not playbook.completed:
         return 'incomplete'
 
     if playbook_stats['failed'] >= 1 or playbook_stats['unreachable'] >= 1:

@@ -285,7 +285,7 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(res[1][0][0], ctx['playbook'].id)
 
     def test_playbook_list_complete_with_no_complete(self):
-        ansible_run(complete=False)
+        ansible_run(completed=False)
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
@@ -295,7 +295,7 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(res[1], [])
 
     def test_playbook_list_incomplete(self):
-        ctx = ansible_run(complete=False)
+        ctx = ansible_run(completed=False)
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')

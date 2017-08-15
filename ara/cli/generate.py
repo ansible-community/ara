@@ -253,10 +253,10 @@ class GenerateSubunit(Command):
             # The timestamp needs to be an epoch, so we need
             # to convert it.
             start_time = datetime.datetime.fromtimestamp(
-                float(result.time_start.strftime('%s'))
+                float(result.started.strftime('%s'))
             ).replace(tzinfo=iso8601.UTC)
             end_time = datetime.datetime.fromtimestamp(
-                float(result.time_end.strftime('%s'))
+                float(result.ended.strftime('%s'))
             ).replace(tzinfo=iso8601.UTC)
 
             # Output the start of the event

@@ -44,10 +44,10 @@ def report_list(page=1):
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
         playbooks = (models.Playbook.query
                      .filter(models.Playbook.id.in_(override))
-                     .order_by(models.Playbook.time_start.desc()))
+                     .order_by(models.Playbook.started.desc()))
     else:
         playbooks = (models.Playbook.query
-                     .order_by(models.Playbook.time_start.desc()))
+                     .order_by(models.Playbook.started.desc()))
 
     if not utils.fast_count(playbooks):
         return redirect(url_for('about.main'))
@@ -131,8 +131,8 @@ def ajax_plays(playbook):
 
     for play in plays:
         name = u"<span class='pull-left'>{0}</span>".format(play.name)
-        start = date.render(date=play.time_start)
-        end = date.render(date=play.time_end)
+        start = date.render(date=play.started)
+        end = date.render(date=play.ended)
         duration = time.render(time=play.duration)
         results['data'].append([name, start, end, duration])
 

@@ -39,11 +39,9 @@ TASK_FIELDS = {
     'action': fields.String,
     'lineno': fields.Integer,
     'tags': fields.String,
-    'handler': fields.Boolean(attribute='is_handler'),
-    'started': fields.DateTime(attribute='time_start',
-                               dt_format='iso8601'),
-    'ended': fields.DateTime(attribute='time_end',
-                             dt_format='iso8601'),
+    'handler': fields.Boolean,
+    'started': fields.DateTime(dt_format='iso8601'),
+    'ended': fields.DateTime(dt_format='iso8601'),
     'results': fields.List(fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('results.resultrestapi')
@@ -206,16 +204,16 @@ def _find_tasks(**kwargs):
         )
 
     if 'handler' in kwargs and kwargs['handler'] is not None:
-        query = query.filter_by(is_handler=kwargs['handler'])
+        query = query.filter_by(handler=kwargs['handler'])
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Task.time_end
+            kwargs['before'] < Task.ended
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Task.time_end
+            kwargs['after'] > Task.ended
         )
 
     return query.order_by(Task.id.desc()).all()

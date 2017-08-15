@@ -146,7 +146,7 @@ class CallbackModule(CallbackBase):
         LOG.debug('logging task result for task %s (%s), host %s',
                   self.task.name, self.task.id, result._host.get_name())
 
-        result.task_start = self.task.time_start
+        result.task_start = self.task.started
         result.task_end = datetime.utcnow()
         host = self.get_or_create_host(result._host.get_name())
 
@@ -170,8 +170,8 @@ class CallbackModule(CallbackBase):
             play=self.play,
             task=self.task,
             host=host,
-            time_start=result.task_start,
-            time_end=result.task_end,
+            started=result.task_start,
+            ended=result.task_end,
             result=jsonutils.dumps(results),
             status=status,
             changed=result._result.get('changed', False),
@@ -233,7 +233,7 @@ class CallbackModule(CallbackBase):
         if self.playbook is not None:
             LOG.debug('closing playbook %s', self.playbook.path)
             self.playbook.stop()
-            self.playbook.complete = True
+            self.playbook.completed = True
             db.session.add(self.playbook)
 
     def v2_runner_item_on_ok(self, result):
@@ -261,7 +261,7 @@ class CallbackModule(CallbackBase):
         self.log_task(result, 'skipped', **kwargs)
 
     def v2_playbook_on_task_start(self, task, is_conditional,
-                                  is_handler=False):
+                                  handler=False):
         self.close_task()
 
         LOG.debug('starting task %s (action %s)',
@@ -284,13 +284,13 @@ class CallbackModule(CallbackBase):
             tags=jsonutils.dumps(task._attributes['tags']),
             file=file_,
             lineno=lineno,
-            is_handler=is_handler)
+            handler=handler)
 
         self.task.start()
         db.session.add(self.task)
 
     def v2_playbook_on_handler_task_start(self, task):
-        self.v2_playbook_on_task_start(task, False, is_handler=True)
+        self.v2_playbook_on_task_start(task, False, handler=True)
 
     def v2_playbook_on_start(self, playbook):
         path = os.path.abspath(playbook._file_name)

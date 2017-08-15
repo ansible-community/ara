@@ -77,25 +77,25 @@ class TimedEntity(object):
     @property
     def duration(self):
         """
-        Calculates '(time_end-time_start)' and return the resulting
+        Calculates '(ended-started)' and return the resulting
         'datetime.timedelta' object.
         """
-        if self.time_end is None or self.time_start is None:
+        if self.ended is None or self.started is None:
             return timedelta(seconds=0)
         else:
-            return self.time_end - self.time_start
+            return self.ended - self.started
 
     def start(self):
         """
-        Explicitly sets 'self.time_start'
+        Explicitly sets 'self.started'
         """
-        self.time_start = datetime.utcnow()
+        self.started = datetime.utcnow()
 
     def stop(self):
         """
-        Explicitly sets 'self.time_end'
+        Explicitly sets 'self.ended'
         """
-        self.time_end = datetime.utcnow()
+        self.ended = datetime.utcnow()
 
 
 class CompressedData(types.TypeDecorator):
@@ -177,10 +177,10 @@ class Playbook(db.Model, TimedEntity):
     path = db.Column(db.String(255))
     ansible_version = db.Column(db.String(255))
     parameters = db.Column(CompressedData((2 ** 32) - 1))
-    complete = db.Column(db.Boolean, default=False)
+    completed = db.Column(db.Boolean, default=False)
 
-    time_start = db.Column(db.DateTime, default=datetime.utcnow)
-    time_end = db.Column(db.DateTime)
+    started = db.Column(db.DateTime, default=datetime.utcnow)
+    ended = db.Column(db.DateTime)
 
     @property
     def file(self):
@@ -246,15 +246,15 @@ class Play(Base, TimedEntity):
 
     name = db.Column(db.Text)
 
-    time_start = db.Column(db.DateTime, default=datetime.utcnow)
-    time_end = db.Column(db.DateTime)
+    started = db.Column(db.DateTime, default=datetime.utcnow)
+    ended = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Play %s>' % (self.name or self.id)
 
     @property
     def offset_from_playbook(self):
-        return self.time_start - self.playbook.time_start
+        return self.started - self.playbook.started
 
 
 class Task(Base, TimedEntity):
@@ -277,21 +277,21 @@ class Task(Base, TimedEntity):
     action = db.Column(db.Text)
     lineno = db.Column(db.Integer)
     tags = db.Column(db.Text)
-    is_handler = db.Column(db.Boolean)
+    handler = db.Column(db.Boolean)
 
-    time_start = db.Column(db.DateTime, default=datetime.utcnow())
-    time_end = db.Column(db.DateTime)
+    started = db.Column(db.DateTime, default=datetime.utcnow())
+    ended = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Task %s>' % (self.name or self.id)
 
     @property
     def offset_from_playbook(self):
-        return self.time_start - self.playbook.time_start
+        return self.started - self.playbook.started
 
     @property
     def offset_from_play(self):
-        return self.time_start - self.play.time_start
+        return self.started - self.play.started
 
 
 class Result(Base, TimedEntity):
@@ -318,8 +318,8 @@ class Result(Base, TimedEntity):
     ignore_errors = db.Column(db.Boolean, default=False)
     result = db.Column(CompressedText((2**32) - 1))
 
-    time_start = db.Column(db.DateTime, default=datetime.utcnow)
-    time_end = db.Column(db.DateTime)
+    started = db.Column(db.DateTime, default=datetime.utcnow)
+    ended = db.Column(db.DateTime)
 
     @property
     def derived_status(self):
