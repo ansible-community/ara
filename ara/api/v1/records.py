@@ -52,7 +52,7 @@ class RecordRestApi(Resource):
                 abort(404, message="Record {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, RECORD_FIELDS))
 
-            return marshal(record, RECORD_FIELDS), 200
+            return marshal(record, RECORD_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -63,7 +63,7 @@ class RecordRestApi(Resource):
             abort(404, message="No records found for this query",
                   help=api_utils.help(parser.args, RECORD_FIELDS))
 
-        return marshal(records, RECORD_FIELDS), 200
+        return marshal(records, RECORD_FIELDS)
 
     @staticmethod
     def _get_parser():

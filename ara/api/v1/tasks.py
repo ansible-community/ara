@@ -62,7 +62,7 @@ class TaskRestApi(Resource):
                 abort(404, message="Task {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, TASK_FIELDS))
 
-            return marshal(task, TASK_FIELDS), 200
+            return marshal(task, TASK_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -73,7 +73,7 @@ class TaskRestApi(Resource):
             abort(404, message="No tasks found for this query",
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
-        return marshal(tasks, TASK_FIELDS), 200
+        return marshal(tasks, TASK_FIELDS)
 
     @staticmethod
     def _get_parser():

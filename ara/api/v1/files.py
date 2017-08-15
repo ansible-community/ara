@@ -53,7 +53,7 @@ class FileRestApi(Resource):
                 abort(404, message="File {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, FILE_FIELDS))
 
-            return marshal(file_, FILE_FIELDS), 200
+            return marshal(file_, FILE_FIELDS)
 
         args = parser.parse_args()
         if args.help:
@@ -64,7 +64,7 @@ class FileRestApi(Resource):
             abort(404, message='No files found for this query',
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
-        return marshal(files, FILE_FIELDS), 200
+        return marshal(files, FILE_FIELDS)
 
     @staticmethod
     def _get_parser():

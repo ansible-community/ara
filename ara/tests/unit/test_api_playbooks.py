@@ -54,8 +54,8 @@ class TestApiPlaybooks(TestAra):
         res = self.client.post('/api/v1/playbooks/',
                                data=jsonutils.dumps(data),
                                content_type='application/json')
-        self.assertEqual(res.status_code, 201)
-        data = jsonutils.loads(res.data)[0]
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
 
         playbook = models.Playbook.query.get(data['id'])
         self.assertIsNotNone(playbook)
@@ -80,8 +80,8 @@ class TestApiPlaybooks(TestAra):
         }
         res = PlaybookApi().post(data)
 
-        self.assertEqual(res.status_code, 201)
-        data = jsonutils.loads(res.data)[0]
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
 
         playbook = models.Playbook.query.get(data['id'])
         self.assertIsNotNone(playbook)
@@ -158,7 +158,7 @@ class TestApiPlaybooks(TestAra):
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
         self.assertEquals(res.status_code, 200)
-        data = jsonutils.loads(res.data)[0]
+        data = jsonutils.loads(res.data)
 
         self.assertEquals(data['ansible_version'],
                           new_version)
@@ -184,7 +184,7 @@ class TestApiPlaybooks(TestAra):
 
         res = PlaybookApi().patch(data)
         self.assertEquals(res.status_code, 200)
-        data = jsonutils.loads(res.data)[0]
+        data = jsonutils.loads(res.data)
 
         self.assertEquals(data['ansible_version'],
                           new_version)
