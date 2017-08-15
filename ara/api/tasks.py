@@ -17,6 +17,7 @@
 
 from ara.webapp import create_app
 from flask import current_app
+from oslo_serialization import jsonutils
 
 
 class TaskApi(object):
@@ -32,17 +33,25 @@ class TaskApi(object):
         self.client = current_app.test_client()
 
     def get(self, **kwargs):
-        data = self.client.get('/api/v1/tasks/', query_string=kwargs)
-        return data
+        get = self.client.get('/api/v1/tasks/', query_string=kwargs)
+        return get
 
-    def post(self, **kwargs):
-        data = self.client.post('/api/v1/tasks/', data=kwargs)
-        return data
+    def patch(self, data=None):
+        patch = self.client.patch('/api/v1/tasks/',
+                                  content_type='application/json',
+                                  data=jsonutils.dumps(data))
+        return patch
+
+    def post(self, data=None):
+        post = self.client.post('/api/v1/tasks/',
+                                content_type='application/json',
+                                data=jsonutils.dumps(data))
+        return post
 
     def put(self, **kwargs):
-        data = self.client.put('/api/v1/tasks/', data=kwargs)
-        return data
+        put = self.client.put('/api/v1/tasks/', data=kwargs)
+        return put
 
     def delete(self, **kwargs):
-        data = self.client.delete('/api/v1/tasks/', data=kwargs)
-        return data
+        delete = self.client.delete('/api/v1/tasks/', data=kwargs)
+        return delete

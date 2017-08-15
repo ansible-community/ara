@@ -36,13 +36,13 @@ class PlaybookApi(object):
         get = self.client.get('/api/v1/playbooks/', query_string=kwargs)
         return get
 
-    def patch(self, data):
+    def patch(self, data=None):
         patch = self.client.patch('/api/v1/playbooks/',
                                   content_type='application/json',
                                   data=jsonutils.dumps(data))
         return patch
 
-    def post(self, data):
+    def post(self, data=None):
         post = self.client.post('/api/v1/playbooks/',
                                 content_type='application/json',
                                 data=jsonutils.dumps(data))
