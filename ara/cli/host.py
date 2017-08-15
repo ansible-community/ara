@@ -30,7 +30,6 @@ LIST_FIELDS = (
     Field('Ok'),
     Field('Skipped'),
     Field('Unreachable'),
-    Field('Latest facts', 'timestamp')
 )
 
 SHOW_FIELDS = (
@@ -43,7 +42,6 @@ SHOW_FIELDS = (
     Field('Unreachable'),
     Field('Playbook ID', 'playbook.id'),
     Field('Playbook Path', 'playbook.path'),
-    Field('Latest facts', 'timestamp'),
     # TODO: Make this readable
     Field('facts', template="{{ value.items() | sort | to_nice_json | safe }}")
 )

@@ -33,7 +33,6 @@ HOST_FIELDS = {
     'id': fields.Integer,
     'playbook_id': fields.Integer,
     'facts': fields.Raw,
-    'timestamp': fields.DateTime(dt_format='iso8601'),
     'name': api_utils.Encoded,
     'changed': fields.Integer,
     'failed': fields.Integer,

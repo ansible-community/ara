@@ -349,7 +349,6 @@ class Host(Base):
     )
     results = one_to_many('Result', backref='host')
 
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
     facts = db.Column(CompressedData((2 ** 32) - 1), default={})
     changed = db.Column(db.Integer, default=0)
     failed = db.Column(db.Integer, default=0)
