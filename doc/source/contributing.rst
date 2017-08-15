@@ -30,7 +30,7 @@ This documentation you will find here is mostly a summary of
    required to have signed a contributors agreement with the OpenStack
    foundation to be able to contribute to ARA.
 
-.. _OpenStack: http://www.openstack.org/
+.. _OpenStack: https://www.openstack.org/
 .. _OpenStack's developer getting started: https://docs.openstack.org/infra/manual/developers.html
 
 Set up your Ubuntu Launchpad account
