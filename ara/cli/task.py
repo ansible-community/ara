@@ -42,7 +42,7 @@ SHOW_FIELDS = (
     Field('Path'),
     Field('Line', 'lineno'),
     Field('Action'),
-    Field('Tags', template='{{ value | from_json | to_nice_json | safe }}'),
+    Field('Tags', template='{{ value | to_nice_json | safe }}'),
     Field('Time Start'),
     Field('Time End'),
     Field('Duration'),

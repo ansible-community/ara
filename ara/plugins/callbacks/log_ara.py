@@ -281,11 +281,10 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play,
             playbook=self.playbook,
-            tags=jsonutils.dumps(task._attributes['tags']),
+            tags=task._attributes['tags'],
             file=file_,
             lineno=lineno,
             handler=handler)
-
         self.task.start()
         db.session.add(self.task)
 

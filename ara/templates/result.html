@@ -32,8 +32,8 @@
     <div class="row">
         <div class="col-md-12 results">
           <h2>Task: <strong>{{ result.task.name }}</strong></h2>
-          {% if result.task.tags and result.task.tags | from_json | length > 0 -%}
-          <h2>Tags: <strong>{{ result.task.tags | from_json | join(', ') }}</strong></h2>
+          {% if result.task.tags and result.task.tags | length > 0 -%}
+          <h2>Tags: <strong>{{ result.task.tags | join(', ') }}</strong></h2>
           {% endif -%}
           <h2>Host: <strong>{{ result.host.name }}</strong></h2>
           <p>Time: <strong>{{ result.started | datefmt }}</strong></p>

@@ -276,7 +276,7 @@ class Task(Base, TimedEntity):
     name = db.Column(db.Text)
     action = db.Column(db.Text)
     lineno = db.Column(db.Integer)
-    tags = db.Column(db.Text)
+    tags = db.Column(CompressedData((2 ** 32) - 1))
     handler = db.Column(db.Boolean)
 
     started = db.Column(db.DateTime, default=datetime.utcnow())
