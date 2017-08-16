@@ -37,39 +37,219 @@ class TestApiHosts(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/hosts')
+        res = self.client.post('/api/v1/hosts')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/hosts/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/hosts/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/hosts/')
-        internal = HostApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_post_internal_with_no_data(self):
+        res = HostApi().post()
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_correct_data(self):
+        # Create fake playbook data and create a host in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "name": "hostname",
+            "facts": {
+                "ansible_foo": "bar"
+            },
+            "changed": 1,
+            "failed": 0,
+            "ok": 4,
+            "skipped": 1,
+            "unreachable": 0
+        }
+        res = self.client.post('/api/v1/hosts/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full host object ("data")
+        # and that the host was really created properly by fetching it
+        # ("host")
+        host = self.client.get('/api/v1/hosts/',
+                               content_type='application/json',
+                               query_string=dict(id=data['id']))
+        host = jsonutils.loads(host.data)
+        self.assertEquals(data['id'], host['id'])
+        self.assertEquals(data['playbook_id'], host['playbook_id'])
+        self.assertEquals(data['name'], host['name'])
+        self.assertEquals(data['facts'], host['facts'])
+        self.assertEquals(data['changed'], host['changed'])
+        self.assertEquals(data['failed'], host['failed'])
+        self.assertEquals(data['ok'], host['ok'])
+        self.assertEquals(data['skipped'], host['skipped'])
+        self.assertEquals(data['unreachable'], host['unreachable'])
+
+    def test_post_internal_with_correct_data(self):
+        # Create fake playbook data and create a host in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "name": "hostname",
+            "facts": {
+                "ansible_foo": "bar"
+            },
+            "changed": 1,
+            "failed": 0,
+            "ok": 4,
+            "skipped": 1,
+            "unreachable": 0
+        }
+        res = HostApi().post(data)
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full host object ("data")
+        # and that the host was really created properly by fetching it
+        # ("host")
+        host = HostApi().get(id=data['id'])
+        host = jsonutils.loads(host.data)
+        self.assertEquals(data['id'], host['id'])
+        self.assertEquals(data['playbook_id'], host['playbook_id'])
+        self.assertEquals(data['name'], host['name'])
+        self.assertEquals(data['facts'], host['facts'])
+        self.assertEquals(data['changed'], host['changed'])
+        self.assertEquals(data['failed'], host['failed'])
+        self.assertEquals(data['ok'], host['ok'])
+        self.assertEquals(data['skipped'], host['skipped'])
+        self.assertEquals(data['unreachable'], host['unreachable'])
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "name": 1,
+            "facts": False,
+            "changed": False
+        }
+
+        res = self.client.post('/api/v1/hosts/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "name": 1,
+            "facts": False,
+            "changed": False
+        }
+
+        res = HostApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "name": "hostname",
+        }
+        res = self.client.post('/api/v1/hosts/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "name": "hostname",
+        }
+        res = HostApi().post(data)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PATCH
     ###########
     def test_patch_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.patch('/api/v1/hosts')
+        res = self.client.patch('/api/v1/hosts')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_patch_http_unimplemented(self):
-        res = self.client.patch('/api/v1/hosts/')
-        self.assertEqual(res.status_code, 405)
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/hosts/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_patch_internal_unimplemented(self):
-        http = self.client.patch('/api/v1/hosts/')
-        internal = HostApi().patch()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_patch_internal_with_no_data(self):
+        res = HostApi().patch()
+        self.assertEqual(res.status_code, 400)
+
+    def test_patch_http_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['host'].id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_name = "Updated host name"
+        self.assertNotEquals(ctx['host'].name, new_name)
+
+        data = {
+            "id": ctx['host'].id,
+            "name": new_name
+        }
+        res = self.client.patch('/api/v1/hosts/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['name'], new_name)
+
+        # Confirm by re-fetching host
+        updated = self.client.get('/api/v1/hosts/',
+                                  content_type='application/json',
+                                  query_string=dict(id=ctx['host'].id))
+        updated_host = jsonutils.loads(updated.data)
+        self.assertEquals(updated_host['name'], new_name)
+
+    def test_patch_internal_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['host'].id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_name = "Updated host name"
+        self.assertNotEquals(ctx['host'].name, new_name)
+
+        data = {
+            "id": ctx['host'].id,
+            "name": new_name
+        }
+        res = HostApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['name'], new_name)
+
+        # Confirm by re-fetching host
+        updated = HostApi().get(id=ctx['host'].id)
+        updated_host = jsonutils.loads(updated.data)
+        self.assertEquals(updated_host['name'], new_name)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "name": "Updated host name"
+        }
+        res = self.client.patch('/api/v1/hosts/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "name": "Updated host name"
+        }
+        res = HostApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # PUT

@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Host
 
 from flask import Blueprint
@@ -46,7 +47,60 @@ class HostRestApi(Resource):
     """
     REST API for Hosts: api.v1.hosts
     """
+    def post(self):
+        """
+        Creates a host with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        host = Host(
+            playbook_id=args.playbook_id,
+            name=args.name,
+            facts=args.facts,
+            changed=args.changed,
+            failed=args.failed,
+            ok=args.ok,
+            skipped=args.skipped,
+            unreachable=args.unreachable,
+        )
+        db.session.add(host)
+        db.session.commit()
+
+        return self.get(id=host.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a host
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        host = Host.query.get(args.id)
+        if not host:
+            abort(404, message="Host {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, HOST_FIELDS))
+
+        keys = ['playbook_id', 'name', 'facts', 'changed', 'failed',
+                'ok', 'skipped', 'unreachable']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(host, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, HOST_FIELDS))
+
+        db.session.add(host)
+        db.session.commit()
+
+        return self.get(id=host.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many hosts based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -64,6 +118,141 @@ class HostRestApi(Resource):
                   help=api_utils.help(parser.args, HOST_FIELDS))
 
         return marshal(hosts, HOST_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id of the host'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=api_utils.encoded_input,
+            location='json',
+            required=True,
+            help='The name of the host'
+        )
+        parser.add_argument(
+            'facts', dest='facts',
+            type=dict,
+            location='json',
+            required=False,
+            default={},
+            help='The facts for the host'
+        )
+        parser.add_argument(
+            'changed', dest='changed',
+            type=int,
+            location='json',
+            required=False,
+            default=0,
+            help='Changed tasks for the host'
+        )
+        parser.add_argument(
+            'failed', dest='failed',
+            type=int,
+            location='json',
+            required=False,
+            default=0,
+            help='Failed tasks for the host'
+        )
+        parser.add_argument(
+            'ok', dest='ok',
+            type=int,
+            location='json',
+            required=False,
+            default=0,
+            help='Failed tasks for the host'
+        )
+        parser.add_argument(
+            'skipped', dest='skipped',
+            type=int,
+            location='json',
+            required=False,
+            default=0,
+            help='Skipped tasks for the host'
+        )
+        parser.add_argument(
+            'unreachable', dest='unreachable',
+            type=int,
+            location='json',
+            required=False,
+            default=0,
+            help='Unreachable tasks for the host'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the host'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id of the host'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=api_utils.encoded_input,
+            location='json',
+            required=False,
+            help='The name of the host'
+        )
+        parser.add_argument(
+            'facts', dest='facts',
+            type=dict,
+            location='json',
+            required=False,
+            help='The facts for the host'
+        )
+        parser.add_argument(
+            'changed', dest='changed',
+            type=int,
+            location='json',
+            required=False,
+            help='Changed tasks for the host'
+        )
+        parser.add_argument(
+            'failed', dest='failed',
+            type=int,
+            location='json',
+            required=False,
+            help='Failed tasks for the host'
+        )
+        parser.add_argument(
+            'ok', dest='ok',
+            type=int,
+            location='json',
+            required=False,
+            help='Failed tasks for the host'
+        )
+        parser.add_argument(
+            'skipped', dest='skipped',
+            type=int,
+            location='json',
+            required=False,
+            help='Skipped tasks for the host'
+        )
+        parser.add_argument(
+            'unreachable', dest='unreachable',
+            type=int,
+            location='json',
+            required=False,
+            help='Unreachable tasks for the host'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():
