@@ -35,7 +35,7 @@ TASK_FIELDS = {
     'playbook_id': fields.Integer,
     'play_id': fields.Integer,
     'file_id': fields.Integer,
-    'name': fields.String,
+    'name': api_utils.Encoded,
     'action': fields.String,
     'lineno': fields.Integer,
     'tags': fields.String,
@@ -105,7 +105,7 @@ class TaskRestApi(Resource):
         )
         parser.add_argument(
             'name', dest='name',
-            type=str,
+            type=api_utils.encoded_input,
             location='values',
             required=False,
             help='Search with the name (full or part) of a task'

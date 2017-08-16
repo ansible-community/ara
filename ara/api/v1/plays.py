@@ -34,7 +34,7 @@ api = Api(blueprint)
 PLAY_FIELDS = {
     'id': fields.Integer,
     'playbook_id': fields.Integer,
-    'name': fields.String,
+    'name': api_utils.Encoded,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
     'results': fields.List(fields.Nested({
@@ -131,7 +131,7 @@ class PlayRestApi(Resource):
         )
         parser.add_argument(
             'name', dest='name',
-            type=str,
+            type=api_utils.encoded_input,
             location='json',
             required=True,
             help='The name of the play'
@@ -171,7 +171,7 @@ class PlayRestApi(Resource):
         )
         parser.add_argument(
             'name', dest='name',
-            type=str,
+            type=api_utils.encoded_input,
             location='json',
             required=False,
             help='The name of the play'
@@ -211,7 +211,7 @@ class PlayRestApi(Resource):
         )
         parser.add_argument(
             'name', dest='name',
-            type=str,
+            type=api_utils.encoded_input,
             location='values',
             required=False,
             help='Search with the name (full or part) of a play'

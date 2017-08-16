@@ -34,7 +34,7 @@ HOST_FIELDS = {
     'playbook_id': fields.Integer,
     'facts': fields.Raw,
     'timestamp': fields.DateTime(dt_format='iso8601'),
-    'name': fields.String,
+    'name': api_utils.Encoded,
     'changed': fields.Integer,
     'failed': fields.Integer,
     'ok': fields.Integer,
@@ -85,7 +85,7 @@ class HostRestApi(Resource):
         )
         parser.add_argument(
             'name', dest='name',
-            type=str,
+            type=api_utils.encoded_input,
             location='values',
             required=False,
             help='Search with the name (full or part) of a host'
