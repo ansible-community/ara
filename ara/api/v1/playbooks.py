@@ -314,12 +314,12 @@ def _find_playbooks(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Playbook.ended
+            kwargs['before'] < Playbook.started
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Playbook.ended
+            kwargs['after'] > Playbook.started
         )
 
     return query.order_by(Playbook.id.desc()).all()
