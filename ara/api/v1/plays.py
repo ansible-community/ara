@@ -101,7 +101,6 @@ class PlayRestApi(Resource):
         """
         Retrieves one or many plays based on the request and the query
         """
-
         parser = self._get_parser()
 
         if id is not None:
