@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Task
 
 from flask import Blueprint
@@ -38,7 +39,7 @@ TASK_FIELDS = {
     'name': api_utils.Encoded,
     'action': fields.String,
     'lineno': fields.Integer,
-    'tags': fields.String,
+    'tags': fields.Raw,
     'handler': fields.Boolean,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
@@ -53,7 +54,61 @@ class TaskRestApi(Resource):
     """
     REST API for Tasks: api.v1.tasks
     """
+    def post(self):
+        """
+        Creates a task with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+        task = Task(
+            playbook_id=args.playbook_id,
+            play_id=args.play_id,
+            file_id=args.file_id,
+            name=args.name,
+            action=args.action,
+            lineno=args.lineno,
+            tags=args.tags,
+            handler=args.handler,
+            started=args.started,
+            ended=args.ended
+        )
+        db.session.add(task)
+        db.session.commit()
+
+        return self.get(id=task.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a task
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        task = Task.query.get(args.id)
+        if not task:
+            abort(404, message="Task {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, TASK_FIELDS))
+
+        keys = ['playbook_id', 'name', 'action', 'lineno', 'tags',
+                'handler', 'started', 'ended']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(task, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, TASK_FIELDS))
+
+        db.session.add(task)
+        db.session.commit()
+
+        return self.get(id=task.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many tasks based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -71,6 +126,164 @@ class TaskRestApi(Resource):
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
         return marshal(tasks, TASK_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id of the task'
+        )
+        parser.add_argument(
+            'file_id', dest='file_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The file_id of the task'
+        )
+        parser.add_argument(
+            'play_id', dest='play_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The play_id of the task'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=api_utils.encoded_input,
+            location='json',
+            required=True,
+            help='The name of the task'
+        )
+        parser.add_argument(
+            'action', dest='action',
+            type=str,
+            location='json',
+            required=True,
+            help='The action of the task'
+        )
+        parser.add_argument(
+            'lineno', dest='lineno',
+            type=int,
+            location='json',
+            required=False,
+            help='The line number from the action of the task'
+        )
+        parser.add_argument(
+            'tags', dest='tags',
+            type=list,
+            location='json',
+            required=False,
+            help='The tags of the task'
+        )
+        parser.add_argument(
+            'handler', dest='handler',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the task is a handler'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=True,
+            help='Timestamp for the start of the task (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the task (ISO8601)'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the task'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id of the task'
+        )
+        parser.add_argument(
+            'file_id', dest='file_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The file_id of the task'
+        )
+        parser.add_argument(
+            'play_id', dest='play_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The play_id of the task'
+        )
+        parser.add_argument(
+            'name', dest='name',
+            type=api_utils.encoded_input,
+            location='json',
+            required=False,
+            help='The name of the task'
+        )
+        parser.add_argument(
+            'action', dest='action',
+            type=str,
+            location='json',
+            required=False,
+            help='The action of the task'
+        )
+        parser.add_argument(
+            'lineno', dest='lineno',
+            type=int,
+            location='json',
+            required=False,
+            help='The line number from the action of the task'
+        )
+        parser.add_argument(
+            'tags', dest='tags',
+            type=list,
+            location='json',
+            required=False,
+            help='The tags of the task'
+        )
+        parser.add_argument(
+            'handler', dest='handler',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the task is a handler'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the task (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the task (ISO8601)'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():
@@ -126,7 +339,7 @@ class TaskRestApi(Resource):
         )
         parser.add_argument(
             'tags', dest='tags',
-            type=str,
+            type=list,
             location='values',
             required=False,
             help='Search with the tags (full or part) of a task'

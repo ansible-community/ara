@@ -37,39 +37,233 @@ class TestApiTasks(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/tasks')
+        res = self.client.post('/api/v1/tasks')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/tasks/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/tasks/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/tasks/')
-        internal = TaskApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_post_internal_with_no_data(self):
+        res = TaskApi().post()
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_correct_data(self):
+        # Create fake playbook data and create a task in a play
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "play_id": ctx['play'].id,
+            "file_id": ctx['playbook'].file.id,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/tasks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full task object ("data")
+        # and that the task was really created properly by fetching it
+        # ("task")
+        task = self.client.get('/api/v1/tasks/',
+                               content_type='application/json',
+                               query_string=dict(id=data['id']))
+        task = jsonutils.loads(task.data)
+        self.assertEquals(data['id'], task['id'])
+        self.assertEquals(data['playbook_id'], task['playbook_id'])
+        self.assertEquals(data['play_id'], task['play_id'])
+        self.assertEquals(data['file_id'], task['file_id'])
+        self.assertEquals(data['name'], task['name'])
+        self.assertEquals(data['action'], task['action'])
+        self.assertEquals(data['lineno'], task['lineno'])
+        self.assertEquals(data['tags'], task['tags'])
+        self.assertEquals(data['started'], task['started'])
+        self.assertEquals(data['ended'], task['ended'])
+
+    def test_post_internal_with_correct_data(self):
+        # Create fake playbook data and create a task in a play
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "play_id": ctx['play'].id,
+            "file_id": ctx['playbook'].file.id,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = TaskApi().post(data)
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full task object ("data")
+        # and that the task was really created properly by fetching it
+        # ("task")
+        task = TaskApi().get(id=data['id'])
+        task = jsonutils.loads(task.data)
+        self.assertEquals(data['id'], task['id'])
+        self.assertEquals(data['playbook_id'], task['playbook_id'])
+        self.assertEquals(data['play_id'], task['play_id'])
+        self.assertEquals(data['file_id'], task['file_id'])
+        self.assertEquals(data['name'], task['name'])
+        self.assertEquals(data['action'], task['action'])
+        self.assertEquals(data['lineno'], task['lineno'])
+        self.assertEquals(data['tags'], task['tags'])
+        self.assertEquals(data['started'], task['started'])
+        self.assertEquals(data['ended'], task['ended'])
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "play_id": "one",
+            "file_id": "False",
+            "name": 1,
+            "action": None,
+            "lineno": "two",
+            "tags": "None",
+            "started": False
+        }
+
+        res = self.client.post('/api/v1/tasks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "play_id": "one",
+            "file_id": "False",
+            "name": 1,
+            "action": None,
+            "lineno": "two",
+            "tags": "None",
+            "started": False
+        }
+
+        res = TaskApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/tasks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = TaskApi().post(data)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PATCH
     ###########
     def test_patch_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.patch('/api/v1/tasks')
+        res = self.client.patch('/api/v1/tasks')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_patch_http_unimplemented(self):
-        res = self.client.patch('/api/v1/tasks/')
-        self.assertEqual(res.status_code, 405)
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/tasks/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_patch_internal_unimplemented(self):
-        http = self.client.patch('/api/v1/tasks/')
-        internal = TaskApi().patch()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_patch_internal_with_no_data(self):
+        res = TaskApi().patch()
+        self.assertEqual(res.status_code, 400)
+
+    def test_patch_http_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['task'].id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_name = "Updated task name"
+        self.assertNotEquals(ctx['task'].name, new_name)
+
+        data = {
+            "id": ctx['task'].id,
+            "name": new_name
+        }
+        res = self.client.patch('/api/v1/tasks/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['name'], new_name)
+
+        # Confirm by re-fetching task
+        updated = self.client.get('/api/v1/tasks/',
+                                  content_type='application/json',
+                                  query_string=dict(id=ctx['task'].id))
+        updated_task = jsonutils.loads(updated.data)
+        self.assertEquals(updated_task['name'], new_name)
+
+    def test_patch_internal_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['task'].id, 1)
+
+        # We'll update the name field, assert we are actually
+        # making a change
+        new_name = "Updated task name"
+        self.assertNotEquals(ctx['task'].name, new_name)
+
+        data = {
+            "id": ctx['task'].id,
+            "name": new_name
+        }
+        res = TaskApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['name'], new_name)
+
+        # Confirm by re-fetching play
+        updated = TaskApi().get(id=ctx['task'].id)
+        updated_task = jsonutils.loads(updated.data)
+        self.assertEquals(updated_task['name'], new_name)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "name": "Updated task name"
+        }
+        res = self.client.patch('/api/v1/tasks/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "name": "Updated task name"
+        }
+        res = TaskApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # PUT
