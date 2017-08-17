@@ -198,12 +198,12 @@ def _find_tasks(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Task.ended
+            kwargs['before'] < Task.started
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Task.ended
+            kwargs['after'] > Task.started
         )
 
     return query.order_by(Task.id.desc()).all()

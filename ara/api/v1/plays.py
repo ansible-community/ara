@@ -250,12 +250,12 @@ def _find_plays(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Play.ended
+            kwargs['before'] < Play.started
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Play.ended
+            kwargs['after'] > Play.started
         )
 
     return query.order_by(Play.id.desc()).all()

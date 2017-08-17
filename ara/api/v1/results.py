@@ -207,12 +207,12 @@ def _find_results(**kwargs):
 
     if 'before' in kwargs and kwargs['before'] is not None:
         query = query.filter(
-            kwargs['before'] < Result.ended
+            kwargs['before'] < Result.started
         )
 
     if 'after' in kwargs and kwargs['after'] is not None:
         query = query.filter(
-            kwargs['after'] > Result.ended
+            kwargs['after'] > Result.started
         )
 
     return query.order_by(Result.id.desc()).all()
