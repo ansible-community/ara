@@ -141,14 +141,14 @@ class PlayRestApi(Resource):
             type=inputs.datetime_from_iso8601,
             location='json',
             required=True,
-            help='Timestamp for the start of the playbook run (ISO8601)'
+            help='Timestamp for the start of the play (ISO8601)'
         )
         parser.add_argument(
             'ended', dest='ended',
             type=inputs.datetime_from_iso8601,
             location='json',
             required=False,
-            help='Timestamp for the start of the playbook run (ISO8601)'
+            help='Timestamp for the start of the play (ISO8601)'
         )
         return parser
 
@@ -181,14 +181,14 @@ class PlayRestApi(Resource):
             type=inputs.datetime_from_iso8601,
             location='json',
             required=False,
-            help='Timestamp for the start of the playbook run (ISO8601)'
+            help='Timestamp for the start of the play (ISO8601)'
         )
         parser.add_argument(
             'ended', dest='ended',
             type=inputs.datetime_from_iso8601,
             location='json',
             required=False,
-            help='Timestamp for the start of the playbook run (ISO8601)'
+            help='Timestamp for the end of the play (ISO8601)'
         )
         return parser
 
