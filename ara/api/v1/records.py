@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Record
 
 from flask import Blueprint
@@ -42,7 +43,55 @@ class RecordRestApi(Resource):
     """
     REST API for Records: api.v1.records
     """
+    def post(self):
+        """
+        Creates a record with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        record = Record(
+            playbook_id=args.playbook_id,
+            key=args.key,
+            value=args.value,
+            type=args.type
+        )
+        db.session.add(record)
+        db.session.commit()
+
+        return self.get(id=record.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a record
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        record = Record.query.get(args.id)
+        if not record:
+            abort(404, message="Record {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, RECORD_FIELDS))
+
+        keys = ['playbook_id', 'key', 'value', 'type']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(record, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, RECORD_FIELDS))
+
+        db.session.add(record)
+        db.session.commit()
+
+        return self.get(id=record.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many records based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -60,6 +109,83 @@ class RecordRestApi(Resource):
                   help=api_utils.help(parser.args, RECORD_FIELDS))
 
         return marshal(records, RECORD_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id for the record'
+        )
+        parser.add_argument(
+            'key', dest='key',
+            type=str,
+            location='json',
+            required=True,
+            help='The key of the record'
+        )
+        parser.add_argument(
+            'value', dest='value',
+            type=str,
+            location='json',
+            required=True,
+            help='The value of the record'
+        )
+        parser.add_argument(
+            'type', dest='type',
+            type=str,
+            location='json',
+            choices=['text', 'url', 'json', 'list', 'dict'],
+            required=False,
+            default='text',
+            help='The type of the record'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the record'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id for the record'
+        )
+        parser.add_argument(
+            'key', dest='key',
+            type=str,
+            location='json',
+            required=False,
+            help='The key of the record'
+        )
+        parser.add_argument(
+            'value', dest='value',
+            type=str,
+            location='json',
+            required=False,
+            help='The value of the record'
+        )
+        parser.add_argument(
+            'type', dest='type',
+            type=str,
+            location='json',
+            choices=['text', 'url', 'json', 'list', 'dict'],
+            required=False,
+            default='text',
+            help='The type of the record'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():

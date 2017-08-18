@@ -37,39 +37,203 @@ class TestApiRecords(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/records')
+        res = self.client.post('/api/v1/records')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/records/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/records/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/records/')
-        internal = RecordApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_post_internal_with_no_data(self):
+        res = RecordApi().post()
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_correct_data(self):
+        # Create fake playbook data and create a record in it
+        ctx = ansible_run(ara_record=True)
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = self.client.post('/api/v1/records/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full record object ("data")
+        # and that the record was really created properly by fetching it
+        # ("record")
+        record = self.client.get('/api/v1/records/',
+                                 content_type='application/json',
+                                 query_string=dict(id=data['id']))
+        record = jsonutils.loads(record.data)
+        self.assertEquals(data['id'], record['id'])
+        self.assertEquals(data['playbook_id'], record['playbook_id'])
+        self.assertEquals(data['key'], record['key'])
+        self.assertEquals(data['value'], record['value'])
+        self.assertEquals(data['type'], record['type'])
+
+    def test_post_internal_with_correct_data(self):
+        # Create fake playbook data and create a record in it
+        ctx = ansible_run(ara_record=True)
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = RecordApi().post(data)
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full record object ("data")
+        # and that the record was really created properly by fetching it
+        # ("record")
+        record = RecordApi().get(id=data['id'])
+        record = jsonutils.loads(record.data)
+        self.assertEquals(data['id'], record['id'])
+        self.assertEquals(data['playbook_id'], record['playbook_id'])
+        self.assertEquals(data['key'], record['key'])
+        self.assertEquals(data['value'], record['value'])
+        self.assertEquals(data['type'], record['type'])
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "key": 1,
+            "value": False,
+            "type": "binary",
+        }
+
+        res = self.client.post('/api/v1/records/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "playbook_id": "1",
+            "key": 1,
+            "value": False,
+            "type": "binary",
+        }
+
+        res = RecordApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = self.client.post('/api/v1/records/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = RecordApi().post(data)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PATCH
     ###########
     def test_patch_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.patch('/api/v1/records')
+        res = self.client.patch('/api/v1/records')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_patch_http_unimplemented(self):
-        res = self.client.patch('/api/v1/records/')
-        self.assertEqual(res.status_code, 405)
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/records/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_patch_internal_unimplemented(self):
-        http = self.client.patch('/api/v1/records/')
-        internal = RecordApi().patch()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_patch_internal_with_no_data(self):
+        res = RecordApi().patch()
+        self.assertEqual(res.status_code, 400)
+
+    def test_patch_http_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run(ara_record=True)
+        self.assertEquals(ctx['record'].id, 1)
+
+        # We'll update the value field, assert we are actually
+        # making a change
+        new_value = "Updated value"
+        self.assertNotEquals(ctx['record'].value, new_value)
+
+        data = {
+            "id": ctx['record'].id,
+            "value": new_value
+        }
+        res = self.client.patch('/api/v1/records/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['value'], new_value)
+
+        # Confirm by re-fetching record
+        updated = self.client.get('/api/v1/records/',
+                                  content_type='application/json',
+                                  query_string=dict(id=ctx['record'].id))
+        updated_record = jsonutils.loads(updated.data)
+        self.assertEquals(updated_record['value'], new_value)
+
+    def test_patch_internal_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run(ara_record=True)
+        self.assertEquals(ctx['record'].id, 1)
+
+        # We'll update the value field, assert we are actually
+        # making a change
+        new_value = "Updated value"
+        self.assertNotEquals(ctx['record'].value, new_value)
+
+        data = {
+            "id": ctx['record'].id,
+            "value": new_value
+        }
+        res = RecordApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['value'], new_value)
+
+        # Confirm by re-fetching record
+        updated = RecordApi().get(id=ctx['record'].id)
+        updated_record = jsonutils.loads(updated.data)
+        self.assertEquals(updated_record['value'], new_value)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run(ara_record=True)
+        data = {
+            "value": "Updated value"
+        }
+        res = self.client.patch('/api/v1/records/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run(ara_record=True)
+        data = {
+            "value": "Updated value"
+        }
+        res = RecordApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # PUT
