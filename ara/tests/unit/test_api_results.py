@@ -37,58 +37,265 @@ class TestApiResults(TestAra):
     # POST
     ###########
     def test_post_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.post('/api/v1/results')
+        res = self.client.post('/api/v1/results')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_post_http_unimplemented(self):
-        res = self.client.post('/api/v1/results/')
-        self.assertEqual(res.status_code, 405)
+    def test_post_http_with_no_data(self):
+        res = self.client.post('/api/v1/results/',
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_post_internal_unimplemented(self):
-        http = self.client.post('/api/v1/results/')
-        internal = ResultApi().post()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_post_internal_with_no_data(self):
+        res = ResultApi().post()
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_correct_data(self):
+        # Create fake playbook data and create a result in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "host_id": ctx['host'].id,
+            "play_id": ctx['play'].id,
+            "task_id": ctx['task'].id,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": '{"msg": "some result"}',
+            "started": "1970-08-14T00:52:49.570031"
+        }
+
+        res = self.client.post('/api/v1/results/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full result object ("data")
+        # and that the result was really created properly by fetching it
+        # ("result")
+        result = self.client.get('/api/v1/results/',
+                                 content_type='application/json',
+                                 query_string=dict(id=data['id']))
+        result = jsonutils.loads(result.data)
+        self.assertEquals(data['id'], result['id'])
+        self.assertEquals(data['playbook_id'], result['playbook_id'])
+        self.assertEquals(data['host_id'], result['host_id'])
+        self.assertEquals(data['play_id'], result['play_id'])
+        self.assertEquals(data['task_id'], result['task_id'])
+        self.assertEquals(data['status'], result['status'])
+        self.assertEquals(data['changed'], result['changed'])
+        self.assertEquals(data['failed'], result['failed'])
+        self.assertEquals(data['skipped'], result['skipped'])
+        self.assertEquals(data['unreachable'], result['unreachable'])
+        self.assertEquals(data['ignore_errors'], result['ignore_errors'])
+        self.assertEquals(data['result'], result['result'])
+        self.assertEquals(data['started'], result['started'])
+        self.assertEquals(data['ended'], result['ended'])
+
+    def test_post_internal_with_correct_data(self):
+        # Create fake playbook data and create a result in it
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "host_id": ctx['host'].id,
+            "play_id": ctx['play'].id,
+            "task_id": ctx['task'].id,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": '{"msg": "some result"}',
+            "started": "1970-08-14T00:52:49.570031"
+        }
+
+        res = ResultApi().post(data)
+        self.assertEqual(res.status_code, 200)
+        data = jsonutils.loads(res.data)
+
+        # Confirm that the POST returned the full result object ("data")
+        # and that the result was really created properly by fetching it
+        # ("result")
+        result = ResultApi().get(id=data['id'])
+        result = jsonutils.loads(result.data)
+        self.assertEquals(data['id'], result['id'])
+        self.assertEquals(data['playbook_id'], result['playbook_id'])
+        self.assertEquals(data['host_id'], result['host_id'])
+        self.assertEquals(data['play_id'], result['play_id'])
+        self.assertEquals(data['task_id'], result['task_id'])
+        self.assertEquals(data['status'], result['status'])
+        self.assertEquals(data['changed'], result['changed'])
+        self.assertEquals(data['failed'], result['failed'])
+        self.assertEquals(data['skipped'], result['skipped'])
+        self.assertEquals(data['unreachable'], result['unreachable'])
+        self.assertEquals(data['ignore_errors'], result['ignore_errors'])
+        self.assertEquals(data['result'], result['result'])
+        self.assertEquals(data['started'], result['started'])
+        self.assertEquals(data['ended'], result['ended'])
+
+    def test_post_http_with_incorrect_data(self):
+        data = {
+            "playbook_id": "one",
+            "host_id": "two",
+            "play_id": "three",
+            "task_id": "four",
+            "status": True,
+            "changed": "yes",
+            "failed": "no",
+            "skipped": "no",
+            "unreachable": "no",
+            "ignore_errors": "no",
+            "result": {"msg": "some result"},
+            "started": "a long time ago"
+        }
+
+        res = self.client.post('/api/v1/results/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_incorrect_data(self):
+        data = {
+            "playbook_id": "one",
+            "host_id": "two",
+            "play_id": "three",
+            "task_id": "four",
+            "status": True,
+            "changed": "yes",
+            "failed": "no",
+            "skipped": "no",
+            "unreachable": "no",
+            "ignore_errors": "no",
+            "result": {"msg": "some result"},
+            "started": "a long time ago"
+        }
+
+        res = ResultApi().post(data)
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_missing_argument(self):
+        data = {
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": '{"msg": "some result"}',
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/results/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_internal_with_missing_argument(self):
+        data = {
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": '{"msg": "some result"}',
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = ResultApi().post(data)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PATCH
     ###########
     def test_patch_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.patch('/api/v1/results')
+        res = self.client.patch('/api/v1/results')
+        self.assertEqual(res.status_code, 301)
 
-    # Not implemented yet
-    def test_patch_http_unimplemented(self):
-        res = self.client.patch('/api/v1/results/')
-        self.assertEqual(res.status_code, 405)
+    def test_patch_http_with_no_data(self):
+        res = self.client.patch('/api/v1/results/',
+                                content_type='application/json')
+        self.assertEqual(res.status_code, 400)
 
-    def test_patch_internal_unimplemented(self):
-        http = self.client.patch('/api/v1/results/')
-        internal = ResultApi().patch()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_patch_internal_with_no_data(self):
+        res = ResultApi().patch()
+        self.assertEqual(res.status_code, 400)
 
-    ###########
-    # PUT
-    ###########
-    def test_put_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.put('/api/v1/results')
+    def test_patch_http_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['result'].id, 1)
 
-    # Not implemented yet
-    def test_put_http_unimplemented(self):
-        res = self.client.put('/api/v1/results/')
-        self.assertEqual(res.status_code, 405)
+        # We'll update the status field, assert we are actually
+        # making a change
+        new_status = "failed"
+        self.assertNotEquals(ctx['result'].status, new_status)
 
-    def test_put_internal_unimplemented(self):
-        http = self.client.put('/api/v1/results/')
-        internal = ResultApi().put()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+        data = {
+            "id": ctx['result'].id,
+            "status": new_status
+        }
+        res = self.client.patch('/api/v1/results/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['status'], new_status)
+
+        # Confirm by re-fetching result
+        updated = self.client.get('/api/v1/results/',
+                                  content_type='application/json',
+                                  query_string=dict(id=ctx['result'].id))
+        updated_result = jsonutils.loads(updated.data)
+        self.assertEquals(updated_result['status'], new_status)
+
+    def test_patch_internal_existing(self):
+        # Generate fake playbook data
+        ctx = ansible_run()
+        self.assertEquals(ctx['result'].id, 1)
+
+        # We'll update the status field, assert we are actually
+        # making a change
+        new_status = "failed"
+        self.assertNotEquals(ctx['result'].status, new_status)
+
+        data = {
+            "id": ctx['result'].id,
+            "status": new_status
+        }
+        res = ResultApi().patch(data)
+        self.assertEquals(res.status_code, 200)
+
+        # The patch endpoint should return the full updated object
+        data = jsonutils.loads(res.data)
+        self.assertEquals(data['status'], new_status)
+
+        # Confirm by re-fetching result
+        updated = ResultApi().get(id=ctx['result'].id)
+        updated_result = jsonutils.loads(updated.data)
+        self.assertEquals(updated_result['status'], new_status)
+
+    def test_patch_http_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "status": "failed"
+        }
+        res = self.client.patch('/api/v1/results/',
+                                data=jsonutils.dumps(data),
+                                content_type='application/json')
+        self.assertEquals(res.status_code, 400)
+
+    def test_patch_internal_with_missing_arg(self):
+        ansible_run()
+        data = {
+            "status": "failed"
+        }
+        res = ResultApi().patch(data)
+        self.assertEquals(res.status_code, 400)
 
     ###########
     # DELETE
