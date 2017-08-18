@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.db.models import db
 from ara.db.models import Result
 
 from flask import Blueprint
@@ -52,7 +53,66 @@ class ResultRestApi(Resource):
     """
     REST API for Results: api.v1.results
     """
+    def post(self):
+        """
+        Creates a result with the provided arguments
+        """
+        parser = self._post_parser()
+        args = parser.parse_args()
+
+        result = Result(
+            playbook_id=args.playbook_id,
+            host_id=args.host_id,
+            play_id=args.play_id,
+            task_id=args.task_id,
+            status=args.status,
+            changed=args.changed,
+            failed=args.failed,
+            skipped=args.skipped,
+            unreachable=args.unreachable,
+            ignore_errors=args.ignore_errors,
+            result=args.result,
+            started=args.started,
+            ended=args.ended
+        )
+        db.session.add(result)
+        db.session.commit()
+
+        return self.get(id=result.id)
+
+    def patch(self):
+        """
+        Updates provided parameters for a result
+        """
+        parser = self._patch_parser()
+        args = parser.parse_args()
+
+        result = Result.query.get(args.id)
+        if not result:
+            abort(404, message="Result {} doesn't exist".format(args.id),
+                  help=api_utils.help(parser.args, RESULT_FIELDS))
+
+        keys = ['playbook_id', 'host_id', 'play_id', 'task_id', 'status',
+                'changed', 'failed', 'skipped', 'unreachable',
+                'ignore_errors', 'result', 'started', 'ended']
+        updates = 0
+        for key in keys:
+            if getattr(args, key) is not None:
+                updates += 1
+                setattr(result, key, getattr(args, key))
+        if not updates:
+            abort(400, message="No parameters to update provided",
+                  help=api_utils.help(parser.args, RESULT_FIELDS))
+
+        db.session.add(result)
+        db.session.commit()
+
+        return self.get(id=result.id)
+
     def get(self, id=None):
+        """
+        Retrieves one or many results based on the request and the query
+        """
         parser = self._get_parser()
 
         if id is not None:
@@ -70,6 +130,212 @@ class ResultRestApi(Resource):
                   help=api_utils.help(parser.args, RESULT_FIELDS))
 
         return marshal(results, RESULT_FIELDS)
+
+    @staticmethod
+    def _post_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The playbook_id of the result'
+        )
+        parser.add_argument(
+            'play_id', dest='play_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The play_id of the result'
+        )
+        parser.add_argument(
+            'task_id', dest='task_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The task_id of the result'
+        )
+        parser.add_argument(
+            'host_id', dest='host_id',
+            type=int,
+            location='json',
+            required=True,
+            help='The host_id of the result'
+        )
+        parser.add_argument(
+            'status', dest='status',
+            type=str,
+            location='json',
+            required=True,
+            choices=['ok', 'failed', 'skipped', 'unreachable'],
+            help='The status of the result'
+        )
+        parser.add_argument(
+            'changed', dest='changed',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the result is changed or not'
+        )
+        parser.add_argument(
+            'failed', dest='failed',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the result is failed or not'
+        )
+        parser.add_argument(
+            'skipped', dest='skipped',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the result is skipped or not'
+        )
+        parser.add_argument(
+            'unreachable', dest='unreachable',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the result is unreachable or not'
+        )
+        parser.add_argument(
+            'ignore_errors', dest='ignore_errors',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            default=False,
+            help='If the result has ignore_errors set or not'
+        )
+        parser.add_argument(
+            'result', dest='result',
+            type=str,
+            location='json',
+            required=True,
+            help='The actual result output as provided by Ansible'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=True,
+            help='Timestamp for the start of the result (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the result (ISO8601)'
+        )
+        return parser
+
+    @staticmethod
+    def _patch_parser():
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'id', dest='id',
+            type=int,
+            location='json',
+            required=True,
+            help='The id of the result'
+        )
+        parser.add_argument(
+            'playbook_id', dest='playbook_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The playbook_id of the result'
+        )
+        parser.add_argument(
+            'play_id', dest='play_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The play_id of the result'
+        )
+        parser.add_argument(
+            'task_id', dest='task_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The task_id of the result'
+        )
+        parser.add_argument(
+            'host_id', dest='host_id',
+            type=int,
+            location='json',
+            required=False,
+            help='The host_id of the result'
+        )
+        parser.add_argument(
+            'status', dest='status',
+            type=str,
+            location='json',
+            required=False,
+            choices=['ok', 'failed', 'skipped', 'unreachable'],
+            help='The status of the result'
+        )
+        parser.add_argument(
+            'changed', dest='changed',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the result is changed or not'
+        )
+        parser.add_argument(
+            'failed', dest='failed',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the result is failed or not'
+        )
+        parser.add_argument(
+            'skipped', dest='skipped',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the result is skipped or not'
+        )
+        parser.add_argument(
+            'unreachable', dest='unreachable',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the result is unreachable or not'
+        )
+        parser.add_argument(
+            'ignore_errors', dest='ignore_errors',
+            type=inputs.boolean,
+            location='json',
+            required=False,
+            help='If the result has ignore_errors set or not'
+        )
+        parser.add_argument(
+            'result', dest='result',
+            type=str,
+            location='json',
+            required=False,
+            help='The actual result output as provided by Ansible'
+        )
+        parser.add_argument(
+            'started', dest='started',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the start of the result (ISO8601)'
+        )
+        parser.add_argument(
+            'ended', dest='ended',
+            type=inputs.datetime_from_iso8601,
+            location='json',
+            required=False,
+            help='Timestamp for the end of the result (ISO8601)'
+        )
+        return parser
 
     @staticmethod
     def _get_parser():
