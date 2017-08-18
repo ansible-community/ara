@@ -18,6 +18,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.plays import PlayApi
+from ara.api.v1.plays import PLAY_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -70,11 +71,11 @@ class TestApiPlays(TestAra):
                                content_type='application/json',
                                query_string=dict(id=data['id']))
         play = jsonutils.loads(play.data)
-        self.assertEquals(data['id'], play['id'])
-        self.assertEquals(data['playbook_id'], play['playbook_id'])
-        self.assertEquals(data['name'], play['name'])
-        self.assertEquals(data['started'], play['started'])
-        self.assertEquals(data['ended'], play['ended'])
+        self.assertEqual(len(data), len(play))
+        self.assertEqual(data, play)
+        for key in PLAY_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, play)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a play in it
@@ -93,11 +94,11 @@ class TestApiPlays(TestAra):
         # ("play")
         play = PlayApi().get(id=data['id'])
         play = jsonutils.loads(play.data)
-        self.assertEquals(data['id'], play['id'])
-        self.assertEquals(data['playbook_id'], play['playbook_id'])
-        self.assertEquals(data['name'], play['name'])
-        self.assertEquals(data['started'], play['started'])
-        self.assertEquals(data['ended'], play['ended'])
+        self.assertEqual(len(data), len(play))
+        self.assertEqual(data, play)
+        for key in PLAY_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, play)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -158,12 +159,12 @@ class TestApiPlays(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['play'].id, 1)
+        self.assertEqual(ctx['play'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated play name"
-        self.assertNotEquals(ctx['play'].name, new_name)
+        self.assertNotEqual(ctx['play'].name, new_name)
 
         data = {
             "id": ctx['play'].id,
@@ -172,44 +173,44 @@ class TestApiPlays(TestAra):
         res = self.client.patch('/api/v1/plays/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
         updated = self.client.get('/api/v1/plays/',
                                   content_type='application/json',
                                   query_string=dict(id=ctx['play'].id))
         updated_play = jsonutils.loads(updated.data)
-        self.assertEquals(updated_play['name'], new_name)
+        self.assertEqual(updated_play['name'], new_name)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['play'].id, 1)
+        self.assertEqual(ctx['play'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated play name"
-        self.assertNotEquals(ctx['play'].name, new_name)
+        self.assertNotEqual(ctx['play'].name, new_name)
 
         data = {
             "id": ctx['play'].id,
             "name": new_name
         }
         res = PlayApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
         updated = PlayApi().get(id=ctx['play'].id)
         updated_play = jsonutils.loads(updated.data)
-        self.assertEquals(updated_play['name'], new_name)
+        self.assertEqual(updated_play['name'], new_name)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
@@ -219,7 +220,7 @@ class TestApiPlays(TestAra):
         res = self.client.patch('/api/v1/plays/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run()
@@ -227,7 +228,7 @@ class TestApiPlays(TestAra):
             "name": "Updated play name"
         }
         res = PlayApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PUT

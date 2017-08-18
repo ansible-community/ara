@@ -18,6 +18,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.results import ResultApi
+from ara.api.v1.results import RESULT_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -80,20 +81,11 @@ class TestApiResults(TestAra):
                                  content_type='application/json',
                                  query_string=dict(id=data['id']))
         result = jsonutils.loads(result.data)
-        self.assertEquals(data['id'], result['id'])
-        self.assertEquals(data['playbook_id'], result['playbook_id'])
-        self.assertEquals(data['host_id'], result['host_id'])
-        self.assertEquals(data['play_id'], result['play_id'])
-        self.assertEquals(data['task_id'], result['task_id'])
-        self.assertEquals(data['status'], result['status'])
-        self.assertEquals(data['changed'], result['changed'])
-        self.assertEquals(data['failed'], result['failed'])
-        self.assertEquals(data['skipped'], result['skipped'])
-        self.assertEquals(data['unreachable'], result['unreachable'])
-        self.assertEquals(data['ignore_errors'], result['ignore_errors'])
-        self.assertEquals(data['result'], result['result'])
-        self.assertEquals(data['started'], result['started'])
-        self.assertEquals(data['ended'], result['ended'])
+        self.assertEqual(len(data), len(result))
+        self.assertEqual(data, result)
+        for key in RESULT_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, result)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a result in it
@@ -122,20 +114,11 @@ class TestApiResults(TestAra):
         # ("result")
         result = ResultApi().get(id=data['id'])
         result = jsonutils.loads(result.data)
-        self.assertEquals(data['id'], result['id'])
-        self.assertEquals(data['playbook_id'], result['playbook_id'])
-        self.assertEquals(data['host_id'], result['host_id'])
-        self.assertEquals(data['play_id'], result['play_id'])
-        self.assertEquals(data['task_id'], result['task_id'])
-        self.assertEquals(data['status'], result['status'])
-        self.assertEquals(data['changed'], result['changed'])
-        self.assertEquals(data['failed'], result['failed'])
-        self.assertEquals(data['skipped'], result['skipped'])
-        self.assertEquals(data['unreachable'], result['unreachable'])
-        self.assertEquals(data['ignore_errors'], result['ignore_errors'])
-        self.assertEquals(data['result'], result['result'])
-        self.assertEquals(data['started'], result['started'])
-        self.assertEquals(data['ended'], result['ended'])
+        self.assertEqual(len(data), len(result))
+        self.assertEqual(data, result)
+        for key in RESULT_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, result)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -226,12 +209,12 @@ class TestApiResults(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['result'].id, 1)
+        self.assertEqual(ctx['result'].id, 1)
 
         # We'll update the status field, assert we are actually
         # making a change
         new_status = "failed"
-        self.assertNotEquals(ctx['result'].status, new_status)
+        self.assertNotEqual(ctx['result'].status, new_status)
 
         data = {
             "id": ctx['result'].id,
@@ -240,44 +223,44 @@ class TestApiResults(TestAra):
         res = self.client.patch('/api/v1/results/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['status'], new_status)
+        self.assertEqual(data['status'], new_status)
 
         # Confirm by re-fetching result
         updated = self.client.get('/api/v1/results/',
                                   content_type='application/json',
                                   query_string=dict(id=ctx['result'].id))
         updated_result = jsonutils.loads(updated.data)
-        self.assertEquals(updated_result['status'], new_status)
+        self.assertEqual(updated_result['status'], new_status)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['result'].id, 1)
+        self.assertEqual(ctx['result'].id, 1)
 
         # We'll update the status field, assert we are actually
         # making a change
         new_status = "failed"
-        self.assertNotEquals(ctx['result'].status, new_status)
+        self.assertNotEqual(ctx['result'].status, new_status)
 
         data = {
             "id": ctx['result'].id,
             "status": new_status
         }
         res = ResultApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['status'], new_status)
+        self.assertEqual(data['status'], new_status)
 
         # Confirm by re-fetching result
         updated = ResultApi().get(id=ctx['result'].id)
         updated_result = jsonutils.loads(updated.data)
-        self.assertEquals(updated_result['status'], new_status)
+        self.assertEqual(updated_result['status'], new_status)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
@@ -287,7 +270,7 @@ class TestApiResults(TestAra):
         res = self.client.patch('/api/v1/results/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run()
@@ -295,7 +278,7 @@ class TestApiResults(TestAra):
             "status": "failed"
         }
         res = ResultApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # DELETE

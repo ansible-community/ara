@@ -18,6 +18,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.tasks import TaskApi
+from ara.api.v1.tasks import TASK_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -75,16 +76,11 @@ class TestApiTasks(TestAra):
                                content_type='application/json',
                                query_string=dict(id=data['id']))
         task = jsonutils.loads(task.data)
-        self.assertEquals(data['id'], task['id'])
-        self.assertEquals(data['playbook_id'], task['playbook_id'])
-        self.assertEquals(data['play_id'], task['play_id'])
-        self.assertEquals(data['file_id'], task['file_id'])
-        self.assertEquals(data['name'], task['name'])
-        self.assertEquals(data['action'], task['action'])
-        self.assertEquals(data['lineno'], task['lineno'])
-        self.assertEquals(data['tags'], task['tags'])
-        self.assertEquals(data['started'], task['started'])
-        self.assertEquals(data['ended'], task['ended'])
+        self.assertEqual(len(data), len(task))
+        self.assertEqual(data, task)
+        for key in TASK_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, task)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a task in a play
@@ -108,16 +104,11 @@ class TestApiTasks(TestAra):
         # ("task")
         task = TaskApi().get(id=data['id'])
         task = jsonutils.loads(task.data)
-        self.assertEquals(data['id'], task['id'])
-        self.assertEquals(data['playbook_id'], task['playbook_id'])
-        self.assertEquals(data['play_id'], task['play_id'])
-        self.assertEquals(data['file_id'], task['file_id'])
-        self.assertEquals(data['name'], task['name'])
-        self.assertEquals(data['action'], task['action'])
-        self.assertEquals(data['lineno'], task['lineno'])
-        self.assertEquals(data['tags'], task['tags'])
-        self.assertEquals(data['started'], task['started'])
-        self.assertEquals(data['ended'], task['ended'])
+        self.assertEqual(len(data), len(task))
+        self.assertEqual(data, task)
+        for key in TASK_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, task)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -194,12 +185,12 @@ class TestApiTasks(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['task'].id, 1)
+        self.assertEqual(ctx['task'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated task name"
-        self.assertNotEquals(ctx['task'].name, new_name)
+        self.assertNotEqual(ctx['task'].name, new_name)
 
         data = {
             "id": ctx['task'].id,
@@ -208,44 +199,44 @@ class TestApiTasks(TestAra):
         res = self.client.patch('/api/v1/tasks/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching task
         updated = self.client.get('/api/v1/tasks/',
                                   content_type='application/json',
                                   query_string=dict(id=ctx['task'].id))
         updated_task = jsonutils.loads(updated.data)
-        self.assertEquals(updated_task['name'], new_name)
+        self.assertEqual(updated_task['name'], new_name)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['task'].id, 1)
+        self.assertEqual(ctx['task'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated task name"
-        self.assertNotEquals(ctx['task'].name, new_name)
+        self.assertNotEqual(ctx['task'].name, new_name)
 
         data = {
             "id": ctx['task'].id,
             "name": new_name
         }
         res = TaskApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
         updated = TaskApi().get(id=ctx['task'].id)
         updated_task = jsonutils.loads(updated.data)
-        self.assertEquals(updated_task['name'], new_name)
+        self.assertEqual(updated_task['name'], new_name)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
@@ -255,7 +246,7 @@ class TestApiTasks(TestAra):
         res = self.client.patch('/api/v1/tasks/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run()
@@ -263,7 +254,7 @@ class TestApiTasks(TestAra):
             "name": "Updated task name"
         }
         res = TaskApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PUT

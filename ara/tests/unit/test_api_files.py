@@ -19,6 +19,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.files import FileApi
+from ara.api.v1.files import FILE_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -71,11 +72,11 @@ class TestApiFiles(TestAra):
                                 content_type='application/json',
                                 query_string=dict(id=data['id']))
         file_ = jsonutils.loads(file_.data)
-        self.assertEquals(data['id'], file_['id'])
-        self.assertEquals(data['playbook_id'], file_['playbook_id'])
-        self.assertEquals(data['path'], file_['path'])
-        self.assertEquals(data['content'], file_['content'])
-        self.assertEquals(data['sha1'], file_['sha1'])
+        self.assertEqual(len(data), len(file_))
+        self.assertEqual(data, file_)
+        for key in FILE_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, file_)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a file in it
@@ -94,11 +95,11 @@ class TestApiFiles(TestAra):
         # ("file")
         file_ = FileApi().get(id=data['id'])
         file_ = jsonutils.loads(file_.data)
-        self.assertEquals(data['id'], file_['id'])
-        self.assertEquals(data['playbook_id'], file_['playbook_id'])
-        self.assertEquals(data['path'], file_['path'])
-        self.assertEquals(data['content'], file_['content'])
-        self.assertEquals(data['sha1'], file_['sha1'])
+        self.assertEqual(len(data), len(file_))
+        self.assertEqual(data, file_)
+        for key in FILE_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, file_)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -169,12 +170,12 @@ class TestApiFiles(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['playbook'].file.id, 1)
+        self.assertEqual(ctx['playbook'].file.id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_content = "# Empty file !"
-        self.assertNotEquals(ctx['playbook'].file.content, new_content)
+        self.assertNotEqual(ctx['playbook'].file.content, new_content)
 
         data = {
             "id": ctx['playbook'].file.id,
@@ -183,11 +184,11 @@ class TestApiFiles(TestAra):
         res = self.client.patch('/api/v1/files/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['content'], new_content)
+        self.assertEqual(data['content'], new_content)
 
         # Confirm by re-fetching file
         updated = self.client.get('/api/v1/files/',
@@ -196,33 +197,33 @@ class TestApiFiles(TestAra):
                                       id=ctx['playbook'].file.id)
                                   )
         updated_file = jsonutils.loads(updated.data)
-        self.assertEquals(updated_file['content'], new_content)
+        self.assertEqual(updated_file['content'], new_content)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['playbook'].file.id, 1)
+        self.assertEqual(ctx['playbook'].file.id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_content = "# Empty file !"
-        self.assertNotEquals(ctx['playbook'].file.content, new_content)
+        self.assertNotEqual(ctx['playbook'].file.content, new_content)
 
         data = {
             "id": ctx['playbook'].file.id,
             "content": new_content
         }
         res = FileApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['content'], new_content)
+        self.assertEqual(data['content'], new_content)
 
         # Confirm by re-fetching file
         updated = FileApi().get(id=ctx['playbook'].file.id)
         updated_file = jsonutils.loads(updated.data)
-        self.assertEquals(updated_file['content'], new_content)
+        self.assertEqual(updated_file['content'], new_content)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
@@ -232,7 +233,7 @@ class TestApiFiles(TestAra):
         res = self.client.patch('/api/v1/files/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run()
@@ -240,7 +241,7 @@ class TestApiFiles(TestAra):
             "path": "/updated/path.yml"
         }
         res = FileApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PUT

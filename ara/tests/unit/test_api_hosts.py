@@ -18,6 +18,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.hosts import HostApi
+from ara.api.v1.hosts import HOST_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -77,15 +78,11 @@ class TestApiHosts(TestAra):
                                content_type='application/json',
                                query_string=dict(id=data['id']))
         host = jsonutils.loads(host.data)
-        self.assertEquals(data['id'], host['id'])
-        self.assertEquals(data['playbook_id'], host['playbook_id'])
-        self.assertEquals(data['name'], host['name'])
-        self.assertEquals(data['facts'], host['facts'])
-        self.assertEquals(data['changed'], host['changed'])
-        self.assertEquals(data['failed'], host['failed'])
-        self.assertEquals(data['ok'], host['ok'])
-        self.assertEquals(data['skipped'], host['skipped'])
-        self.assertEquals(data['unreachable'], host['unreachable'])
+        self.assertEqual(len(data), len(host))
+        self.assertEqual(data, host)
+        for key in HOST_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, host)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a host in it
@@ -111,15 +108,11 @@ class TestApiHosts(TestAra):
         # ("host")
         host = HostApi().get(id=data['id'])
         host = jsonutils.loads(host.data)
-        self.assertEquals(data['id'], host['id'])
-        self.assertEquals(data['playbook_id'], host['playbook_id'])
-        self.assertEquals(data['name'], host['name'])
-        self.assertEquals(data['facts'], host['facts'])
-        self.assertEquals(data['changed'], host['changed'])
-        self.assertEquals(data['failed'], host['failed'])
-        self.assertEquals(data['ok'], host['ok'])
-        self.assertEquals(data['skipped'], host['skipped'])
-        self.assertEquals(data['unreachable'], host['unreachable'])
+        self.assertEqual(len(data), len(host))
+        self.assertEqual(data, host)
+        for key in HOST_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, host)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -180,12 +173,12 @@ class TestApiHosts(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['host'].id, 1)
+        self.assertEqual(ctx['host'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated host name"
-        self.assertNotEquals(ctx['host'].name, new_name)
+        self.assertNotEqual(ctx['host'].name, new_name)
 
         data = {
             "id": ctx['host'].id,
@@ -194,44 +187,44 @@ class TestApiHosts(TestAra):
         res = self.client.patch('/api/v1/hosts/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching host
         updated = self.client.get('/api/v1/hosts/',
                                   content_type='application/json',
                                   query_string=dict(id=ctx['host'].id))
         updated_host = jsonutils.loads(updated.data)
-        self.assertEquals(updated_host['name'], new_name)
+        self.assertEqual(updated_host['name'], new_name)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run()
-        self.assertEquals(ctx['host'].id, 1)
+        self.assertEqual(ctx['host'].id, 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated host name"
-        self.assertNotEquals(ctx['host'].name, new_name)
+        self.assertNotEqual(ctx['host'].name, new_name)
 
         data = {
             "id": ctx['host'].id,
             "name": new_name
         }
         res = HostApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['name'], new_name)
+        self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching host
         updated = HostApi().get(id=ctx['host'].id)
         updated_host = jsonutils.loads(updated.data)
-        self.assertEquals(updated_host['name'], new_name)
+        self.assertEqual(updated_host['name'], new_name)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run()
@@ -241,7 +234,7 @@ class TestApiHosts(TestAra):
         res = self.client.patch('/api/v1/hosts/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run()
@@ -249,7 +242,7 @@ class TestApiHosts(TestAra):
             "name": "Updated host name"
         }
         res = HostApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PUT

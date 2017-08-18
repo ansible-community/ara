@@ -18,6 +18,7 @@
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
 from ara.api.records import RecordApi
+from ara.api.v1.records import RECORD_FIELDS
 import ara.db.models as models
 import pytest
 
@@ -71,11 +72,11 @@ class TestApiRecords(TestAra):
                                  content_type='application/json',
                                  query_string=dict(id=data['id']))
         record = jsonutils.loads(record.data)
-        self.assertEquals(data['id'], record['id'])
-        self.assertEquals(data['playbook_id'], record['playbook_id'])
-        self.assertEquals(data['key'], record['key'])
-        self.assertEquals(data['value'], record['value'])
-        self.assertEquals(data['type'], record['type'])
+        self.assertEqual(len(data), len(record))
+        self.assertEqual(data, record)
+        for key in RECORD_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, record)
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a record in it
@@ -95,11 +96,11 @@ class TestApiRecords(TestAra):
         # ("record")
         record = RecordApi().get(id=data['id'])
         record = jsonutils.loads(record.data)
-        self.assertEquals(data['id'], record['id'])
-        self.assertEquals(data['playbook_id'], record['playbook_id'])
-        self.assertEquals(data['key'], record['key'])
-        self.assertEquals(data['value'], record['value'])
-        self.assertEquals(data['type'], record['type'])
+        self.assertEqual(len(data), len(record))
+        self.assertEqual(data, record)
+        for key in RECORD_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, record)
 
     def test_post_http_with_incorrect_data(self):
         data = {
@@ -164,12 +165,12 @@ class TestApiRecords(TestAra):
     def test_patch_http_existing(self):
         # Generate fake playbook data
         ctx = ansible_run(ara_record=True)
-        self.assertEquals(ctx['record'].id, 1)
+        self.assertEqual(ctx['record'].id, 1)
 
         # We'll update the value field, assert we are actually
         # making a change
         new_value = "Updated value"
-        self.assertNotEquals(ctx['record'].value, new_value)
+        self.assertNotEqual(ctx['record'].value, new_value)
 
         data = {
             "id": ctx['record'].id,
@@ -178,44 +179,44 @@ class TestApiRecords(TestAra):
         res = self.client.patch('/api/v1/records/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['value'], new_value)
+        self.assertEqual(data['value'], new_value)
 
         # Confirm by re-fetching record
         updated = self.client.get('/api/v1/records/',
                                   content_type='application/json',
                                   query_string=dict(id=ctx['record'].id))
         updated_record = jsonutils.loads(updated.data)
-        self.assertEquals(updated_record['value'], new_value)
+        self.assertEqual(updated_record['value'], new_value)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
         ctx = ansible_run(ara_record=True)
-        self.assertEquals(ctx['record'].id, 1)
+        self.assertEqual(ctx['record'].id, 1)
 
         # We'll update the value field, assert we are actually
         # making a change
         new_value = "Updated value"
-        self.assertNotEquals(ctx['record'].value, new_value)
+        self.assertNotEqual(ctx['record'].value, new_value)
 
         data = {
             "id": ctx['record'].id,
             "value": new_value
         }
         res = RecordApi().patch(data)
-        self.assertEquals(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)
 
         # The patch endpoint should return the full updated object
         data = jsonutils.loads(res.data)
-        self.assertEquals(data['value'], new_value)
+        self.assertEqual(data['value'], new_value)
 
         # Confirm by re-fetching record
         updated = RecordApi().get(id=ctx['record'].id)
         updated_record = jsonutils.loads(updated.data)
-        self.assertEquals(updated_record['value'], new_value)
+        self.assertEqual(updated_record['value'], new_value)
 
     def test_patch_http_with_missing_arg(self):
         ansible_run(ara_record=True)
@@ -225,7 +226,7 @@ class TestApiRecords(TestAra):
         res = self.client.patch('/api/v1/records/',
                                 data=jsonutils.dumps(data),
                                 content_type='application/json')
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
         ansible_run(ara_record=True)
@@ -233,7 +234,7 @@ class TestApiRecords(TestAra):
             "value": "Updated value"
         }
         res = RecordApi().patch(data)
-        self.assertEquals(res.status_code, 400)
+        self.assertEqual(res.status_code, 400)
 
     ###########
     # PUT
