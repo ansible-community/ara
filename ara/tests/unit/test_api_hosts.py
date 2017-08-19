@@ -351,7 +351,7 @@ class TestApiHosts(TestAra):
         self.assertEqual(ctx['host'].id,
                          data['id'])
         self.assertEqual(ctx['host'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
         self.assertEqual(ctx['host'].facts,
@@ -391,7 +391,7 @@ class TestApiHosts(TestAra):
         self.assertEqual(ctx['host'].id,
                          data['id'])
         self.assertEqual(ctx['host'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
         self.assertEqual(ctx['host'].facts,
@@ -436,7 +436,7 @@ class TestApiHosts(TestAra):
         self.assertEqual(ctx['host'].id,
                          data['id'])
         self.assertEqual(ctx['host'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['host'].name,
                          data['name'])
         self.assertEqual(ctx['host'].facts,

@@ -364,7 +364,7 @@ class TestApiFiles(TestAra):
         self.assertEqual(ctx['playbook'].file.id,
                          data['id'])
         self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
         self.assertEqual(ctx['playbook'].file.content.content,
@@ -396,7 +396,7 @@ class TestApiFiles(TestAra):
         self.assertEqual(ctx['playbook'].file.id,
                          data['id'])
         self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
         self.assertEqual(ctx['playbook'].file.content.content,
@@ -431,7 +431,7 @@ class TestApiFiles(TestAra):
         self.assertEqual(ctx['playbook'].file.id,
                          data['id'])
         self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['playbook'].file.path,
                          data['path'])
         self.assertEqual(ctx['playbook'].file.content.content,

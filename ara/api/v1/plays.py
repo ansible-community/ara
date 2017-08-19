@@ -34,10 +34,13 @@ api = Api(blueprint)
 
 PLAY_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
     'name': api_utils.Encoded,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
     'results': fields.List(fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('results.resultrestapi')

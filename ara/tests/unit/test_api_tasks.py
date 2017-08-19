@@ -405,11 +405,11 @@ class TestApiTasks(TestAra):
         self.assertEqual(ctx['task'].id,
                          data['id'])
         self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['task'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['task'].file_id,
-                         data['file_id'])
+                         data['file']['id'])
         self.assertEqual(ctx['task'].name,
                          data['name'])
         self.assertEqual(ctx['task'].action,
@@ -447,11 +447,11 @@ class TestApiTasks(TestAra):
         self.assertEqual(ctx['task'].id,
                          data['id'])
         self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['task'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['task'].file_id,
-                         data['file_id'])
+                         data['file']['id'])
         self.assertEqual(ctx['task'].name,
                          data['name'])
         self.assertEqual(ctx['task'].action,
@@ -494,11 +494,11 @@ class TestApiTasks(TestAra):
         self.assertEqual(ctx['task'].id,
                          data['id'])
         self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['task'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['task'].file_id,
-                         data['file_id'])
+                         data['file']['id'])
         self.assertEqual(ctx['task'].name,
                          data['name'])
         self.assertEqual(ctx['task'].action,

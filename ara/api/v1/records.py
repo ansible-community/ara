@@ -33,10 +33,13 @@ api = Api(blueprint)
 
 RECORD_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
     'key': fields.String,
     'value': fields.Raw,
-    'type': fields.String
+    'type': fields.String,
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
 }
 
 

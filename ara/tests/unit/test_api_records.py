@@ -349,7 +349,7 @@ class TestApiRecords(TestAra):
         self.assertEqual(ctx['record'].id,
                          data['id'])
         self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['record'].key,
                          data['key'])
         self.assertEqual(ctx['record'].value,
@@ -380,7 +380,7 @@ class TestApiRecords(TestAra):
         self.assertEqual(ctx['record'].id,
                          data['id'])
         self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['record'].key,
                          data['key'])
         self.assertEqual(ctx['record'].value,
@@ -415,7 +415,7 @@ class TestApiRecords(TestAra):
         self.assertEqual(ctx['record'].id,
                          data['id'])
         self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['record'].key,
                          data['key'])
         self.assertEqual(ctx['record'].value,

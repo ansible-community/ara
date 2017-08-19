@@ -35,9 +35,6 @@ api = Api(blueprint)
 
 TASK_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
-    'play_id': fields.Integer,
-    'file_id': fields.Integer,
     'name': api_utils.Encoded,
     'action': fields.String,
     'lineno': fields.Integer,
@@ -48,7 +45,19 @@ TASK_FIELDS = {
     'results': fields.List(fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('results.resultrestapi')
-    }))
+    })),
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
+    'play': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('plays.playrestapi')
+    }),
+    'file': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('files.filerestapi')
+    }),
 }
 
 

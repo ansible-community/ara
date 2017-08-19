@@ -33,14 +33,17 @@ api = Api(blueprint)
 
 HOST_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
     'facts': fields.Raw,
     'name': api_utils.Encoded,
     'changed': fields.Integer,
     'failed': fields.Integer,
     'ok': fields.Integer,
     'skipped': fields.Integer,
-    'unreachable': fields.Integer
+    'unreachable': fields.Integer,
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
 }
 
 

@@ -35,10 +35,6 @@ api = Api(blueprint)
 
 RESULT_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
-    'play_id': fields.Integer,
-    'task_id': fields.Integer,
-    'host_id': fields.Integer,
     'status': fields.String,
     'changed': fields.Boolean,
     'failed': fields.Boolean,
@@ -47,7 +43,23 @@ RESULT_FIELDS = {
     'ignore_errors': fields.Boolean,
     'result': fields.Raw,
     'started': fields.DateTime(dt_format='iso8601'),
-    'ended': fields.DateTime(dt_format='iso8601')
+    'ended': fields.DateTime(dt_format='iso8601'),
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
+    'play': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('plays.playrestapi')
+    }),
+    'task': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('tasks.taskrestapi')
+    }),
+    'host': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('hosts.hostrestapi')
+    })
 }
 
 

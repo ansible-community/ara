@@ -37,11 +37,14 @@ api = Api(blueprint)
 
 FILE_FIELDS = {
     'id': fields.Integer,
-    'playbook_id': fields.Integer,
     'path': fields.String,
     'content': api_utils.Encoded(attribute='content.content'),
     'sha1': fields.String(attribute='content.sha1'),
     'is_playbook': fields.Boolean,
+    'playbook': fields.Nested({
+        'id': fields.Integer,
+        'href': fields.Url('playbooks.playbookrestapi')
+    }),
 }
 
 

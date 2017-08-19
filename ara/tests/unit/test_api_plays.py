@@ -341,7 +341,7 @@ class TestApiPlays(TestAra):
         self.assertEqual(ctx['play'].id,
                          data['id'])
         self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['play'].name,
                          data['name'])
         self.assertEqual(ctx['play'].started.isoformat(),
@@ -377,7 +377,7 @@ class TestApiPlays(TestAra):
         self.assertEqual(ctx['play'].id,
                          data['id'])
         self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['play'].name,
                          data['name'])
         self.assertEqual(ctx['play'].started.isoformat(),
@@ -418,7 +418,7 @@ class TestApiPlays(TestAra):
         self.assertEqual(ctx['play'].id,
                          data['id'])
         self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['play'].name,
                          data['name'])
         self.assertEqual(ctx['play'].started.isoformat(),

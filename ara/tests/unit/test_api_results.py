@@ -422,13 +422,13 @@ class TestApiResults(TestAra):
         self.assertEqual(ctx['result'].id,
                          data['id'])
         self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['result'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['result'].task_id,
-                         data['task_id'])
+                         data['task']['id'])
         self.assertEqual(ctx['result'].host_id,
-                         data['host_id'])
+                         data['host']['id'])
         self.assertEqual(ctx['result'].status,
                          data['status'])
         self.assertEqual(ctx['result'].changed,
@@ -472,13 +472,13 @@ class TestApiResults(TestAra):
         self.assertEqual(ctx['result'].id,
                          data['id'])
         self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['result'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['result'].task_id,
-                         data['task_id'])
+                         data['task']['id'])
         self.assertEqual(ctx['result'].host_id,
-                         data['host_id'])
+                         data['host']['id'])
         self.assertEqual(ctx['result'].status,
                          data['status'])
         self.assertEqual(ctx['result'].changed,
@@ -527,13 +527,13 @@ class TestApiResults(TestAra):
         self.assertEqual(ctx['result'].id,
                          data['id'])
         self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook_id'])
+                         data['playbook']['id'])
         self.assertEqual(ctx['result'].play_id,
-                         data['play_id'])
+                         data['play']['id'])
         self.assertEqual(ctx['result'].task_id,
-                         data['task_id'])
+                         data['task']['id'])
         self.assertEqual(ctx['result'].host_id,
-                         data['host_id'])
+                         data['host']['id'])
         self.assertEqual(ctx['result'].status,
                          data['status'])
         self.assertEqual(ctx['result'].changed,
