@@ -17,7 +17,9 @@
 
 from ara.api.v1 import utils as api_utils
 from ara.db.models import db
+from ara.db.models import Host
 from ara.db.models import Result
+from ara.db.models import Task
 
 from flask import Blueprint
 from flask_restful import Api
@@ -60,11 +62,25 @@ class ResultRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        # Validate and retrieve the task reference
+        task = Task.query.get(args.task_id)
+        if not task:
+            abort(404,
+                  message="Task {} doesn't exist".format(args.task_id),
+                  help=api_utils.help(parser.args, RESULT_FIELDS))
+
+        # Validate and retrieve the host reference
+        host = Host.query.get(args.host_id)
+        if not host:
+            abort(404,
+                  message="Host {} doesn't exist".format(args.host_id),
+                  help=api_utils.help(parser.args, RESULT_FIELDS))
+
         result = Result(
-            playbook_id=args.playbook_id,
-            host_id=args.host_id,
-            play_id=args.play_id,
-            task_id=args.task_id,
+            playbook=task.playbook,
+            host=host,
+            play=task.play,
+            task=task,
             status=args.status,
             changed=args.changed,
             failed=args.failed,
@@ -92,9 +108,8 @@ class ResultRestApi(Resource):
             abort(404, message="Result {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, RESULT_FIELDS))
 
-        keys = ['playbook_id', 'host_id', 'play_id', 'task_id', 'status',
-                'changed', 'failed', 'skipped', 'unreachable',
-                'ignore_errors', 'result', 'started', 'ended']
+        keys = ['host_id', 'task_id', 'status', 'changed', 'failed', 'skipped',
+                'unreachable', 'ignore_errors', 'result', 'started', 'ended']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -134,20 +149,6 @@ class ResultRestApi(Resource):
     @staticmethod
     def _post_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=True,
-            help='The playbook_id of the result'
-        )
-        parser.add_argument(
-            'play_id', dest='play_id',
-            type=int,
-            location='json',
-            required=True,
-            help='The play_id of the result'
-        )
         parser.add_argument(
             'task_id', dest='task_id',
             type=int,
@@ -242,20 +243,6 @@ class ResultRestApi(Resource):
             location='json',
             required=True,
             help='The id of the result'
-        )
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The playbook_id of the result'
-        )
-        parser.add_argument(
-            'play_id', dest='play_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The play_id of the result'
         )
         parser.add_argument(
             'task_id', dest='task_id',

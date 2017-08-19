@@ -17,6 +17,8 @@
 
 from ara.api.v1 import utils as api_utils
 from ara.db.models import db
+from ara.db.models import File
+from ara.db.models import Play
 from ara.db.models import Task
 
 from flask import Blueprint
@@ -60,10 +62,25 @@ class TaskRestApi(Resource):
         """
         parser = self._post_parser()
         args = parser.parse_args()
+
+        # Validate and retrieve the play reference
+        play = Play.query.get(args.play_id)
+        if not play:
+            abort(404,
+                  message="Play {} doesn't exist".format(args.play_id),
+                  help=api_utils.help(parser.args, TASK_FIELDS))
+
+        # Validate and retrieve the file reference
+        file_ = File.query.get(args.file_id)
+        if not file_:
+            abort(404,
+                  message="File {} doesn't exist".format(args.file_id),
+                  help=api_utils.help(parser.args, TASK_FIELDS))
+
         task = Task(
-            playbook_id=args.playbook_id,
-            play_id=args.play_id,
-            file_id=args.file_id,
+            playbook=play.playbook,
+            play=play,
+            file=file_,
             name=args.name,
             action=args.action,
             lineno=args.lineno,
@@ -89,8 +106,8 @@ class TaskRestApi(Resource):
             abort(404, message="Task {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
-        keys = ['playbook_id', 'name', 'action', 'lineno', 'tags',
-                'handler', 'started', 'ended']
+        keys = ['name', 'action', 'lineno', 'tags', 'handler', 'started',
+                'ended']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -130,13 +147,6 @@ class TaskRestApi(Resource):
     @staticmethod
     def _post_parser():
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=True,
-            help='The playbook_id of the task'
-        )
         parser.add_argument(
             'file_id', dest='file_id',
             type=int,
@@ -212,27 +222,6 @@ class TaskRestApi(Resource):
             location='json',
             required=True,
             help='The id of the task'
-        )
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The playbook_id of the task'
-        )
-        parser.add_argument(
-            'file_id', dest='file_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The file_id of the task'
-        )
-        parser.add_argument(
-            'play_id', dest='play_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The play_id of the task'
         )
         parser.add_argument(
             'name', dest='name',

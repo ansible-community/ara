@@ -21,6 +21,7 @@ from ara.db.models import db
 from ara.db.models import File
 from ara.db.models import FileContent
 from ara.db.models import NoResultFound
+from ara.db.models import Playbook
 
 from flask import Blueprint
 from flask_restful import Api
@@ -55,6 +56,13 @@ class FileRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        # Validate and retrieve the playbook reference
+        playbook = Playbook.query.get(args.playbook_id)
+        if not playbook:
+            abort(404,
+                  message="Playbook {} doesn't exist".format(args.playbook_id),
+                  help=api_utils.help(parser.args, FILE_FIELDS))
+
         # Files are stored uniquely by sha1, get it or create it
         sha1 = content_sha1(args.content)
         try:
@@ -63,7 +71,7 @@ class FileRestApi(Resource):
             content = FileContent(content=args.content)
 
         file_ = File(
-            playbook_id=args.playbook_id,
+            playbook=playbook,
             path=args.path,
             is_playbook=args.is_playbook,
             content=content
@@ -86,7 +94,7 @@ class FileRestApi(Resource):
             abort(404, message="File {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
-        keys = ['playbook_id', 'path', 'is_playbook', 'content']
+        keys = ['path', 'is_playbook', 'content']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -175,13 +183,6 @@ class FileRestApi(Resource):
             location='json',
             required=True,
             help='The id of the file'
-        )
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The playbook_id of the file'
         )
         parser.add_argument(
             'path', dest='path',

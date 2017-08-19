@@ -166,6 +166,66 @@ class TestApiTasks(TestAra):
         res = TaskApi().post(data)
         self.assertEqual(res.status_code, 400)
 
+    def test_post_http_with_nonexistant_play(self):
+        ansible_run()
+        data = {
+            "play_id": 9001,
+            "file_id": 1,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/tasks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_play(self):
+        ansible_run()
+        data = {
+            "play_id": 9001,
+            "file_id": 1,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = TaskApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_http_with_nonexistant_file(self):
+        ansible_run()
+        data = {
+            "play_id": 1,
+            "file_id": 9001,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/tasks/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_file(self):
+        ansible_run()
+        data = {
+            "play_id": 1,
+            "file_id": 9001,
+            "name": "Task from unit tests",
+            "action": "debug",
+            "lineno": 1,
+            "tags": ['one', 'two'],
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = TaskApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
     ###########
     # PATCH
     ###########

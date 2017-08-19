@@ -146,6 +146,30 @@ class TestApiRecords(TestAra):
         res = RecordApi().post(data)
         self.assertEqual(res.status_code, 400)
 
+    def test_post_http_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = self.client.post('/api/v1/records/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "key": "foo",
+            "value": "bar",
+            "type": "text"
+        }
+        res = RecordApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
     ###########
     # PATCH
     ###########

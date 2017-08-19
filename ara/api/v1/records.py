@@ -18,6 +18,7 @@
 from ara.api.v1 import utils as api_utils
 from ara.db.models import db
 from ara.db.models import Record
+from ara.db.models import Playbook
 
 from flask import Blueprint
 from flask_restful import Api
@@ -50,8 +51,15 @@ class RecordRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        # Validate and retrieve the playbook reference
+        playbook = Playbook.query.get(args.playbook_id)
+        if not playbook:
+            abort(404,
+                  message="Playbook {} doesn't exist".format(args.playbook_id),
+                  help=api_utils.help(parser.args, RECORD_FIELDS))
+
         record = Record(
-            playbook_id=args.playbook_id,
+            playbook=playbook,
             key=args.key,
             value=args.value,
             type=args.type
@@ -73,7 +81,7 @@ class RecordRestApi(Resource):
             abort(404, message="Record {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, RECORD_FIELDS))
 
-        keys = ['playbook_id', 'key', 'value', 'type']
+        keys = ['key', 'value', 'type']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -154,13 +162,6 @@ class RecordRestApi(Resource):
             location='json',
             required=True,
             help='The id of the record'
-        )
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The playbook_id for the record'
         )
         parser.add_argument(
             'key', dest='key',
