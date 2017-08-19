@@ -316,7 +316,7 @@ class Result(Base, TimedEntity):
     skipped = db.Column(db.Boolean, default=False)
     unreachable = db.Column(db.Boolean, default=False)
     ignore_errors = db.Column(db.Boolean, default=False)
-    result = db.Column(CompressedText((2**32) - 1))
+    result = db.Column(CompressedData((2**32) - 1))
 
     started = db.Column(db.DateTime, default=datetime.utcnow)
     ended = db.Column(db.DateTime)

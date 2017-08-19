@@ -161,9 +161,8 @@ class CallbackModule(CallbackBase):
             results = [self._dump_results(result._result)]
             for item in self.loop_items:
                 results.append(self._dump_results(item._result))
-            results = jsonutils.loads(jsonutils.dumps(results))
         else:
-            results = jsonutils.loads(self._dump_results(result._result))
+            results = self._dump_results(result._result)
 
         self.result = models.Result(
             playbook=self.playbook,
@@ -172,7 +171,7 @@ class CallbackModule(CallbackBase):
             host=host,
             started=result.task_start,
             ended=result.task_end,
-            result=jsonutils.dumps(results),
+            result=jsonutils.loads(results),
             status=status,
             changed=result._result.get('changed', False),
             failed=result._result.get('failed', False),

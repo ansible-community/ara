@@ -64,7 +64,7 @@ class TestApiResults(TestAra):
             "skipped": False,
             "unreachable": False,
             "ignore_errors": False,
-            "result": '{"msg": "some result"}',
+            "result": {"msg": "some result"},
             "started": "1970-08-14T00:52:49.570031"
         }
 
@@ -101,7 +101,7 @@ class TestApiResults(TestAra):
             "skipped": False,
             "unreachable": False,
             "ignore_errors": False,
-            "result": '{"msg": "some result"}',
+            "result": {"msg": "some result"},
             "started": "1970-08-14T00:52:49.570031"
         }
 
@@ -132,7 +132,7 @@ class TestApiResults(TestAra):
             "skipped": "no",
             "unreachable": "no",
             "ignore_errors": "no",
-            "result": {"msg": "some result"},
+            "result": '{"msg": "some result"}',
             "started": "a long time ago"
         }
 

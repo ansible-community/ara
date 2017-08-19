@@ -212,7 +212,7 @@ class ResultRestApi(Resource):
         )
         parser.add_argument(
             'result', dest='result',
-            type=str,
+            type=dict,
             location='json',
             required=True,
             help='The actual result output as provided by Ansible'
@@ -316,7 +316,7 @@ class ResultRestApi(Resource):
         )
         parser.add_argument(
             'result', dest='result',
-            type=str,
+            type=dict,
             location='json',
             required=False,
             help='The actual result output as provided by Ansible'

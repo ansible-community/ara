@@ -38,14 +38,13 @@
           <h2>Host: <strong>{{ result.host.name }}</strong></h2>
           <p>Time: <strong>{{ result.started | datefmt }}</strong></p>
           <p>Ansible version: <strong>{{ result.task.playbook.ansible_version }}</strong></p>
-          {% set result = result.result | from_json %}
-          {% if 'results' in result %}
-              {% for item in result.results %}
+          {% if 'results' in result.result %}
+              {% for item in result.result.results %}
                   <h2>Result #{{ loop.index }}</h2>
                   {{ display_result(item, 'h3') }}
               {% endfor %}
           {% else %}
-              {{ display_result(result, 'h2') }}
+              {{ display_result(result.result, 'h2') }}
           {% endif %}
         </div>
     </div>
