@@ -299,7 +299,7 @@ class CallbackModule(CallbackBase):
 
         # Potentially sanitize some user-specified keys
         for parameter in app.config['ARA_IGNORE_PARAMETERS']:
-            if parameter in parameter:
+            if parameter in parameters:
                 msg = "Parameter not saved by ARA due to configuration"
                 parameters[parameter] = msg
 
