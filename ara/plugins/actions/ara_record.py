@@ -15,10 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from ansible.plugins.action import ActionBase
-from oslo_serialization import jsonutils
 
 try:
     from ara.db import models
@@ -179,11 +176,8 @@ class ActionModule(ActionBase):
             return result
 
         if playbook_id is None:
-            # Retrieve the persisted playbook_id from tmpfile
-            tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
-            with open(tmpfile, 'rb') as file:
-                data = jsonutils.load(file)
-            playbook_id = data['playbook']['id']
+            # Retrieve playbook_id from the cached context
+            playbook_id = current_app._cache['playbook']['id']
 
         try:
             data = self.create_or_update_key(playbook_id, key, value, type)

@@ -15,8 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from ara.tests.unit.common import TestAra
 
 
@@ -55,8 +53,6 @@ class TestConfig(TestAra):
                          self.app.config['SQLALCHEMY_DATABASE_URI'])
         self.assertEqual(defaults['ARA_SQL_DEBUG'],
                          self.app.config['SQLALCHEMY_ECHO'])
-        self.assertEqual(defaults['ARA_TMP_DIR'],
-                         os.path.split(self.app.config['ARA_TMP_DIR'])[:-1][0])
         self.assertEqual(defaults['ARA_IGNORE_MIMETYPE_WARNINGS'],
                          self.app.config['FREEZER_IGNORE_MIMETYPE_WARNINGS'])
 

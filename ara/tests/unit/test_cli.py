@@ -17,9 +17,7 @@
 
 import os
 import pytest
-import shutil
 import six
-import tempfile
 
 from distutils.version import LooseVersion
 from flask_frozen import MissingURLGeneratorWarning
@@ -594,23 +592,18 @@ class TestCLIGenerate(TestAra):
     """ Tests for the ARA CLI generate commands """
     def setUp(self):
         super(TestCLIGenerate, self).setUp()
-        # Create a temporary directory for ara generate tests
-        self.generate_dir = tempfile.mkdtemp(prefix='ara')
 
     def tearDown(self):
         super(TestCLIGenerate, self).tearDown()
-        # Remove the temporary ara generate directory
-        shutil.rmtree(self.generate_dir)
 
     def test_generate_empty_html(self):
         """ Ensures the application is still rendered gracefully """
         self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = False
-        dir = self.generate_dir
         shell = ara.shell.AraCli()
         shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([dir])
+        args = parser.parse_args([self.tmpdir])
 
         with pytest.warns(MissingURLGeneratorWarning) as warnings:
             cmd.take_action(args)
@@ -625,8 +618,8 @@ class TestCLIGenerate(TestAra):
                                 for w in warnings))
 
         paths = [
-            os.path.join(dir, 'index.html'),
-            os.path.join(dir, 'static'),
+            os.path.join(self.tmpdir, 'index.html'),
+            os.path.join(self.tmpdir, 'static'),
         ]
 
         for path in paths:
@@ -635,18 +628,17 @@ class TestCLIGenerate(TestAra):
     def test_generate_empty_html_with_ignore_empty_generation(self):
         """ Ensures the application is still rendered gracefully """
         self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = True
-        dir = self.generate_dir
 
         shell = ara.shell.AraCli()
         shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([dir])
+        args = parser.parse_args([self.tmpdir])
         cmd.take_action(args)
 
         paths = [
-            os.path.join(dir, 'index.html'),
-            os.path.join(dir, 'static'),
+            os.path.join(self.tmpdir, 'index.html'),
+            os.path.join(self.tmpdir, 'static'),
         ]
 
         for path in paths:
@@ -665,8 +657,6 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_html(self):
         """ Roughly ensures the expected files are generated properly """
-        dir = self.generate_dir
-
         ctx = ansible_run()
 
         shell = ara.shell.AraCli()
@@ -674,22 +664,22 @@ class TestCLIGenerate(TestAra):
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
 
-        args = parser.parse_args([dir])
+        args = parser.parse_args([self.tmpdir])
         cmd.take_action(args)
 
         file_id = ctx['task'].file_id
         host_id = ctx['host'].id
         result_id = ctx['result'].id
         paths = [
-            os.path.join(dir, 'index.html'),
-            os.path.join(dir, 'static'),
-            os.path.join(dir, 'file/index.html'),
-            os.path.join(dir, 'file/{0}'.format(file_id)),
-            os.path.join(dir, 'host/index.html'),
-            os.path.join(dir, 'host/{0}'.format(host_id)),
-            os.path.join(dir, 'reports/index.html'),
-            os.path.join(dir, 'result/index.html'),
-            os.path.join(dir, 'result/{0}'.format(result_id))
+            os.path.join(self.tmpdir, 'index.html'),
+            os.path.join(self.tmpdir, 'static'),
+            os.path.join(self.tmpdir, 'file/index.html'),
+            os.path.join(self.tmpdir, 'file/{0}'.format(file_id)),
+            os.path.join(self.tmpdir, 'host/index.html'),
+            os.path.join(self.tmpdir, 'host/{0}'.format(host_id)),
+            os.path.join(self.tmpdir, 'reports/index.html'),
+            os.path.join(self.tmpdir, 'result/index.html'),
+            os.path.join(self.tmpdir, 'result/{0}'.format(result_id))
         ]
 
         for path in paths:
@@ -697,8 +687,6 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_html_for_playbook(self):
         """ Roughly ensures the expected files are generated properly """
-        dir = self.generate_dir
-
         # Record two separate playbooks
         ctx = ansible_run()
         ansible_run()
@@ -709,7 +697,7 @@ class TestCLIGenerate(TestAra):
         parser = cmd.get_parser('test')
 
         args = parser.parse_args([
-            dir,
+            self.tmpdir,
             '--playbook',
             six.text_type(ctx['playbook'].id)
         ])
@@ -719,15 +707,15 @@ class TestCLIGenerate(TestAra):
         host_id = ctx['host'].id
         result_id = ctx['result'].id
         paths = [
-            os.path.join(dir, 'index.html'),
-            os.path.join(dir, 'static'),
-            os.path.join(dir, 'file/index.html'),
-            os.path.join(dir, 'file/{0}'.format(file_id)),
-            os.path.join(dir, 'host/index.html'),
-            os.path.join(dir, 'host/{0}'.format(host_id)),
-            os.path.join(dir, 'reports/index.html'),
-            os.path.join(dir, 'result/index.html'),
-            os.path.join(dir, 'result/{0}'.format(result_id))
+            os.path.join(self.tmpdir, 'index.html'),
+            os.path.join(self.tmpdir, 'static'),
+            os.path.join(self.tmpdir, 'file/index.html'),
+            os.path.join(self.tmpdir, 'file/{0}'.format(file_id)),
+            os.path.join(self.tmpdir, 'host/index.html'),
+            os.path.join(self.tmpdir, 'host/{0}'.format(host_id)),
+            os.path.join(self.tmpdir, 'reports/index.html'),
+            os.path.join(self.tmpdir, 'result/index.html'),
+            os.path.join(self.tmpdir, 'result/{0}'.format(result_id))
         ]
 
         for path in paths:
@@ -741,18 +729,17 @@ class TestCLIGenerate(TestAra):
         # files for it
         playbook_two = (m.Playbook.query
                         .filter(m.Playbook.id != ctx['playbook'].id).one())
-        path = os.path.join(dir, 'playbook/{0}'.format(playbook_two.id))
+        path = os.path.join(self.tmpdir,
+                            'playbook/{0}'.format(playbook_two.id))
         self.assertFalse(os.path.exists(path))
 
     def test_generate_junit(self):
         """ Roughly ensures the expected xml is generated properly """
-        tdir = self.generate_dir
-
         ctx = ansible_run()
         cmd = ara.cli.generate.GenerateJunit(None, None)
         parser = cmd.get_parser('test')
 
-        junit_file = '{tdir}/junit.xml'.format(tdir=tdir)
+        junit_file = '{0}/junit.xml'.format(self.tmpdir)
         args = parser.parse_args([junit_file])
         cmd.take_action(args)
 
@@ -769,15 +756,13 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_junit_for_playbook(self):
         """ Roughly ensures the expected xml is generated properly """
-        tdir = self.generate_dir
-
         # Record two separate playbooks
         ctx = ansible_run()
         ansible_run()
         cmd = ara.cli.generate.GenerateJunit(None, None)
         parser = cmd.get_parser('test')
 
-        junit_file = "{tdir}/junit-playbook.xml".format(tdir=tdir)
+        junit_file = "{0}/junit-playbook.xml".format(self.tmpdir)
         args = parser.parse_args([
             junit_file,
             '--playbook',
@@ -803,14 +788,12 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_subunit(self):
         """ Roughly ensures the expected subunit is generated properly """
-        tdir = self.generate_dir
-
         ansible_run()
         cmd = ara.cli.generate.GenerateSubunit(None, None)
         parser = cmd.get_parser('test')
 
-        subunit_file = os.path.join(tdir, 'test.subunit')
-        subunit_dir = os.path.join(tdir, 'subunit_dir')
+        subunit_file = os.path.join(self.tmpdir, 'test.subunit')
+        subunit_dir = os.path.join(self.tmpdir, 'subunit_dir')
         args = parser.parse_args([subunit_file])
         cmd.take_action(args)
 

@@ -78,7 +78,6 @@ DEFAULTS = {
     'ARA_PORT': '9191',
     'ARA_RESULT_PER_PAGE': 25,
     'ARA_SQL_DEBUG': False,
-    'ARA_TMP_DIR': os.path.expanduser('~/.ansible/tmp')
 }
 
 # Bootstrap Ansible configuration
@@ -116,10 +115,6 @@ ARA_PORT = _ara_config(config, 'port', 'ARA_PORT')
 ARA_RESULT_PER_PAGE = _ara_config(config, 'result_per_page',
                                   'ARA_RESULT_PER_PAGE',
                                   value_type='integer')
-ARA_TMP_DIR = _ara_config(config, 'local_tmp', 'ANSIBLE_LOCAL_TEMP',
-                          default=DEFAULTS['ARA_TMP_DIR'],
-                          section='defaults',
-                          value_type='tmppath')
 
 # Static generation with flask-frozen
 ARA_IGNORE_EMPTY_GENERATION = _ara_config(config,

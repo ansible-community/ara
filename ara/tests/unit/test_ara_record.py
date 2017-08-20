@@ -17,205 +17,88 @@
 
 import ara.db.models as m
 import ara.plugins.actions.ara_record as ara_record
-import ara.plugins.callbacks.log_ara as l
-import random
 
 from ara.tests.unit import fakes
 from ara.tests.unit.common import TestAra
-from collections import defaultdict
-from mock import MagicMock
 from mock import Mock
 
 
-class Playbook(object):
-    def __init__(self, path):
-        self._file_name = path
-        self.path = path
-        self.parameters = {'fake': 'yes'}
-
-
-class Play(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class Task(object):
-    def __init__(self, name, path, lineno=1, action='fakeaction'):
-        self.name = name
-        self.action = action
-        self.path = '%s:%d' % (path, lineno)
-        self._attributes = {'tags': []}
-
-    def get_path(self):
-        """ Callback specific method """
-        return self.path
-
-    def get_name(self):
-        """ Callback specific method """
-        return self.name
-
-
-class Result(object):
-    def __init__(self, task, host, status, changed=False):
-        assert status in ['ok', 'failed', 'skipped', 'unreachable']
-
-        self.task = task
-        self.status = status
-        self._host = MagicMock()
-        self._host.get_name.return_value = host
-        self._result = {
-            'changed': changed,
-            'failed': status == 'failed',
-            'skipped': status == 'skipped',
-            'unreachable': status == 'unreachable',
-        }
-
-
 class TestRecord(TestAra):
-    '''Tests for the Ansible ara_record module'''
+    """ Tests for the Ansible ara_record module """
     def setUp(self):
         super(TestRecord, self).setUp()
 
-        self.cb = l.CallbackModule()
-        self.tag = '%04d' % random.randint(0, 9999)
-
-        self.ansible_run()
-
-        self.play_context = Mock()
-        self.play_context.check_mode = False
-        self.connection = Mock()
-
     def tearDown(self):
         super(TestRecord, self).tearDown()
-
-    def ansible_run(self):
-        '''Simulates an ansible run by creating stub versions of the
-        information that Ansible passes to the callback, and then
-        calling the various callback methods.'''
-
-        self.playbook = self._test_playbook()
-        self.play = self._test_play()
-        self.task = self._test_task(self.playbook)
-        self.results = [
-            self._test_result(self.task, 'host1', 'ok', changed=True),
-        ]
-
-        self.stats = self._test_stats()
-
-    def _test_stats(self):
-        stats = fakes.Stats({
-            'host1': defaultdict(int, ok=1, changed=1),
-            'host2': defaultdict(int, failed=1),
-        })
-
-        self.cb.v2_playbook_on_stats(stats)
-        return stats
-
-    def _test_result(self, task, host, status='ok', changed=False):
-        result = Result(task, host, status, changed)
-        func = getattr(self.cb, 'v2_runner_on_%s' % status)
-        func(result)
-        return result
-
-    def _test_playbook(self):
-        path = '/test-playbook-%s.yml' % self.tag
-        playbook = Playbook(path)
-        self.cb.v2_playbook_on_start(playbook)
-        return playbook
-
-    def _test_play(self):
-        name = 'test-play-%s' % self.tag
-        play = Play(name)
-        self.cb.v2_playbook_on_play_start(play)
-        return play
-
-    def _test_task(self, playbook):
-        name = 'test-task-%s' % self.tag
-        task = Task(name, playbook.path)
-        self.cb.v2_playbook_on_task_start(task, False)
-        return task
 
     def test_create_text_record_with_playbook(self):
         """
         Create a new record with ara_record on a specified playbook
         """
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
+        ctx = fakes.FakeRun(record_task=False)
 
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
-            'playbook': r_playbook.id,
-            'key': 'test-text',
-            'value': 'test-with-playbook',
+        record_data = {
+            'playbook': ctx.playbook['id'],
+            'key': 'test-key',
+            'value': 'test-value-outside-playbook',
             'type': 'text'
         }
+        task = fakes.AnsibleTask(
+            name='Record something',
+            action='ara_record',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
+        play_context = Mock()
+        play_context.check_mode = False
+        connection = Mock()
+
+        action = ara_record.ActionModule(task, connection, play_context,
+                                         loader=None, templar=None,
+                                         shared_loader_obj=None)
         action.run()
 
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
-                                          key='test-text').one()
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
+                                          key='test-key').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
-        self.assertEqual(r_data.key, 'test-text')
-        self.assertEqual(r_data.value, 'test-with-playbook')
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
+        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.value, 'test-value-outside-playbook')
         self.assertEqual(r_data.type, 'text')
 
     def test_create_text_record(self):
         """
-        Create a new record with ara_record.
+        Create a new record with ara_record.from inside a playbook run
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
-            'key': 'test-text',
-            'value': 'test-value',
+        ctx = fakes.FakeRun(record_task=True, record_data={
+            'key': 'test-key',
+            'value': 'test-value-inside-playbook',
             'type': 'text'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
-                                          key='test-text').one()
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
+                                          key='test-key').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
-        self.assertEqual(r_data.key, 'test-text')
-        self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
+        self.assertEqual(r_data.key, 'test-key')
+        self.assertEqual(r_data.value, 'test-value-inside-playbook')
         self.assertEqual(r_data.type, 'text')
 
     def test_create_url_record(self):
         """
         Create a new record with ara_record.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-url',
             'value': 'http://url',
             'type': 'url'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-url').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-url')
         self.assertEqual(r_data.value, 'http://url')
         self.assertEqual(r_data.type, 'url')
@@ -224,26 +107,16 @@ class TestRecord(TestAra):
         """
         Create a new record with ara_record.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-json',
             'value': '{"foo": "bar"}',
             'type': 'json'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-json').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-json')
         self.assertEqual(r_data.value, '{"foo": "bar"}')
         self.assertEqual(r_data.type, 'json')
@@ -252,26 +125,16 @@ class TestRecord(TestAra):
         """
         Create a new record with ara_record.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-list',
             'value': ['foo', 'bar'],
             'type': 'list'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-list').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-list')
         self.assertEqual(r_data.value, ['foo', 'bar'])
         self.assertEqual(r_data.type, 'list')
@@ -280,26 +143,16 @@ class TestRecord(TestAra):
         """
         Create a new record with ara_record.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-dict',
             'value': {'foo': 'bar'},
             'type': 'dict'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-dict').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-dict')
         self.assertEqual(r_data.value, {'foo': 'bar'})
         self.assertEqual(r_data.type, 'dict')
@@ -308,25 +161,15 @@ class TestRecord(TestAra):
         """
         Create a new record with ara_record with no type specified.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-notype',
             'value': 'test-value'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-notype').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-notype')
         self.assertEqual(r_data.value, 'test-value')
         self.assertEqual(r_data.type, 'text')
@@ -335,26 +178,16 @@ class TestRecord(TestAra):
         """
         Create a new record with ara_record.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-wrongtype',
             'value': ['foo', 'bar'],
             'type': 'text'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-wrongtype').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-wrongtype')
         self.assertEqual(r_data.value, ['foo', 'bar'])
         self.assertEqual(r_data.type, 'text')
@@ -364,41 +197,42 @@ class TestRecord(TestAra):
         Update an existing record by running ara_record a second time on the
         same key.
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-update',
             'value': 'test-value',
             'type': 'text'
-        }
+        })
 
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-update').one()
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-update')
         self.assertEqual(r_data.value, 'test-value')
         self.assertEqual(r_data.type, 'text')
 
-        task.args = {
+        record_data = {
             'key': 'test-update',
             'value': 'http://another-value',
             'type': 'url'
         }
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
+        task = fakes.AnsibleTask(
+            name='Record something',
+            action='ara_record',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
+
+        play_context = Mock()
+        play_context.check_mode = False
+        connection = Mock()
+
+        action = ara_record.ActionModule(task, connection, play_context,
+                                         loader=None, templar=None,
+                                         shared_loader_obj=None)
         action.run()
 
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-update').one()
 
         self.assertEqual(r_data.value, 'http://another-value')
@@ -408,46 +242,26 @@ class TestRecord(TestAra):
         """
         Trying to use ara_record with no key parameter should properly fail
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
-            'value': 'test-value'
-        }
-
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
+        ctx = fakes.FakeRun(record_task=True, record_data={
+            'value': 'test-value',
+        })
 
         # There is no exception raised in the action module, we instead
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be recorded so we can catch this.
         with self.assertRaises(Exception):
-            m.Record.query.filter_by(playbook_id=r_playbook.id).one()
+            m.Record.query.filter_by(playbook_id=ctx.playbook['id']).one()
 
     def test_record_with_no_value(self):
         """
         Trying to use ara_record with no value parameter should properly fail
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
             'key': 'test-key',
-        }
-
-        action = ara_record.ActionModule(task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
+        })
 
         # There is no exception raised in the action module, we instead
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be recorded so we can catch this.
         with self.assertRaises(Exception):
-            m.Record.query.filter_by(playbook_id=r_playbook.id).one()
+            m.Record.query.filter_by(playbook_id=ctx.playbook['id']).one()

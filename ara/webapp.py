@@ -78,6 +78,7 @@ def create_app(config=None, app_name=None):
     configure_api(app)
     configure_static_route(app)
     configure_db(app)
+    configure_cache(app)
 
     return app
 
@@ -166,3 +167,14 @@ def configure_static_route(app):
             return send_from_directory(xstatic[module], filename)
         else:
             abort(404)
+
+
+def configure_cache(app):
+    """ Sets up an attribute to cache data in the app context """
+    # Note (dmsimard):
+    # Flask overrides getattr, simply doing a getattr will throw an exception.
+    try:
+        cache = app._cache
+    except AttributeError:
+        cache = {}
+    app._cache = cache

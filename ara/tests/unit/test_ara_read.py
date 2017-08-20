@@ -18,59 +18,10 @@
 import ara.db.models as m
 import ara.plugins.actions.ara_read as ara_read
 import ara.plugins.actions.ara_record as ara_record
-import ara.plugins.callbacks.log_ara as l
-import random
 
-from collections import defaultdict
-from mock import MagicMock
 from mock import Mock
 from ara.tests.unit import fakes
 from ara.tests.unit.common import TestAra
-
-
-class Playbook(object):
-    def __init__(self, path):
-        self._file_name = path
-        self.path = path
-        self.parameters = {'fake': 'yes'}
-
-
-class Play(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class Task(object):
-    def __init__(self, name, path, lineno=1, action='fakeaction'):
-        self.name = name
-        self.action = action
-        self.path = '%s:%d' % (path, lineno)
-        self._attributes = {'tags': []}
-
-    def get_path(self):
-        """ Ansible Module/Callback specific method """
-        return self.path
-
-    def get_name(self):
-        """ Ansible Module/Callback specific method """
-        return self.name
-
-
-class Result(object):
-    def __init__(self, task, host, status, changed=False):
-        assert status in ['ok', 'failed', 'skipped', 'unreachable']
-
-        self.task = task
-        self.status = status
-        self._host = MagicMock()
-        self._host.get_name.return_value = host
-
-        self._result = {
-            'changed': changed,
-            'failed': status == 'failed',
-            'skipped': status == 'skipped',
-            'unreachable': status == 'unreachable',
-        }
 
 
 class TestRead(TestAra):
@@ -78,103 +29,59 @@ class TestRead(TestAra):
     def setUp(self):
         super(TestRead, self).setUp()
 
-        self.cb = l.CallbackModule()
-        self.tag = '%04d' % random.randint(0, 9999)
-        self.ansible_run()
-
     def tearDown(self):
         super(TestRead, self).tearDown()
-
-    def ansible_run(self):
-        '''Simulates an ansible run by creating stub versions of the
-        information that Ansible passes to the callback, and then
-        calling the various callback methods.'''
-
-        self.playbook = self._test_playbook()
-        self.play = self._test_play()
-        self.task = self._test_task(self.playbook)
-        self.results = [
-            self._test_result(self.task, 'host1', 'ok', changed=True),
-        ]
-
-        self.stats = self._test_stats()
-
-        # Record a k/v pair to test with
-        self.play_context = Mock()
-        self.play_context.check_mode = False
-        self.connection = Mock()
-
-        self.task = MagicMock(Task)
-        self.task.async = 0
-        self.task.args = {
-            'key': 'test-key',
-            'value': 'test-value',
-            'type': 'text'
-        }
-
-        action = ara_record.ActionModule(self.task, self.connection,
-                                         self.play_context, loader=None,
-                                         templar=None, shared_loader_obj=None)
-        action.run()
-
-    def _test_stats(self):
-        stats = fakes.Stats({
-            'host1': defaultdict(int, ok=1, changed=1),
-            'host2': defaultdict(int, failed=1),
-        })
-
-        self.cb.v2_playbook_on_stats(stats)
-        return stats
-
-    def _test_result(self, task, host, status='ok', changed=False):
-        result = Result(task, host, status, changed)
-        func = getattr(self.cb, 'v2_runner_on_%s' % status)
-        func(result)
-        return result
-
-    def _test_playbook(self):
-        path = '/test-playbook-%s.yml' % self.tag
-        playbook = Playbook(path)
-        self.cb.v2_playbook_on_start(playbook)
-        return playbook
-
-    def _test_play(self):
-        name = 'test-play-%s' % self.tag
-        play = Play(name)
-        self.cb.v2_playbook_on_play_start(play)
-        return play
-
-    def _test_task(self, playbook):
-        name = 'test-task-%s' % self.tag
-        task = Task(name, playbook.path)
-        self.cb.v2_playbook_on_task_start(task, False)
-        return task
 
     def test_read_record_with_playbook(self):
         """
         Read an existing record with ara_read for a specified playbook
         """
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
+        ctx = fakes.FakeRun(record_task=False)
+        play_context = Mock()
+        play_context.check_mode = False
+        connection = Mock()
 
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
-            'playbook': r_playbook.id,
+        # Record something first
+        record_data = {
+            'playbook': ctx.playbook['id'],
+            'key': 'test-key',
+            'value': 'test-value-outside-playbook',
+            'type': 'text'
+        }
+        task = fakes.AnsibleTask(
+            name='Record something',
+            action='ara_record',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
+
+        action = ara_record.ActionModule(task, connection, play_context,
+                                         loader=None, templar=None,
+                                         shared_loader_obj=None)
+        action.run()
+
+        # Now read the data
+        record_data = {
+            'playbook': ctx.playbook['id'],
             'key': 'test-key',
         }
+        task = fakes.AnsibleTask(
+            name='Read something',
+            action='ara_read',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
 
-        action = ara_read.ActionModule(task, self.connection,
-                                       self.play_context, loader=None,
-                                       templar=None, shared_loader_obj=None)
+        action = ara_read.ActionModule(task, connection, play_context,
+                                       loader=None, templar=None,
+                                       shared_loader_obj=None)
         data = action.run()
 
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-key').one()
-        self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-key')
-        self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.value, 'test-value-outside-playbook')
         self.assertEqual(r_data.type, 'text')
 
         self.assertEqual(data['playbook_id'], r_data.playbook_id)
@@ -186,27 +93,37 @@ class TestRead(TestAra):
         """
         Read an existing record with ara_read
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True, record_data={
+            'key': 'test-key',
+            'value': 'test-value-inside-playbook',
+            'type': 'text'
+        })
+        play_context = Mock()
+        play_context.check_mode = False
+        connection = Mock()
+
+        record_data = {
             'key': 'test-key',
         }
+        task = fakes.AnsibleTask(
+            name='Read something',
+            action='ara_read',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
 
-        action = ara_read.ActionModule(task, self.connection,
-                                       self.play_context, loader=None,
-                                       templar=None, shared_loader_obj=None)
+        action = ara_read.ActionModule(task, connection, play_context,
+                                       loader=None, templar=None,
+                                       shared_loader_obj=None)
         data = action.run()
 
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
-
-        r_data = m.Record.query.filter_by(playbook_id=r_playbook.id,
+        r_data = m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                           key='test-key').one()
 
         self.assertIsNotNone(r_data)
-        self.assertEqual(r_data.playbook_id, r_playbook.id)
+        self.assertEqual(r_data.playbook_id, ctx.playbook['id'])
         self.assertEqual(r_data.key, 'test-key')
-        self.assertEqual(r_data.value, 'test-value')
+        self.assertEqual(r_data.value, 'test-value-inside-playbook')
         self.assertEqual(r_data.type, 'text')
 
         self.assertEqual(data['playbook_id'], r_data.playbook_id)
@@ -218,25 +135,31 @@ class TestRead(TestAra):
         """
         Read a existing record that does not exist with ara_read
         """
-        task = MagicMock(Task)
-        task.async = 0
-        task.args = {
+        ctx = fakes.FakeRun(record_task=True)
+        play_context = Mock()
+        play_context.check_mode = False
+        connection = Mock()
+
+        record_data = {
             'key': 'key',
         }
+        task = fakes.AnsibleTask(
+            name='Read something',
+            action='ara_read',
+            path='%s:%s' % (ctx.playbook['path'], 1),
+            args=record_data
+        )
 
-        action = ara_read.ActionModule(task, self.connection,
-                                       self.play_context, loader=None,
-                                       templar=None, shared_loader_obj=None)
+        action = ara_read.ActionModule(task, connection, play_context,
+                                       loader=None, templar=None,
+                                       shared_loader_obj=None)
         data = action.run()
-
-        r_playbook = m.Playbook.query.first()
-        self.assertIsNotNone(r_playbook)
 
         # There is no exception raised in the action module, we instead
         # properly return a failure status to Ansible.
         # If there is a failure, no data will be returned so we can catch this.
         with self.assertRaises(Exception):
-            m.Record.query.filter_by(playbook_id=r_playbook.id,
+            m.Record.query.filter_by(playbook_id=ctx.playbook['id'],
                                      key='key').one()
 
         self.assertEqual(data['failed'], True)

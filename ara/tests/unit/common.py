@@ -16,6 +16,8 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
+import shutil
+import tempfile
 
 import ara.db.models as m
 import ara.webapp as w
@@ -37,14 +39,15 @@ class TestAra(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client = self.app.test_client()
+        self.tmpdir = tempfile.mkdtemp(prefix='ara')
 
         m.db.create_all()
 
     def tearDown(self):
         m.db.session.remove()
         m.db.drop_all()
-
         self.app_context.pop()
+        shutil.rmtree(self.tmpdir)
 
 
 def ansible_run(completed=True, failed=False, gather_facts=True,
@@ -87,8 +90,8 @@ def ansible_run(completed=True, failed=False, gather_facts=True,
     pb_content = fakes.FileContent(content=fakes.FAKE_PLAYBOOK_CONTENT).model
     pb_file.content = pb_content
 
-    play = fakes.Play(playbook=playbook).model
     host = fakes.Host(playbook=playbook).model
+    play = fakes.Play(playbook=playbook).model
 
     tasks = []
     results = []
