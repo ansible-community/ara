@@ -18,6 +18,7 @@
 from ara.api.v1 import utils as api_utils
 from ara.db.models import db
 from ara.db.models import Host
+from ara.db.models import Playbook
 
 from flask import Blueprint
 from flask_restful import Api
@@ -54,8 +55,15 @@ class HostRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        # Validate and retrieve the playbook reference
+        playbook = Playbook.query.get(args.playbook_id)
+        if not playbook:
+            abort(404,
+                  message="Playbook {} doesn't exist".format(args.playbook_id),
+                  help=api_utils.help(parser.args, HOST_FIELDS))
+
         host = Host(
-            playbook_id=args.playbook_id,
+            playbook=playbook,
             name=args.name,
             facts=args.facts,
             changed=args.changed,
@@ -81,8 +89,8 @@ class HostRestApi(Resource):
             abort(404, message="Host {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, HOST_FIELDS))
 
-        keys = ['playbook_id', 'name', 'facts', 'changed', 'failed',
-                'ok', 'skipped', 'unreachable']
+        keys = ['name', 'facts', 'changed', 'failed', 'ok',
+                'skipped', 'unreachable']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -195,13 +203,6 @@ class HostRestApi(Resource):
             location='json',
             required=True,
             help='The id of the host'
-        )
-        parser.add_argument(
-            'playbook_id', dest='playbook_id',
-            type=int,
-            location='json',
-            required=False,
-            help='The playbook_id of the host'
         )
         parser.add_argument(
             'name', dest='name',

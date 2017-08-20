@@ -154,6 +154,24 @@ class TestApiHosts(TestAra):
         res = HostApi().post(data)
         self.assertEqual(res.status_code, 400)
 
+    def test_post_http_with_nonexistant_playbook(self):
+        data = {
+            "playbook_id": 9001,
+            "name": "hostname",
+        }
+        res = self.client.post('/api/v1/hosts/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_playbook(self):
+        data = {
+            "playbook_id": 9001,
+            "name": "hostname",
+        }
+        res = HostApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
     ###########
     # PATCH
     ###########

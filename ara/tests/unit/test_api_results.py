@@ -184,11 +184,83 @@ class TestApiResults(TestAra):
             "skipped": False,
             "unreachable": False,
             "ignore_errors": False,
-            "result": '{"msg": "some result"}',
+            "result": {"msg": "some result"},
             "started": "1970-08-14T00:52:49.570031"
         }
         res = ResultApi().post(data)
         self.assertEqual(res.status_code, 400)
+
+    def test_post_http_with_nonexistant_task(self):
+        ansible_run()
+        data = {
+            "task_id": 9001,
+            "host_id": 1,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": {"msg": "some result"},
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/results/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_task(self):
+        ansible_run()
+        data = {
+            "task_id": 9001,
+            "host_id": 1,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": {"msg": "some result"},
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = ResultApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_http_with_nonexistant_host(self):
+        ansible_run()
+        data = {
+            "task_id": 1,
+            "host_id": 9001,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": {"msg": "some result"},
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/results/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_host(self):
+        ansible_run()
+        data = {
+            "task_id": 1,
+            "host_id": 9001,
+            "status": "ok",
+            "changed": True,
+            "failed": False,
+            "skipped": False,
+            "unreachable": False,
+            "ignore_errors": False,
+            "result": {"msg": "some result"},
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = ResultApi().post(data)
+        self.assertEqual(res.status_code, 404)
 
     ###########
     # PATCH

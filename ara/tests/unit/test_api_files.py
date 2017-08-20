@@ -151,6 +151,38 @@ class TestApiFiles(TestAra):
         res = FileApi().post(data)
         self.assertEqual(res.status_code, 400)
 
+    def test_post_http_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "path": "/root/playbook.yml",
+            "content": """
+                    ---
+                    - name: A task from ünit tests
+                      debug:
+                        msg: "hello world"
+                    """
+        }
+        res = self.client.post('/api/v1/files/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "path": "/root/playbook.yml",
+            "content": """
+                    ---
+                    - name: A task from ünit tests
+                      debug:
+                        msg: "hello world"
+                    """
+        }
+        res = FileApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
     ###########
     # PATCH
     ###########

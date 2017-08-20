@@ -140,6 +140,28 @@ class TestApiPlays(TestAra):
         res = PlayApi().post(data)
         self.assertEqual(res.status_code, 400)
 
+    def test_post_http_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "name": "Play from unit tests",
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = self.client.post('/api/v1/plays/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_internal_with_nonexistant_playbook(self):
+        ansible_run()
+        data = {
+            "playbook_id": 9001,
+            "name": "Play from unit tests",
+            "started": "1970-08-14T00:52:49.570031"
+        }
+        res = PlayApi().post(data)
+        self.assertEqual(res.status_code, 404)
+
     ###########
     # PATCH
     ###########
