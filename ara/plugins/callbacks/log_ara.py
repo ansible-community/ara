@@ -161,6 +161,7 @@ class CallbackModule(CallbackBase):
             results = [self._dump_results(result._result)]
             for item in self.loop_items:
                 results.append(self._dump_results(item._result))
+            results = jsonutils.dumps(results)
         else:
             results = self._dump_results(result._result)
 
