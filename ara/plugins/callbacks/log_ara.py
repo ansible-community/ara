@@ -282,9 +282,9 @@ class CallbackModule(CallbackBase):
             lineno = int(lineno)
             file_ = self.get_or_create_file(path)
         else:
-            path = None
-            lineno = None
-            file_ = None
+            path = self.playbook.path
+            lineno = 1
+            file_ = self.get_or_create_file(self.playbook.path)
 
         self.task = models.Task(
             name=task.get_name(),
