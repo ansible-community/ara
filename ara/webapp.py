@@ -26,14 +26,15 @@ import ara.api.v1.results
 import ara.api.v1.tasks
 import logging
 import os
+import yaml
 
 from ara.context_processors import configure_context_processors
 from ara.db.models import db
 from ara.errorhandlers import configure_errorhandlers
 from ara.filters import configure_template_filters
-from flask import Flask
 from flask import abort
 from flask import current_app
+from flask import Flask
 from flask import logging as flask_logging
 from flask import send_from_directory
 
@@ -117,7 +118,15 @@ def configure_db(app):
 
 
 def configure_logging(app):
-    if app.config['ARA_LOG_FILE']:
+    if app.config['ARA_LOG_CONFIG'] and os.path.exists(
+            app.config['ARA_LOG_CONFIG']):
+        config_path = app.config['ARA_LOG_CONFIG']
+        if os.path.splitext(config_path)[1] in ('.yml', '.yaml', '.json'):
+            # yaml.safe_load can load json as well as yaml
+            logging.config.dictConfig(yaml.safe_load(open(config_path, 'r')))
+        else:
+            logging.config.fileConfig(config_path)
+    elif app.config['ARA_LOG_FILE']:
         handler = logging.FileHandler(app.config['ARA_LOG_FILE'])
         # Set the ARA log format or fall back to the flask debugging format
         handler.setFormatter(
@@ -127,6 +136,12 @@ def configure_logging(app):
         logger.setLevel(app.config['ARA_LOG_LEVEL'])
         del logger.handlers[:]
         logger.addHandler(handler)
+
+        for name in ('alembic', 'sqlalchemy.engine'):
+            other_logger = logging.getLogger(name)
+            other_logger.setLevel(logging.WARNING)
+            del other_logger.handlers[:]
+            other_logger.addHandler(handler)
 
 
 def configure_static_route(app):
