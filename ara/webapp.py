@@ -20,6 +20,7 @@ import ara.views
 import flask_migrate
 import logging
 import os
+import yaml
 
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
@@ -133,7 +134,15 @@ def configure_db(app):
 
 
 def configure_logging(app):
-    if app.config['ARA_LOG_FILE']:
+    if app.config['ARA_LOG_CONFIG'] and os.path.exists(
+            app.config['ARA_LOG_CONFIG']):
+        config_path = app.config['ARA_LOG_CONFIG']
+        if os.path.splitext(config_path)[1] in ('.yml', '.yaml', '.json'):
+            # yaml.safe_load can load json as well as yaml
+            logging.config.dictConfig(yaml.safe_load(open(config_path, 'r')))
+        else:
+            logging.config.fileConfig(config_path)
+    elif app.config['ARA_LOG_FILE']:
         handler = logging.FileHandler(app.config['ARA_LOG_FILE'])
         # Set the ARA log format or fall back to the flask debugging format
         handler.setFormatter(
@@ -144,11 +153,11 @@ def configure_logging(app):
         del logger.handlers[:]
         logger.addHandler(handler)
 
-        # TODO: Log things from Alembic to ARA_LOG_FILE properly
-        alembic_logger = logging.getLogger('alembic')
-        alembic_logger.setLevel(logging.WARNING)
-        del alembic_logger.handlers[:]
-        alembic_logger.addHandler(handler)
+        for name in ('alembic', 'sqlalchemy.engine'):
+            other_logger = logging.getLogger(name)
+            other_logger.setLevel(logging.WARNING)
+            del other_logger.handlers[:]
+            other_logger.addHandler(handler)
 
 
 def configure_static_route(app):

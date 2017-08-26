@@ -69,6 +69,7 @@ DEFAULTS = {
     'ARA_IGNORE_EMPTY_GENERATION': True,
     'ARA_IGNORE_MIMETYPE_WARNINGS': True,
     'ARA_IGNORE_PARAMETERS': ['extra_vars'],
+    'ARA_LOG_CONFIG': None,
     'ARA_LOG_FORMAT': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     'ARA_LOG_LEVEL': 'INFO',
     'ARA_PATH_MAX': 40,
@@ -101,6 +102,7 @@ ARA_HOST = _ara_config(config, 'host', 'ARA_HOST')
 ARA_IGNORE_PARAMETERS = _ara_config(config, 'ignore_parameters',
                                     'ARA_IGNORE_PARAMETERS',
                                     value_type='list')
+ARA_LOG_CONFIG = _ara_config(config, 'logconfig', 'ARA_LOG_CONFIG')
 ARA_LOG_FILE = _ara_config(config, 'logfile', 'ARA_LOG_FILE')
 ARA_LOG_FORMAT = _ara_config(config, 'logformat', 'ARA_LOG_FORMAT')
 ARA_LOG_LEVEL = _ara_config(config, 'loglevel', 'ARA_LOG_LEVEL')

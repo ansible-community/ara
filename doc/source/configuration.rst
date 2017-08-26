@@ -105,6 +105,8 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_PORT_                     | port                       | 9191                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_LOG_CONFIG_               | logconfig                  | None                                      |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FILE_                 | logfile                    | ~/.ara/ara.log                            |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_LEVEL_                | loglevel                   | INFO                                      |
@@ -210,6 +212,24 @@ the ``ara-manage runserver`` command.
 
 It is equivalent to the ``-p`` or ``--port`` argument of the
 ``ara-manage runserver`` command.
+
+ARA_LOG_FILE
+~~~~~~~~~~~~
+
+Path to a python logging config file.
+
+If the filename ends in ``.yaml`` or ``.yml`` the file will be loaded as yaml.
+If the filename ends in ``.json`` the file will be loaded as json. The
+resulting dict for either will be treated as a `logging config dict`_
+and passed to `logging.config.dictConfig`.
+
+Otherwise it will be assumed to a `logging config file`_ and the path will be
+passed to `logging.config.fileConfig`.
+
+If this option is given it superseeds the other individual log options.
+
+.. _logging config dict: https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
+.. _logging config file: https://docs.python.org/3/library/logging.config.html#logging-config-fileformat
 
 ARA_LOG_FILE
 ~~~~~~~~~~~~
