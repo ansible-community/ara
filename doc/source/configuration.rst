@@ -213,8 +213,8 @@ the ``ara-manage runserver`` command.
 It is equivalent to the ``-p`` or ``--port`` argument of the
 ``ara-manage runserver`` command.
 
-ARA_LOG_FILE
-~~~~~~~~~~~~
+ARA_LOG_CONFIG
+~~~~~~~~~~~~~~
 
 Path to a python logging config file.
 
