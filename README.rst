@@ -12,7 +12,7 @@ Whether you are running Ansible from your personal laptop or a server, all
 you need to do is to `install ARA`_, `configure Ansible to use ARA`_ and
 you're good to go.
 
-.. image:: doc/source_static/reports.png
+.. image:: doc/source/_static/reports.png
 
 .. _install ARA: https://ara.readthedocs.io/en/latest/installation.html
 .. _configure Ansible to use ARA: http://ara.readthedocs.io/en/latest/configuration.html
