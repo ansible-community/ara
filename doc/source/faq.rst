@@ -46,6 +46,13 @@ where you’ll be able to find all the information about your playbooks:
 
 .. image:: _static/reports.png
 
+Ansible parameters
+~~~~~~~~~~~~~~~~~~
+
+ARA stores parameters and options passed to your ansible-playbook command:
+
+.. image:: _static/parameters.png
+
 Playbook host summary
 ~~~~~~~~~~~~~~~~~~~~~
 
