@@ -2,23 +2,44 @@ ARA: Ansible Run Analysis
 =========================
 .. image:: doc/source/_static/ara-with-icon.png
 
-ARA is an open source project that was created by Ansible users for Ansible
-users.
-
-Its purpose is to provide a way to simply and easily understand what happens
-throughout playbook runs at any scale.
-
 ARA records Ansible playbook runs and makes the recorded data available and
 intuitive for users and systems.
 
-TL;DR
-=====
+ARA doesn't run your playbooks for you: it integrates with Ansible as a
+callback plugin wherever it is.
 
-ARA_ records Ansible_ Playbook runs seamlessly to make them easier to
-visualize, understand and troubleshoot. It integrates with Ansible wherever you
-run it.
+Whether you are running Ansible from your personal laptop or a server, all
+you need to do is to `install ARA`_, `configure Ansible to use ARA`_ and
+you're good to go.
 
-ARA provides four things:
+.. image:: doc/source_static/reports.png
+
+.. _install ARA: https://ara.readthedocs.io/en/latest/installation.html
+.. _configure Ansible to use ARA: http://ara.readthedocs.io/en/latest/configuration.html
+
+Quickstart
+==========
+
+::
+
+    # Install ARA
+    pip install ara
+    # Make Ansible use the ARA callback plugin regardless of python version
+    export ANSIBLE_CALLBACK_PLUGINS="$(python -c 'import os,ara; print(os.path.dirname(ara.__file__))')/plugins/callbacks"
+    # Run your playbook
+    # ansible-playbook myplaybook.yml
+    # Start the ARA standalone webserver
+    ara-manage runserver
+    # Browse http://127.0.0.1:9191
+
+Refer to the documentation_ for more information.
+
+.. _documentation: https://ara.readthedocs.io/en/latest/
+
+ARA components
+==============
+
+ARA has four main components:
 
 1. An `Ansible callback plugin`_ to record playbook runs into a local or remote database
 2. The ara_record_ and ara_read_ pair of Ansible modules to record and read persistent data with ARA
@@ -45,14 +66,32 @@ Otherwise, screenshots highlighting some of ARA's features are available in
 
 .. _YouTube: https://www.youtube.com/watch?v=k3i8VPCanGo
 .. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
-.. _the frequently asked questions: http://ara.readthedocs.io/en/latest/faq.html#interface-preview
+.. _the frequently asked questions: https://ara.readthedocs.io/en/latest/faq.html#interface-preview
 
 Community and getting help
 ==========================
 
-The ARA community hangs out on IRC on the freenode network.
+The ARA community hangs out on IRC, Slack and Discord.
 
-Come chat with developers and users on the **#ara** channel !
+All three chats are seamlessly linked to each other so you can use your
+preferred client to come chat with us !
+
+**IRC**
+
+- Server: `irc.freenode.net`_
+- Channel: #ara
+
+**Slack**
+
+- https://ara-community.slack.com
+- Join with the `Slack invitation <https://join.slack.com/t/ara-community/shared_invite/MjMxNzI4ODAxMDQxLTE1MDM4MDEzMTEtNzU1NTUwMTcyOQ>`_
+
+**Discord**
+
+- https://discordapp.com
+- Join with the `Discord invitation <https://discord.gg/z2SGdc9>`_
+
+.. _irc.freenode.net: https://webchat.freenode.net/
 
 Contributing, issues and bugs
 =============================
