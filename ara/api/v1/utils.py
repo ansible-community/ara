@@ -18,6 +18,7 @@
 import six
 from flask_restful import fields
 from oslo_utils import encodeutils
+from oslo_serialization import jsonutils
 
 
 def help(args, fields):
@@ -50,8 +51,20 @@ def encoded_input(value, argument='argument'):
     if not isinstance(value, six.text_type):
         error = 'Invalid {arg}: {value}. {arg} must be a string.'
         raise ValueError(error.format(arg=argument, value=value))
-    value = encodeutils.to_utf8(value)
-    return value
+    return encodeutils.safe_decode(value)
+
+
+def result_input(value, argument='argument'):
+    """
+    Returns either a dict for a single result or or a list of dicts for many
+    results.
+    """
+    try:
+        value = jsonutils.loads(jsonutils.dumps(value))
+        return value
+    except (ValueError, TypeError) as e:
+        error = 'Unable to load JSON from {arg}: {exc}'
+        raise ValueError(error.format(arg=argument, exc=six.text_type(e)))
 
 
 def _field_to_string(field):
