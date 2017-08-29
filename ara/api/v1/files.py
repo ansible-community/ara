@@ -30,7 +30,6 @@ from flask_restful import fields
 from flask_restful import marshal
 from flask_restful import reqparse
 from flask_restful import Resource
-from flask_restful import inputs
 
 blueprint = Blueprint('files', __name__)
 api = Api(blueprint)
@@ -66,6 +65,21 @@ class FileRestApi(Resource):
                   message="Playbook {} doesn't exist".format(args.playbook_id),
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
+        # If this is the playbook file, mark it as such
+        is_playbook = False
+        if playbook.path == args.path:
+            is_playbook = True
+
+        # Files are stored uniquely by path for a playbook, get it or create it
+        try:
+            file_ = File.query.filter_by(
+                playbook_id=args.playbook_id,
+                path=args.path
+            ).one()
+            return self.get(id=file_.id)
+        except NoResultFound:
+            pass
+
         # Files are stored uniquely by sha1, get it or create it
         sha1 = content_sha1(args.content)
         try:
@@ -76,7 +90,7 @@ class FileRestApi(Resource):
         file_ = File(
             playbook=playbook,
             path=args.path,
-            is_playbook=args.is_playbook,
+            is_playbook=is_playbook,
             content=content
         )
 
@@ -97,7 +111,7 @@ class FileRestApi(Resource):
             abort(404, message="File {} doesn't exist".format(args.id),
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
-        keys = ['path', 'is_playbook', 'content']
+        keys = ['path', 'content']
         updates = 0
         for key in keys:
             if getattr(args, key) is not None:
@@ -167,14 +181,6 @@ class FileRestApi(Resource):
             required=True,
             help='The content of the file'
         )
-        parser.add_argument(
-            'is_playbook', dest='is_playbook',
-            type=inputs.boolean,
-            location='json',
-            required=False,
-            default=False,
-            help='Whether or not the file is a playbook file'
-        )
         return parser
 
     @staticmethod
@@ -201,13 +207,6 @@ class FileRestApi(Resource):
             required=False,
             help='The content of the file'
         )
-        parser.add_argument(
-            'is_playbook', dest='is_playbook',
-            type=inputs.boolean,
-            location='json',
-            required=False,
-            help='Whether or not the file is a playbook file'
-        )
         return parser
 
     @staticmethod
@@ -233,13 +232,6 @@ class FileRestApi(Resource):
             location='values',
             required=False,
             help='Search with the path (full or part) of a file'
-        )
-        parser.add_argument(
-            'is_playbook', dest='is_playbook',
-            type=inputs.boolean,
-            location='values',
-            required=False,
-            help='Search for files that are playbook files'
         )
         return parser
 

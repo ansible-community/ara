@@ -38,6 +38,8 @@ class TestApiFiles(TestAra):
     ###########
     # POST
     ###########
+    # TODO: Add test for validating that is_playbook is set properly for
+    # playbook files
     def test_post_http_redirect(self):
         res = self.client.post('/api/v1/files')
         self.assertEqual(res.status_code, 301)
@@ -182,6 +184,40 @@ class TestApiFiles(TestAra):
         }
         res = FileApi().post(data)
         self.assertEqual(res.status_code, 404)
+
+    def test_post_http_file_already_exists(self):
+        # Posting the same file a second time should yield a 200 and not error
+        # out, files are unique per sha1
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "path": ctx['playbook'].path,
+            "content": ctx['playbook'].file.content.content
+        }
+        res = self.client.post('/api/v1/files/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+
+        self.assertEqual(res.status_code, 200)
+        file_ = jsonutils.loads(res.data)
+
+        self.assertEqual(ctx['playbook'].file.content.sha1, file_['sha1'])
+
+    def test_post_internal_file_already_exists(self):
+        # Posting the same file a second time should yield a 200 and not error
+        # out, files are unique per sha1
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['playbook'].id,
+            "path": ctx['playbook'].path,
+            "content": ctx['playbook'].file.content.content
+        }
+        res = FileApi().post(data)
+
+        self.assertEqual(res.status_code, 200)
+        file_ = jsonutils.loads(res.data)
+
+        self.assertEqual(ctx['playbook'].file.content.sha1, file_['sha1'])
 
     ###########
     # PATCH
