@@ -18,6 +18,7 @@
 from ara.api.v1 import utils as api_utils
 from ara.db.models import db
 from ara.db.models import Host
+from ara.db.models import NoResultFound
 from ara.db.models import Playbook
 
 from flask import Blueprint
@@ -64,6 +65,16 @@ class HostRestApi(Resource):
             abort(404,
                   message="Playbook {} doesn't exist".format(args.playbook_id),
                   help=api_utils.help(parser.args, HOST_FIELDS))
+
+        # Hosts are stored uniquely by name for a playbook, get it or create it
+        try:
+            host = Host.query.filter_by(
+                playbook_id=args.playbook_id,
+                name=args.name
+            ).one()
+            return self.get(id=host.id)
+        except NoResultFound:
+            pass
 
         host = Host(
             playbook=playbook,
@@ -296,7 +307,7 @@ def _find_hosts(**kwargs):
     if 'name' in kwargs and kwargs['name'] is not None:
         query = query.filter(
             Host.name.like(
-                "%{0}%".format(kwargs['name'])
+                u"%{0}%".format(kwargs['name'])
             )
         )
 

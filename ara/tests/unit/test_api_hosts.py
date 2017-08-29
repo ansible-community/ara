@@ -172,6 +172,50 @@ class TestApiHosts(TestAra):
         res = HostApi().post(data)
         self.assertEqual(res.status_code, 404)
 
+    def test_post_http_host_already_exists(self):
+        # Posting the same host a second time should yield a 200 and not error
+        # out, hosts are unique per playbook
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['host'].playbook.id,
+            "name": ctx['host'].name,
+            "facts": ctx['host'].facts,
+            "changed": ctx['host'].changed,
+            "failed": ctx['host'].failed,
+            "ok": ctx['host'].ok,
+            "skipped": ctx['host'].skipped,
+            "unreachable": ctx['host'].unreachable
+        }
+        res = self.client.post('/api/v1/hosts/',
+                               data=jsonutils.dumps(data),
+                               content_type='application/json')
+
+        self.assertEqual(res.status_code, 200)
+        host = jsonutils.loads(res.data)
+
+        self.assertEqual(ctx['host'].facts, host['facts'])
+
+    def test_post_internal_host_already_exists(self):
+        # Posting the same host a second time should yield a 200 and not error
+        # out, hosts are unique per playbook
+        ctx = ansible_run()
+        data = {
+            "playbook_id": ctx['host'].playbook.id,
+            "name": ctx['host'].name,
+            "facts": ctx['host'].facts,
+            "changed": ctx['host'].changed,
+            "failed": ctx['host'].failed,
+            "ok": ctx['host'].ok,
+            "skipped": ctx['host'].skipped,
+            "unreachable": ctx['host'].unreachable
+        }
+        res = HostApi().post(data)
+
+        self.assertEqual(res.status_code, 200)
+        host = jsonutils.loads(res.data)
+
+        self.assertEqual(ctx['host'].facts, host['facts'])
+
     ###########
     # PATCH
     ###########
