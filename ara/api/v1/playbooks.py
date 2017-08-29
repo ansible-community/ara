@@ -19,6 +19,7 @@ from ara.api.v1 import utils as api_utils
 from ara.db.models import db
 from ara.db.models import Playbook
 
+from datetime import datetime
 from flask import Blueprint
 from flask_restful import Api
 from flask_restful import abort
@@ -77,12 +78,16 @@ class PlaybookRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        started = args.started
+        if not started:
+            started = datetime.utcnow()
+
         playbook = Playbook(
             path=args.path,
             ansible_version=args.ansible_version,
             parameters=args.parameters,
             completed=args.completed,
-            started=args.started,
+            started=started,
             ended=args.ended
         )
         db.session.add(playbook)
@@ -176,7 +181,7 @@ class PlaybookRestApi(Resource):
             'started', dest='started',
             type=inputs.datetime_from_iso8601,
             location='json',
-            required=True,
+            required=False,
             help='Timestamp for the start of the playbook run (ISO8601)'
         )
         parser.add_argument(

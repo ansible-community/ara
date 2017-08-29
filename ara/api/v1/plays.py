@@ -20,6 +20,7 @@ from ara.db.models import db
 from ara.db.models import Play
 from ara.db.models import Playbook
 
+from datetime import datetime
 from flask import Blueprint
 from flask_restful import Api
 from flask_restful import abort
@@ -70,10 +71,14 @@ class PlayRestApi(Resource):
                   message="Playbook {} doesn't exist".format(args.playbook_id),
                   help=api_utils.help(parser.args, PLAY_FIELDS))
 
+        started = args.started
+        if not started:
+            started = datetime.utcnow()
+
         play = Play(
             playbook=playbook,
             name=args.name,
-            started=args.started,
+            started=started,
             ended=args.ended
         )
         db.session.add(play)
@@ -151,7 +156,7 @@ class PlayRestApi(Resource):
             'started', dest='started',
             type=inputs.datetime_from_iso8601,
             location='json',
-            required=True,
+            required=False,
             help='Timestamp for the start of the play (ISO8601)'
         )
         parser.add_argument(

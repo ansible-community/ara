@@ -21,6 +21,7 @@ from ara.db.models import File
 from ara.db.models import Play
 from ara.db.models import Task
 
+from datetime import datetime
 from flask import Blueprint
 from flask_restful import Api
 from flask_restful import abort
@@ -86,6 +87,10 @@ class TaskRestApi(Resource):
                   message="File {} doesn't exist".format(args.file_id),
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
+        started = args.started
+        if not started:
+            started = datetime.utcnow()
+
         task = Task(
             playbook=play.playbook,
             play=play,
@@ -95,7 +100,7 @@ class TaskRestApi(Resource):
             lineno=args.lineno,
             tags=args.tags,
             handler=args.handler,
-            started=args.started,
+            started=started,
             ended=args.ended
         )
         db.session.add(task)
@@ -210,7 +215,7 @@ class TaskRestApi(Resource):
             'started', dest='started',
             type=inputs.datetime_from_iso8601,
             location='json',
-            required=True,
+            required=False,
             help='Timestamp for the start of the task (ISO8601)'
         )
         parser.add_argument(
@@ -333,7 +338,7 @@ class TaskRestApi(Resource):
             type=int,
             location='values',
             required=False,
-            help='Search with the name (full or part) of a task'
+            help='Search with the lineno of a task'
         )
         parser.add_argument(
             'tags', dest='tags',
@@ -383,7 +388,7 @@ def _find_tasks(**kwargs):
     if 'name' in kwargs and kwargs['name'] is not None:
         query = query.filter(
             Task.name.like(
-                "%{0}%".format(kwargs['name'])
+                u"%{0}%".format(kwargs['name'])
             )
         )
 

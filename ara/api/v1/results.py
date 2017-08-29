@@ -21,6 +21,7 @@ from ara.db.models import Host
 from ara.db.models import Result
 from ara.db.models import Task
 
+from datetime import datetime
 from flask import Blueprint
 from flask_restful import Api
 from flask_restful import abort
@@ -74,6 +75,10 @@ class ResultRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
+        started = args.started
+        if not started:
+            started = datetime.utcnow()
+
         # Validate and retrieve the task reference
         task = Task.query.get(args.task_id)
         if not task:
@@ -100,7 +105,7 @@ class ResultRestApi(Resource):
             unreachable=args.unreachable,
             ignore_errors=args.ignore_errors,
             result=args.result,
-            started=args.started,
+            started=started,
             ended=args.ended
         )
         db.session.add(result)
@@ -234,7 +239,7 @@ class ResultRestApi(Resource):
             'started', dest='started',
             type=inputs.datetime_from_iso8601,
             location='json',
-            required=True,
+            required=False,
             help='Timestamp for the start of the result (ISO8601)'
         )
         parser.add_argument(
