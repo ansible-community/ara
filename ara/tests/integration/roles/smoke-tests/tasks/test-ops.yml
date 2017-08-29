@@ -51,6 +51,18 @@
     msg: "{{ item.value.name }}: {{ item.value.value }}"
   with_dict: "{{ dict_items }}"
 
+- name: Test host vars
+  assert:
+    that:
+      - host_var is defined
+      - host_var == "host_var"
+
+- name: Test group vars
+  assert:
+    that:
+      - group_var is defined
+      - group_var == "group_var"
+
 - name: Test for XSS
   command: echo "<script>alert(document.cookie)</script>"
   changed_when: False

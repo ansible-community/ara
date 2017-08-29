@@ -20,6 +20,9 @@
 - name: Print normal data
   debug:
     msg: "normal data"
+  changed_when: true
+  notify:
+    - Handler task
 
 - name: Print confidential data
   debug:
