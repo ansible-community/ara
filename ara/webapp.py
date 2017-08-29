@@ -25,6 +25,7 @@ import ara.api.v1.records
 import ara.api.v1.results
 import ara.api.v1.tasks
 import logging
+import logging.config
 import os
 import yaml
 
