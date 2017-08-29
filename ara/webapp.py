@@ -19,6 +19,7 @@ import ara.config
 import ara.views
 import flask_migrate
 import logging
+import logging.config
 import os
 import yaml
 
