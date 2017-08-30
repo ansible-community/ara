@@ -15,11 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.results import ResultApi
 from ara.api.v1.results import RESULT_FIELDS
-import ara.db.models as models
 import pytest
 
 from oslo_serialization import jsonutils
@@ -52,12 +51,12 @@ class TestApiResults(TestAra):
 
     def test_post_http_with_correct_data(self):
         # Create fake playbook data and create a result in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "host_id": ctx['host'].id,
-            "play_id": ctx['play'].id,
-            "task_id": ctx['task'].id,
+            "playbook_id": ctx.playbook['id'],
+            "host_id": ctx.playbook['hosts'][0]['id'],
+            "play_id": ctx.play['id'],
+            "task_id": ctx.t_ok['id'],
             "status": "ok",
             "changed": True,
             "failed": False,
@@ -89,12 +88,12 @@ class TestApiResults(TestAra):
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a result in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "host_id": ctx['host'].id,
-            "play_id": ctx['play'].id,
-            "task_id": ctx['task'].id,
+            "playbook_id": ctx.playbook['id'],
+            "host_id": ctx.playbook['hosts'][0]['id'],
+            "play_id": ctx.play['id'],
+            "task_id": ctx.t_ok['id'],
             "status": "ok",
             "changed": True,
             "failed": False,
@@ -191,7 +190,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_post_http_with_nonexistant_task(self):
-        ansible_run()
         data = {
             "task_id": 9001,
             "host_id": 1,
@@ -210,7 +208,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_task(self):
-        ansible_run()
         data = {
             "task_id": 9001,
             "host_id": 1,
@@ -227,7 +224,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_http_with_nonexistant_host(self):
-        ansible_run()
         data = {
             "task_id": 1,
             "host_id": 9001,
@@ -246,7 +242,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_host(self):
-        ansible_run()
         data = {
             "task_id": 1,
             "host_id": 9001,
@@ -280,16 +275,24 @@ class TestApiResults(TestAra):
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['result'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['results'][0]['id'], 1)
+
+        # Get existing result
+        pbresult = self.client.get('/api/v1/results/',
+                                   content_type='application/json',
+                                   query_string=dict(
+                                       id=ctx.playbook['results'][0]['id'])
+                                   )
+        pbresult = jsonutils.loads(pbresult.data)
 
         # We'll update the status field, assert we are actually
         # making a change
         new_status = "failed"
-        self.assertNotEqual(ctx['result'].status, new_status)
+        self.assertNotEqual(pbresult['status'], new_status)
 
         data = {
-            "id": ctx['result'].id,
+            "id": pbresult['id'],
             "status": new_status
         }
         res = self.client.patch('/api/v1/results/',
@@ -304,22 +307,26 @@ class TestApiResults(TestAra):
         # Confirm by re-fetching result
         updated = self.client.get('/api/v1/results/',
                                   content_type='application/json',
-                                  query_string=dict(id=ctx['result'].id))
+                                  query_string=dict(id=pbresult['id']))
         updated_result = jsonutils.loads(updated.data)
         self.assertEqual(updated_result['status'], new_status)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['result'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['results'][0]['id'], 1)
+
+        # Get existing result
+        pbresult = ResultApi().get(id=ctx.playbook['results'][0]['id'])
+        pbresult = jsonutils.loads(pbresult.data)
 
         # We'll update the status field, assert we are actually
         # making a change
         new_status = "failed"
-        self.assertNotEqual(ctx['result'].status, new_status)
+        self.assertNotEqual(pbresult['status'], new_status)
 
         data = {
-            "id": ctx['result'].id,
+            "id": pbresult['id'],
             "status": new_status
         }
         res = ResultApi().patch(data)
@@ -330,12 +337,11 @@ class TestApiResults(TestAra):
         self.assertEqual(data['status'], new_status)
 
         # Confirm by re-fetching result
-        updated = ResultApi().get(id=ctx['result'].id)
+        updated = ResultApi().get(id=pbresult['id'])
         updated_result = jsonutils.loads(updated.data)
         self.assertEqual(updated_result['status'], new_status)
 
     def test_patch_http_with_missing_arg(self):
-        ansible_run()
         data = {
             "status": "failed"
         }
@@ -345,7 +351,6 @@ class TestApiResults(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
-        ansible_run()
         data = {
             "status": "failed"
         }
@@ -412,44 +417,20 @@ class TestApiResults(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
         res = self.client.get('/api/v1/results/',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(ctx.playbook['results']),
+                         len(jsonutils.loads(res.data)))
 
-        data = jsonutils.loads(res.data)[2]
-
-        self.assertEqual(ctx['result'].id,
-                         data['id'])
-        self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['result'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['result'].task_id,
-                         data['task']['id'])
-        self.assertEqual(ctx['result'].host_id,
-                         data['host']['id'])
-        self.assertEqual(ctx['result'].status,
-                         data['status'])
-        self.assertEqual(ctx['result'].changed,
-                         data['changed'])
-        self.assertEqual(ctx['result'].failed,
-                         data['failed'])
-        self.assertEqual(ctx['result'].skipped,
-                         data['skipped'])
-        self.assertEqual(ctx['result'].unreachable,
-                         data['unreachable'])
-        self.assertEqual(ctx['result'].ignore_errors,
-                         data['ignore_errors'])
-        self.assertEqual(ctx['result'].result,
-                         data['result'])
-        self.assertEqual(ctx['result'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['result'].ended.isoformat(),
-                         data['ended'])
+        # TODO: Is ordering weird here ?
+        # playbook['results'] doesn't seem to be sorted in the same way as data
+        data = jsonutils.loads(res.data)[0]
+        self.assertEqual(ctx.playbook['results'][7]['id'], data['id'])
 
     def test_get_internal_without_parameters(self):
-        ansible_run()
+        FakeRun()
         http = self.client.get('/api/v1/results/',
                                content_type='application/json')
         internal = ResultApi().get()
@@ -457,111 +438,38 @@ class TestApiResults(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_parameter(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
+        ctx = FakeRun()
         res = self.client.get('/api/v1/results/',
                               content_type='application/json',
-                              query_string=dict(id=1))
+                              query_string=dict(id=2))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['result'].id,
-                         data['id'])
-        self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['result'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['result'].task_id,
-                         data['task']['id'])
-        self.assertEqual(ctx['result'].host_id,
-                         data['host']['id'])
-        self.assertEqual(ctx['result'].status,
-                         data['status'])
-        self.assertEqual(ctx['result'].changed,
-                         data['changed'])
-        self.assertEqual(ctx['result'].failed,
-                         data['failed'])
-        self.assertEqual(ctx['result'].skipped,
-                         data['skipped'])
-        self.assertEqual(ctx['result'].unreachable,
-                         data['unreachable'])
-        self.assertEqual(ctx['result'].ignore_errors,
-                         data['ignore_errors'])
-        self.assertEqual(ctx['result'].result,
-                         data['result'])
-        self.assertEqual(ctx['result'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['result'].ended.isoformat(),
-                         data['ended'])
+        self.assertEqual(ctx.playbook['results'][1]['id'], data['id'])
 
     def test_get_internal_with_id_parameter(self):
-        ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
+        FakeRun()
         http = self.client.get('/api/v1/results/',
                                content_type='application/json',
-                               query_string=dict(id=1))
-        internal = ResultApi().get(id=1)
+                               query_string=dict(id=2))
+        internal = ResultApi().get(id=2)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_url(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
+        ctx = FakeRun()
 
-        res = self.client.get('/api/v1/results/1',
+        res = self.client.get('/api/v1/results/2',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['result'].id,
-                         data['id'])
-        self.assertEqual(ctx['result'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['result'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['result'].task_id,
-                         data['task']['id'])
-        self.assertEqual(ctx['result'].host_id,
-                         data['host']['id'])
-        self.assertEqual(ctx['result'].status,
-                         data['status'])
-        self.assertEqual(ctx['result'].changed,
-                         data['changed'])
-        self.assertEqual(ctx['result'].failed,
-                         data['failed'])
-        self.assertEqual(ctx['result'].skipped,
-                         data['skipped'])
-        self.assertEqual(ctx['result'].unreachable,
-                         data['unreachable'])
-        self.assertEqual(ctx['result'].ignore_errors,
-                         data['ignore_errors'])
-        self.assertEqual(ctx['result'].result,
-                         data['result'])
-        self.assertEqual(ctx['result'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['result'].ended.isoformat(),
-                         data['ended'])
+        self.assertEqual(ctx.playbook['results'][1]['id'], data['id'])
 
     def test_get_internal_with_id_url(self):
-        ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
-        http = self.client.get('/api/v1/results/1',
+        FakeRun()
+        http = self.client.get('/api/v1/results/2',
                                content_type='application/json')
-        internal = ResultApi().get(id=1)
+        internal = ResultApi().get(id=2)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

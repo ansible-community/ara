@@ -34,9 +34,16 @@ import ara.cli.play
 import ara.cli.playbook
 import ara.cli.result
 import ara.cli.task
-import ara.db.models as m
 
-from ara.tests.unit.common import ansible_run
+from ara.api.files import FileApi
+from ara.api.hosts import HostApi
+from ara.api.plays import PlayApi
+from ara.api.playbooks import PlaybookApi
+from ara.api.records import RecordApi
+from ara.api.results import ResultApi
+from ara.api.tasks import TaskApi
+
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 
 
@@ -49,31 +56,29 @@ class TestCLIRecord(TestAra):
         super(TestCLIRecord, self).tearDown()
 
     def test_record_list(self):
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
 
         cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['-a'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['record'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['records'][0]['id'])
 
     def test_record_list_for_playbook(self):
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
 
         cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['record'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['records'][0]['id'])
 
     def test_record_list_for_non_existing_playbook(self):
-        ansible_run(ara_record=True)
-
         cmd = ara.cli.record.RecordList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
@@ -82,32 +87,36 @@ class TestCLIRecord(TestAra):
         self.assertEqual(res[1], [])
 
     def test_record_show_by_id(self):
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
 
         cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['record'].id)])
+        args = parser.parse_args([
+            six.text_type(ctx.playbook['records'][0]['id'])
+        ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['record'].id)
+        self.assertEqual(res[1][0], ctx.playbook['records'][0]['id'])
 
     def test_record_show_by_key(self):
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
+
+        # Get record
+        record = RecordApi().get(id=ctx.playbook['records'][0]['id'])
+        record = jsonutils.loads(record.data)
 
         cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '-b',
-            six.text_type(ctx['record'].playbook.id),
-            ctx['record'].key
+            six.text_type(ctx.playbook['id']),
+            record['key']
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['record'].id)
+        self.assertEqual(res[1][0], record['id'])
 
     def test_record_show_for_non_existing_data(self):
-        ansible_run(ara_record=True)
-
         cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -125,31 +134,29 @@ class TestCLIHost(TestAra):
         super(TestCLIHost, self).tearDown()
 
     def test_host_list(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['-a'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['host'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['hosts'][0]['id'])
 
     def test_host_list_for_playbook(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['host'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['hosts'][0]['id'])
 
     def test_host_list_for_non_existing_playbook(self):
-        ansible_run()
-
         cmd = ara.cli.host.HostList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
@@ -158,32 +165,36 @@ class TestCLIHost(TestAra):
         self.assertEqual(res[1], [])
 
     def test_host_show_by_id(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['host'].id)])
+        args = parser.parse_args([
+            six.text_type(ctx.playbook['hosts'][0]['id'])
+        ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['host'].id)
+        self.assertEqual(res[1][0], ctx.playbook['hosts'][0]['id'])
 
     def test_host_show_by_name(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
+
+        # Get host
+        host = HostApi().get(id=ctx.playbook['hosts'][0]['id'])
+        host = jsonutils.loads(host.data)
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '-b',
-            six.text_type(ctx['host'].playbook.id),
-            ctx['host'].name
+            six.text_type(ctx.playbook['id']),
+            host['name']
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['host'].id)
+        self.assertEqual(res[1][0], host['id'])
 
     def test_host_show_for_non_existing_host(self):
-        ansible_run()
-
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -201,31 +212,29 @@ class TestCLIPlay(TestAra):
         super(TestCLIPlay, self).tearDown()
 
     def test_play_list_all(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--all'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['play'].id)
+        self.assertEqual(res[1][0][0], ctx.play['id'])
 
     def test_play_list_playbook(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['play'].id)
+        self.assertEqual(res[1][0][0], ctx.play['id'])
 
     def test_play_list_non_existing_playbook(self):
-        ansible_run()
-
         cmd = ara.cli.play.PlayList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
@@ -234,18 +243,16 @@ class TestCLIPlay(TestAra):
         self.assertEqual(res[1], [])
 
     def test_play_show(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.play.PlayShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['play'].id)])
+        args = parser.parse_args([six.text_type(ctx.play['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['play'].id)
+        self.assertEqual(res[1][0], ctx.play['id'])
 
     def test_play_show_non_existing(self):
-        ansible_run()
-
         cmd = ara.cli.play.PlayShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -263,27 +270,27 @@ class TestCLIPlaybook(TestAra):
         super(TestCLIPlaybook, self).tearDown()
 
     def test_playbook_list(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['playbook'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['id'])
 
     def test_playbook_list_complete(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--complete'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['playbook'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['id'])
 
     def test_playbook_list_complete_with_no_complete(self):
-        ansible_run(completed=False)
+        FakeRun(completed=False)
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
@@ -293,17 +300,17 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(res[1], [])
 
     def test_playbook_list_incomplete(self):
-        ctx = ansible_run(completed=False)
+        ctx = FakeRun(completed=False)
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--incomplete'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['playbook'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['id'])
 
     def test_playbook_list_incomplete_with_no_incomplete(self):
-        ansible_run()
+        FakeRun()
 
         cmd = ara.cli.playbook.PlaybookList(None, None)
         parser = cmd.get_parser('test')
@@ -313,18 +320,16 @@ class TestCLIPlaybook(TestAra):
         self.assertEqual(res[1], [])
 
     def test_playbook_show(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.playbook.PlaybookShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['playbook'].id)])
+        args = parser.parse_args([six.text_type(ctx.playbook['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['playbook'].id)
+        self.assertEqual(res[1][0], ctx.playbook['id'])
 
     def test_playbook_show_non_existing(self):
-        ansible_run()
-
         cmd = ara.cli.playbook.PlaybookShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -334,53 +339,62 @@ class TestCLIPlaybook(TestAra):
 
     def test_playbook_delete(self):
         # Run two playbook runs
-        ctx = ansible_run(ara_record=True)
-        ansible_run(gather_facts=False)
+        ctx = FakeRun()
+        FakeRun()
 
         # Assert that we have two playbooks and that we have valid data for
         # the first playbook
-        playbooks = m.Playbook.query.all()
+        playbooks = PlaybookApi().get()
+        playbooks = jsonutils.loads(playbooks.data)
         self.assertTrue(len(playbooks) == 2)
 
-        d = m.Record.query.filter(
-            m.Record.playbook_id.in_([ctx['playbook'].id])
-        )
-        self.assertNotEqual(d.count(), 0)
-        f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
-        self.assertNotEqual(f.count(), 0)
-        p = m.Play.query.filter(m.Play.playbook_id.in_([ctx['playbook'].id]))
-        self.assertNotEqual(p.count(), 0)
-        t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
-        self.assertNotEqual(t.count(), 0)
-        tr = m.Result.query.count()  # compared later
-        h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
-        self.assertNotEqual(h.count(), 0)
+        # Validate that we have real data for this playbook
+        files = FileApi().get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(jsonutils.loads(files.data)), 0)
 
-        # Delete the first playbook
+        hosts = HostApi().get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(jsonutils.loads(hosts.data)), 0)
+
+        plays = PlayApi().get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(jsonutils.loads(plays.data)), 0)
+
+        tasks = TaskApi().get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(jsonutils.loads(tasks.data)), 0)
+
+        results = ResultApi().get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(jsonutils.loads(results.data)), 0)
+
+        # Delete the playbook
         cmd = ara.cli.playbook.PlaybookDelete(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['playbook'].id)])
+        args = parser.parse_args([six.text_type(ctx.playbook['id'])])
         cmd.take_action(args)
 
         # Assert that we only have one playbook left and that records have been
         # deleted
-        playbooks = m.Playbook.query.all()
+        playbooks = PlaybookApi().get()
+        playbooks = jsonutils.loads(playbooks.data)
         self.assertTrue(len(playbooks) == 1)
 
-        d = m.Record.query.filter(
-            m.Record.playbook_id.in_([ctx['playbook'].id])
-        )
-        self.assertEqual(d.count(), 0)
-        f = m.File.query.filter(m.File.playbook_id.in_([ctx['playbook'].id]))
-        self.assertEqual(f.count(), 0)
-        p = m.Play.query.filter(m.Play.playbook_id.in_([ctx['playbook'].id]))
-        self.assertEqual(p.count(), 0)
-        t = m.Task.query.filter(m.Task.playbook_id.in_([ctx['playbook'].id]))
-        self.assertEqual(t.count(), 0)
-        new_tr = m.Result.query.count()  # compare before and after
-        self.assertNotEqual(tr, new_tr)
-        h = m.Host.query.filter(m.Host.playbook_id.in_([ctx['playbook'].id]))
-        self.assertEqual(h.count(), 0)
+        # Assert that we have no data for the first playbook
+        playbook = PlaybookApi().get(id=ctx.playbook['id'])
+        self.assertEqual(playbook.status_code, 404)
+
+        # Validate that we nog longer have any data for this playbook
+        files = FileApi().get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(files.status_code, 404)
+
+        hosts = HostApi().get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(hosts.status_code, 404)
+
+        plays = PlayApi().get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(plays.status_code, 404)
+
+        tasks = TaskApi().get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(tasks.status_code, 404)
+
+        results = ResultApi().get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(results.status_code, 404)
 
 
 class TestCLIResult(TestAra):
@@ -392,31 +406,29 @@ class TestCLIResult(TestAra):
         super(TestCLIResult, self).tearDown()
 
     def test_result_list_all(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--all'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['result'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['results'][0]['id'])
 
     def test_result_list_playbook(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['result'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['results'][0]['id'])
 
     def test_result_list_non_existing_playbook(self):
-        ansible_run()
-
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
@@ -425,18 +437,16 @@ class TestCLIResult(TestAra):
         self.assertEqual(res[1], [])
 
     def test_result_list_play(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', six.text_type(ctx['play'].id)])
+        args = parser.parse_args(['--play', six.text_type(ctx.play['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['result'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['results'][0]['id'])
 
     def test_result_list_non_existing_play(self):
-        ansible_run()
-
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--play', six.text_type(9)])
@@ -445,18 +455,16 @@ class TestCLIResult(TestAra):
         self.assertEqual(res[1], [])
 
     def test_result_list_task(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--task', six.text_type(ctx['task'].id)])
+        args = parser.parse_args(['--task', six.text_type(ctx.t_ok['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['result'].id)
+        self.assertEqual(res[1][0][0], ctx.playbook['results'][0]['id'])
 
     def test_result_list_non_existing_task(self):
-        ansible_run()
-
         cmd = ara.cli.result.ResultList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--task', six.text_type(9)])
@@ -465,18 +473,18 @@ class TestCLIResult(TestAra):
         self.assertEqual(res[1], [])
 
     def test_result_show(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['result'].id)])
+        args = parser.parse_args([
+            six.text_type(ctx.playbook['results'][0]['id'])
+        ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['result'].id)
+        self.assertEqual(res[1][0], ctx.playbook['results'][0]['id'])
 
     def test_result_show_non_existing(self):
-        ansible_run()
-
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -485,19 +493,24 @@ class TestCLIResult(TestAra):
             cmd.take_action(args)
 
     def test_result_show_long(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
+
+        # Get result
+        result = ResultApi().get(id=ctx.playbook['results'][0]['id'])
+        result = jsonutils.loads(result.data)
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['result'].id), '--long'])
+        args = parser.parse_args([
+            six.text_type(ctx.playbook['results'][0]['id']), '--long'
+        ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['result'].id)
-        self.assertEqual(res[1][-1], jsonutils.dumps(ctx['result'].result))
+        self.assertEqual(res[1][0], ctx.playbook['results'][0]['id'])
+        self.assertEqual(res[1][-1], jsonutils.dumps(result['result'],
+                                                     indent=4))
 
     def test_result_show_long_non_existing(self):
-        ansible_run()
-
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0, '--long'])
@@ -515,28 +528,26 @@ class TestCLITask(TestAra):
         super(TestCLITask, self).tearDown()
 
     def test_task_list_all(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--all'])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['task'].id)
+        self.assertEqual(res[1][0][0], ctx.t_ok['id'])
 
     def test_task_list_play(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args(['--play', six.text_type(ctx['play'].id)])
+        args = parser.parse_args(['--play', six.text_type(ctx.play['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['task'].id)
+        self.assertEqual(res[1][0][0], ctx.t_ok['id'])
 
     def test_task_list_non_existing_play(self):
-        ansible_run()
-
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--play', six.text_type(9)])
@@ -545,21 +556,19 @@ class TestCLITask(TestAra):
         self.assertEqual(res[1], [])
 
     def test_task_list_playbook(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0][0], ctx['task'].id)
+        self.assertEqual(res[1][0][0], ctx.t_ok['id'])
 
     def test_task_list_non_existing_playbook(self):
-        ansible_run()
-
         cmd = ara.cli.task.TaskList(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args(['--playbook', six.text_type(9)])
@@ -568,18 +577,16 @@ class TestCLITask(TestAra):
         self.assertEqual(res[1], [])
 
     def test_task_show(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         cmd = ara.cli.task.TaskShow(None, None)
         parser = cmd.get_parser('test')
-        args = parser.parse_args([six.text_type(ctx['task'].id)])
+        args = parser.parse_args([six.text_type(ctx.t_ok['id'])])
         res = cmd.take_action(args)
 
-        self.assertEqual(res[1][0], ctx['task'].id)
+        self.assertEqual(res[1][0], ctx.t_ok['id'])
 
     def test_task_show_non_existing(self):
-        ansible_run()
-
         cmd = ara.cli.task.TaskShow(None, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([0])
@@ -646,7 +653,7 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_html_no_destination(self):
         """ Ensures generating without a destination fails """
-        ansible_run()
+        FakeRun()
 
         cmd = ara.cli.generate.GenerateHtml(None, None)
         parser = cmd.get_parser('test')
@@ -657,7 +664,7 @@ class TestCLIGenerate(TestAra):
 
     def test_generate_html(self):
         """ Roughly ensures the expected files are generated properly """
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         shell = ara.shell.AraCli()
         shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
@@ -667,9 +674,9 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([self.tmpdir])
         cmd.take_action(args)
 
-        file_id = ctx['task'].file_id
-        host_id = ctx['host'].id
-        result_id = ctx['result'].id
+        file_id = ctx.playbook['files'][0]['id']
+        host_id = ctx.playbook['hosts'][0]['id']
+        result_id = ctx.playbook['results'][0]['id']
         paths = [
             os.path.join(self.tmpdir, 'index.html'),
             os.path.join(self.tmpdir, 'static'),
@@ -688,8 +695,8 @@ class TestCLIGenerate(TestAra):
     def test_generate_html_for_playbook(self):
         """ Roughly ensures the expected files are generated properly """
         # Record two separate playbooks
-        ctx = ansible_run()
-        ansible_run()
+        ctx = FakeRun()
+        ctx_two = FakeRun()
 
         shell = ara.shell.AraCli()
         shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
@@ -699,13 +706,13 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([
             self.tmpdir,
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         cmd.take_action(args)
 
-        file_id = ctx['task'].file_id
-        host_id = ctx['host'].id
-        result_id = ctx['result'].id
+        file_id = ctx.playbook['files'][0]['id']
+        host_id = ctx.playbook['hosts'][0]['id']
+        result_id = ctx.playbook['results'][0]['id']
         paths = [
             os.path.join(self.tmpdir, 'index.html'),
             os.path.join(self.tmpdir, 'static'),
@@ -721,21 +728,15 @@ class TestCLIGenerate(TestAra):
         for path in paths:
             self.assertTrue(os.path.exists(path))
 
-        # Test that we effectively have two playbooks
-        playbooks = m.Playbook.query.all()
-        self.assertTrue(len(playbooks) == 2)
-
         # Retrieve the other playbook and validate that we haven't generated
         # files for it
-        playbook_two = (m.Playbook.query
-                        .filter(m.Playbook.id != ctx['playbook'].id).one())
         path = os.path.join(self.tmpdir,
-                            'playbook/{0}'.format(playbook_two.id))
+                            'playbook/{0}'.format(ctx_two.playbook['id']))
         self.assertFalse(os.path.exists(path))
 
     def test_generate_junit(self):
         """ Roughly ensures the expected xml is generated properly """
-        ctx = ansible_run()
+        ctx = FakeRun()
         cmd = ara.cli.generate.GenerateJunit(None, None)
         parser = cmd.get_parser('test')
 
@@ -745,20 +746,20 @@ class TestCLIGenerate(TestAra):
 
         self.assertTrue(os.path.exists(junit_file))
 
-        tasks = m.Task.query.all()
         tree = etree.parse(junit_file)
         self.assertEqual(tree.getroot().tag, "testsuites")
         self.assertEqual(tree.getroot()[0].tag, "testsuite")
         self.assertEqual(tree.getroot()[0][0].tag, "testcase")
-        self.assertEqual(int(tree.getroot().get('tests')), len(tasks))
+        self.assertEqual(int(tree.getroot().get('tests')),
+                         len(ctx.playbook['results']))
         self.assertEqual(int(tree.getroot().get('failures')),
-                         ctx['host'].failed)
+                         2)
 
     def test_generate_junit_for_playbook(self):
         """ Roughly ensures the expected xml is generated properly """
         # Record two separate playbooks
-        ctx = ansible_run()
-        ansible_run()
+        ctx = FakeRun()
+        FakeRun()
         cmd = ara.cli.generate.GenerateJunit(None, None)
         parser = cmd.get_parser('test')
 
@@ -766,17 +767,9 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([
             junit_file,
             '--playbook',
-            six.text_type(ctx['playbook'].id)
+            six.text_type(ctx.playbook['id'])
         ])
         cmd.take_action(args)
-
-        # Test that we effectively have two playbooks
-        playbooks = m.Playbook.query.all()
-        all_tasks = m.Task.query.all()
-        tasks = (m.Task.query
-                 .filter(m.Task.playbook_id == ctx['playbook'].id).all())
-        self.assertEqual(len(playbooks), 2)
-        self.assertNotEqual(len(all_tasks), len(tasks))
 
         self.assertTrue(os.path.exists(junit_file))
 
@@ -784,11 +777,12 @@ class TestCLIGenerate(TestAra):
         self.assertEqual(tree.getroot().tag, "testsuites")
         self.assertEqual(tree.getroot()[0].tag, "testsuite")
         self.assertEqual(tree.getroot()[0][0].tag, "testcase")
-        self.assertEqual(int(tree.getroot().get('tests')), len(tasks))
+        self.assertEqual(int(tree.getroot().get('tests')),
+                         len(ctx.playbook['results']))
 
     def test_generate_subunit(self):
         """ Roughly ensures the expected subunit is generated properly """
-        ansible_run()
+        ctx = FakeRun()
         cmd = ara.cli.generate.GenerateSubunit(None, None)
         parser = cmd.get_parser('test')
 
@@ -836,14 +830,13 @@ class TestCLIGenerate(TestAra):
                 self.assertTrue(key in keys)
 
             # Test that we have matching data for playbook records
-            playbook = m.Playbook.query.get(result['playbook_id'])
-            self.assertEqual(playbook.id, result['playbook_id'])
-            self.assertEqual(playbook.path, result['playbook_path'])
+            self.assertEqual(ctx.playbook['id'], result['playbook_id'])
+            self.assertEqual(ctx.playbook['path'], result['playbook_path'])
 
-            # Test that we have matchin gdata for task records
-            task = m.Task.query.get(result['task_id'])
-            self.assertEqual(task.id, result['task_id'])
-            self.assertEqual(task.action, result['task_action'])
-            self.assertEqual(task.file.path, result['task_path'])
-            self.assertEqual(task.lineno, result['task_action_lineno'])
-            self.assertEqual(task.name, result['task_name'])
+            # Test that we have matching data for task records
+            task = TaskApi().get(id=result['task_id'])
+            task = jsonutils.loads(task.data)
+            self.assertEqual(task['id'], result['task_id'])
+            self.assertEqual(task['action'], result['task_action'])
+            self.assertEqual(task['lineno'], result['task_action_lineno'])
+            self.assertEqual(task['name'], result['task_name'])

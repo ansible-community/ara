@@ -15,12 +15,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import ara.db.models as m
+from ara.api.plays import PlayApi
+from ara.api.playbooks import PlaybookApi
+from ara.api.tasks import TaskApi
 import ara.plugins.callbacks.log_ara as log_ara
 import ara.plugins.actions.ara_record as ara_record
-import random
 
-from ansible import __version__ as ansible_version
 from mock import Mock
 from mock import MagicMock
 from oslo_serialization import jsonutils
@@ -63,7 +63,7 @@ class AnsiblePlaybook(object):
     def __init__(self, path='/playbook.yml', content=FAKE_PLAYBOOK_CONTENT):
         self._file_name = path
         self._loader = MagicMock()
-        self._loader._FILE_CACHE.return_value = {
+        self._loader._FILE_CACHE = {
             path: content
         }
         self._options = MagicMock()
@@ -221,12 +221,13 @@ class FakeRun(object):
             else:
                 record_data['playbook'] = self.playbook['id']
 
-            self.t_changed = AnsibleTask(
+            record = AnsibleTask(
                 name='Record something',
                 action='ara_record',
                 path='%s:%s' % (self.playbook['path'], 8),
                 args=record_data
             )
+            self.t_changed = self.cb.v2_playbook_on_task_start(record, False)
 
             result = dict(
                 changed=True,
@@ -237,7 +238,7 @@ class FakeRun(object):
                 self._task_result('ok', host=self.host_two, result=result)
             ]
             # Record the actual data with the module
-            action = ara_record.ActionModule(self.t_changed, self.connection,
+            action = ara_record.ActionModule(record, self.connection,
                                              self.play_context, loader=None,
                                              templar=None,
                                              shared_loader_obj=None)
@@ -303,240 +304,30 @@ class FakeRun(object):
             ])
             self.cb.v2_playbook_on_stats(self.stats)
 
+        # Playbooks, plays and tasks can "lag" behind because they are first
+        # created and then "children" are created. Refresh their reference at
+        # the end so we have a complete set with the children.
+        updated = PlaybookApi().get(id=self.playbook['id'])
+        self.playbook = jsonutils.loads(updated.data)
+
+        updated = PlayApi().get(id=self.play['id'])
+        self.play = jsonutils.loads(updated.data)
+
+        for task in ['t_ok', 't_changed', 't_failed', 't_skipped',
+                     't_unreach']:
+            if getattr(self, task, None):
+                updated = TaskApi().get(id=getattr(self, task)['id'])
+                setattr(self, task, jsonutils.loads(updated.data))
+
     def _task_result(self, status, host, result):
         """ Creates a result and runs the appropriate callback hook """
         res = AnsibleResult(host=host, result=result)
         hook = getattr(self.cb, 'v2_runner_on_%s' % status)
         hook(res)
 
-        # Increment stats
+        # Increment stats based on the result
         real_host = getattr(self, host.name)
         setattr(real_host, status, getattr(real_host, status) + 1)
+        if 'changed' in result and result['changed']:
+            setattr(real_host, 'changed', getattr(real_host, 'changed') + 1)
         return res
-
-
-# TODO: Get rid of those model fakes, use the "real" Ansible ones.
-class Record(object):
-    def __init__(self, playbook=None, key='test key', value='test value'):
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-        self.key = key
-        self.value = value
-
-    @property
-    def model(self):
-        return m.Record(playbook=self.playbook,
-                        key=self.key,
-                        value=self.value)
-
-
-class File(object):
-    def __init__(self, is_playbook=False, path='main.yml', playbook=None,
-                 content=None):
-        self.is_playbook = is_playbook
-        self.path = path
-        if playbook is None:
-            playbook = Playbook(path=self.path).model
-        self.playbook = playbook
-        if content is None:
-            content = FileContent().model
-        self.content = content
-
-    @property
-    def model(self):
-        return m.File(is_playbook=self.is_playbook,
-                      path=self.path,
-                      playbook=self.playbook,
-                      content=self.content)
-
-
-class FileContent(object):
-    def __init__(self, content=FAKE_PLAYBOOK_CONTENT):
-        self.content = content
-
-    @property
-    def model(self):
-        sha1 = m.content_sha1(self.content)
-
-        try:
-            content = m.FileContent.query.filter_by(sha1=sha1).one()
-            return content
-        except m.NoResultFound:
-            return m.FileContent(content=self.content)
-
-
-class Host(object):
-    def __init__(self, name=None, playbook=None, facts=None, changed=0,
-                 failed=0, ok=0, skipped=0, unreachable=0):
-        if name is None:
-            name = 'host-%04d' % random.randint(0, 9999)
-        self.name = name
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-        self.facts = facts
-
-        self.changed = changed
-        self.failed = failed
-        self.ok = ok
-        self.skipped = skipped
-        self.unreachable = unreachable
-
-    def get_name(self):
-        """ Callback specific method """
-        return self.name
-
-    @property
-    def model(self):
-        return m.Host(name=self.name,
-                      playbook=self.playbook,
-                      facts=self.facts,
-                      changed=self.changed,
-                      failed=self.failed,
-                      ok=self.ok,
-                      skipped=self.skipped,
-                      unreachable=self.unreachable)
-
-
-class Playbook(object):
-    def __init__(self, completed=True, path='playbook.yml',
-                 parameters={'fake': 'yes'}):
-
-        self.ansible_version = ansible_version
-        self.completed = completed
-        self.parameters = parameters
-        self.path = path
-
-        # Callback specific parameters
-        self._loader = MagicMock()
-        self._loader._FILE_CACHE.return_value = {
-            self.path: FAKE_PLAYBOOK_CONTENT
-        }
-        self._file_name = path
-
-    @property
-    def model(self):
-        return m.Playbook(ansible_version=ansible_version,
-                          completed=self.completed,
-                          parameters=self.parameters,
-                          path=self.path)
-
-
-class Play(object):
-    def __init__(self, name='ARA unit tests', playbook=None):
-        self.name = name
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-
-        # Callback specific parameters
-        hosts = [host.name for host in self.playbook.hosts.all()]
-        self._variable_manager = MagicMock()
-        self._variable_manager._inventory._restriction.return_value = hosts
-        self._loader = MagicMock()
-        self._loader._FILE_CACHE.return_value = {
-            self.playbook.path: FAKE_PLAYBOOK_CONTENT
-        }
-
-    @property
-    def model(self):
-        return m.Play(name=self.name,
-                      playbook=self.playbook)
-
-
-class Task(object):
-    def __init__(self, action='fake_action', lineno=1, name='Fake action',
-                 playbook=None, play=None, file=None, file_id=None, path=None,
-                 tags=None):
-        self.action = action
-        if tags is None:
-            tags = []
-        self.tags = tags
-        self.lineno = lineno
-        self.name = name
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-        if play is None:
-            play = Play(playbook=self.playbook).model
-        self.play = play
-        self.file = file
-        self.file_id = file_id
-
-        # Callback specific parameter
-        if path is None:
-            path = playbook.path
-        self.path = '%s:%d' % (path, self.lineno)
-        self._attributes = {'tags': self.tags}
-
-    def get_path(self):
-        """ Callback specific method """
-        return self.path
-
-    def get_name(self):
-        """ Callback specific method """
-        return self.name
-
-    @property
-    def model(self):
-        return m.Task(action=self.action,
-                      tags=jsonutils.dumps(self.tags),
-                      lineno=self.lineno,
-                      name=self.name,
-                      playbook=self.playbook,
-                      play=self.play,
-                      file=self.file,
-                      file_id=self.file_id)
-
-
-class Result(object):
-    def __init__(self, playbook=None, play=None, task=None, host=None,
-                 status='ok', ignore_errors=False, changed=True, failed=False,
-                 skipped=False, unreachable=False,
-                 result='Task result <here>'):
-        assert status in ['ok', 'failed', 'skipped', 'unreachable']
-
-        if playbook is None:
-            playbook = Playbook().model
-        self.playbook = playbook
-        if play is None:
-            play = Play().model
-        self.play = play
-        if task is None:
-            task = Task().model
-        self.task = task
-        if host is None:
-            host = Host(playbook=self.task.playbook)
-        self.host = host
-        self.status = status
-        self.ignore_errors = ignore_errors
-        self.changed = changed
-        self.failed = failed
-        self.skipped = skipped,
-        self.unreachable = unreachable
-        self.result = result
-
-        # Callback specific parameters
-        self._host = MagicMock()
-        self._host.get_name.return_value = host
-        self._result = {
-            'changed': self.changed,
-            'failed': self.failed,
-            'skipped': self.skipped,
-            'unreachable': self.unreachable
-        }
-
-    @property
-    def model(self):
-        return m.Result(playbook=self.playbook,
-                        play=self.play,
-                        task=self.task,
-                        host=self.host,
-                        status=self.status,
-                        ignore_errors=self.ignore_errors,
-                        changed=self.changed,
-                        failed=self.failed,
-                        skipped=self.skipped,
-                        unreachable=self.unreachable,
-                        result=self.result)

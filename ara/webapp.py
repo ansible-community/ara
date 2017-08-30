@@ -172,10 +172,5 @@ def configure_static_route(app):
 
 def configure_cache(app):
     """ Sets up an attribute to cache data in the app context """
-    # Note (dmsimard):
-    # Flask overrides getattr, simply doing a getattr will throw an exception.
-    try:
-        cache = app._cache
-    except AttributeError:
-        cache = {}
-    app._cache = cache
+    if not getattr(app, '_cache', None):
+        app._cache = {}

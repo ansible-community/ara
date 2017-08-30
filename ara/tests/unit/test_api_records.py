@@ -15,11 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.records import RecordApi
 from ara.api.v1.records import RECORD_FIELDS
-import ara.db.models as models
 import pytest
 
 from oslo_serialization import jsonutils
@@ -52,9 +51,9 @@ class TestApiRecords(TestAra):
 
     def test_post_http_with_correct_data(self):
         # Create fake playbook data and create a record in it
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "key": "foo",
             "value": "bar",
             "type": "text"
@@ -80,9 +79,9 @@ class TestApiRecords(TestAra):
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a record in it
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "key": "foo",
             "value": "bar",
             "type": "text"
@@ -147,7 +146,6 @@ class TestApiRecords(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_post_http_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "key": "foo",
@@ -160,7 +158,6 @@ class TestApiRecords(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "key": "foo",
@@ -188,16 +185,24 @@ class TestApiRecords(TestAra):
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run(ara_record=True)
-        self.assertEqual(ctx['record'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['records'][0]['id'], 1)
+
+        # Get existing record
+        pbrecord = self.client.get('/api/v1/records/',
+                                   content_type='application/json',
+                                   query_string=dict(
+                                       id=ctx.playbook['records'][0]['id'])
+                                   )
+        pbrecord = jsonutils.loads(pbrecord.data)
 
         # We'll update the value field, assert we are actually
         # making a change
         new_value = "Updated value"
-        self.assertNotEqual(ctx['record'].value, new_value)
+        self.assertNotEqual(pbrecord['value'], new_value)
 
         data = {
-            "id": ctx['record'].id,
+            "id": pbrecord['id'],
             "value": new_value
         }
         res = self.client.patch('/api/v1/records/',
@@ -212,22 +217,30 @@ class TestApiRecords(TestAra):
         # Confirm by re-fetching record
         updated = self.client.get('/api/v1/records/',
                                   content_type='application/json',
-                                  query_string=dict(id=ctx['record'].id))
+                                  query_string=dict(id=pbrecord['id']))
         updated_record = jsonutils.loads(updated.data)
         self.assertEqual(updated_record['value'], new_value)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run(ara_record=True)
-        self.assertEqual(ctx['record'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['records'][0]['id'], 1)
+
+        # Get existing record
+        pbrecord = self.client.get('/api/v1/records/',
+                                   content_type='application/json',
+                                   query_string=dict(
+                                       id=ctx.playbook['records'][0]['id'])
+                                   )
+        pbrecord = jsonutils.loads(pbrecord.data)
 
         # We'll update the value field, assert we are actually
         # making a change
         new_value = "Updated value"
-        self.assertNotEqual(ctx['record'].value, new_value)
+        self.assertNotEqual(pbrecord['value'], new_value)
 
         data = {
-            "id": ctx['record'].id,
+            "id": pbrecord['id'],
             "value": new_value
         }
         res = RecordApi().patch(data)
@@ -238,12 +251,11 @@ class TestApiRecords(TestAra):
         self.assertEqual(data['value'], new_value)
 
         # Confirm by re-fetching record
-        updated = RecordApi().get(id=ctx['record'].id)
+        updated = RecordApi().get(id=pbrecord['id'])
         updated_record = jsonutils.loads(updated.data)
         self.assertEqual(updated_record['value'], new_value)
 
     def test_patch_http_with_missing_arg(self):
-        ansible_run(ara_record=True)
         data = {
             "value": "Updated value"
         }
@@ -253,7 +265,6 @@ class TestApiRecords(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
-        ansible_run(ara_record=True)
         data = {
             "value": "Updated value"
         }
@@ -339,26 +350,17 @@ class TestApiRecords(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
-        ctx = ansible_run(ara_record=True)
+        ctx = FakeRun()
         res = self.client.get('/api/v1/records/',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)[0]
 
-        self.assertEqual(ctx['record'].id,
-                         data['id'])
-        self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['record'].key,
-                         data['key'])
-        self.assertEqual(ctx['record'].value,
-                         data['value'])
-        self.assertEqual(ctx['record'].type,
-                         data['type'])
+        self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
 
     def test_get_internal_without_parameters(self):
-        ansible_run(ara_record=True)
+        FakeRun()
         http = self.client.get('/api/v1/records/',
                                content_type='application/json')
         internal = RecordApi().get()
@@ -366,33 +368,24 @@ class TestApiRecords(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_parameter(self):
-        ctx = ansible_run(ara_record=True)
-        ansible_run(ara_record=True)
-        records = models.Record.query.all()
-        self.assertEqual(len(records), 2)
+        FakeRun()
+        # Run twice to get a second record
+        ctx = FakeRun()
+        records = self.client.get('/api/v1/records/',
+                                  content_type='application/json')
+        self.assertEqual(len(jsonutils.loads(records.data)), 2)
 
         res = self.client.get('/api/v1/records/',
                               content_type='application/json',
-                              query_string=dict(id=1))
+                              query_string=dict(id=2))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['record'].id,
-                         data['id'])
-        self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['record'].key,
-                         data['key'])
-        self.assertEqual(ctx['record'].value,
-                         data['value'])
-        self.assertEqual(ctx['record'].type,
-                         data['type'])
+        self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
 
     def test_get_internal_with_id_parameter(self):
-        ansible_run(ara_record=True)
-        ansible_run(ara_record=True)
-        records = models.Record.query.all()
-        self.assertEqual(len(records), 2)
+        FakeRun()
+        FakeRun()
 
         http = self.client.get('/api/v1/records/',
                                content_type='application/json',
@@ -402,35 +395,22 @@ class TestApiRecords(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_url(self):
-        ctx = ansible_run(ara_record=True)
-        ansible_run(ara_record=True)
-        records = models.Record.query.all()
-        self.assertEqual(len(records), 2)
+        FakeRun()
+        ctx = FakeRun()
 
-        res = self.client.get('/api/v1/records/1',
+        res = self.client.get('/api/v1/records/2',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['record'].id,
-                         data['id'])
-        self.assertEqual(ctx['record'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['record'].key,
-                         data['key'])
-        self.assertEqual(ctx['record'].value,
-                         data['value'])
-        self.assertEqual(ctx['record'].type,
-                         data['type'])
+        self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
 
     def test_get_internal_with_id(self):
-        ansible_run(ara_record=True)
-        ansible_run(ara_record=True)
-        records = models.Record.query.all()
-        self.assertEqual(len(records), 2)
+        FakeRun()
+        FakeRun()
 
-        http = self.client.get('/api/v1/records/1',
+        http = self.client.get('/api/v1/records/2',
                                content_type='application/json')
-        internal = RecordApi().get(id=1)
+        internal = RecordApi().get(id=2)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

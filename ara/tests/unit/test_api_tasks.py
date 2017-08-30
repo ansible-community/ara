@@ -15,11 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.tasks import TaskApi
 from ara.api.v1.tasks import TASK_FIELDS
-import ara.db.models as models
 import pytest
 
 from oslo_serialization import jsonutils
@@ -52,11 +51,11 @@ class TestApiTasks(TestAra):
 
     def test_post_http_with_correct_data(self):
         # Create fake playbook data and create a task in a play
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "play_id": ctx['play'].id,
-            "file_id": ctx['playbook'].file.id,
+            "playbook_id": ctx.playbook['id'],
+            "play_id": ctx.play['id'],
+            "file_id": ctx.playbook['files'][0]['id'],
             "name": "Task from unit tests",
             "action": "debug",
             "lineno": 1,
@@ -84,11 +83,11 @@ class TestApiTasks(TestAra):
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a task in a play
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "play_id": ctx['play'].id,
-            "file_id": ctx['playbook'].file.id,
+            "playbook_id": ctx.playbook['id'],
+            "play_id": ctx.play['id'],
+            "file_id": ctx.playbook['files'][0]['id'],
             "name": "Task from unit tests",
             "action": "debug",
             "lineno": 1,
@@ -167,7 +166,6 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_post_http_with_nonexistant_play(self):
-        ansible_run()
         data = {
             "play_id": 9001,
             "file_id": 1,
@@ -183,7 +181,6 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_play(self):
-        ansible_run()
         data = {
             "play_id": 9001,
             "file_id": 1,
@@ -197,7 +194,6 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_http_with_nonexistant_file(self):
-        ansible_run()
         data = {
             "play_id": 1,
             "file_id": 9001,
@@ -213,7 +209,6 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_file(self):
-        ansible_run()
         data = {
             "play_id": 1,
             "file_id": 9001,
@@ -244,16 +239,24 @@ class TestApiTasks(TestAra):
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['task'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.t_ok['id'], 1)
+
+        # Get existing task
+        pbtask = self.client.get('/api/v1/tasks/',
+                                 content_type='application/json',
+                                 query_string=dict(
+                                     id=ctx.t_ok['id'])
+                                 )
+        pbtask = jsonutils.loads(pbtask.data)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated task name"
-        self.assertNotEqual(ctx['task'].name, new_name)
+        self.assertNotEqual(pbtask['name'], new_name)
 
         data = {
-            "id": ctx['task'].id,
+            "id": pbtask['id'],
             "name": new_name
         }
         res = self.client.patch('/api/v1/tasks/',
@@ -268,22 +271,26 @@ class TestApiTasks(TestAra):
         # Confirm by re-fetching task
         updated = self.client.get('/api/v1/tasks/',
                                   content_type='application/json',
-                                  query_string=dict(id=ctx['task'].id))
+                                  query_string=dict(id=pbtask['id']))
         updated_task = jsonutils.loads(updated.data)
         self.assertEqual(updated_task['name'], new_name)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['task'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.t_ok['id'], 1)
+
+        # Get existing task
+        pbtask = TaskApi().get(id=ctx.t_ok['id'])
+        pbtask = jsonutils.loads(pbtask.data)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated task name"
-        self.assertNotEqual(ctx['task'].name, new_name)
+        self.assertNotEqual(pbtask['name'], new_name)
 
         data = {
-            "id": ctx['task'].id,
+            "id": pbtask['id'],
             "name": new_name
         }
         res = TaskApi().patch(data)
@@ -294,12 +301,11 @@ class TestApiTasks(TestAra):
         self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
-        updated = TaskApi().get(id=ctx['task'].id)
+        updated = TaskApi().get(id=pbtask['id'])
         updated_task = jsonutils.loads(updated.data)
         self.assertEqual(updated_task['name'], new_name)
 
     def test_patch_http_with_missing_arg(self):
-        ansible_run()
         data = {
             "name": "Updated task name"
         }
@@ -309,7 +315,6 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
-        ansible_run()
         data = {
             "name": "Updated task name"
         }
@@ -395,40 +400,21 @@ class TestApiTasks(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
         res = self.client.get('/api/v1/tasks/',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
-        data = jsonutils.loads(res.data)[2]
+        data = jsonutils.loads(res.data)[4]
 
-        self.assertEqual(ctx['task'].id,
-                         data['id'])
-        self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['task'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['task'].file_id,
-                         data['file']['id'])
-        self.assertEqual(ctx['task'].name,
-                         data['name'])
-        self.assertEqual(ctx['task'].action,
-                         data['action'])
-        self.assertEqual(ctx['task'].lineno,
-                         data['lineno'])
-        self.assertEqual(ctx['task'].tags,
-                         data['tags'])
-        self.assertEqual(ctx['task'].handler,
-                         data['handler'])
-        self.assertEqual(ctx['task'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['task'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['task'].results.all()),
-                         len(data['results']))
+        self.assertEqual(len(data), len(ctx.t_ok))
+        self.assertEqual(data, ctx.t_ok)
+        for key in TASK_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.t_ok)
 
     def test_get_internal_without_parameters(self):
-        ansible_run()
+        FakeRun()
         http = self.client.get('/api/v1/tasks/',
                                content_type='application/json')
         internal = TaskApi().get()
@@ -436,7 +422,7 @@ class TestApiTasks(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_parameter(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         res = self.client.get('/api/v1/tasks/',
                               content_type='application/json',
@@ -444,87 +430,39 @@ class TestApiTasks(TestAra):
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['task'].id,
-                         data['id'])
-        self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['task'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['task'].file_id,
-                         data['file']['id'])
-        self.assertEqual(ctx['task'].name,
-                         data['name'])
-        self.assertEqual(ctx['task'].action,
-                         data['action'])
-        self.assertEqual(ctx['task'].lineno,
-                         data['lineno'])
-        self.assertEqual(ctx['task'].tags,
-                         data['tags'])
-        self.assertEqual(ctx['task'].handler,
-                         data['handler'])
-        self.assertEqual(ctx['task'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['task'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['task'].results.all()),
-                         len(data['results']))
+        self.assertEqual(len(data), len(ctx.t_ok))
+        self.assertEqual(data, ctx.t_ok)
+        for key in TASK_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.t_ok)
 
     def test_get_internal_with_id_parameter(self):
-        ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
+        FakeRun()
         http = self.client.get('/api/v1/tasks/',
                                content_type='application/json',
-                               query_string=dict(id=1))
-        internal = TaskApi().get(id=1)
+                               query_string=dict(id=2))
+        internal = TaskApi().get(id=2)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_url(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
 
         res = self.client.get('/api/v1/tasks/1',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['task'].id,
-                         data['id'])
-        self.assertEqual(ctx['task'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['task'].play_id,
-                         data['play']['id'])
-        self.assertEqual(ctx['task'].file_id,
-                         data['file']['id'])
-        self.assertEqual(ctx['task'].name,
-                         data['name'])
-        self.assertEqual(ctx['task'].action,
-                         data['action'])
-        self.assertEqual(ctx['task'].lineno,
-                         data['lineno'])
-        self.assertEqual(ctx['task'].tags,
-                         data['tags'])
-        self.assertEqual(ctx['task'].handler,
-                         data['handler'])
-        self.assertEqual(ctx['task'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['task'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['task'].results.all()),
-                         len(data['results']))
+        self.assertEqual(len(data), len(ctx.t_ok))
+        self.assertEqual(data, ctx.t_ok)
+        for key in TASK_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.t_ok)
 
     def test_get_internal_with_id_url(self):
-        ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
-
-        http = self.client.get('/api/v1/tasks/1',
+        FakeRun()
+        http = self.client.get('/api/v1/tasks/2',
                                content_type='application/json')
-        internal = TaskApi().get(id=1)
+        internal = TaskApi().get(id=2)
         self.assertEqual(http.status_code, internal.status_code)
         self.assertEqual(http.data, internal.data)

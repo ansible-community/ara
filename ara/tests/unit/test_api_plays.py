@@ -15,11 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.plays import PlayApi
 from ara.api.v1.plays import PLAY_FIELDS
-import ara.db.models as models
 import pytest
 
 from oslo_serialization import jsonutils
@@ -52,9 +51,9 @@ class TestApiPlays(TestAra):
 
     def test_post_http_with_correct_data(self):
         # Create fake playbook data and create a play in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "name": "Play from unit tests",
             "started": "1970-08-14T00:52:49.570031"
         }
@@ -79,9 +78,9 @@ class TestApiPlays(TestAra):
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a play in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "name": "Play from unit tests",
             "started": "1970-08-14T00:52:49.570031"
         }
@@ -141,7 +140,6 @@ class TestApiPlays(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_post_http_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "name": "Play from unit tests",
@@ -153,7 +151,6 @@ class TestApiPlays(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "name": "Play from unit tests",
@@ -180,16 +177,16 @@ class TestApiPlays(TestAra):
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['play'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.play['id'], 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated play name"
-        self.assertNotEqual(ctx['play'].name, new_name)
+        self.assertNotEqual(ctx.play['name'], new_name)
 
         data = {
-            "id": ctx['play'].id,
+            "id": ctx.play['id'],
             "name": new_name
         }
         res = self.client.patch('/api/v1/plays/',
@@ -204,22 +201,22 @@ class TestApiPlays(TestAra):
         # Confirm by re-fetching play
         updated = self.client.get('/api/v1/plays/',
                                   content_type='application/json',
-                                  query_string=dict(id=ctx['play'].id))
+                                  query_string=dict(id=ctx.play['id']))
         updated_play = jsonutils.loads(updated.data)
         self.assertEqual(updated_play['name'], new_name)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['play'].id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.play['id'], 1)
 
         # We'll update the name field, assert we are actually
         # making a change
         new_name = "Updated play name"
-        self.assertNotEqual(ctx['play'].name, new_name)
+        self.assertNotEqual(ctx.play['name'], new_name)
 
         data = {
-            "id": ctx['play'].id,
+            "id": ctx.play['id'],
             "name": new_name
         }
         res = PlayApi().patch(data)
@@ -230,12 +227,11 @@ class TestApiPlays(TestAra):
         self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
-        updated = PlayApi().get(id=ctx['play'].id)
+        updated = PlayApi().get(id=ctx.play['id'])
         updated_play = jsonutils.loads(updated.data)
         self.assertEqual(updated_play['name'], new_name)
 
     def test_patch_http_with_missing_arg(self):
-        ansible_run()
         data = {
             "name": "Updated play name"
         }
@@ -245,7 +241,6 @@ class TestApiPlays(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
-        ansible_run()
         data = {
             "name": "Updated play name"
         }
@@ -331,30 +326,21 @@ class TestApiPlays(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
         res = self.client.get('/api/v1/plays/',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)[0]
 
-        self.assertEqual(ctx['play'].id,
-                         data['id'])
-        self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['play'].name,
-                         data['name'])
-        self.assertEqual(ctx['play'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['play'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['play'].results.all()),
-                         len(data['results']))
-        self.assertEqual(len(ctx['play'].tasks.all()),
-                         len(data['tasks']))
+        self.assertEqual(len(data), len(ctx.play))
+        self.assertEqual(data, ctx.play)
+        for key in PLAY_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.play)
 
     def test_get_internal_without_parameters(self):
-        ansible_run()
+        FakeRun()
         http = self.client.get('/api/v1/plays/',
                                content_type='application/json')
         internal = PlayApi().get()
@@ -362,39 +348,29 @@ class TestApiPlays(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_parameter(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
+        FakeRun()
+        # Run twice to get a second play
+        ctx = FakeRun()
+        plays = self.client.get('/api/v1/plays/',
+                                content_type='application/json')
+        self.assertEqual(len(jsonutils.loads(plays.data)), 2)
 
         res = self.client.get('/api/v1/plays/',
                               content_type='application/json',
-                              query_string=dict(id=1))
+                              query_string=dict(id=2))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['play'].id,
-                         data['id'])
-        self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['play'].name,
-                         data['name'])
-        self.assertEqual(ctx['play'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['play'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['play'].results.all()),
-                         len(data['results']))
-        self.assertEqual(len(ctx['play'].tasks.all()),
-                         len(data['tasks']))
+        self.assertEqual(len(data), len(ctx.play))
+        self.assertEqual(data, ctx.play)
+        for key in PLAY_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.play)
 
     def test_get_internal_with_id_parameter(self):
-        ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
+        FakeRun()
+        # Run twice to get a second play
+        FakeRun()
 
         http = self.client.get('/api/v1/plays/',
                                content_type='application/json',
@@ -404,38 +380,25 @@ class TestApiPlays(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_url(self):
-        ctx = ansible_run()
-        # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
+        ctx = FakeRun()
+        # Run twice to get a second play
+        FakeRun()
 
         res = self.client.get('/api/v1/plays/1',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['play'].id,
-                         data['id'])
-        self.assertEqual(ctx['play'].playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['play'].name,
-                         data['name'])
-        self.assertEqual(ctx['play'].started.isoformat(),
-                         data['started'])
-        self.assertEqual(ctx['play'].ended.isoformat(),
-                         data['ended'])
-        self.assertEqual(len(ctx['play'].results.all()),
-                         len(data['results']))
-        self.assertEqual(len(ctx['play'].tasks.all()),
-                         len(data['tasks']))
+        self.assertEqual(len(data), len(ctx.play))
+        self.assertEqual(data, ctx.play)
+        for key in PLAY_FIELDS.keys():
+            self.assertIn(key, data)
+            self.assertIn(key, ctx.play)
 
     def test_get_internal_with_id_url(self):
-        ansible_run()
+        FakeRun()
         # Run twice to get a second playbook
-        ansible_run()
-        playbooks = models.Playbook.query.all()
-        self.assertEqual(len(playbooks), 2)
+        FakeRun()
 
         http = self.client.get('/api/v1/plays/1',
                                content_type='application/json')

@@ -21,7 +21,7 @@ import ara.db.models as m
 import ara.utils as u
 
 from ara.tests.unit.common import TestAra
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 
 
 class TestUtils(TestAra):
@@ -34,43 +34,33 @@ class TestUtils(TestAra):
         super(TestUtils, self).tearDown()
 
     def test_get_summary_stats_complete(self):
-        ctx = ansible_run()
-        playbook = ctx['playbook'].id
-        res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
+        # TODO: Switch this to API once views are using API
+        ctx = FakeRun()
+        playbook = m.Playbook.query.get(ctx.playbook['id'])
+        res = u.get_summary_stats([playbook], 'playbook_id')
 
-        self.assertEqual(1, res[playbook]['ok'])
-        self.assertEqual(1, res[playbook]['changed'])
-        self.assertEqual(0, res[playbook]['failed'])
-        self.assertEqual(1, res[playbook]['skipped'])
-        self.assertEqual(0, res[playbook]['unreachable'])
-        self.assertEqual('success', res[playbook]['status'])
+        self.assertEqual(4, res[playbook.id]['ok'])
+        self.assertEqual(2, res[playbook.id]['changed'])
+        self.assertEqual(1, res[playbook.id]['failed'])
+        self.assertEqual(2, res[playbook.id]['skipped'])
+        self.assertEqual(1, res[playbook.id]['unreachable'])
+        self.assertEqual('failed', res[playbook.id]['status'])
 
     def test_get_summary_stats_incomplete(self):
-        ctx = ansible_run(completed=False)
-        playbook = ctx['playbook'].id
-        res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
+        # TODO: Switch this to API once views are using API
+        ctx = FakeRun(completed=False)
+        playbook = m.Playbook.query.get(ctx.playbook['id'])
+        res = u.get_summary_stats([playbook], 'playbook_id')
 
-        self.assertEqual(0, res[playbook]['ok'])
-        self.assertEqual(0, res[playbook]['changed'])
-        self.assertEqual(0, res[playbook]['failed'])
-        self.assertEqual(0, res[playbook]['skipped'])
-        self.assertEqual(0, res[playbook]['unreachable'])
-        self.assertEqual('incomplete', res[playbook]['status'])
-
-    def test_get_summary_stats_failed(self):
-        ctx = ansible_run(failed=True)
-        playbook = ctx['playbook'].id
-        res = u.get_summary_stats([ctx['playbook']], 'playbook_id')
-
-        self.assertEqual(1, res[playbook]['ok'])
-        self.assertEqual(1, res[playbook]['changed'])
-        self.assertEqual(1, res[playbook]['failed'])
-        self.assertEqual(1, res[playbook]['skipped'])
-        self.assertEqual(0, res[playbook]['unreachable'])
-        self.assertEqual('failed', res[playbook]['status'])
+        self.assertEqual(0, res[playbook.id]['ok'])
+        self.assertEqual(0, res[playbook.id]['changed'])
+        self.assertEqual(0, res[playbook.id]['failed'])
+        self.assertEqual(0, res[playbook.id]['skipped'])
+        self.assertEqual(0, res[playbook.id]['unreachable'])
+        self.assertEqual('incomplete', res[playbook.id]['status'])
 
     def test_fast_count(self):
-        ansible_run()
+        FakeRun()
         query = m.Task.query
 
         normal_count = query.count()
@@ -79,8 +69,8 @@ class TestUtils(TestAra):
         self.assertEqual(normal_count, fast_count)
 
     def test_playbook_treeview(self):
-        ctx = ansible_run()
-        treeview = jsonutils.loads(u.playbook_treeview(ctx['playbook'].id))
+        ctx = FakeRun()
+        treeview = jsonutils.loads(u.playbook_treeview(ctx.playbook['id']))
 
         # ansible_run provides two fake files:
         # /some/path/main.yml and /playbook.yml
@@ -92,8 +82,8 @@ class TestUtils(TestAra):
                 child = child['nodes'][0]
                 self.assertEqual(child['text'], 'main.yml')
                 self.assertEqual(child['dataAttr']['load'],
-                                 ctx['task'].file.id)
+                                 ctx.playbook['files'][1]['id'])
             else:
                 self.assertEqual(f['text'], 'playbook.yml')
                 self.assertEqual(f['dataAttr']['load'],
-                                 ctx['playbook'].file.id)
+                                 ctx.playbook['files'][0]['id'])

@@ -20,7 +20,7 @@ import datetime
 import six
 
 from ara.tests.unit.common import TestAra
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 
 
 class TestFilters(TestAra):
@@ -200,7 +200,7 @@ class TestFilters(TestAra):
         self.assertEqual(res, expected)
 
     def test_jinja_fast_count(self):
-        ansible_run()
+        FakeRun()
         query = m.Task.query
 
         normal_count = query.count()

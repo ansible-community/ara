@@ -16,11 +16,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.files import FileApi
 from ara.api.v1.files import FILE_FIELDS
-import ara.db.models as models
 import pytest
 
 from oslo_serialization import jsonutils
@@ -55,9 +54,9 @@ class TestApiFiles(TestAra):
 
     def test_post_http_with_correct_data(self):
         # Create fake playbook data and create a file in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "path": "/root/playbook.yml",
             "content": "---\n- name: A task from ünit tests"
         }
@@ -82,9 +81,9 @@ class TestApiFiles(TestAra):
 
     def test_post_internal_with_correct_data(self):
         # Create fake playbook data and create a file in it
-        ctx = ansible_run()
+        ctx = FakeRun()
         data = {
-            "playbook_id": ctx['playbook'].id,
+            "playbook_id": ctx.playbook['id'],
             "path": "/root/playbook.yml",
             "content": "---\n- name: A task from ünit tests"
         }
@@ -154,7 +153,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_post_http_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "path": "/root/playbook.yml",
@@ -171,7 +169,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 404)
 
     def test_post_internal_with_nonexistant_playbook(self):
-        ansible_run()
         data = {
             "playbook_id": 9001,
             "path": "/root/playbook.yml",
@@ -188,11 +185,22 @@ class TestApiFiles(TestAra):
     def test_post_http_file_already_exists(self):
         # Posting the same file a second time should yield a 200 and not error
         # out, files are unique per sha1
-        ctx = ansible_run()
+        ctx = FakeRun()
+
+        # Retrieve the playbook file so we can post the same thing
+        pbfile = self.client.get('/api/v1/files/',
+                                 data=jsonutils.dumps(dict(
+                                     playbook_id=ctx.playbook['id'],
+                                     is_playbook=True
+                                 )),
+                                 content_type='application/json')
+        pbfile = jsonutils.loads(pbfile.data)[0]
+
+        # Post the same thing
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "path": ctx['playbook'].path,
-            "content": ctx['playbook'].file.content.content
+            "playbook_id": pbfile['playbook']['id'],
+            "path": pbfile['path'],
+            "content": pbfile['content']
         }
         res = self.client.post('/api/v1/files/',
                                data=jsonutils.dumps(data),
@@ -201,23 +209,30 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 200)
         file_ = jsonutils.loads(res.data)
 
-        self.assertEqual(ctx['playbook'].file.content.sha1, file_['sha1'])
+        self.assertEqual(pbfile['sha1'], file_['sha1'])
 
     def test_post_internal_file_already_exists(self):
         # Posting the same file a second time should yield a 200 and not error
         # out, files are unique per sha1
-        ctx = ansible_run()
+        ctx = FakeRun()
+
+        # Retrieve the playbook file so we can post the same thing
+        pbfile = FileApi().get(playbook_id=ctx.playbook['id'],
+                               is_playbook=True)
+        pbfile = jsonutils.loads(pbfile.data)[0]
+
+        # Post the same thing
         data = {
-            "playbook_id": ctx['playbook'].id,
-            "path": ctx['playbook'].path,
-            "content": ctx['playbook'].file.content.content
+            "playbook_id": pbfile['playbook']['id'],
+            "path": pbfile['path'],
+            "content": pbfile['content']
         }
         res = FileApi().post(data)
 
         self.assertEqual(res.status_code, 200)
         file_ = jsonutils.loads(res.data)
 
-        self.assertEqual(ctx['playbook'].file.content.sha1, file_['sha1'])
+        self.assertEqual(pbfile['sha1'], file_['sha1'])
 
     ###########
     # PATCH
@@ -237,16 +252,24 @@ class TestApiFiles(TestAra):
 
     def test_patch_http_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['playbook'].file.id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['files'][0]['id'], 1)
 
-        # We'll update the name field, assert we are actually
+        # Get existing file
+        file_ = self.client.get('/api/v1/files/',
+                                content_type='application/json',
+                                query_string=dict(
+                                    id=ctx.playbook['files'][0]['id'])
+                                )
+        file_ = jsonutils.loads(file_.data)
+
+        # We'll update the content field, assert we are actually
         # making a change
         new_content = "# Empty file !"
-        self.assertNotEqual(ctx['playbook'].file.content, new_content)
+        self.assertNotEqual(file_['content'], new_content)
 
         data = {
-            "id": ctx['playbook'].file.id,
+            "id": file_['id'],
             "content": new_content
         }
         res = self.client.patch('/api/v1/files/',
@@ -262,23 +285,27 @@ class TestApiFiles(TestAra):
         updated = self.client.get('/api/v1/files/',
                                   content_type='application/json',
                                   query_string=dict(
-                                      id=ctx['playbook'].file.id)
-                                  )
+                                      id=file_['id']
+                                  ))
         updated_file = jsonutils.loads(updated.data)
         self.assertEqual(updated_file['content'], new_content)
 
     def test_patch_internal_existing(self):
         # Generate fake playbook data
-        ctx = ansible_run()
-        self.assertEqual(ctx['playbook'].file.id, 1)
+        ctx = FakeRun()
+        self.assertEqual(ctx.playbook['files'][0]['id'], 1)
 
-        # We'll update the name field, assert we are actually
+        # Get existing file
+        file_ = FileApi().get(id=ctx.playbook['files'][0]['id'])
+        file_ = jsonutils.loads(file_.data)
+
+        # We'll update the content field, assert we are actually
         # making a change
         new_content = "# Empty file !"
-        self.assertNotEqual(ctx['playbook'].file.content, new_content)
+        self.assertNotEqual(file_['content'], new_content)
 
         data = {
-            "id": ctx['playbook'].file.id,
+            "id": file_['id'],
             "content": new_content
         }
         res = FileApi().patch(data)
@@ -289,12 +316,11 @@ class TestApiFiles(TestAra):
         self.assertEqual(data['content'], new_content)
 
         # Confirm by re-fetching file
-        updated = FileApi().get(id=ctx['playbook'].file.id)
+        updated = FileApi().get(id=file_['id'])
         updated_file = jsonutils.loads(updated.data)
         self.assertEqual(updated_file['content'], new_content)
 
     def test_patch_http_with_missing_arg(self):
-        ansible_run()
         data = {
             "path": "/updated/path.yml"
         }
@@ -304,7 +330,6 @@ class TestApiFiles(TestAra):
         self.assertEqual(res.status_code, 400)
 
     def test_patch_internal_with_missing_arg(self):
-        ansible_run()
         data = {
             "path": "/updated/path.yml"
         }
@@ -390,28 +415,21 @@ class TestApiFiles(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_without_parameters(self):
-        ctx = ansible_run()
+        ctx = FakeRun()
         res = self.client.get('/api/v1/files/',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(ctx.playbook['files']),
+                         len(jsonutils.loads(res.data)))
 
-        data = jsonutils.loads(res.data)[1]
+        data = jsonutils.loads(res.data)[0]
 
-        self.assertEqual(ctx['playbook'].file.id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['playbook'].file.path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].file.content.content,
-                         data['content'])
-        self.assertEqual(ctx['playbook'].file.content.sha1,
-                         data['sha1'])
-        self.assertEqual(ctx['playbook'].file.is_playbook,
-                         data['is_playbook'])
+        self.assertEqual(ctx.playbook['files'][0]['id'], data['id'])
+        self.assertEqual(ctx.playbook['id'], data['playbook']['id'])
+        self.assertEqual(ctx.playbook['path'], data['path'])
 
     def test_get_internal_without_parameters(self):
-        ansible_run()
+        FakeRun()
         http = self.client.get('/api/v1/files/',
                                content_type='application/json')
         internal = FileApi().get()
@@ -419,33 +437,30 @@ class TestApiFiles(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_parameter(self):
-        ctx = ansible_run()
-        files = models.File.query.all()
-        self.assertEqual(len(files), 2)
+        # Run twice and assert that we have two files
+        ctx = FakeRun()
+        FakeRun()
+        files = self.client.get('/api/v1/files/',
+                                content_type='application/json')
+        self.assertEqual(len(jsonutils.loads(files.data)), 2)
 
+        # Get the file from our first playbook run
         res = self.client.get('/api/v1/files/',
                               content_type='application/json',
                               query_string=dict(id=1))
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['playbook'].file.id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['playbook'].file.path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].file.content.content,
-                         data['content'])
-        self.assertEqual(ctx['playbook'].file.content.sha1,
-                         data['sha1'])
-        self.assertEqual(ctx['playbook'].file.is_playbook,
-                         data['is_playbook'])
+        self.assertEqual(ctx.playbook['files'][0]['id'], data['id'])
+        self.assertEqual(ctx.playbook['id'], data['playbook']['id'])
+        self.assertEqual(ctx.playbook['path'], data['path'])
 
     def test_get_internal_with_id_parameter(self):
-        ansible_run()
-        files = models.File.query.all()
-        self.assertEqual(len(files), 2)
+        # Run twice and assert that we have two files
+        FakeRun()
+        FakeRun()
+        files = FileApi().get()
+        self.assertEqual(len(jsonutils.loads(files.data)), 2)
 
         http = self.client.get('/api/v1/files/',
                                content_type='application/json',
@@ -455,32 +470,27 @@ class TestApiFiles(TestAra):
         self.assertEqual(http.data, internal.data)
 
     def test_get_http_with_id_url(self):
-        ctx = ansible_run()
-        files = models.File.query.all()
-        self.assertEqual(len(files), 2)
+        # Run twice and assert that we have two files
+        ctx = FakeRun()
+        FakeRun()
+        files = self.client.get('/api/v1/files/',
+                                content_type='application/json')
+        self.assertEqual(len(jsonutils.loads(files.data)), 2)
 
         res = self.client.get('/api/v1/files/1',
                               content_type='application/json')
         self.assertEqual(res.status_code, 200)
 
         data = jsonutils.loads(res.data)
-        self.assertEqual(ctx['playbook'].file.id,
-                         data['id'])
-        self.assertEqual(ctx['playbook'].file.playbook_id,
-                         data['playbook']['id'])
-        self.assertEqual(ctx['playbook'].file.path,
-                         data['path'])
-        self.assertEqual(ctx['playbook'].file.content.content,
-                         data['content'])
-        self.assertEqual(ctx['playbook'].file.content.sha1,
-                         data['sha1'])
-        self.assertEqual(ctx['playbook'].file.is_playbook,
-                         data['is_playbook'])
+        self.assertEqual(ctx.playbook['files'][0]['id'], data['id'])
+        self.assertEqual(ctx.playbook['id'], data['playbook']['id'])
+        self.assertEqual(ctx.playbook['path'], data['path'])
 
     def test_get_internal_with_id(self):
-        ansible_run()
-        files = models.File.query.all()
-        self.assertEqual(len(files), 2)
+        FakeRun()
+        FakeRun()
+        files = FileApi().get()
+        self.assertEqual(len(jsonutils.loads(files.data)), 2)
 
         http = self.client.get('/api/v1/files/1',
                                content_type='application/json')

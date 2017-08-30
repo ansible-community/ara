@@ -17,7 +17,7 @@
 
 import pytest
 
-from ara.tests.unit.common import ansible_run
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 
 
@@ -30,7 +30,7 @@ class TestApp(TestAra):
         super(TestApp, self).tearDown()
 
     def test_about_with_data(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/about/')
         self.assertEqual(res.status_code, 200)
 
@@ -47,30 +47,30 @@ class TestApp(TestAra):
         self.assertEqual(res.status_code, 302)
 
     def test_reports(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
     def test_reports_with_incomplete(self):
-        ansible_run(completed=False)
+        FakeRun(completed=False)
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
     def test_reports_with_override(self):
-        ctx = ansible_run()
-        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx['playbook'].id]
+        ctx = FakeRun()
+        self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx.playbook['id']]
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
 
     def test_reports_with_bad_override(self):
-        ansible_run()
+        FakeRun()
         self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 302)
 
     def test_reports_with_pagination(self):
-        ansible_run()
-        ansible_run()
+        FakeRun()
+        FakeRun()
         self.app.config['ARA_PLAYBOOK_PER_PAGE'] = 1
         res = self.client.get('/reports/')
         self.assertEqual(res.status_code, 200)
@@ -82,122 +82,132 @@ class TestApp(TestAra):
         self.assertEqual(res.status_code, 200)
 
     def test_reports_single(self):
-        ctx = ansible_run()
-        res = self.client.get('/reports/{0}.html'.format(ctx['playbook'].id))
+        ctx = FakeRun()
+        res = self.client.get('/reports/{0}.html'.format(ctx.playbook['id']))
         self.assertEqual(res.status_code, 200)
 
     def test_reports_single_bad_playbook(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/0.html')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_parameters(self):
-        ctx = ansible_run()
-        pbid = ctx['playbook'].id
+        ctx = FakeRun()
+        pbid = ctx.playbook['id']
         res = self.client.get('/reports/ajax/parameters/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
     def test_report_ajax_no_parameters(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/ajax/parameters/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_plays(self):
-        ctx = ansible_run()
-        pbid = ctx['playbook'].id
+        ctx = FakeRun()
+        pbid = ctx.playbook['id']
         res = self.client.get('/reports/ajax/plays/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
     def test_report_ajax_no_plays(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/ajax/plays/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_records(self):
-        ctx = ansible_run(ara_record=True)
-        pbid = ctx['playbook'].id
+        ctx = FakeRun()
+        pbid = ctx.playbook['id']
         res = self.client.get('/reports/ajax/records/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
     def test_report_ajax_no_records(self):
-        ansible_run()
+        FakeRun(record_task=False)
         res = self.client.get('/reports/ajax/records/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_results(self):
-        ctx = ansible_run()
-        pbid = ctx['playbook'].id
+        ctx = FakeRun()
+        pbid = ctx.playbook['id']
         res = self.client.get('/reports/ajax/results/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
     def test_report_ajax_no_results(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/ajax/results/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_report_ajax_hosts(self):
-        ctx = ansible_run()
-        pbid = ctx['playbook'].id
+        ctx = FakeRun()
+        pbid = ctx.playbook['id']
         res = self.client.get('/reports/ajax/hosts/{0}.txt'.format(pbid))
         self.assertEqual(res.status_code, 200)
 
     def test_report_ajax_no_hosts(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/reports/ajax/hosts/0.txt')
         self.assertEqual(res.status_code, 404)
 
     def test_show_file(self):
-        ctx = ansible_run()
-        res = self.client.get('/file/{0}/'.format(ctx['pb_file'].id))
+        ctx = FakeRun()
+        res = self.client.get('/file/{0}/'.format(
+            ctx.playbook['files'][0]['id'])
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_show_file_index(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/file/')
         self.assertEqual(res.status_code, 200)
 
     def test_show_host(self):
-        ctx = ansible_run()
-        res = self.client.get('/host/{}/'.format(ctx['host'].id))
+        ctx = FakeRun()
+        res = self.client.get('/host/{}/'.format(
+            ctx.playbook['hosts'][0]['id'])
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_show_host_index(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/host/')
         self.assertEqual(res.status_code, 200)
 
     def test_show_host_missing(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/host/foo/')
         self.assertEqual(res.status_code, 404)
 
     def test_show_host_exists_facts_missing(self):
-        ctx = ansible_run(gather_facts=False)
-        res = self.client.get('/host/{}/'.format(ctx['host'].id))
+        ctx = FakeRun(host_facts=False)
+        res = self.client.get('/host/{}/'.format(
+            ctx.playbook['hosts'][0]['id'])
+        )
         self.assertEqual(res.status_code, 404)
 
     def test_show_host_missing_facts_missing(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/host/foo/')
         self.assertEqual(res.status_code, 404)
 
     def test_show_result(self):
-        ctx = ansible_run()
-        res = self.client.get('/result/{}/'.format(ctx['result'].id))
+        ctx = FakeRun()
+        res = self.client.get('/result/{}/'.format(
+            ctx.t_ok['results'][0]['id'])
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_show_result_index(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/result/')
         self.assertEqual(res.status_code, 200)
 
     def test_show_result_missing(self):
-        ansible_run()
+        FakeRun()
         res = self.client.get('/result/foo/')
         self.assertEqual(res.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_result_incomplete(self):
-        ctx = ansible_run(completed=False)
-        res = self.client.get('/result/{}/'.format(ctx['result'].id))
+        ctx = FakeRun(completed=False)
+        res = self.client.get('/result/{}/'.format(
+            ctx.t_ok['results'][0]['id'])
+        )
         self.assertEqual(res.status_code, 200)

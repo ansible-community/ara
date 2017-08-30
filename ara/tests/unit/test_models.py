@@ -17,7 +17,7 @@
 
 import ara.db.models as m
 
-from ara.tests.unit import fakes
+from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 
 
@@ -26,57 +26,15 @@ class TestModels(TestAra):
     def setUp(self):
         super(TestModels, self).setUp()
 
-        self.playbook = fakes.Playbook(path='testing.yml',
-                                       parameters={'option': 'test'}).model
-        self.playbook_content = fakes.FileContent(
-            content=fakes.FAKE_PLAYBOOK_CONTENT
-        ).model
-        self.playbook_file = fakes.File(path=self.playbook.path,
-                                        playbook=self.playbook,
-                                        is_playbook=True,
-                                        content=self.playbook_content).model
-
-        self.play = fakes.Play(name='test play',
-                               playbook=self.playbook).model
-
-        self.task_content = fakes.FileContent(
-            content=fakes.FAKE_TASK_CONTENT
-        ).model
-        self.task_file = fakes.File(path='main.yml',
-                                    playbook=self.playbook,
-                                    is_playbook=False,
-                                    content=self.task_content).model
-        self.task = fakes.Task(name='test task',
-                               play=self.play,
-                               playbook=self.playbook,
-                               file=self.task_file,
-                               action='fake_action',
-                               tags=['just', 'testing']).model
-
-        self.record = fakes.Record(playbook=self.playbook,
-                                   key='test key',
-                                   value='test value').model
-
-        self.host = fakes.Host(name='localhost',
-                               playbook=self.playbook,
-                               facts={'fact', 'value'},
-                               changed=0,
-                               failed=0,
-                               skipped=0,
-                               unreachable=0,
-                               ok=0).model
-
-        self.result = fakes.Result(playbook=self.playbook,
-                                   play=self.play,
-                                   task=self.task,
-                                   status='ok',
-                                   host=self.host).model
-
-        for obj in [self.playbook, self.playbook_file, self.play,
-                    self.task, self.record, self.host, self.result]:
-            m.db.session.add(obj)
-
-        m.db.session.commit()
+        self.ctx = FakeRun()
+        self.playbook = m.Playbook.query.get(self.ctx.playbook['id'])
+        self.file = m.File.query.get(self.ctx.playbook['files'][0]['id'])
+        self.content = m.FileContent.query.get(self.file.content.id)
+        self.play = m.Play.query.get(self.ctx.play['id'])
+        self.task = m.Task.query.get(self.ctx.t_ok['id'])
+        self.result = m.Result.query.get(self.ctx.t_ok['results'][0]['id'])
+        self.host = m.Host.query.get(self.result.host_id)
+        self.record = m.Record.query.get(self.ctx.playbook['records'][0]['id'])
 
     def tearDown(self):
         super(TestModels, self).tearDown()
@@ -86,39 +44,35 @@ class TestModels(TestAra):
         self.assertIn(self.playbook, playbooks)
 
     def test_playbook_file(self):
-        playbook = m.Playbook.query.one()
         file = (m.File.query
-                .filter(m.File.playbook_id == playbook.id)
+                .filter(m.File.playbook_id == self.playbook.id)
                 .filter(m.File.is_playbook)).one()
-        self.assertEqual(playbook.file, file)
-        self.assertIn(file, playbook.files)
-
-    def test_play(self):
-        playbook = m.Playbook.query.get(self.playbook.id)
-        self.assertIn(self.play, playbook.plays)
-
-    def test_task(self):
-        task = m.Task.query.get(self.task.id)
-        self.assertIn(task, self.playbook.tasks)
-        self.assertIn(task, self.play.tasks)
-
-    def test_file(self):
-        file = m.File.query.get(self.playbook_file.id)
+        self.assertEqual(self.playbook.file, file)
         self.assertIn(file, self.playbook.files)
 
+    def test_play(self):
+        self.assertIn(self.play, self.playbook.plays)
+
+    def test_task(self):
+        self.assertIn(self.task, self.playbook.tasks)
+        self.assertIn(self.task, self.play.tasks)
+        self.assertIn(self.result, self.task.results)
+
+    def test_file(self):
+        self.assertIn(self.file, self.playbook.files)
+
     def test_duplicate_file(self):
-        second = m.File(is_playbook=self.task_file.is_playbook,
-                        path=self.task_file.path,
-                        playbook=self.task_file.playbook,
-                        content=self.task_file.content)
+        second = m.File(is_playbook=self.task.file.is_playbook,
+                        path=self.task.file.path,
+                        playbook=self.task.file.playbook,
+                        content=self.task.file.content)
         m.db.session.add(second)
 
         with self.assertRaises(Exception):
             m.db.session.commit()
 
     def test_file_content(self):
-        file_content = m.FileContent.query.get(self.playbook.file.content.id)
-        self.assertEqual(file_content.content,
+        self.assertEqual(self.content.content,
                          self.playbook.file.content.content)
 
     def test_duplicate_file_content(self):
@@ -135,16 +89,15 @@ class TestModels(TestAra):
         self.assertEqual(file_content.content, second.content.content)
 
     def test_record(self):
-        record = m.Record.query.get(self.record.id)
-        self.assertEqual(record.playbook_id, self.playbook.id)
-        self.assertEqual(record.key, 'test key')
-        self.assertEqual(record.value, 'test value')
+        self.assertEqual(self.record.playbook_id, self.playbook.id)
+        self.assertEqual(self.record.key, 'test-text')
+        self.assertEqual(self.record.value, 'test-with-playbook')
 
     def test_duplicate_record(self):
         record = m.Record(
             playbook=self.playbook,
-            key='test key',
-            value='another value'
+            key=self.record.key,
+            value=self.record.value
         )
         m.db.session.add(record)
 
@@ -152,13 +105,12 @@ class TestModels(TestAra):
             m.db.session.commit()
 
     def test_result(self):
-        result = m.Result.query.get(self.result.id)
-        self.assertIn(result, self.playbook.results)
-        self.assertIn(result, self.play.results)
-        self.assertIn(result, self.task.results)
+        self.assertIn(self.result, self.playbook.results)
+        self.assertIn(self.result, self.play.results)
+        self.assertIn(self.result, self.task.results)
 
     def test_host(self):
-        host1 = m.Host.query.filter_by(name='localhost').one()
+        host1 = m.Host.query.filter_by(name=self.host.name).one()
         host2 = m.Host.query.get(self.host.id)
 
         self.assertEqual(host1, self.host)
@@ -166,7 +118,7 @@ class TestModels(TestAra):
 
     def test_duplicate_host(self):
         host = m.Host(
-            name='localhost',
+            name=self.host.name,
             playbook=self.playbook,
         )
         m.db.session.add(host)
