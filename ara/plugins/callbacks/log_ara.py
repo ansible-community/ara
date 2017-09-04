@@ -133,12 +133,12 @@ class CallbackModule(CallbackBase):
         self._create_files(self.playbook['id'], [path])
 
         # TODO: Implement a one() method for retrieving one or raise exception
-        file_ = FileApi().get(playbook_id=self.playbook['id'],
-                              path=path)
-        file_ = jsonutils.loads(file_.data)[0]
+        resp, data = FileApi().get(playbook_id=self.playbook['id'],
+                                   path=path)
+        file_ = data[0]
 
         # TODO: Wrap this validation logic
-        response = TaskApi().post(dict(
+        resp, data = TaskApi().post(
             name=task.get_name(),
             action=task.action,
             play_id=self.play['id'],
@@ -147,12 +147,12 @@ class CallbackModule(CallbackBase):
             tags=task._attributes['tags'],
             lineno=lineno,
             handler=handler
-        ))
-        if response.status_code not in [200, 201]:
+        )
+        if resp.status_code not in [200, 201]:
             raise SystemError("HTTP {0} when posting data: {1}".format(
-                response.status_code, response.data
+                resp.status_code, six.text_type(data)
             ))
-        self.task = jsonutils.loads(response.data)
+        self.task = data
 
         return self.task
 
@@ -175,16 +175,16 @@ class CallbackModule(CallbackBase):
         LOG.debug('starting playbook %s', path)
 
         # TODO: Wrap this validation logic
-        response = PlaybookApi().post(dict(
+        resp, data = PlaybookApi().post(
             ansible_version=ansible_version,
             path=path,
             parameters=parameters,
-        ))
-        if response.status_code not in [200, 201]:
+        )
+        if resp.status_code not in [200, 201]:
             raise SystemError("HTTP {0} when posting data: {1}".format(
-                response.status_code, response.data
+                resp.status_code, six.text_type(data)
             ))
-        self.playbook = jsonutils.loads(response.data)
+        self.playbook = data
 
         # Record all the files involved in the playbook
         files = playbook._loader._FILE_CACHE.keys()
@@ -210,15 +210,15 @@ class CallbackModule(CallbackBase):
         self._create_hosts(self.playbook['id'], hosts)
 
         # TODO: Wrap this validation logic
-        response = PlayApi().post(dict(
+        resp, data = PlayApi().post(
             name=play.name,
             playbook_id=self.playbook['id'],
-        ))
-        if response.status_code not in [200, 201]:
+        )
+        if resp.status_code not in [200, 201]:
             raise SystemError("HTTP {0} when posting data: {1}".format(
-                response.status_code, response.data
+                resp.status_code, six.text_type(data)
             ))
-        self.play = jsonutils.loads(response.data)
+        self.play = data
 
         return self.play
 
@@ -228,20 +228,20 @@ class CallbackModule(CallbackBase):
         for hostname in hosts:
             # TODO: Implement a one() method for retrieving one or raise
             # exception
-            host = HostApi().get(playbook_id=self.playbook['id'],
-                                 name=encodeutils.safe_encode(hostname))
-            host = jsonutils.loads(host.data)[0]
+            resp, data = HostApi().get(playbook_id=self.playbook['id'],
+                                       name=encodeutils.safe_encode(hostname))
+            host = data[0]
             host_stats = stats.summarize(hostname)
 
             # TODO: Add validation for this
-            HostApi().patch(dict(
+            HostApi().patch(
                 id=host['id'],
                 changed=host_stats['changed'],
                 failed=host_stats['failures'],
                 ok=host_stats['ok'],
                 skipped=host_stats['skipped'],
                 unreachable=host_stats['unreachable']
-            ))
+            )
 
         self._close_task()
         self._close_play()
@@ -259,9 +259,9 @@ class CallbackModule(CallbackBase):
         ended = datetime.utcnow().isoformat()
 
         # TODO: Implement a one() method for retrieving one or raise exception
-        host = HostApi().get(playbook_id=self.playbook['id'],
-                             name=result._host.get_name())
-        host = jsonutils.loads(host.data)[0]
+        resp, data = HostApi().get(playbook_id=self.playbook['id'],
+                                   name=result._host.get_name())
+        host = data[0]
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal
         # keys, respect no_log directive, etc.
@@ -279,7 +279,7 @@ class CallbackModule(CallbackBase):
             results = jsonutils.loads(self._dump_results(result._result))
 
         # TODO: Wrap this validation logic
-        response = ResultApi().post(dict(
+        resp, data = ResultApi().post(
             playbook_id=self.playbook['id'],
             play_id=self.play['id'],
             task_id=self.task['id'],
@@ -293,19 +293,19 @@ class CallbackModule(CallbackBase):
             skipped=result._result.get('skipped', False),
             unreachable=result._result.get('unreachable', False),
             ignore_errors=kwargs.get('ignore_errors', False),
-        ))
-        if response.status_code not in [200, 201]:
+        )
+        if resp.status_code not in [200, 201]:
             raise SystemError("HTTP {0} when posting data: {1}".format(
-                response.status_code, response.data
+                resp.status_code, six.text_type(data)
             ))
 
         # TODO: Abstract this under the API
         if self.task['action'] == 'setup' and 'ansible_facts' in results:
             # TODO: Add validation for this
-            HostApi().patch(dict(
+            HostApi().patch(
                 id=host['id'],
                 facts=results['ansible_facts']
-            ))
+            )
 
     def _close_task(self):
         """
@@ -317,10 +317,10 @@ class CallbackModule(CallbackBase):
                       self.task['id'])
 
             # TODO: Add validation for this
-            TaskApi().patch(dict(
+            TaskApi().patch(
                 id=self.task['id'],
                 ended=datetime.utcnow().isoformat()
-            ))
+            )
 
             self.task = None
             self.loop_items = []
@@ -335,10 +335,10 @@ class CallbackModule(CallbackBase):
                       self.play['id'])
 
             # TODO: Add validation for this
-            PlayApi().patch(dict(
+            PlayApi().patch(
                 id=self.play['id'],
                 ended=datetime.utcnow().isoformat()
-            ))
+            )
             self.play = None
 
     def _close_playbook(self):
@@ -351,11 +351,11 @@ class CallbackModule(CallbackBase):
                       self.playbook['id'])
 
             # TODO: Add validation for this
-            PlaybookApi().patch(dict(
+            PlaybookApi().patch(
                 id=self.playbook['id'],
                 ended=datetime.utcnow().isoformat(),
                 completed=True
-            ))
+            )
 
         db.session.close()
 
@@ -364,22 +364,21 @@ class CallbackModule(CallbackBase):
         Ensures a list of hosts ("hosts") is added to "playbook_id"
         """
         current_hosts = []
-        current = HostApi().get(playbook_id=playbook_id)
-        if current.status_code == 200:
+        resp, data = HostApi().get(playbook_id=playbook_id)
+        if resp.status_code == 200:
             # 404 means there are no hosts (yet)
-            current = jsonutils.loads(current.data)
-            current_hosts = [host['name'] for host in current]
+            current_hosts = [host['name'] for host in data]
 
         for host in hosts:
             if host not in current_hosts:
                 # TODO: Wrap this validation logic
-                response = HostApi().post(dict(
+                resp, data = HostApi().post(
                     playbook_id=playbook_id,
                     name=host,
-                ))
-                if response.status_code not in [200, 201]:
+                )
+                if resp.status_code not in [200, 201]:
                     raise SystemError("HTTP {0} when posting data: {1}".format(
-                        response.status_code, response.data
+                        resp.status_code, six.text_type(data)
                     ))
 
     def _create_files(self, playbook_id, files):
@@ -387,24 +386,23 @@ class CallbackModule(CallbackBase):
         Ensures a list of files ("files") is added to "playbook_id"
         """
         current_files = []
-        current = FileApi().get(playbook_id=playbook_id)
-        if current.status_code == 200:
+        resp, data = FileApi().get(playbook_id=playbook_id)
+        if resp.status_code == 200:
             # 404 means there are no files (yet)
-            current = jsonutils.loads(current.data)
-            current_files = [file_['path'] for file_ in current]
+            current_files = [file_['path'] for file_ in data]
 
         for file_ in files:
             if file_ not in current_files:
                 content = self._read_file(file_)
-                response = FileApi().post(dict(
+                resp, data = FileApi().post(
                     playbook_id=playbook_id,
                     path=file_,
                     content=content,
-                ))
-                if response.status_code not in [200, 201]:
+                )
+                if resp.status_code not in [200, 201]:
                     raise SystemError(
                         "HTTP {0} when posting data: {1}".format(
-                            response.status_code, response.data
+                            resp.status_code, six.text_type(data)
                         ))
         return True
 

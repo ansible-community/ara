@@ -63,6 +63,7 @@ def _ara_config(config, key, env_var, default=None, section='ara',
 
 DEFAULTS = {
     'ARA_AUTOCREATE_DATABASE': True,
+    'ARA_API_CLIENT': 'python',
     'ARA_DIR': os.path.expanduser('~/.ara'),
     'ARA_ENABLE_DEBUG_VIEW': False,
     'ARA_HOST': '127.0.0.1',
@@ -91,13 +92,20 @@ DEFAULTS.update({
     'ARA_DATABASE': 'sqlite:///{}'.format(database_path)
 })
 
+ARA_HOST = _ara_config(config, 'host', 'ARA_HOST')
+ARA_PORT = _ara_config(config, 'port', 'ARA_PORT')
+DEFAULTS.update({
+    'ARA_API_ENDPOINT': 'http://%s:%s/api/v1' % (ARA_HOST, ARA_PORT)
+})
+ARA_API_ENDPOINT = _ara_config(config, 'api_endpoint', 'ARA_API_ENDPOINT')
+
 ARA_AUTOCREATE_DATABASE = _ara_config(config, 'autocreate_database',
                                       'ARA_AUTOCREATE_DATABASE',
                                       value_type='boolean')
+ARA_API_CLIENT = _ara_config(config, 'api_client', 'ARA_API_CLIENT')
 ARA_ENABLE_DEBUG_VIEW = _ara_config(config, 'enable_debug_view',
                                     'ARA_ENABLE_DEBUG_VIEW',
                                     value_type='boolean')
-ARA_HOST = _ara_config(config, 'host', 'ARA_HOST')
 ARA_IGNORE_PARAMETERS = _ara_config(config, 'ignore_parameters',
                                     'ARA_IGNORE_PARAMETERS',
                                     value_type='list')
@@ -111,10 +119,10 @@ ARA_PLAYBOOK_OVERRIDE = _ara_config(config, 'playbook_override',
 ARA_PLAYBOOK_PER_PAGE = _ara_config(config, 'playbook_per_page',
                                     'ARA_PLAYBOOK_PER_PAGE',
                                     value_type='integer')
-ARA_PORT = _ara_config(config, 'port', 'ARA_PORT')
 ARA_RESULT_PER_PAGE = _ara_config(config, 'result_per_page',
                                   'ARA_RESULT_PER_PAGE',
                                   value_type='integer')
+
 
 # Static generation with flask-frozen
 ARA_IGNORE_EMPTY_GENERATION = _ara_config(config,

@@ -19,398 +19,162 @@ from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.records import RecordApi
 from ara.api.v1.records import RECORD_FIELDS
-import pytest
-
-from oslo_serialization import jsonutils
-from werkzeug.routing import RequestRedirect
 
 
-class TestApiRecords(TestAra):
+class TestPythonApiRecords(TestAra):
     """ Tests for the ARA API interface """
     def setUp(self):
-        super(TestApiRecords, self).setUp()
+        super(TestPythonApiRecords, self).setUp()
+        self.client = RecordApi()
 
     def tearDown(self):
-        super(TestApiRecords, self).tearDown()
+        super(TestPythonApiRecords, self).tearDown()
 
     ###########
     # POST
     ###########
-    def test_post_http_redirect(self):
-        res = self.client.post('/api/v1/records')
-        self.assertEqual(res.status_code, 301)
+    def test_post_with_no_data(self):
+        resp, data = self.client.post()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_post_http_with_no_data(self):
-        res = self.client.post('/api/v1/records/',
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_no_data(self):
-        res = RecordApi().post()
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_correct_data(self):
+    def test_post_with_correct_data(self):
         # Create fake playbook data and create a record in it
         ctx = FakeRun()
-        data = {
-            "playbook_id": ctx.playbook['id'],
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = self.client.post('/api/v1/records/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
+        resp, data = self.client.post(
+            playbook_id=ctx.playbook['id'],
+            key='foo',
+            value='bar',
+            type='text'
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # Confirm that the POST returned the full record object ("data")
         # and that the record was really created properly by fetching it
         # ("record")
-        record = self.client.get('/api/v1/records/',
-                                 content_type='application/json',
-                                 query_string=dict(id=data['id']))
-        record = jsonutils.loads(record.data)
+        resp, record = self.client.get(id=data['id'])
         self.assertEqual(len(data), len(record))
         self.assertEqual(data, record)
         for key in RECORD_FIELDS.keys():
             self.assertIn(key, data)
             self.assertIn(key, record)
 
-    def test_post_internal_with_correct_data(self):
-        # Create fake playbook data and create a record in it
-        ctx = FakeRun()
-        data = {
-            "playbook_id": ctx.playbook['id'],
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = RecordApi().post(data)
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
+    def test_post_with_incorrect_data(self):
+        FakeRun()
+        resp, data = self.client.post(
+            playbook_id='1',
+            key=1,
+            value=False,
+            type='binary'
+        )
+        self.assertEqual(resp.status_code, 400)
 
-        # Confirm that the POST returned the full record object ("data")
-        # and that the record was really created properly by fetching it
-        # ("record")
-        record = RecordApi().get(id=data['id'])
-        record = jsonutils.loads(record.data)
-        self.assertEqual(len(data), len(record))
-        self.assertEqual(data, record)
-        for key in RECORD_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, record)
+    def test_post_with_missing_argument(self):
+        FakeRun()
+        resp, data = self.client.post(
+            key='foo',
+            value='bar',
+            type='text'
+        )
+        self.assertEqual(resp.status_code, 400)
 
-    def test_post_http_with_incorrect_data(self):
-        data = {
-            "playbook_id": "1",
-            "key": 1,
-            "value": False,
-            "type": "binary",
-        }
-
-        res = self.client.post('/api/v1/records/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_incorrect_data(self):
-        data = {
-            "playbook_id": "1",
-            "key": 1,
-            "value": False,
-            "type": "binary",
-        }
-
-        res = RecordApi().post(data)
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_missing_argument(self):
-        data = {
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = self.client.post('/api/v1/records/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_missing_argument(self):
-        data = {
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = RecordApi().post(data)
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_nonexistant_playbook(self):
-        data = {
-            "playbook_id": 9001,
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = self.client.post('/api/v1/records/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 404)
-
-    def test_post_internal_with_nonexistant_playbook(self):
-        data = {
-            "playbook_id": 9001,
-            "key": "foo",
-            "value": "bar",
-            "type": "text"
-        }
-        res = RecordApi().post(data)
-        self.assertEqual(res.status_code, 404)
+    def test_post_with_nonexistant_playbook(self):
+        resp, data = self.client.post(
+            playbook_id=9001,
+            key='foo',
+            value='bar',
+            type='text'
+        )
+        self.assertEqual(resp.status_code, 404)
 
     ###########
     # PATCH
     ###########
-    def test_patch_http_redirect(self):
-        res = self.client.patch('/api/v1/records')
-        self.assertEqual(res.status_code, 301)
+    def test_patch_with_no_data(self):
+        resp, data = self.client.patch()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_patch_http_with_no_data(self):
-        res = self.client.patch('/api/v1/records/',
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_no_data(self):
-        res = RecordApi().patch()
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_http_existing(self):
+    def test_patch_existing(self):
         # Generate fake playbook data
         ctx = FakeRun()
         self.assertEqual(ctx.playbook['records'][0]['id'], 1)
 
         # Get existing record
-        pbrecord = self.client.get('/api/v1/records/',
-                                   content_type='application/json',
-                                   query_string=dict(
-                                       id=ctx.playbook['records'][0]['id'])
-                                   )
-        pbrecord = jsonutils.loads(pbrecord.data)
+        resp, pbrecord = self.client.get(id=ctx.playbook['records'][0]['id'])
 
         # We'll update the value field, assert we are actually
         # making a change
         new_value = "Updated value"
         self.assertNotEqual(pbrecord['value'], new_value)
 
-        data = {
-            "id": pbrecord['id'],
-            "value": new_value
-        }
-        res = self.client.patch('/api/v1/records/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.patch(
+            id=pbrecord['id'],
+            value=new_value
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
         self.assertEqual(data['value'], new_value)
 
         # Confirm by re-fetching record
-        updated = self.client.get('/api/v1/records/',
-                                  content_type='application/json',
-                                  query_string=dict(id=pbrecord['id']))
-        updated_record = jsonutils.loads(updated.data)
-        self.assertEqual(updated_record['value'], new_value)
+        resp, updated = self.client.get(id=pbrecord['id'])
+        self.assertEqual(updated['value'], new_value)
 
-    def test_patch_internal_existing(self):
-        # Generate fake playbook data
-        ctx = FakeRun()
-        self.assertEqual(ctx.playbook['records'][0]['id'], 1)
-
-        # Get existing record
-        pbrecord = self.client.get('/api/v1/records/',
-                                   content_type='application/json',
-                                   query_string=dict(
-                                       id=ctx.playbook['records'][0]['id'])
-                                   )
-        pbrecord = jsonutils.loads(pbrecord.data)
-
-        # We'll update the value field, assert we are actually
-        # making a change
-        new_value = "Updated value"
-        self.assertNotEqual(pbrecord['value'], new_value)
-
-        data = {
-            "id": pbrecord['id'],
-            "value": new_value
-        }
-        res = RecordApi().patch(data)
-        self.assertEqual(res.status_code, 200)
-
-        # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
-        self.assertEqual(data['value'], new_value)
-
-        # Confirm by re-fetching record
-        updated = RecordApi().get(id=pbrecord['id'])
-        updated_record = jsonutils.loads(updated.data)
-        self.assertEqual(updated_record['value'], new_value)
-
-    def test_patch_http_with_missing_arg(self):
-        data = {
-            "value": "Updated value"
-        }
-        res = self.client.patch('/api/v1/records/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_missing_arg(self):
-        data = {
-            "value": "Updated value"
-        }
-        res = RecordApi().patch(data)
-        self.assertEqual(res.status_code, 400)
+    def test_patch_with_missing_arg(self):
+        FakeRun()
+        resp, data = self.client.patch(
+            value='Updated value'
+        )
+        self.assertEqual(resp.status_code, 400)
 
     ###########
     # PUT
     ###########
-    def test_put_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.put('/api/v1/records')
-
     # Not implemented yet
-    def test_put_http_unimplemented(self):
-        res = self.client.put('/api/v1/records/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_internal_unimplemented(self):
-        http = self.client.put('/api/v1/records/')
-        internal = RecordApi().put()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_put_unimplemented(self):
+        resp, data = self.client.put()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # DELETE
     ###########
-    def test_delete_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.delete('/api/v1/records')
-
     # Not implemented yet
-    def test_delete_http_unimplemented(self):
-        res = self.client.delete('/api/v1/records/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_internal_unimplemented(self):
-        http = self.client.delete('/api/v1/records/')
-        internal = RecordApi().delete()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_delete_unimplemented(self):
+        resp, data = self.client.delete()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # GET
     ###########
-    def test_get_http_redirect(self):
-        res = self.client.get('/api/v1/records',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 301)
-
-    def test_get_http_with_bad_params_404_help(self):
-        res = self.client.get('/api/v1/records/',
-                              content_type='application/json',
-                              query_string=dict(id=0))
-        self.assertEqual(res.status_code, 404)
+    def test_get_with_bad_params_404_help(self):
+        FakeRun()
+        resp, data = self.client.get(id=0)
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_with_bad_params_404_help(self):
-        http = self.client.get('/api/v1/records/',
-                               content_type='application/json',
-                               query_string=dict(id=0))
-        internal = RecordApi().get(id=0)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/records/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 404)
+    def test_get_without_parameters_and_data(self):
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/records/',
-                               content_type='application/json')
-        internal = RecordApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters(self):
+    def test_get_without_parameters(self):
         ctx = FakeRun()
-        res = self.client.get('/api/v1/records/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 200)
 
-        data = jsonutils.loads(res.data)[0]
-
+        data = data[0]
         self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
 
-    def test_get_internal_without_parameters(self):
-        FakeRun()
-        http = self.client.get('/api/v1/records/',
-                               content_type='application/json')
-        internal = RecordApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_parameter(self):
+    def test_get_with_id_parameter(self):
         FakeRun()
         # Run twice to get a second record
         ctx = FakeRun()
-        records = self.client.get('/api/v1/records/',
-                                  content_type='application/json')
-        self.assertEqual(len(jsonutils.loads(records.data)), 2)
+        resp, records = self.client.get()
+        self.assertEqual(len(records), 2)
 
-        res = self.client.get('/api/v1/records/',
-                              content_type='application/json',
-                              query_string=dict(id=2))
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
+        resp, data = self.client.get(id=2)
+        self.assertEqual(resp.status_code, 200)
         self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
-
-    def test_get_internal_with_id_parameter(self):
-        FakeRun()
-        FakeRun()
-
-        http = self.client.get('/api/v1/records/',
-                               content_type='application/json',
-                               query_string=dict(id=1))
-        internal = RecordApi().get(id=1)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_url(self):
-        FakeRun()
-        ctx = FakeRun()
-
-        res = self.client.get('/api/v1/records/2',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        self.assertEqual(ctx.playbook['records'][0]['id'], data['id'])
-
-    def test_get_internal_with_id(self):
-        FakeRun()
-        FakeRun()
-
-        http = self.client.get('/api/v1/records/2',
-                               content_type='application/json')
-        internal = RecordApi().get(id=2)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)

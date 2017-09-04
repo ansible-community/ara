@@ -15,8 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.webapp import create_app
-from flask import current_app
+from ara.api.client import get_client
 from oslo_serialization import jsonutils
 
 
@@ -24,36 +23,21 @@ class HostApi(object):
     """
     Internal API passthrough to the REST API: api.v1.hosts
     """
-    def __init__(self):
-        if not current_app:
-            app = create_app()
-            self.context = app.app_context()
-            self.context.push()
-
-        self.client = current_app.test_client()
+    def __init__(self, client=None):
+        self.client = get_client(client)
+        self.endpoint = '/api/v1/hosts/'
 
     def get(self, **kwargs):
-        get = self.client.get('/api/v1/hosts/',
-                              content_type='application/json',
-                              query_string=kwargs)
-        return get
+        return self.client.get(self.endpoint, query_string=kwargs)
 
-    def patch(self, data=None):
-        patch = self.client.patch('/api/v1/hosts/',
-                                  content_type='application/json',
-                                  data=jsonutils.dumps(data))
-        return patch
+    def patch(self, **kwargs):
+        return self.client.patch(self.endpoint, data=jsonutils.dumps(kwargs))
 
-    def post(self, data=None):
-        post = self.client.post('/api/v1/hosts/',
-                                content_type='application/json',
-                                data=jsonutils.dumps(data))
-        return post
+    def post(self, **kwargs):
+        return self.client.post(self.endpoint, data=jsonutils.dumps(kwargs))
 
     def put(self, **kwargs):
-        put = self.client.put('/api/v1/hosts/', data=kwargs)
-        return put
+        return self.client.put(self.endpoint, data=jsonutils.dumps(kwargs))
 
     def delete(self, **kwargs):
-        delete = self.client.delete('/api/v1/hosts/', data=kwargs)
-        return delete
+        return self.client.delete(self.endpoint, data=jsonutils.dumps(kwargs))

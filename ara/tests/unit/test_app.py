@@ -31,183 +31,195 @@ class TestApp(TestAra):
 
     def test_about_with_data(self):
         FakeRun()
-        res = self.client.get('/about/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/about/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_about_without_data(self):
-        res = self.client.get('/about/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/about/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_without_data_at_root(self):
-        res = self.client.get('/')
-        self.assertEqual(res.status_code, 302)
+        resp, data = self.client.get('/')
+        self.assertEqual(resp.status_code, 302)
 
     def test_reports_without_data(self):
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 302)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 302)
 
     def test_reports(self):
         FakeRun()
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_with_incomplete(self):
         FakeRun(completed=False)
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_with_override(self):
         ctx = FakeRun()
         self.app.config['ARA_PLAYBOOK_OVERRIDE'] = [ctx.playbook['id']]
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_with_bad_override(self):
         FakeRun()
         self.app.config['ARA_PLAYBOOK_OVERRIDE'] = ['uuuu-iiii-dddd-0000']
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 302)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 302)
 
     def test_reports_with_pagination(self):
         FakeRun()
         FakeRun()
         self.app.config['ARA_PLAYBOOK_PER_PAGE'] = 1
-        res = self.client.get('/reports/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/')
+        self.assertEqual(resp.status_code, 200)
 
-        res = self.client.get('/reports/list/1.html')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/list/1.html')
+        self.assertEqual(resp.status_code, 200)
 
-        res = self.client.get('/reports/list/2.html')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/reports/list/2.html')
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_single(self):
         ctx = FakeRun()
-        res = self.client.get('/reports/{0}.html'.format(ctx.playbook['id']))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/{0}.html'.format(ctx.playbook['id'])
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_reports_single_bad_playbook(self):
         FakeRun()
-        res = self.client.get('/reports/0.html')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/0.html')
+        self.assertEqual(resp.status_code, 404)
 
     def test_report_ajax_parameters(self):
         ctx = FakeRun()
         pbid = ctx.playbook['id']
-        res = self.client.get('/reports/ajax/parameters/{0}.txt'.format(pbid))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/ajax/parameters/{0}.txt'.format(pbid)
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_report_ajax_no_parameters(self):
         FakeRun()
-        res = self.client.get('/reports/ajax/parameters/0.txt')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/ajax/parameters/0.txt')
+        self.assertEqual(resp.status_code, 404)
 
     def test_report_ajax_plays(self):
         ctx = FakeRun()
         pbid = ctx.playbook['id']
-        res = self.client.get('/reports/ajax/plays/{0}.txt'.format(pbid))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/ajax/plays/{0}.txt'.format(pbid)
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_report_ajax_no_plays(self):
         FakeRun()
-        res = self.client.get('/reports/ajax/plays/0.txt')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/ajax/plays/0.txt')
+        self.assertEqual(resp.status_code, 404)
 
     def test_report_ajax_records(self):
         ctx = FakeRun()
         pbid = ctx.playbook['id']
-        res = self.client.get('/reports/ajax/records/{0}.txt'.format(pbid))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/ajax/records/{0}.txt'.format(pbid)
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_report_ajax_no_records(self):
         FakeRun(record_task=False)
-        res = self.client.get('/reports/ajax/records/0.txt')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/ajax/records/0.txt')
+        self.assertEqual(resp.status_code, 404)
 
     def test_report_ajax_results(self):
         ctx = FakeRun()
         pbid = ctx.playbook['id']
-        res = self.client.get('/reports/ajax/results/{0}.txt'.format(pbid))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/ajax/results/{0}.txt'.format(pbid)
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_report_ajax_no_results(self):
         FakeRun()
-        res = self.client.get('/reports/ajax/results/0.txt')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/ajax/results/0.txt')
+        self.assertEqual(resp.status_code, 404)
 
     def test_report_ajax_hosts(self):
         ctx = FakeRun()
         pbid = ctx.playbook['id']
-        res = self.client.get('/reports/ajax/hosts/{0}.txt'.format(pbid))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(
+            '/reports/ajax/hosts/{0}.txt'.format(pbid)
+        )
+        self.assertEqual(resp.status_code, 200)
 
     def test_report_ajax_no_hosts(self):
         FakeRun()
-        res = self.client.get('/reports/ajax/hosts/0.txt')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/reports/ajax/hosts/0.txt')
+        self.assertEqual(resp.status_code, 404)
 
     def test_show_file(self):
         ctx = FakeRun()
-        res = self.client.get('/file/{0}/'.format(
+        resp, data = self.client.get('/file/{0}/'.format(
             ctx.playbook['files'][0]['id'])
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_file_index(self):
         FakeRun()
-        res = self.client.get('/file/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/file/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_host(self):
         ctx = FakeRun()
-        res = self.client.get('/host/{}/'.format(
+        resp, data = self.client.get('/host/{}/'.format(
             ctx.playbook['hosts'][0]['id'])
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_host_index(self):
         FakeRun()
-        res = self.client.get('/host/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/host/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_host_missing(self):
         FakeRun()
-        res = self.client.get('/host/foo/')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/host/foo/')
+        self.assertEqual(resp.status_code, 404)
 
     def test_show_host_exists_facts_missing(self):
         ctx = FakeRun(host_facts=False)
-        res = self.client.get('/host/{}/'.format(
+        resp, data = self.client.get('/host/{}/'.format(
             ctx.playbook['hosts'][0]['id'])
         )
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(resp.status_code, 404)
 
     def test_show_host_missing_facts_missing(self):
         FakeRun()
-        res = self.client.get('/host/foo/')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/host/foo/')
+        self.assertEqual(resp.status_code, 404)
 
     def test_show_result(self):
         ctx = FakeRun()
-        res = self.client.get('/result/{}/'.format(
+        resp, data = self.client.get('/result/{}/'.format(
             ctx.t_ok['results'][0]['id'])
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_result_index(self):
         FakeRun()
-        res = self.client.get('/result/')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get('/result/')
+        self.assertEqual(resp.status_code, 200)
 
     def test_show_result_missing(self):
         FakeRun()
-        res = self.client.get('/result/foo/')
-        self.assertEqual(res.status_code, 404)
+        resp, data = self.client.get('/result/foo/')
+        self.assertEqual(resp.status_code, 404)
 
     @pytest.mark.incomplete
     def test_show_result_incomplete(self):
         ctx = FakeRun(completed=False)
-        res = self.client.get('/result/{}/'.format(
+        resp, data = self.client.get('/result/{}/'.format(
             ctx.t_ok['results'][0]['id'])
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(resp.status_code, 200)

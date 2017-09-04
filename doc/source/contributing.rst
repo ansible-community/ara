@@ -148,25 +148,23 @@ core reviewers must provide their agreement with the patch.
 Running tests locally
 ---------------------
 
-Unit tests::
+**Unit tests**::
 
    # Python 2.7
    tox -e py27
    # Python 3.5
    tox -e py35
 
-pep8/flake8/bandit/bashate tests::
+**pep8/flake8/bandit/bashate tests**::
 
    tox -e pep8
 
-Documentation tests::
+**Documentation tests**::
 
    # This will also build the docs locally in docs/build/html
    tox -e docs
 
-Integration tests:
-
-::
+**Integration tests**:
 
 At the root of the ARA source, you'll find the ``run_tests.sh`` script that
 allows you to easily run integration tests across a range of different

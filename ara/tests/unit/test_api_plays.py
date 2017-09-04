@@ -19,16 +19,13 @@ from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.plays import PlayApi
 from ara.api.v1.plays import PLAY_FIELDS
-import pytest
-
-from oslo_serialization import jsonutils
-from werkzeug.routing import RequestRedirect
 
 
 class TestApiPlays(TestAra):
     """ Tests for the ARA API interface """
     def setUp(self):
         super(TestApiPlays, self).setUp()
+        self.client = PlayApi()
 
     def tearDown(self):
         super(TestApiPlays, self).tearDown()
@@ -36,146 +33,63 @@ class TestApiPlays(TestAra):
     ###########
     # POST
     ###########
-    def test_post_http_redirect(self):
-        res = self.client.post('/api/v1/plays')
-        self.assertEqual(res.status_code, 301)
+    def test_post_with_no_data(self):
+        resp, data = self.client.post()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_post_http_with_no_data(self):
-        res = self.client.post('/api/v1/plays/',
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_no_data(self):
-        res = PlayApi().post()
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_correct_data(self):
+    def test_post_with_correct_data(self):
         # Create fake playbook data and create a play in it
         ctx = FakeRun()
-        data = {
-            "playbook_id": ctx.playbook['id'],
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = self.client.post('/api/v1/plays/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
+        resp, data = self.client.post(
+            playbook_id=ctx.playbook['id'],
+            name='Play from unit tests',
+            started='1970-08-14T00:52:49.570031'
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # Confirm that the POST returned the full play object ("data")
         # and that the play was really created properly by fetching it
         # ("play")
-        play = self.client.get('/api/v1/plays/',
-                               content_type='application/json',
-                               query_string=dict(id=data['id']))
-        play = jsonutils.loads(play.data)
+        resp, play = self.client.get(id=data['id'])
         self.assertEqual(len(data), len(play))
         self.assertEqual(data, play)
         for key in PLAY_FIELDS.keys():
             self.assertIn(key, data)
             self.assertIn(key, play)
 
-    def test_post_internal_with_correct_data(self):
-        # Create fake playbook data and create a play in it
-        ctx = FakeRun()
-        data = {
-            "playbook_id": ctx.playbook['id'],
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = PlayApi().post(data)
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
+    def test_post_with_incorrect_data(self):
+        FakeRun()
+        resp, data = self.client.post(
+            playbook_id='1',
+            name=1,
+            started='a long time ago'
+        )
+        self.assertEqual(resp.status_code, 400)
 
-        # Confirm that the POST returned the full play object ("data")
-        # and that the play was really created properly by fetching it
-        # ("play")
-        play = PlayApi().get(id=data['id'])
-        play = jsonutils.loads(play.data)
-        self.assertEqual(len(data), len(play))
-        self.assertEqual(data, play)
-        for key in PLAY_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, play)
+    def test_post_with_missing_argument(self):
+        FakeRun()
+        resp, data = self.client.post(
+            name='Play from unit tests',
+            started='1970-08-14T00:52:49.570031'
+        )
+        self.assertEqual(resp.status_code, 400)
 
-    def test_post_http_with_incorrect_data(self):
-        data = {
-            "playbook_id": "1",
-            "name": 1,
-            "started": "a long time ago",
-        }
-
-        res = self.client.post('/api/v1/plays/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_incorrect_data(self):
-        data = {
-            "playbook_id": "1",
-            "name": 1,
-            "started": "a long time ago",
-        }
-
-        res = PlayApi().post(data)
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_missing_argument(self):
-        data = {
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = self.client.post('/api/v1/plays/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_missing_argument(self):
-        data = {
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = PlayApi().post(data)
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_nonexistant_playbook(self):
-        data = {
-            "playbook_id": 9001,
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = self.client.post('/api/v1/plays/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 404)
-
-    def test_post_internal_with_nonexistant_playbook(self):
-        data = {
-            "playbook_id": 9001,
-            "name": "Play from unit tests",
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = PlayApi().post(data)
-        self.assertEqual(res.status_code, 404)
+    def test_post_with_nonexistant_playbook(self):
+        resp, data = self.client.post(
+            playbook_id=9001,
+            name='Play from unit tests',
+            started='1970-08-14T00:52:49.570031'
+        )
+        self.assertEqual(resp.status_code, 404)
 
     ###########
     # PATCH
     ###########
-    def test_patch_http_redirect(self):
-        res = self.client.patch('/api/v1/plays')
-        self.assertEqual(res.status_code, 301)
+    def test_patch_with_no_data(self):
+        resp, data = self.client.patch()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_patch_http_with_no_data(self):
-        res = self.client.patch('/api/v1/plays/',
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_no_data(self):
-        res = PlayApi().patch()
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_http_existing(self):
+    def test_patch_existing(self):
         # Generate fake playbook data
         ctx = FakeRun()
         self.assertEqual(ctx.play['id'], 1)
@@ -185,153 +99,66 @@ class TestApiPlays(TestAra):
         new_name = "Updated play name"
         self.assertNotEqual(ctx.play['name'], new_name)
 
-        data = {
-            "id": ctx.play['id'],
-            "name": new_name
-        }
-        res = self.client.patch('/api/v1/plays/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.patch(
+            id=ctx.play['id'],
+            name=new_name
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
         self.assertEqual(data['name'], new_name)
 
         # Confirm by re-fetching play
-        updated = self.client.get('/api/v1/plays/',
-                                  content_type='application/json',
-                                  query_string=dict(id=ctx.play['id']))
-        updated_play = jsonutils.loads(updated.data)
-        self.assertEqual(updated_play['name'], new_name)
+        resp, updated = self.client.get(id=ctx.play['id'])
+        self.assertEqual(updated['name'], new_name)
 
-    def test_patch_internal_existing(self):
-        # Generate fake playbook data
-        ctx = FakeRun()
-        self.assertEqual(ctx.play['id'], 1)
-
-        # We'll update the name field, assert we are actually
-        # making a change
-        new_name = "Updated play name"
-        self.assertNotEqual(ctx.play['name'], new_name)
-
-        data = {
-            "id": ctx.play['id'],
-            "name": new_name
-        }
-        res = PlayApi().patch(data)
-        self.assertEqual(res.status_code, 200)
-
-        # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
-        self.assertEqual(data['name'], new_name)
-
-        # Confirm by re-fetching play
-        updated = PlayApi().get(id=ctx.play['id'])
-        updated_play = jsonutils.loads(updated.data)
-        self.assertEqual(updated_play['name'], new_name)
-
-    def test_patch_http_with_missing_arg(self):
-        data = {
-            "name": "Updated play name"
-        }
-        res = self.client.patch('/api/v1/plays/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_missing_arg(self):
-        data = {
-            "name": "Updated play name"
-        }
-        res = PlayApi().patch(data)
-        self.assertEqual(res.status_code, 400)
+    def test_patch_with_missing_arg(self):
+        FakeRun()
+        resp, data = self.client.patch(
+            name='Updated play name'
+        )
+        self.assertEqual(resp.status_code, 400)
 
     ###########
     # PUT
     ###########
-    def test_put_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.put('/api/v1/plays')
-
     # Not implemented yet
-    def test_put_http_unimplemented(self):
-        res = self.client.put('/api/v1/plays/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_internal_unimplemented(self):
-        http = self.client.put('/api/v1/plays/')
-        internal = PlayApi().put()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_put_unimplemented(self):
+        resp, data = self.client.put()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # DELETE
     ###########
-    def test_delete_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.delete('/api/v1/plays')
-
     # Not implemented yet
-    def test_delete_http_unimplemented(self):
-        res = self.client.delete('/api/v1/plays/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_internal_unimplemented(self):
-        http = self.client.delete('/api/v1/plays/')
-        internal = PlayApi().delete()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_delete_unimplemented(self):
+        resp, data = self.client.delete()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # GET
     ###########
-    def test_get_http_redirect(self):
-        res = self.client.get('/api/v1/plays',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 301)
-
-    def test_get_http_with_bad_params_404_help(self):
-        res = self.client.get('/api/v1/plays/',
-                              content_type='application/json',
-                              query_string=dict(id=0))
-        self.assertEqual(res.status_code, 404)
+    def test_get_with_bad_params_404_help(self):
+        FakeRun()
+        resp, data = self.client.get(id=0)
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_with_bad_params_404_help(self):
-        http = self.client.get('/api/v1/plays/',
-                               content_type='application/json',
-                               query_string=dict(id=0))
-        internal = PlayApi().get(id=0)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/plays/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 404)
+    def test_get_without_parameters_and_data(self):
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/plays/',
-                               content_type='application/json')
-        internal = PlayApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters(self):
+    def test_get_without_parameters(self):
         ctx = FakeRun()
-        res = self.client.get('/api/v1/plays/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 200)
 
-        data = jsonutils.loads(res.data)[0]
+        data = data[0]
 
         self.assertEqual(len(data), len(ctx.play))
         self.assertEqual(data, ctx.play)
@@ -339,69 +166,18 @@ class TestApiPlays(TestAra):
             self.assertIn(key, data)
             self.assertIn(key, ctx.play)
 
-    def test_get_internal_without_parameters(self):
-        FakeRun()
-        http = self.client.get('/api/v1/plays/',
-                               content_type='application/json')
-        internal = PlayApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_parameter(self):
+    def test_get_with_id_parameter(self):
         FakeRun()
         # Run twice to get a second play
         ctx = FakeRun()
-        plays = self.client.get('/api/v1/plays/',
-                                content_type='application/json')
-        self.assertEqual(len(jsonutils.loads(plays.data)), 2)
+        resp, plays = self.client.get()
+        self.assertEqual(len(plays), 2)
 
-        res = self.client.get('/api/v1/plays/',
-                              content_type='application/json',
-                              query_string=dict(id=2))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(id=2)
+        self.assertEqual(resp.status_code, 200)
 
-        data = jsonutils.loads(res.data)
         self.assertEqual(len(data), len(ctx.play))
         self.assertEqual(data, ctx.play)
         for key in PLAY_FIELDS.keys():
             self.assertIn(key, data)
             self.assertIn(key, ctx.play)
-
-    def test_get_internal_with_id_parameter(self):
-        FakeRun()
-        # Run twice to get a second play
-        FakeRun()
-
-        http = self.client.get('/api/v1/plays/',
-                               content_type='application/json',
-                               query_string=dict(id=1))
-        internal = PlayApi().get(id=1)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_url(self):
-        ctx = FakeRun()
-        # Run twice to get a second play
-        FakeRun()
-
-        res = self.client.get('/api/v1/plays/1',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        self.assertEqual(len(data), len(ctx.play))
-        self.assertEqual(data, ctx.play)
-        for key in PLAY_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, ctx.play)
-
-    def test_get_internal_with_id_url(self):
-        FakeRun()
-        # Run twice to get a second playbook
-        FakeRun()
-
-        http = self.client.get('/api/v1/plays/1',
-                               content_type='application/json')
-        internal = PlayApi().get(id=1)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)

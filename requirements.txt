@@ -16,6 +16,7 @@ pygments
 debtcollector>=1.2.0
 junit-xml>=1.7
 pyfakefs
+requests>=2.14.2
 six
 
 oslo.serialization>=1.10.0 # Apache-2.0

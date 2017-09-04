@@ -23,7 +23,6 @@ import ara.plugins.actions.ara_record as ara_record
 
 from mock import Mock
 from mock import MagicMock
-from oslo_serialization import jsonutils
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests
@@ -307,17 +306,17 @@ class FakeRun(object):
         # Playbooks, plays and tasks can "lag" behind because they are first
         # created and then "children" are created. Refresh their reference at
         # the end so we have a complete set with the children.
-        updated = PlaybookApi().get(id=self.playbook['id'])
-        self.playbook = jsonutils.loads(updated.data)
+        resp, data = PlaybookApi().get(id=self.playbook['id'])
+        self.playbook = data
 
-        updated = PlayApi().get(id=self.play['id'])
-        self.play = jsonutils.loads(updated.data)
+        resp, data = PlayApi().get(id=self.play['id'])
+        self.play = data
 
         for task in ['t_ok', 't_changed', 't_failed', 't_skipped',
                      't_unreach']:
             if getattr(self, task, None):
-                updated = TaskApi().get(id=getattr(self, task)['id'])
-                setattr(self, task, jsonutils.loads(updated.data))
+                resp, data = TaskApi().get(id=getattr(self, task)['id'])
+                setattr(self, task, data)
 
     def _task_result(self, status, host, result):
         """ Creates a result and runs the appropriate callback hook """

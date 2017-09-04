@@ -105,6 +105,10 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_PORT_                     | port                       | 9191                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_API_ENDPOINT_             | api_endpoint               | http://127.0.0.1:9191/api/v1              |
++-------------------------------+----------------------------+-------------------------------------------+
+| ARA_API_CLIENT_               | api_client                 | python                                    |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_CONFIG_               | logconfig                  | None                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FILE_                 | logfile                    | ~/.ara/ara.log                            |
@@ -212,6 +216,24 @@ the ``ara-manage runserver`` command.
 
 It is equivalent to the ``-p`` or ``--port`` argument of the
 ``ara-manage runserver`` command.
+
+ARA_API_ENDPOINT
+~~~~~~~~~~~~~~~~
+
+If using the **http** ``ARA_API_CLIENT``, the endpoint where a hosted ARA REST
+API is located.
+
+ARA_API_CLIENT
+~~~~~~~~~~~~~~~~
+
+The client implementation to use when communicating with the ARA API.
+
+The default is to use the ``python`` internal implementation which is suitable
+for standalone, local, offline and self-hosted operation.
+
+You can also select the ``http`` implementation which will communicate with the
+ARA REST API over HTTP. Hosting the ARA web application at a location specified
+by ``ARA_API_ENDPOINT`` is required to use this.
 
 ARA_LOG_CONFIG
 ~~~~~~~~~~~~~~

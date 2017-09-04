@@ -19,6 +19,7 @@ import unittest
 import shutil
 import tempfile
 
+from ara.api.client import get_client
 import ara.db.models as m
 import ara.webapp as w
 
@@ -36,7 +37,7 @@ class TestAra(unittest.TestCase):
         self.app = w.create_app(self)
         self.app_context = self.app.app_context()
         self.app_context.push()
-        self.client = self.app.test_client()
+        self.client = get_client(client='python')
         self.tmpdir = tempfile.mkdtemp(prefix='ara')
 
         m.db.create_all()

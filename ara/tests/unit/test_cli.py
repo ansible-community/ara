@@ -51,6 +51,7 @@ class TestCLIRecord(TestAra):
     """ Tests for the ARA CLI record commands """
     def setUp(self):
         super(TestCLIRecord, self).setUp()
+        self.client = RecordApi()
 
     def tearDown(self):
         super(TestCLIRecord, self).tearDown()
@@ -102,8 +103,7 @@ class TestCLIRecord(TestAra):
         ctx = FakeRun()
 
         # Get record
-        record = RecordApi().get(id=ctx.playbook['records'][0]['id'])
-        record = jsonutils.loads(record.data)
+        resp, record = self.client.get(id=ctx.playbook['records'][0]['id'])
 
         cmd = ara.cli.record.RecordShow(None, None)
         parser = cmd.get_parser('test')
@@ -129,6 +129,7 @@ class TestCLIHost(TestAra):
     """ Tests for the ARA CLI host commands """
     def setUp(self):
         super(TestCLIHost, self).setUp()
+        self.client = HostApi()
 
     def tearDown(self):
         super(TestCLIHost, self).tearDown()
@@ -180,8 +181,7 @@ class TestCLIHost(TestAra):
         ctx = FakeRun()
 
         # Get host
-        host = HostApi().get(id=ctx.playbook['hosts'][0]['id'])
-        host = jsonutils.loads(host.data)
+        resp, host = self.client.get(id=ctx.playbook['hosts'][0]['id'])
 
         cmd = ara.cli.host.HostShow(None, None)
         parser = cmd.get_parser('test')
@@ -265,6 +265,12 @@ class TestCLIPlaybook(TestAra):
     """ Tests for the ARA CLI playbook commands """
     def setUp(self):
         super(TestCLIPlaybook, self).setUp()
+        self.playbook_api = PlaybookApi()
+        self.file_api = FileApi()
+        self.host_api = HostApi()
+        self.play_api = PlayApi()
+        self.task_api = TaskApi()
+        self.result_api = ResultApi()
 
     def tearDown(self):
         super(TestCLIPlaybook, self).tearDown()
@@ -344,25 +350,24 @@ class TestCLIPlaybook(TestAra):
 
         # Assert that we have two playbooks and that we have valid data for
         # the first playbook
-        playbooks = PlaybookApi().get()
-        playbooks = jsonutils.loads(playbooks.data)
+        resp, playbooks = self.playbook_api.get()
         self.assertTrue(len(playbooks) == 2)
 
         # Validate that we have real data for this playbook
-        files = FileApi().get(playbook_id=ctx.playbook['id'])
-        self.assertNotEqual(len(jsonutils.loads(files.data)), 0)
+        resp, files = self.file_api.get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(files), 0)
 
-        hosts = HostApi().get(playbook_id=ctx.playbook['id'])
-        self.assertNotEqual(len(jsonutils.loads(hosts.data)), 0)
+        resp, hosts = self.host_api.get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(hosts), 0)
 
-        plays = PlayApi().get(playbook_id=ctx.playbook['id'])
-        self.assertNotEqual(len(jsonutils.loads(plays.data)), 0)
+        resp, plays = self.play_api.get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(plays), 0)
 
-        tasks = TaskApi().get(playbook_id=ctx.playbook['id'])
-        self.assertNotEqual(len(jsonutils.loads(tasks.data)), 0)
+        resp, tasks = self.task_api.get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(tasks), 0)
 
-        results = ResultApi().get(playbook_id=ctx.playbook['id'])
-        self.assertNotEqual(len(jsonutils.loads(results.data)), 0)
+        resp, results = self.result_api.get(playbook_id=ctx.playbook['id'])
+        self.assertNotEqual(len(results), 0)
 
         # Delete the playbook
         cmd = ara.cli.playbook.PlaybookDelete(None, None)
@@ -372,35 +377,35 @@ class TestCLIPlaybook(TestAra):
 
         # Assert that we only have one playbook left and that records have been
         # deleted
-        playbooks = PlaybookApi().get()
-        playbooks = jsonutils.loads(playbooks.data)
+        resp, playbooks = self.playbook_api.get()
         self.assertTrue(len(playbooks) == 1)
 
         # Assert that we have no data for the first playbook
-        playbook = PlaybookApi().get(id=ctx.playbook['id'])
-        self.assertEqual(playbook.status_code, 404)
+        resp, playbook = self.playbook_api.get(id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
         # Validate that we nog longer have any data for this playbook
-        files = FileApi().get(playbook_id=ctx.playbook['id'])
-        self.assertEqual(files.status_code, 404)
+        resp, files = self.file_api.get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
-        hosts = HostApi().get(playbook_id=ctx.playbook['id'])
-        self.assertEqual(hosts.status_code, 404)
+        resp, hosts = self.host_api.get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
-        plays = PlayApi().get(playbook_id=ctx.playbook['id'])
-        self.assertEqual(plays.status_code, 404)
+        resp, plays = self.play_api.get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
-        tasks = TaskApi().get(playbook_id=ctx.playbook['id'])
-        self.assertEqual(tasks.status_code, 404)
+        resp, tasks = self.task_api.get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
-        results = ResultApi().get(playbook_id=ctx.playbook['id'])
-        self.assertEqual(results.status_code, 404)
+        resp, results = self.result_api.get(playbook_id=ctx.playbook['id'])
+        self.assertEqual(resp.status_code, 404)
 
 
 class TestCLIResult(TestAra):
     """ Tests for the ARA CLI result commands """
     def setUp(self):
         super(TestCLIResult, self).setUp()
+        self.client = ResultApi()
 
     def tearDown(self):
         super(TestCLIResult, self).tearDown()
@@ -496,8 +501,7 @@ class TestCLIResult(TestAra):
         ctx = FakeRun()
 
         # Get result
-        result = ResultApi().get(id=ctx.playbook['results'][0]['id'])
-        result = jsonutils.loads(result.data)
+        resp, result = self.client.get(id=ctx.playbook['results'][0]['id'])
 
         cmd = ara.cli.result.ResultShow(None, None)
         parser = cmd.get_parser('test')
@@ -834,8 +838,7 @@ class TestCLIGenerate(TestAra):
             self.assertEqual(ctx.playbook['path'], result['playbook_path'])
 
             # Test that we have matching data for task records
-            task = TaskApi().get(id=result['task_id'])
-            task = jsonutils.loads(task.data)
+            resp, task = TaskApi().get(id=result['task_id'])
             self.assertEqual(task['id'], result['task_id'])
             self.assertEqual(task['action'], result['task_action'])
             self.assertEqual(task['lineno'], result['task_action_lineno'])

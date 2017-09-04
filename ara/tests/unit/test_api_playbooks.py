@@ -19,154 +19,72 @@ from ara.tests.unit.fakes import FakeRun
 from ara.tests.unit.common import TestAra
 from ara.api.playbooks import PlaybookApi
 from ara.api.v1.playbooks import PLAYBOOK_FIELDS
-import pytest
-
-from oslo_serialization import jsonutils
-from werkzeug.routing import RequestRedirect
 
 
-class TestApiPlaybooks(TestAra):
+class TestPythonApiPlaybooks(TestAra):
     """ Tests for the ARA API interface """
     def setUp(self):
-        super(TestApiPlaybooks, self).setUp()
+        super(TestPythonApiPlaybooks, self).setUp()
+        self.client = PlaybookApi()
 
     def tearDown(self):
-        super(TestApiPlaybooks, self).tearDown()
+        super(TestPythonApiPlaybooks, self).tearDown()
 
     ###########
     # POST
     ###########
-    def test_post_http_redirect(self):
-        res = self.client.post('/api/v1/playbooks')
-        self.assertEqual(res.status_code, 301)
+    def test_post_with_no_data(self):
+        resp, data = self.client.post()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_post_http_with_no_data(self):
-        res = self.client.post('/api/v1/playbooks/',
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_no_data(self):
-        res = PlaybookApi().post()
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_correct_data(self):
+    def test_post_with_correct_data(self):
         # Create a new playbook
-        data = {
-            "path": "/root/playbook.yml",
-            "ansible_version": "2.2.3.1",
-            "parameters": {
-                "become": False,
-                "become_user": "root"
+        resp, data = self.client.post(
+            path='/root/playbook.yml',
+            ansible_version='2.2.3.1',
+            parameters={
+                'become': True,
+                'become_user': 'root'
             },
-            "completed": False,
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = self.client.post('/api/v1/playbooks/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
+            completed=False,
+            started='1970-08-14T00:52:49.570031'
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # Confirm that the POST returned the full playbook object ("data")
         # and that the playbook was really created properly by fetching it
         # ("playbook")
-        playbook = self.client.get('/api/v1/playbooks/',
-                                   content_type='application/json',
-                                   query_string=dict(id=data['id']))
-        playbook = jsonutils.loads(playbook.data)
+        resp, playbook = self.client.get(id=data['id'])
         self.assertEqual(len(data), len(playbook))
         self.assertEqual(data, playbook)
         for key in PLAYBOOK_FIELDS.keys():
             self.assertIn(key, data)
             self.assertIn(key, playbook)
 
-    def test_post_internal_with_correct_data(self):
-        # Create a new playbook
-        data = {
-            "path": "/root/playbook.yml",
-            "ansible_version": "2.2.3.1",
-            "parameters": {
-                "become": False,
-                "become_user": "root"
-            },
-            "completed": False,
-            "started": "1970-08-14T00:52:49.570031"
-        }
-        res = PlaybookApi().post(data)
+    def test_post_with_incorrect_data(self):
+        resp, data = self.client.post(
+            path=False,
+            ansible_version=2,
+            parameters=['one'],
+            completed='yes',
+            started='a long time ago'
+        )
+        self.assertEqual(resp.status_code, 400)
 
-        self.assertEqual(res.status_code, 200)
-        data = jsonutils.loads(res.data)
-
-        # Confirm that the POST returned the full playbook object ("data")
-        # and that the playbook was really created properly by fetching it
-        # ("playbook")
-        playbook = PlaybookApi().get(id=data['id'])
-        playbook = jsonutils.loads(playbook.data)
-        self.assertEqual(len(data), len(playbook))
-        self.assertEqual(data, playbook)
-        for key in PLAYBOOK_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, playbook)
-
-    def test_post_http_with_incorrect_data(self):
-        data = {
-            "path": False,
-            "ansible_version": 2,
-            "parameters": ['one'],
-            "completed": "yes",
-            "started": "a long time ago"
-        }
-
-        res = self.client.post('/api/v1/playbooks/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_incorrect_data(self):
-        data = {
-            "path": False,
-            "ansible_version": 2,
-            "parameters": ['one'],
-            "completed": "yes",
-            "started": "a long time ago"
-        }
-
-        res = PlaybookApi().post(data)
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_http_with_missing_argument(self):
-        data = {
-            "path": "/root/playbook.yml",
-        }
-        res = self.client.post('/api/v1/playbooks/',
-                               data=jsonutils.dumps(data),
-                               content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_post_internal_with_missing_argument(self):
-        data = {
-            "path": "/root/playbook.yml",
-        }
-        res = PlaybookApi().post(data)
-        self.assertEqual(res.status_code, 400)
+    def test_post_with_missing_argument(self):
+        resp, data = self.client.post(
+            path='/root/playbook.yml'
+        )
+        self.assertEqual(resp.status_code, 400)
 
     ###########
     # PATCH
     ###########
-    def test_patch_http_redirect(self):
-        res = self.client.patch('/api/v1/playbooks')
-        self.assertEqual(res.status_code, 301)
+    def test_patch_with_no_data(self):
+        resp, data = self.client.patch()
+        self.assertEqual(resp.status_code, 400)
 
-    def test_patch_http_with_no_data(self):
-        res = self.client.patch('/api/v1/playbooks/',
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_no_data(self):
-        res = PlaybookApi().patch()
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_http_existing(self):
+    def test_patch_existing(self):
         # Generate fake playbook data
         ctx = FakeRun()
         self.assertEqual(ctx.playbook['id'], 1)
@@ -176,153 +94,66 @@ class TestApiPlaybooks(TestAra):
         new_version = "1.9.9.6"
         self.assertNotEqual(ctx.playbook['ansible_version'], new_version)
 
-        data = {
-            "id": ctx.playbook['id'],
-            "ansible_version": new_version
-        }
-        res = self.client.patch('/api/v1/playbooks/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.patch(
+            id=ctx.playbook['id'],
+            ansible_version=new_version
+        )
+        self.assertEqual(resp.status_code, 200)
 
         # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
         self.assertEqual(data['ansible_version'], new_version)
 
         # Confirm by re-fetching playbook
-        updated = self.client.get('/api/v1/playbooks/',
-                                  content_type='application/json',
-                                  query_string=dict(id=ctx.playbook['id']))
-        updated_playbook = jsonutils.loads(updated.data)
-        self.assertEqual(updated_playbook['ansible_version'], new_version)
+        resp, updated = self.client.get(id=ctx.playbook['id'])
+        self.assertEqual(updated['ansible_version'], new_version)
 
-    def test_patch_internal_existing(self):
-        # Generate fake playbook data
-        ctx = FakeRun()
-        self.assertEqual(ctx.playbook['id'], 1)
-
-        # We'll update the ansible_version field, assert we are actually
-        # making a change
-        new_version = "1.9.9.6"
-        self.assertNotEqual(ctx.playbook['ansible_version'], new_version)
-
-        data = {
-            "id": ctx.playbook['id'],
-            "ansible_version": new_version
-        }
-        res = PlaybookApi().patch(data)
-        self.assertEqual(res.status_code, 200)
-
-        # The patch endpoint should return the full updated object
-        data = jsonutils.loads(res.data)
-        self.assertEqual(data['ansible_version'], new_version)
-
-        # Confirm by re-fetching playbook
-        updated = PlaybookApi().get(id=ctx.playbook['id'])
-        updated_playbook = jsonutils.loads(updated.data)
-        self.assertEqual(updated_playbook['ansible_version'], new_version)
-
-    def test_patch_http_with_missing_arg(self):
-        data = {
-            "ansible_version": "1.9.9.6"
-        }
-        res = self.client.patch('/api/v1/playbooks/',
-                                data=jsonutils.dumps(data),
-                                content_type='application/json')
-        self.assertEqual(res.status_code, 400)
-
-    def test_patch_internal_with_missing_arg(self):
-        data = {
-            "ansible_version": "1.9.9.6"
-        }
-        res = PlaybookApi().patch(data)
-        self.assertEqual(res.status_code, 400)
+    def test_patch_with_missing_arg(self):
+        FakeRun()
+        resp, data = self.client.patch(
+            ansible_version='1.9.9.6'
+        )
+        self.assertEqual(resp.status_code, 400)
 
     ###########
     # PUT
     ###########
-    def test_put_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.put('/api/v1/playbooks')
-
     # Not implemented yet
-    def test_put_http_unimplemented(self):
-        res = self.client.put('/api/v1/playbooks/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_put_internal_unimplemented(self):
-        http = self.client.put('/api/v1/playbooks/')
-        internal = PlaybookApi().put()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_put_unimplemented(self):
+        resp, data = self.client.put()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # DELETE
     ###########
-    def test_delete_http_redirect(self):
-        # TODO: Does this raise a RequestRedirect due to underlying 405 ?
-        with pytest.raises(RequestRedirect):
-            self.client.delete('/api/v1/playbooks')
-
     # Not implemented yet
-    def test_delete_http_unimplemented(self):
-        res = self.client.delete('/api/v1/playbooks/')
-        self.assertEqual(res.status_code, 405)
-
-    def test_delete_internal_unimplemented(self):
-        http = self.client.delete('/api/v1/playbooks/')
-        internal = PlaybookApi().delete()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
+    def test_delete_unimplemented(self):
+        resp, data = self.client.delete()
+        self.assertEqual(resp.status_code, 405)
 
     ###########
     # GET
     ###########
-    def test_get_http_redirect(self):
-        res = self.client.get('/api/v1/playbooks',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 301)
-
-    def test_get_http_with_bad_params_404_help(self):
-        res = self.client.get('/api/v1/playbooks/',
-                              content_type='application/json',
-                              query_string=dict(id=0))
-        self.assertEqual(res.status_code, 404)
+    def test_get_with_bad_params_404_help(self):
+        FakeRun()
+        resp, data = self.client.get(id=0)
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_with_bad_params_404_help(self):
-        http = self.client.get('/api/v1/playbooks/',
-                               content_type='application/json',
-                               query_string=dict(id=0))
-        internal = PlaybookApi().get(id=0)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters_and_data(self):
-        res = self.client.get('/api/v1/playbooks/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 404)
+    def test_get_without_parameters_and_data(self):
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 404)
         # TODO: Improve this
-        self.assertTrue(b'result_output' in res.data)
-        self.assertTrue(b'query_parameters' in res.data)
+        self.assertTrue('result_output' in data['help'])
+        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_internal_without_parameters_and_data(self):
-        http = self.client.get('/api/v1/playbooks/',
-                               content_type='application/json')
-        internal = PlaybookApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_without_parameters(self):
+    def test_get_without_parameters(self):
         ctx = FakeRun()
-        res = self.client.get('/api/v1/playbooks/',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get()
+        self.assertEqual(resp.status_code, 200)
 
-        data = jsonutils.loads(res.data)[0]
+        data = data[0]
 
         self.assertEqual(len(data), len(ctx.playbook))
         self.assertEqual(data, ctx.playbook)
@@ -330,69 +161,18 @@ class TestApiPlaybooks(TestAra):
             self.assertIn(key, data)
             self.assertIn(key, ctx.playbook)
 
-    def test_get_internal_without_parameters(self):
-        FakeRun()
-        http = self.client.get('/api/v1/playbooks/',
-                               content_type='application/json')
-        internal = PlaybookApi().get()
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_parameter(self):
+    def test_get_with_id_parameter(self):
         FakeRun()
         # Run twice to get a second playbook
         ctx = FakeRun()
-        playbooks = self.client.get('/api/v1/playbooks/',
-                                    content_type='application/json')
-        self.assertEqual(len(jsonutils.loads(playbooks.data)), 2)
+        resp, playbooks = self.client.get()
+        self.assertEqual(len(playbooks), 2)
 
-        res = self.client.get('/api/v1/playbooks/',
-                              content_type='application/json',
-                              query_string=dict(id=2))
-        self.assertEqual(res.status_code, 200)
+        resp, data = self.client.get(id=2)
+        self.assertEqual(resp.status_code, 200)
 
-        data = jsonutils.loads(res.data)
         self.assertEqual(len(data), len(ctx.playbook))
         self.assertEqual(data, ctx.playbook)
         for key in PLAYBOOK_FIELDS.keys():
             self.assertIn(key, data)
             self.assertIn(key, ctx.playbook)
-
-    def test_get_internal_with_id_parameter(self):
-        FakeRun()
-        # Run twice to get a second playbook
-        FakeRun()
-
-        http = self.client.get('/api/v1/playbooks/',
-                               content_type='application/json',
-                               query_string=dict(id=2))
-        internal = PlaybookApi().get(id=2)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
-
-    def test_get_http_with_id_url(self):
-        FakeRun()
-        # Run twice to get a second playbook
-        ctx = FakeRun()
-
-        res = self.client.get('/api/v1/playbooks/2',
-                              content_type='application/json')
-        self.assertEqual(res.status_code, 200)
-
-        data = jsonutils.loads(res.data)
-        self.assertEqual(len(data), len(ctx.playbook))
-        self.assertEqual(data, ctx.playbook)
-        for key in PLAYBOOK_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, ctx.playbook)
-
-    def test_get_internal_with_id_url(self):
-        FakeRun()
-        # Run twice to get a second playbook
-        FakeRun()
-
-        http = self.client.get('/api/v1/playbooks/2',
-                               content_type='application/json')
-        internal = PlaybookApi().get(id=2)
-        self.assertEqual(http.status_code, internal.status_code)
-        self.assertEqual(http.data, internal.data)
