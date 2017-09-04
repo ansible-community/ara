@@ -11,7 +11,7 @@ decorator>=4.0.0
 cliff
 python-subunit
 setuptools>=11.3
-pygments
+pygments>=1.6
 debtcollector>=1.2.0
 junit-xml>=1.7
 pyfakefs
