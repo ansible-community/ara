@@ -140,7 +140,7 @@ class RecordRestApi(Resource):
         )
         parser.add_argument(
             'value', dest='value',
-            type=str,
+            type=api_utils.result_input,
             location='json',
             required=True,
             help='The value of the record'
@@ -175,7 +175,7 @@ class RecordRestApi(Resource):
         )
         parser.add_argument(
             'value', dest='value',
-            type=str,
+            type=api_utils.result_input,
             location='json',
             required=False,
             help='The value of the record'

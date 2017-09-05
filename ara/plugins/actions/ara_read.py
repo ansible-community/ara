@@ -18,7 +18,7 @@
 from ansible.plugins.action import ActionBase
 
 try:
-    from ara.db import models
+    from ara.api.records import RecordApi
     from ara.webapp import create_app
     from flask import current_app
     HAS_ARA = True
@@ -84,16 +84,15 @@ class ActionModule(ActionBase):
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(('playbook', 'key'))
 
-    def get_key(self, playbook_id, key):
-        try:
-            data = (models.Record.query
-                    .filter_by(key=key)
-                    .filter_by(playbook_id=playbook_id)
-                    .one())
-        except models.NoResultFound:
+    def _get_key(self, playbook_id, key):
+        resp, record = RecordApi().get(
+            playbook_id=playbook_id,
+            key=key
+        )
+        if resp.status_code == 404:
             return False
 
-        return data
+        return record[0]
 
     def run(self, tmp=None, task_vars=None):
         if task_vars is None:
@@ -136,16 +135,22 @@ class ActionModule(ActionBase):
             playbook_id = current_app._cache['playbook']['id']
 
         try:
-            data = self.get_key(playbook_id, key)
+            data = self._get_key(playbook_id, key)
             if data:
-                result['key'] = data.key
-                result['value'] = data.value
-                result['type'] = data.type
-                result['playbook_id'] = data.playbook_id
-                print("read")
-                print(result)
-            msg = 'Sucessfully read data for the key {0}'.format(data.key)
-            result['msg'] = msg
+                result['key'] = data['key']
+                result['value'] = data['value']
+                result['type'] = data['type']
+                result['playbook_id'] = data['playbook']['id']
+                msg = 'Sucessfully read key {0}'.format(data['key'])
+                result['msg'] = msg
+            else:
+                result['key'] = None
+                result['value'] = None
+                result['type'] = None
+                result['playbook_id'] = None
+                result['failed'] = True
+                msg = 'Key {0} does not exist, record it first.'.format(key)
+                result['msg'] = msg
         # TODO: Do a better job for handling exception
         except Exception as e:
             result['key'] = None
@@ -153,6 +158,6 @@ class ActionModule(ActionBase):
             result['type'] = None
             result['playbook_id'] = None
             result['failed'] = True
-            msg = 'Could not read data for key {0}: {1}'.format(key, str(e))
+            msg = 'Could not read key {0}: {1}'.format(key, str(e))
             result['msg'] = msg
         return result

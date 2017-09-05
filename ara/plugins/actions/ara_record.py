@@ -18,8 +18,7 @@
 from ansible.plugins.action import ActionBase
 
 try:
-    from ara.db import models
-    from ara.db.models import db
+    from ara.api.records import RecordApi
     from ara.webapp import create_app
     from flask import current_app
     HAS_ARA = True
@@ -112,21 +111,26 @@ class ActionModule(ActionBase):
     VALID_TYPES = ['text', 'url', 'json', 'list', 'dict']
 
     def create_or_update_key(self, playbook_id, key, value, type):
-        try:
-            data = (models.Record.query
-                    .filter_by(key=key)
-                    .filter_by(playbook_id=playbook_id)
-                    .one())
-            data.value = value
-            data.type = type
-        except models.NoResultFound:
-            data = models.Record(playbook_id=playbook_id,
-                                 key=key,
-                                 value=value,
-                                 type=type)
-        db.session.add(data)
-        db.session.commit()
-
+        resp, exists = RecordApi().get(
+            playbook_id=playbook_id,
+            key=key
+        )
+        if resp.status_code == 404:
+            # TODO: Do a better job at validating this
+            resp, data = RecordApi().post(
+                playbook_id=playbook_id,
+                key=key,
+                value=value,
+                type=type
+            )
+        else:
+            # TODO: Do a better job at validating this
+            resp, data = RecordApi().patch(
+                id=exists[0]['id'],
+                key=key,
+                value=value,
+                type=type
+            )
         return data
 
     def run(self, tmp=None, task_vars=None):
@@ -181,10 +185,10 @@ class ActionModule(ActionBase):
 
         try:
             data = self.create_or_update_key(playbook_id, key, value, type)
-            result['key'] = data.key
-            result['value'] = data.value
-            result['type'] = data.type
-            result['playbook_id'] = data.playbook_id
+            result['key'] = data['key']
+            result['value'] = data['value']
+            result['type'] = data['type']
+            result['playbook_id'] = data['playbook']['id']
             result['msg'] = 'Data recorded in ARA for this playbook.'
         except Exception as e:
             result['failed'] = True
