@@ -263,6 +263,12 @@ class CallbackModule(CallbackBase):
                                    name=result._host.get_name())
         host = data[0]
 
+        # An include_role task might end up putting an IncludeRole object
+        # inside the result object which we don't need
+        # https://github.com/ansible/ansible/issues/30385
+        if 'include_role' in result._result:
+            del result._result['include_role']
+
         # Use Ansible's CallbackBase._dump_results in order to strip internal
         # keys, respect no_log directive, etc.
         if self.loop_items:
