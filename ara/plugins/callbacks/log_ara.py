@@ -150,6 +150,12 @@ class CallbackModule(CallbackBase):
         LOG.debug('logging task result for task %s (%s), host %s',
                   self.task.name, self.task.id, result._host.get_name())
 
+        # An include_role task might end up putting an IncludeRole object
+        # inside the result object which we don't need
+        # https://github.com/ansible/ansible/issues/30385
+        if 'include_role' in result._result:
+            del result._result['include_role']
+
         result.task_start = self.task.time_start
         result.task_end = datetime.now()
         host = self.get_or_create_host(result._host.get_name())
