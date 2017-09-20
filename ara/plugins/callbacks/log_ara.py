@@ -17,12 +17,10 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import decorator
 import flask
 import itertools
 import logging
 import os
-import six
 
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
@@ -43,22 +41,6 @@ LOG = logging.getLogger('ara.callback')
 app = create_app()
 
 
-class CommitAfter(type):
-    def __new__(kls, name, bases, attrs):
-        def commit_after(func):
-            def _commit_after(func, *args, **kwargs):
-                rval = func(*args, **kwargs)
-                db.session.commit()
-                return rval
-
-            return decorator.decorate(func, _commit_after)
-
-        for k, v in attrs.items():
-            if callable(v) and not k.startswith('_'):
-                attrs[k] = commit_after(v)
-        return super(CommitAfter, kls).__new__(kls, name, bases, attrs)
-
-
 class IncludeResult(object):
     """
     This is used by the v2_playbook_on_include callback to synthesize a task
@@ -69,7 +51,6 @@ class IncludeResult(object):
         self._result = {'included_file': path}
 
 
-@six.add_metaclass(CommitAfter)
 class CallbackModule(CallbackBase):
     """
     Saves data from an Ansible run into a database
@@ -109,6 +90,7 @@ class CallbackModule(CallbackBase):
         except models.NoResultFound:
             host = models.Host(name=hostname, playbook=self.playbook)
             db.session.add(host)
+            db.session.commit()
 
         return host
 
@@ -125,6 +107,7 @@ class CallbackModule(CallbackBase):
 
         file_ = models.File(path=path, playbook=self.playbook)
         db.session.add(file_)
+        db.session.commit()
 
         try:
             with open(path, 'r') as fd:
@@ -190,6 +173,7 @@ class CallbackModule(CallbackBase):
         )
 
         db.session.add(self.taskresult)
+        db.session.commit()
 
         if self.task.action == 'setup' and 'ansible_facts' in result._result:
             values = jsonutils.dumps(result._result['ansible_facts'])
@@ -197,6 +181,7 @@ class CallbackModule(CallbackBase):
             host.facts = facts
 
             db.session.add(facts)
+            db.session.commit()
 
     def log_stats(self, stats):
         """
@@ -216,6 +201,7 @@ class CallbackModule(CallbackBase):
                 ok=host_stats['ok'],
                 skipped=host_stats['skipped']
             ))
+            db.session.commit()
 
     def close_task(self):
         """
@@ -227,6 +213,7 @@ class CallbackModule(CallbackBase):
                       self.task.id)
             self.task.stop()
             db.session.add(self.task)
+            db.session.commit()
 
             self.task = None
             self.loop_items = []
@@ -239,6 +226,7 @@ class CallbackModule(CallbackBase):
             LOG.debug('closing play %s (%s)', self.play.name, self.play.id)
             self.play.stop()
             db.session.add(self.play)
+            db.session.commit()
 
             self.play = None
 
@@ -251,6 +239,7 @@ class CallbackModule(CallbackBase):
             self.playbook.stop()
             self.playbook.complete = True
             db.session.add(self.playbook)
+            db.session.commit()
 
     def v2_runner_item_on_ok(self, result):
         self.loop_items.append(result)
@@ -305,6 +294,7 @@ class CallbackModule(CallbackBase):
 
         self.task.start()
         db.session.add(self.task)
+        db.session.commit()
 
     def v2_playbook_on_handler_task_start(self, task):
         self.v2_playbook_on_task_start(task, False, is_handler=True)
@@ -331,6 +321,7 @@ class CallbackModule(CallbackBase):
 
         self.playbook.start()
         db.session.add(self.playbook)
+        db.session.commit()
 
         file_ = self.get_or_create_file(path)
         file_.is_playbook = True
@@ -361,6 +352,7 @@ class CallbackModule(CallbackBase):
 
         self.play.start()
         db.session.add(self.play)
+        db.session.commit()
 
     def v2_playbook_on_stats(self, stats):
         self.log_stats(stats)
