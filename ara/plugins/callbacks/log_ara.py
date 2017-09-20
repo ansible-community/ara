@@ -17,7 +17,6 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import decorator
 import logging
 import os
 import six
@@ -47,23 +46,6 @@ LOG = logging.getLogger('ara.callback')
 app = create_app()
 
 
-class CommitAfter(type):
-    def __new__(kls, name, bases, attrs):
-        def commit_after(func):
-            def _commit_after(func, *args, **kwargs):
-                rval = func(*args, **kwargs)
-                db.session.commit()
-                return rval
-
-            return decorator.decorate(func, _commit_after)
-
-        for k, v in attrs.items():
-            if callable(v) and not k.startswith('_'):
-                attrs[k] = commit_after(v)
-        return super(CommitAfter, kls).__new__(kls, name, bases, attrs)
-
-
-@six.add_metaclass(CommitAfter)
 class CallbackModule(CallbackBase):
     """
     Saves data from an Ansible run into a database

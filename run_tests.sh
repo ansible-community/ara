@@ -126,10 +126,10 @@ export ANSIBLE_LIBRARY="ara/plugins/modules"
 export ARA_DATABASE="${DATABASE}"
 
 # Lint
-for file in $(find ara/tests/integration -regex '.*.y[a]?ml'); do
+for file in $(find ara/tests/integration ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
     ansible-lint ${file}
 done
-for file in $(find ara/tests/integration -maxdepth 1 -regex '.*.y[a]?ml'); do
+for file in $(find ara/tests/integration -maxdepth 1 ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
     ansible-playbook --syntax-check ${file}
 done
 
@@ -147,6 +147,12 @@ kill $!
 
 # Test include role which is a bit special
 ansible-playbook -vv ara/tests/integration/include_role.yml
+
+if [[ $(semver_compare "${ansible_version}" ">=" "2.4.0.0") == "True" ]]; then
+    ansible-playbook --syntax-check ara/tests/integration/import.yml
+    ansible-lint ara/tests/integration/import.yml
+    ansible-playbook -vv ara/tests/integration/import.yml
+fi
 
 # Run test commands
 pbid=$(ara playbook list -c ID -f value |head -n1)

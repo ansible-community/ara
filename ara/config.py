@@ -25,8 +25,17 @@ import xstatic.pkg.patternfly_bootstrap_treeview
 
 from ansible import __version__ as ansible_version
 from ansible.constants import get_config
-from ansible.constants import load_config_file
+try:
+    from ansible.constants import load_config_file
+except ImportError:
+    # Ansible 2.4 no longer provides load_config_file, this is handled further
+    # down
+    # Also, don't scream deprecated things at us
+    import ansible.constants
+    ansible.constants._deprecated = lambda *args: None
+    pass
 from distutils.version import LooseVersion
+from six.moves import configparser
 
 
 def _ara_config(config, key, env_var, default=None, section='ara',
@@ -82,7 +91,11 @@ DEFAULTS = {
 }
 
 # Bootstrap Ansible configuration
-config, path = load_config_file()
+# Ansible >=2.4 takes care of loading the configuration file itself
+if LooseVersion(ansible_version) < LooseVersion('2.4.0'):
+    config, path = load_config_file()
+else:
+    config = configparser.ConfigParser()
 
 # Some defaults need to be based on top of a "processed" ARA_DIR
 ARA_DIR = _ara_config(config, 'dir', 'ARA_DIR')

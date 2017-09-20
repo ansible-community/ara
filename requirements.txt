@@ -1,7 +1,7 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
 
 jinja2>=2.9
-ansible>=2.2.0.0,<2.4
+ansible>=2.2.0.0
 Flask>=0.11,<0.13
 Flask-Restful==0.3.5
 Flask-SQLAlchemy
