@@ -24,6 +24,7 @@ from cliff.show import ShowOne
 
 LIST_FIELDS = (
     Field('ID'),
+    Field('Name', 'task.name'),
     Field('Host', 'host.name'),
     Field('Action', 'task.action'),
     Field('Status', 'derived_status'),
@@ -34,6 +35,7 @@ LIST_FIELDS = (
 
 SHOW_FIELDS = (
     Field('ID'),
+    Field('Name', 'task.name'),
     Field('Playbook ID', 'task.playbook.id'),
     Field('Playbook Path', 'task.playbook.path'),
     Field('Play ID', 'task.play.id'),
