@@ -30,10 +30,10 @@ try:
 except ImportError:
     # Ansible 2.4 no longer provides load_config_file, this is handled further
     # down
+    from ansible.config.manager import find_ini_config_file
     # Also, don't scream deprecated things at us
     import ansible.constants
     ansible.constants._deprecated = lambda *args: None
-    pass
 from distutils.version import LooseVersion
 from six.moves import configparser
 
@@ -95,7 +95,9 @@ DEFAULTS = {
 if LooseVersion(ansible_version) < LooseVersion('2.4.0'):
     config, path = load_config_file()
 else:
+    path = find_ini_config_file()
     config = configparser.ConfigParser()
+    config.read(path)
 
 # Some defaults need to be based on top of a "processed" ARA_DIR
 ARA_DIR = _ara_config(config, 'dir', 'ARA_DIR')

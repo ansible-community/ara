@@ -108,6 +108,7 @@ fi
 # Install ARA so it can be used from a virtual environment
 tox -e ${python_version} --notest
 source .tox/${python_version}/bin/activate
+ansible_version=$(pip freeze |awk -F== '/ansible==/ {print $2}')
 ansible --version
 python --version
 
