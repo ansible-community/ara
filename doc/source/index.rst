@@ -12,6 +12,7 @@ Table of Contents
     Installation <installation>
     Configuration <configuration>
     Web Server configuration <webserver>
+    Advanced use cases <advanced>
     Usage <usage>
     Contributing <contributing>
     Manifesto: Project core values <manifesto>
