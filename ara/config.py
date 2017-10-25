@@ -97,7 +97,8 @@ if LooseVersion(ansible_version) < LooseVersion('2.4.0'):
 else:
     path = find_ini_config_file()
     config = configparser.ConfigParser()
-    config.read(path)
+    if path is not None:
+        config.read(path)
 
 # Some defaults need to be based on top of a "processed" ARA_DIR
 ARA_DIR = _ara_config(config, 'dir', 'ARA_DIR')
