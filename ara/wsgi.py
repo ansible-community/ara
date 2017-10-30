@@ -19,10 +19,18 @@
 # ANSIBLE_CONFIG environment variable in order to configure Ansible and ARA.
 
 import os
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def application(environ, start_response):
-    os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
+    if 'ANSIBLE_CONFIG' in environ:
+        os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
+    else:
+        if 'ANSIBLE_CONFIG' not in os.environ:
+            log.warn('ANSIBLE_CONFIG environment variable not found.')
+
     from ara.webapp import create_app
     app = create_app()
     return app(environ, start_response)
