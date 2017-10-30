@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.api.v1.results import ResultRestApi
 from ara.db.models import db
 from ara.db.models import Host
 from ara.db.models import NoResultFound
@@ -32,8 +33,12 @@ from flask_restful import Resource
 blueprint = Blueprint('hosts', __name__)
 api = Api(blueprint)
 
-HOST_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('hosts.hostrestapi')
+}
+
+DETAIL_FIELDS = {
     'facts': fields.Raw,
     'name': api_utils.Encoded,
     'changed': fields.Integer,
@@ -46,6 +51,9 @@ HOST_FIELDS = {
         'href': fields.Url('playbooks.playbookrestapi')
     }),
 }
+
+HOST_FIELDS = BASE_FIELDS.copy()
+HOST_FIELDS.update(DETAIL_FIELDS)
 
 
 class HostRestApi(Resource):
@@ -119,13 +127,15 @@ class HostRestApi(Resource):
 
         return self.get(id=host.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None):
         """
         Retrieves one or many hosts based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             host = _find_hosts(id=id)
             if host is None:
                 abort(404, message="Host {} doesn't exist".format(id),
@@ -133,13 +143,16 @@ class HostRestApi(Resource):
 
             return marshal(host, HOST_FIELDS)
 
-        args = parser.parse_args()
+        if playbook_id is not None:
+            hosts = _find_hosts(playbook_id=playbook_id)
+            return marshal(hosts, BASE_FIELDS)
+
         hosts = _find_hosts(**args)
         if not hosts:
             abort(404, message='No hosts found for this query',
                   help=api_utils.help(parser.args, HOST_FIELDS))
 
-        return marshal(hosts, HOST_FIELDS)
+        return marshal(hosts, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():
@@ -321,3 +334,5 @@ def _find_hosts(**kwargs):
 # In practice, the endpoint <resource> returns a 301 redirection to <resource>/
 # when used on a live HTTP server.
 api.add_resource(HostRestApi, '/', '', '/<int:id>')
+
+api.add_resource(ResultRestApi, '/<int:host_id>/results')

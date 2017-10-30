@@ -34,8 +34,12 @@ from flask_restful import inputs
 blueprint = Blueprint('results', __name__)
 api = Api(blueprint)
 
-RESULT_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('results.resultrestapi')
+}
+
+DETAIL_FIELDS = {
     'status': fields.String,
     'changed': fields.Boolean,
     'failed': fields.Boolean,
@@ -62,6 +66,9 @@ RESULT_FIELDS = {
         'href': fields.Url('hosts.hostrestapi')
     })
 }
+
+RESULT_FIELDS = BASE_FIELDS.copy()
+RESULT_FIELDS.update(DETAIL_FIELDS)
 
 
 class ResultRestApi(Resource):
@@ -141,13 +148,16 @@ class ResultRestApi(Resource):
 
         return self.get(id=result.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None, play_id=None, task_id=None,
+            host_id=None):
         """
         Retrieves one or many results based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             result = _find_results(id=id)
             if result is None:
                 abort(404, message="Result {} doesn't exist".format(id),
@@ -155,13 +165,22 @@ class ResultRestApi(Resource):
 
             return marshal(result, RESULT_FIELDS)
 
-        args = parser.parse_args()
+        # TODO: I don't particularly like this bit, improve it ?
+        # _find_results does filter for None so it's safe but...
+        if (playbook_id is not None or play_id is not None or
+           task_id is not None or host_id is not None):
+            results = _find_results(playbook_id=playbook_id,
+                                    play_id=play_id,
+                                    task_id=task_id,
+                                    host_id=host_id)
+            return marshal(results, BASE_FIELDS)
+
         results = _find_results(**args)
         if not results:
             abort(404, message="No results found for this query",
                   help=api_utils.help(parser.args, RESULT_FIELDS))
 
-        return marshal(results, RESULT_FIELDS)
+        return marshal(results, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():

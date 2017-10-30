@@ -34,8 +34,12 @@ from flask_restful import Resource
 blueprint = Blueprint('files', __name__)
 api = Api(blueprint)
 
-FILE_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('files.filerestapi')
+}
+
+DETAIL_FIELDS = {
     'path': fields.String,
     'content': api_utils.Encoded(attribute='content.content'),
     'sha1': fields.String(attribute='content.sha1'),
@@ -43,8 +47,11 @@ FILE_FIELDS = {
     'playbook': fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('playbooks.playbookrestapi')
-    }),
+    })
 }
+
+FILE_FIELDS = BASE_FIELDS.copy()
+FILE_FIELDS.update(DETAIL_FIELDS)
 
 
 class FileRestApi(Resource):
@@ -135,13 +142,15 @@ class FileRestApi(Resource):
 
         return self.get(id=file_.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None):
         """
         Retrieves one or many files based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             file_ = _find_files(id=id)
             if file_ is None:
                 abort(404, message="File {} doesn't exist".format(id),
@@ -149,13 +158,16 @@ class FileRestApi(Resource):
 
             return marshal(file_, FILE_FIELDS)
 
-        args = parser.parse_args()
+        if playbook_id is not None:
+            files = _find_files(playbook_id=playbook_id)
+            return marshal(files, BASE_FIELDS)
+
         files = _find_files(**args)
         if not files:
             abort(404, message='No files found for this query',
                   help=api_utils.help(parser.args, FILE_FIELDS))
 
-        return marshal(files, FILE_FIELDS)
+        return marshal(files, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():

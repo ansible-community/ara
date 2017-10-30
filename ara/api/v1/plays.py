@@ -16,6 +16,8 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.api.v1.results import ResultRestApi
+from ara.api.v1.tasks import TaskRestApi
 from ara.db.models import db
 from ara.db.models import Play
 from ara.db.models import Playbook
@@ -33,7 +35,12 @@ from flask_restful import inputs
 blueprint = Blueprint('plays', __name__)
 api = Api(blueprint)
 
-PLAY_FIELDS = {
+BASE_FIELDS = {
+    'id': fields.Integer,
+    'href': fields.Url('plays.playrestapi')
+}
+
+DETAIL_FIELDS = {
     'id': fields.Integer,
     'name': api_utils.Encoded,
     'started': fields.DateTime(dt_format='iso8601'),
@@ -42,15 +49,14 @@ PLAY_FIELDS = {
         'id': fields.Integer,
         'href': fields.Url('playbooks.playbookrestapi')
     }),
-    'results': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('results.resultrestapi')
-    })),
-    'tasks': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('tasks.taskrestapi')
-    }))
+    'results': api_utils.ResourceUrl('plays.playrestapi',
+                                     resource='results'),
+    'tasks': api_utils.ResourceUrl('plays.playrestapi',
+                                   resource='tasks')
 }
+
+PLAY_FIELDS = BASE_FIELDS.copy()
+PLAY_FIELDS.update(DETAIL_FIELDS)
 
 
 class PlayRestApi(Resource):
@@ -113,13 +119,15 @@ class PlayRestApi(Resource):
 
         return self.get(id=play.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None):
         """
         Retrieves one or many plays based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             play = _find_plays(id=id)
             if play is None:
                 abort(404, message="Play {} doesn't exist".format(id),
@@ -127,13 +135,16 @@ class PlayRestApi(Resource):
 
             return marshal(play, PLAY_FIELDS)
 
-        args = parser.parse_args()
+        if playbook_id is not None:
+            plays = _find_plays(playbook_id=playbook_id)
+            return marshal(plays, BASE_FIELDS)
+
         plays = _find_plays(**args)
         if not plays:
             abort(404, message="No plays found for this query",
                   help=api_utils.help(parser.args, PLAY_FIELDS))
 
-        return marshal(plays, PLAY_FIELDS)
+        return marshal(plays, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():
@@ -277,3 +288,6 @@ def _find_plays(**kwargs):
 # In practice, the endpoint <resource> returns a 301 redirection to <resource>/
 # when used on a live HTTP server.
 api.add_resource(PlayRestApi, '/', '', '/<int:id>')
+
+api.add_resource(ResultRestApi, '/<int:play_id>/results')
+api.add_resource(TaskRestApi, '/<int:play_id>/tasks')

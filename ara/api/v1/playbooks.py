@@ -16,6 +16,12 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.api.v1.files import FileRestApi
+from ara.api.v1.hosts import HostRestApi
+from ara.api.v1.plays import PlayRestApi
+from ara.api.v1.records import RecordRestApi
+from ara.api.v1.results import ResultRestApi
+from ara.api.v1.tasks import TaskRestApi
 from ara.db.models import db
 from ara.db.models import Playbook
 
@@ -32,39 +38,34 @@ from flask_restful import inputs
 blueprint = Blueprint('playbooks', __name__)
 api = Api(blueprint)
 
-PLAYBOOK_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('playbooks.playbookrestapi')
+}
+
+DETAIL_FIELDS = {
     'path': fields.String,
     'ansible_version': fields.String,
     'completed': fields.Boolean,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
     'parameters': fields.Raw,
-    'files': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('files.filerestapi')
-    })),
-    'hosts': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('hosts.hostrestapi')
-    })),
-    'plays': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('plays.playrestapi')
-    })),
-    'records': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('records.recordrestapi')
-    })),
-    'results': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('results.resultrestapi')
-    })),
-    'tasks': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('tasks.taskrestapi')
-    }))
+    'files': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                   resource='files'),
+    'hosts': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                   resource='hosts'),
+    'plays': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                   resource='plays'),
+    'records': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                     resource='records'),
+    'results': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                     resource='results'),
+    'tasks': api_utils.ResourceUrl('playbooks.playbookrestapi',
+                                   resource='tasks')
 }
+
+PLAYBOOK_FIELDS = BASE_FIELDS.copy()
+PLAYBOOK_FIELDS.update(DETAIL_FIELDS)
 
 
 class PlaybookRestApi(Resource):
@@ -78,9 +79,7 @@ class PlaybookRestApi(Resource):
         parser = self._post_parser()
         args = parser.parse_args()
 
-        started = args.started
-        if not started:
-            started = datetime.utcnow()
+        started = args.started or datetime.utcnow()
 
         playbook = Playbook(
             path=args.path,
@@ -128,22 +127,22 @@ class PlaybookRestApi(Resource):
         Retrieves one or many playbooks based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             playbook = _find_playbooks(id=id)
             if playbook is None:
                 abort(404, message="Playbook {} doesn't exist".format(id),
                       help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
-
             return marshal(playbook, PLAYBOOK_FIELDS)
 
-        args = parser.parse_args()
         playbooks = _find_playbooks(**args)
         if not playbooks:
             abort(404, message='No playbooks found for this query',
                   help=api_utils.help(parser.args, PLAYBOOK_FIELDS))
 
-        return marshal(playbooks, PLAYBOOK_FIELDS)
+        return marshal(playbooks, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():
@@ -337,3 +336,10 @@ def _find_playbooks(**kwargs):
 # In practice, the endpoint <resource> returns a 301 redirection to <resource>/
 # when used on a live HTTP server.
 api.add_resource(PlaybookRestApi, '/', '', '/<int:id>')
+
+api.add_resource(FileRestApi, '/<int:playbook_id>/files')
+api.add_resource(HostRestApi, '/<int:playbook_id>/hosts')
+api.add_resource(PlayRestApi, '/<int:playbook_id>/plays')
+api.add_resource(RecordRestApi, '/<int:playbook_id>/records')
+api.add_resource(ResultRestApi, '/<int:playbook_id>/results')
+api.add_resource(TaskRestApi, '/<int:playbook_id>/tasks')

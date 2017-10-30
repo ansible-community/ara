@@ -16,9 +16,17 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import six
+from flask import url_for
+from flask import request
 from flask_restful import fields
 from oslo_utils import encodeutils
 from oslo_serialization import jsonutils
+
+try:
+    from urlparse import urlparse, urlunparse
+except ImportError:
+    # python3
+    from urllib.parse import urlparse, urlunparse
 
 
 def help(args, fields):
@@ -39,6 +47,41 @@ def help(args, fields):
         'query_parameters': arguments,
         'result_output': output,
     }
+
+
+class ResourceUrl(fields.Raw):
+    """
+    A string representation of a Url for a resource, for example
+    /api/<resource>/<id>/<items>
+    :param endpoint: Endpoint name. If endpoint is ``None``,
+        ``request.endpoint`` is used instead
+    :type endpoint: str
+    :param absolute: If ``True``, ensures that the generated urls will have the
+        hostname included
+    :type absolute: bool
+    :param scheme: URL scheme specifier (e.g. ``http``, ``https``)
+    :type scheme: str
+    """
+    def __init__(self, endpoint=None, absolute=False, scheme=None,
+                 resource=None, **kwargs):
+        super(ResourceUrl, self).__init__(**kwargs)
+        self.endpoint = endpoint
+        self.absolute = absolute
+        self.scheme = scheme
+        self.resource = resource
+
+    def output(self, key, obj):
+        try:
+            data = fields.to_marshallable_type(obj)
+            endpoint = self.endpoint or request.endpoint
+            o = urlparse(url_for(endpoint, _external=self.absolute, **data))
+            path = "%s/%s" % (o.path, self.resource)
+            if self.absolute:
+                scheme = self.scheme or o.scheme
+                return urlunparse((scheme, o.netloc, path, "", "", ""))
+            return urlunparse(("", "", path, "", "", ""))
+        except TypeError as te:
+            raise fields.MarshallingException(te)
 
 
 class Encoded(fields.Raw):

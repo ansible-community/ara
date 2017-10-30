@@ -355,7 +355,9 @@ class CallbackModule(CallbackBase):
         resp, data = HostApi().get(playbook_id=playbook_id)
         if resp.status_code == 200:
             # 404 means there are no hosts (yet)
-            current_hosts = [host['name'] for host in data]
+            for host in data:
+                resp, host_detail = HostApi().get(id=host['id'])
+                current_hosts.append(host_detail['name'])
 
         for host in hosts:
             if host not in current_hosts:
@@ -377,7 +379,9 @@ class CallbackModule(CallbackBase):
         resp, data = FileApi().get(playbook_id=playbook_id)
         if resp.status_code == 200:
             # 404 means there are no files (yet)
-            current_files = [file_['path'] for file_ in data]
+            for file_ in data:
+                resp, file_detail = FileApi().get(id=file_['id'])
+                current_files.append(file_detail['path'])
 
         for file_ in files:
             if file_ not in current_files:

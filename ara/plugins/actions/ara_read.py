@@ -91,8 +91,11 @@ class ActionModule(ActionBase):
         )
         if resp.status_code == 404:
             return False
+        else:
+            # TODO: This is very optimistic
+            resp, record = RecordApi().get(id=record[0]['id'])
 
-        return record[0]
+        return record
 
     def run(self, tmp=None, task_vars=None):
         if task_vars is None:

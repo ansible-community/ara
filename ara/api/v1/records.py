@@ -31,8 +31,12 @@ from flask_restful import Resource
 blueprint = Blueprint('records', __name__)
 api = Api(blueprint)
 
-RECORD_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('records.recordrestapi')
+}
+
+DETAIL_FIELDS = {
     'key': fields.String,
     'value': fields.Raw,
     'type': fields.String,
@@ -41,6 +45,9 @@ RECORD_FIELDS = {
         'href': fields.Url('playbooks.playbookrestapi')
     }),
 }
+
+RECORD_FIELDS = BASE_FIELDS.copy()
+RECORD_FIELDS.update(DETAIL_FIELDS)
 
 
 class RecordRestApi(Resource):
@@ -99,13 +106,15 @@ class RecordRestApi(Resource):
 
         return self.get(id=record.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None):
         """
         Retrieves one or many records based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             record = _find_records(id=id)
             if record is None:
                 abort(404, message="Record {} doesn't exist".format(id),
@@ -113,13 +122,16 @@ class RecordRestApi(Resource):
 
             return marshal(record, RECORD_FIELDS)
 
-        args = parser.parse_args()
+        if playbook_id is not None:
+            records = _find_records(playbook_id=playbook_id)
+            return marshal(records, BASE_FIELDS)
+
         records = _find_records(**args)
         if not records:
             abort(404, message="No records found for this query",
                   help=api_utils.help(parser.args, RECORD_FIELDS))
 
-        return marshal(records, RECORD_FIELDS)
+        return marshal(records, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():

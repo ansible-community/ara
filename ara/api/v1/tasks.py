@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from ara.api.v1 import utils as api_utils
+from ara.api.v1.results import ResultRestApi
 from ara.db.models import db
 from ara.db.models import File
 from ara.db.models import Play
@@ -34,8 +35,12 @@ from flask_restful import inputs
 blueprint = Blueprint('tasks', __name__)
 api = Api(blueprint)
 
-TASK_FIELDS = {
+BASE_FIELDS = {
     'id': fields.Integer,
+    'href': fields.Url('tasks.taskrestapi')
+}
+
+DETAIL_FIELDS = {
     'name': api_utils.Encoded,
     'action': fields.String,
     'lineno': fields.Integer,
@@ -43,10 +48,8 @@ TASK_FIELDS = {
     'handler': fields.Boolean,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
-    'results': fields.List(fields.Nested({
-        'id': fields.Integer,
-        'href': fields.Url('results.resultrestapi')
-    })),
+    'results': api_utils.ResourceUrl('results.resultrestapi',
+                                     resource='tasks'),
     'playbook': fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('playbooks.playbookrestapi')
@@ -60,6 +63,9 @@ TASK_FIELDS = {
         'href': fields.Url('files.filerestapi')
     }),
 }
+
+TASK_FIELDS = BASE_FIELDS.copy()
+TASK_FIELDS.update(DETAIL_FIELDS)
 
 
 class TaskRestApi(Resource):
@@ -136,13 +142,15 @@ class TaskRestApi(Resource):
 
         return self.get(id=task.id)
 
-    def get(self, id=None):
+    def get(self, id=None, playbook_id=None, play_id=None):
         """
         Retrieves one or many tasks based on the request and the query
         """
         parser = self._get_parser()
+        args = parser.parse_args()
 
-        if id is not None:
+        if id is not None or ('id' in args and args['id'] is not None):
+            id = id or args['id']
             task = _find_tasks(id=id)
             if task is None:
                 abort(404, message="Task {} doesn't exist".format(id),
@@ -150,13 +158,19 @@ class TaskRestApi(Resource):
 
             return marshal(task, TASK_FIELDS)
 
-        args = parser.parse_args()
+        # TODO: I don't particularly like this bit, improve it ?
+        # _find_results does filter for None so it's safe but...
+        if playbook_id is not None or play_id is not None:
+            tasks = _find_tasks(playbook_id=playbook_id,
+                                play_id=play_id)
+            return marshal(tasks, BASE_FIELDS)
+
         tasks = _find_tasks(**args)
         if not tasks:
             abort(404, message="No tasks found for this query",
                   help=api_utils.help(parser.args, TASK_FIELDS))
 
-        return marshal(tasks, TASK_FIELDS)
+        return marshal(tasks, BASE_FIELDS)
 
     @staticmethod
     def _post_parser():
@@ -432,3 +446,5 @@ def _find_tasks(**kwargs):
 # In practice, the endpoint <resource> returns a 301 redirection to <resource>/
 # when used on a live HTTP server.
 api.add_resource(TaskRestApi, '/', '', '/<int:id>')
+
+api.add_resource(ResultRestApi, '/<int:task_id>/results')
