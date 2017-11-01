@@ -1,0 +1,17 @@
+- project:
+    name: openstack/ara
+    check:
+      jobs:
+        - ara-integration-py27-2.2.3.0-centos-7
+        - ara-integration-py27-latest-centos-7
+        - ara-integration-py27-devel-centos-7
+        - ara-integration-py35-latest
+        - ara-integration-py35-devel
+        - ara-integration-py35-latest-fedora-26
+        - ara-integration-py35-devel-fedora-26
+    gate:
+      jobs:
+        - ara-integration-py27-2.2.3.0-centos-7
+        - ara-integration-py27-latest-centos-7
+        - ara-integration-py35-latest
+        - ara-integration-py35-latest-fedora-26

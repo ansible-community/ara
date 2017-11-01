@@ -1,0 +1,56 @@
+- job:
+    name: ara-integration-py27-2.2.3.0-centos-7
+    parent: base
+    run: playbooks/ara-integration-py27-2.2.3.0-centos-7/run.yaml
+    post-run: playbooks/ara-integration-py27-2.2.3.0-centos-7/post.yaml
+    timeout: 1200
+    nodeset: centos-7
+
+- job:
+    name: ara-integration-py27-devel-centos-7
+    parent: base
+    voting: false
+    run: playbooks/ara-integration-py27-devel-centos-7/run.yaml
+    post-run: playbooks/ara-integration-py27-devel-centos-7/post.yaml
+    timeout: 1200
+    nodeset: centos-7
+
+- job:
+    name: ara-integration-py27-latest-centos-7
+    parent: base
+    run: playbooks/ara-integration-py27-latest-centos-7/run.yaml
+    post-run: playbooks/ara-integration-py27-latest-centos-7/post.yaml
+    timeout: 1200
+    nodeset: centos-7
+
+- job:
+    name: ara-integration-py35-devel
+    parent: base
+    voting: false
+    run: playbooks/ara-integration-py35-devel/run.yaml
+    post-run: playbooks/ara-integration-py35-devel/post.yaml
+    timeout: 1200
+
+- job:
+    name: ara-integration-py35-devel-fedora-26
+    parent: base
+    voting: false
+    run: playbooks/ara-integration-py35-devel-fedora-26/run.yaml
+    post-run: playbooks/ara-integration-py35-devel-fedora-26/post.yaml
+    timeout: 1200
+    nodeset: fedora-26
+
+- job:
+    name: ara-integration-py35-latest
+    parent: base
+    run: playbooks/ara-integration-py35-latest/run.yaml
+    post-run: playbooks/ara-integration-py35-latest/post.yaml
+    timeout: 1200
+
+- job:
+    name: ara-integration-py35-latest-fedora-26
+    parent: base
+    run: playbooks/ara-integration-py35-latest-fedora-26/run.yaml
+    post-run: playbooks/ara-integration-py35-latest-fedora-26/post.yaml
+    timeout: 1200
+    nodeset: fedora-26
