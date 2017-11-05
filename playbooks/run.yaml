@@ -1,0 +1,16 @@
+- hosts: all
+  name: Run ARA integration tests
+  tasks:
+    - include_role:
+        name: bindep
+
+    - name: Run integration tests
+      shell:
+        cmd: |
+          set -e
+          set -x
+          ./run_tests.sh --python {{ python_test_version }} --ansible {{ ansible_test_version }}
+        executable: /bin/bash
+        chdir: '{{ zuul.project.src_dir }}'
+      environment:
+        WORKSPACE: "{{ ansible_user_dir }}"

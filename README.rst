@@ -93,8 +93,8 @@ preferred client to come chat with us !
 
 .. _irc.freenode.net: https://webchat.freenode.net/
 
-Contributing, issues and bugs
-=============================
+Contributing, testing, issues and bugs
+======================================
 
 Contributions to ARA are definitely welcome and much appreciated !
 
@@ -110,6 +110,21 @@ contributing !
   https://review.openstack.org/#/q/project:openstack/ara
 * Bugs, issues and feature tracking are available on **StoryBoard**:
   https://storyboard.openstack.org/#!/project/843
+
+Each commit to ARA is reviewed and also rigorously tested to prevent
+regressions. Here's our current testing coverage:
+
++------------------+--------+--------+----------+--------+--------+
+| -                | Fedora | CentOS | OpenSUSE | Debian | Ubuntu |
++==================+========+========+==========+========+========+
+| Ansible 2.2.3.0  |        |        |          |    X   |        |
++------------------+--------+--------+----------+--------+--------+
+| Ansible 2.3.2.0  |        |    X   |          |        |        |
++------------------+--------+--------+----------+--------+--------+
+| Ansible "latest" |    X   |        |     X    |        |    X   |
++------------------+--------+--------+----------+--------+--------+
+| Ansible "devel"  |    X   |        |          |        |    X   |
++------------------+--------+--------+----------+--------+--------+
 
 You might also be interested in reading the project manifesto_ in order to have
 a good understanding of the project's core values and philosophy.
