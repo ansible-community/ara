@@ -214,7 +214,7 @@ To install the package on Ubuntu/Debian::
 
 To install the package on RHEL/CentOS/Fedora::
 
-   sudo yum -y install postgresql-devel
+   sudo yum install postgresql-devel
 
 If you need an ephemeral PostgreSQL server to test against, you can spin one
 up with Docker easily::

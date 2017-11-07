@@ -13,14 +13,14 @@ Required dependencies
 
 ::
 
-    yum -y install gcc python-devel libffi-devel openssl-devel redhat-rpm-config
+    yum install gcc python-devel libffi-devel openssl-devel redhat-rpm-config
 
 Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
-    yum -y install python-setuptools libselinux-python libxml2-devel libxslt-devel
+    yum install python-setuptools libselinux-python libxml2-devel libxslt-devel
     easy_install pip
     pip install tox
 
@@ -32,14 +32,14 @@ Required dependencies
 
 ::
 
-    apt-get -y install gcc python-dev libffi-dev libssl-dev
+    apt-get install gcc python-dev libffi-dev libssl-dev
 
 Development or integration testing dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
-    apt-get -y install python-pip libxml2-dev libxslt1-dev
+    apt-get install python-pip libxml2-dev libxslt1-dev
     pip install tox
 
 Installing ARA from trunk source
