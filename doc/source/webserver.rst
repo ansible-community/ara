@@ -77,7 +77,7 @@ Install Apache+mod_wsgi
 
 ::
 
-    yum -y install httpd mod_wsgi
+    yum install httpd mod_wsgi
     systemctl enable httpd
     systemctl start httpd
 
@@ -175,7 +175,7 @@ Install Apache+mod_wsgi
 
 ::
 
-    apt-get install -y apache2 libapache2-mod-wsgi
+    apt-get install apache2 libapache2-mod-wsgi
     systemctl enable apache2
     systemctl start apache2
 
