@@ -1,56 +1,62 @@
 - job:
-    name: ara-integration-py27-2.2.3.0-centos-7
+    name: ara-integration-base
     parent: base
-    run: playbooks/ara-integration-py27-2.2.3.0-centos-7/run.yaml
-    post-run: playbooks/ara-integration-py27-2.2.3.0-centos-7/post.yaml
-    timeout: 1200
+    run: playbooks/run.yaml
+    post-run: playbooks/post.yaml
+    timeout: 900
+
+- job:
+    name: ara-integration-debian-py27-2.2.3.0
+    parent: ara-integration-base
+    vars:
+      python_test_version: py27
+      ansible_test_version: 2.2.3.0
+    nodeset: debian-jessie
+
+- job:
+    name: ara-integration-centos-py27-2.3.2.0
+    parent: ara-integration-base
+    vars:
+      python_test_version: py27
+      ansible_test_version: 2.3.2.0
     nodeset: centos-7
 
 - job:
-    name: ara-integration-py27-devel-centos-7
-    parent: base
-    voting: false
-    run: playbooks/ara-integration-py27-devel-centos-7/run.yaml
-    post-run: playbooks/ara-integration-py27-devel-centos-7/post.yaml
-    timeout: 1200
-    nodeset: centos-7
+    name: ara-integration-opensuse-py27-latest
+    parent: ara-integration-base
+    vars:
+      python_test_version: py27
+      ansible_test_version: latest
+    nodeset: opensuse-423
 
 - job:
-    name: ara-integration-py27-latest-centos-7
-    parent: base
-    run: playbooks/ara-integration-py27-latest-centos-7/run.yaml
-    post-run: playbooks/ara-integration-py27-latest-centos-7/post.yaml
-    timeout: 1200
-    nodeset: centos-7
+    name: ara-integration-ubuntu-py35-2.3.2.0
+    parent: ara-integration-base
+    vars:
+      python_test_version: py35
+      ansible_test_version: 2.3.2.0
+    nodeset: ubuntu-xenial
 
 - job:
-    name: ara-integration-py35-devel
-    parent: base
-    voting: false
-    run: playbooks/ara-integration-py35-devel/run.yaml
-    post-run: playbooks/ara-integration-py35-devel/post.yaml
-    timeout: 1200
+    name: ara-integration-ubuntu-py35-devel
+    parent: ara-integration-base
+    vars:
+      python_test_version: py35
+      ansible_test_version: devel
+    nodeset: ubuntu-xenial
 
 - job:
-    name: ara-integration-py35-devel-fedora-26
-    parent: base
-    voting: false
-    run: playbooks/ara-integration-py35-devel-fedora-26/run.yaml
-    post-run: playbooks/ara-integration-py35-devel-fedora-26/post.yaml
-    timeout: 1200
+    name: ara-integration-fedora-py35-latest
+    parent: ara-integration-base
+    vars:
+      python_test_version: py35
+      ansible_test_version: latest
     nodeset: fedora-26
 
 - job:
-    name: ara-integration-py35-latest
-    parent: base
-    run: playbooks/ara-integration-py35-latest/run.yaml
-    post-run: playbooks/ara-integration-py35-latest/post.yaml
-    timeout: 1200
-
-- job:
-    name: ara-integration-py35-latest-fedora-26
-    parent: base
-    run: playbooks/ara-integration-py35-latest-fedora-26/run.yaml
-    post-run: playbooks/ara-integration-py35-latest-fedora-26/post.yaml
-    timeout: 1200
+    name: ara-integration-fedora-py35-devel
+    parent: ara-integration-base
+    vars:
+      python_test_version: py35
+      ansible_test_version: devel
     nodeset: fedora-26
