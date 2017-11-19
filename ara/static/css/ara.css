@@ -135,6 +135,12 @@
     font-weight: bold;
     line-height: 1;
 }
+.link-report:hover,
+.link-report:focus,
+.link-modal:hover,
+.link-modal:focus {
+    color: #00659c;
+}
 
 .link:hover,
 .link:focus {
