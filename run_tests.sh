@@ -124,36 +124,27 @@ fi
 export ANSIBLE_CALLBACK_PLUGINS="ara/plugins/callbacks"
 export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
 export ANSIBLE_LIBRARY="ara/plugins/modules"
+export ANSIBLE_RETRY_FILES_ENABLED="False"
 export ARA_DATABASE="${DATABASE}"
 
 # Lint
-for file in $(find ara/tests/integration ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
+for file in $(find ara/tests/fixtures ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
     ansible-lint ${file}
 done
-for file in $(find ara/tests/integration -maxdepth 1 ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
+for file in $(find ara/tests/fixtures -maxdepth 1 ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
     ansible-playbook --syntax-check ${file}
 done
 
 # Run test playbooks
-# smoke.yml run output will be re-used later
-ansible-playbook -vv ara/tests/integration/smoke.yml | tee ${LOGDIR}/smoke.yml.txt
-ansible-playbook -vv ara/tests/integration/hosts.yml
+# ara-functional.yml run output will be re-used later
+ansible-playbook -vv ara/tests/fixtures/ara-functional.yml | tee ${LOGDIR}/smoke.yml.txt
 
 # This playbook is meant to fail
-ansible-playbook -vv ara/tests/integration/failed.yml || true
+ansible-playbook -vv ara/tests/fixtures/failed.yml || true
 # This playbook is meant to be interrupted
-ansible-playbook -vv ara/tests/integration/incomplete.yml &
+ansible-playbook -vv ara/tests/fixtures/incomplete.yml &
 sleep 5
 kill $!
-
-# Test include role which is a bit special
-ansible-playbook -vv ara/tests/integration/include_role.yml
-
-if [[ $(semver_compare "${ansible_version}" ">=" "2.4.0.0") == "True" ]]; then
-    ansible-playbook --syntax-check ara/tests/integration/import.yml
-    ansible-lint ara/tests/integration/import.yml
-    ansible-playbook -vv ara/tests/integration/import.yml
-fi
 
 # Run test commands
 pbid=$(ara playbook list -c ID -f value |head -n1)
@@ -182,15 +173,12 @@ ara generate html ${LOGDIR}/build-playbook --playbook $pbid
 ara generate junit ${LOGDIR}/junit.xml
 ara generate junit ${LOGDIR}/junit-playbook.xml --playbook $pbid
 ara generate junit -
-python ara/tests/integration/helpers/junit_check.py ${LOGDIR}/junit.xml
+python ara/tests/helpers/junit_check.py ${LOGDIR}/junit.xml
 
 ara generate subunit ${LOGDIR}/results.subunit
 ara generate subunit ${LOGDIR}/results-playbook.subunit --playbook $pbid
 ara generate subunit - > ${LOGDIR}/results-stdout.subunit
 subunit2pyunit ${LOGDIR}/results.subunit 2>&1 | cat > ${LOGDIR}/subunit2pyunit.txt
 
-# It's important that ARA behaves well when gzipped
-gzip --best --recursive ${LOGDIR}/build
-
-echo "Run complete, logs and build available in ${LOGDIR}"
+echo "Run complete, logs available in ${LOGDIR}"
 popd

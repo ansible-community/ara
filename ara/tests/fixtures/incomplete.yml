@@ -16,33 +16,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-- name: Create fake hosts for host tests
+- name: Incomplete playbook
   hosts: localhost
-  gather_facts: yes
+  gather_facts: no
   tasks:
-    - name: Add fake hosts in inventory
-      add_host:
-        name: "{{ item }}"
-        ansible_host: "127.0.0.1"
-        ansible_connection: "local"
-      with_items:
-        - host1
-        - host2
-        - host3
+    - debug:
+        msg: "This playbook is meant to be interrupted"
 
-- name: ARA Hosts test play
-  hosts: all
-  gather_facts: yes
-  tasks:
-    - name: Ping
-      ping:
-
-    - name: Do something only on host1
-      set_fact:
-        something: 'done'
-      when: inventory_hostname == 'host1'
-
-    - name: Fail something only on host2
-      command: /bin/false
-      when: inventory_hostname == 'host2'
-      ignore_errors: true
+    - name: Sleep for thirty seconds
+      command: sleep 30
+      changed_when: false

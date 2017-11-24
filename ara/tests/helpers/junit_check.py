@@ -36,11 +36,11 @@ class TestJunitGeneration(unittest.TestCase):
         testsuite = self.tree.getroot()[0]
         self.assertEqual(testsuite.tag, "testsuite")
         self.assertEqual(testsuite.get("errors"), "0")
-        self.assertEqual(testsuite.get("skipped"), "5")
+        self.assertEqual(testsuite.get("skipped"), "7")
 
     def test_skipped_elem(self):
         remove_a_file = self.tree.xpath(
-            "//testcase [@name='smoke-tests : Test a skipped task']")[0]
+            "//testcase [@name='ara-features : Test a skipped task']")[0]
         skipped = remove_a_file[0]
         self.assertEqual(skipped.tag, "skipped")
         self.assertEqual(skipped.get("type"), "skipped")
