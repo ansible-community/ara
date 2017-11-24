@@ -12,9 +12,21 @@
         - ara-integration-fedora-py35-latest
         - ara-integration-fedora-py35-devel:
             voting: false
+        - openstack-tox-py35:
+            voting: false
+        - openstack-tox-py27:
+            voting: false
+        - openstack-tox-cover:
+            voting: false
     gate:
       jobs:
         - ara-integration-debian-py27-2.2.3.0
         - ara-integration-centos-py27-2.3.2.0
         - ara-integration-ubuntu-py35-2.3.2.0
         - ara-integration-fedora-py35-latest
+        - openstack-tox-py35:
+            voting: false
+        - openstack-tox-py27:
+            voting: false
+        - openstack-tox-cover:
+            voting: false
