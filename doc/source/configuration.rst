@@ -12,39 +12,47 @@ To begin using ARA, you'll first need to set up Ansible so it knows about the
 the ARA :ref:`callback <faq_callback>` and, if necessary, the :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` modules.
 
 The callback and modules are bundled when installing ARA but you need to know
-where they have been installed in order to let Ansible know where they are located.
+where they have been installed in order to let Ansible know where they are
+located.
 
-.. tip::
+This location will be different depending on your operating system, how you are
+installing ARA and whether you are using Python 2 or Python 3.
 
-   The location where ARA will be depends on your operating system and how it
-   is installed.
-   Here's some examples of where ARA can be found:
+ARA ships a set of convenience Python modules to help you configure Ansible to
+use it.
 
-   - ``/usr/lib/python2.7/site-packages/ara``
-   - ``/usr/lib/python3.5/site-packages/ara``
-   - ``$VIRTUAL_ENV/lib/python2.7/site-packages/ara``
+They can be used like so::
 
-   If you're not sure where ARA will end up being installed, you can use this
-   snippet to print its location. It works in both Python 2 and Python 3::
+    $ python -m ara.setup.path
+    /usr/lib/python2.7/site-packages/ara
 
-      python -c "import os,ara; print(os.path.dirname(ara.__file__))"
+    $ python -m ara.setup.action_plugins
+    /usr/lib/python2.7/site-packages/ara/plugins/actions
+
+    $ python -m ara.setup.callback_plugins
+    /usr/lib/python2.7/site-packages/ara/plugins/callbacks
+
+    $ python -m ara.setup.library
+    /usr/lib/python2.7/site-packages/ara/plugins/modules
 
 Using ansible.cfg
 ~~~~~~~~~~~~~~~~~
 
-Set up your `ansible.cfg`_ file to seek the callback and modules in the appropriate
-directories::
+This sets up a new `ansible.cfg`_ file to load the callbacks and modules from
+the appropriate locations::
 
-    $ export ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
-    $ cat > ansible.cfg <<EOF
+    $ python -m ara.setup.ansible | tee ansible.cfg
     [defaults]
-    # callback_plugins configuration is required for the ARA callback
-    callback_plugins = $ara_location/plugins/callbacks
+    callback_plugins=/usr/lib/python2.7/site-packages/ara/plugins/callbacks
+    action_plugins=/usr/lib/python2.7/site-packages/ara/plugins/actions
+    library=/usr/lib/python2.7/site-packages/ara/plugins/modules
 
-    # action_plugins and library configuration is required for the ara_record and ara_read modules
-    action_plugins = $ara_location/plugins/actions
-    library = $ara_location/plugins/modules
-    EOF
+Or alternatively, if you have a customized `ansible.cfg`_ file, you can retrieve
+only what you need using the other helpers such as the following:
+
+- ``python -m ara.setup.callback_plugins``
+- ``python -m ara.setup.action_plugins``
+- ``python -m ara.setup.library``
 
 .. _ansible.cfg: https://docs.ansible.com/ansible/intro_configuration.html#configuration-file
 
@@ -53,12 +61,16 @@ Using environment variables
 
 Depending on the context and your use case, configuring Ansible using
 `environment variables`_ instead of an ``ansible.cfg`` file might be more convenient.
-Here's how you can set up Ansible to seek out ARA's callback and modules::
 
-    $ export ara_location=$(python -c "import os,ara; print(os.path.dirname(ara.__file__))")
-    $ export ANSIBLE_CALLBACK_PLUGINS=$ara_location/plugins/callbacks
-    $ export ANSIBLE_ACTION_PLUGINS=$ara_location/plugins/actions
-    $ export ANSIBLE_LIBRARY=$ara_location/plugins/modules
+ARA provides a helper module that prints out the necessary export commands::
+
+    $ python -m ara.setup.env
+    export ANSIBLE_CALLBACK_PLUGINS=/usr/lib/python2.7/site-packages/ara/plugins/callbacks
+    export ANSIBLE_ACTION_PLUGINS=/usr/lib/python2.7/site-packages/ara/plugins/actions
+    export ANSIBLE_LIBRARY=/usr/lib/python2.7/site-packages/ara/plugins/modules
+
+Note that the module doesn't actually run those exports, you'll want to run them
+yourself, add them in a bash script or a bashrc, etc.
 
 .. _environment variables: https://docs.ansible.com/ansible/intro_configuration.html#environmental-configuration
 
