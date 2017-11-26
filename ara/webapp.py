@@ -15,19 +15,16 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import ara.config
-import ara.views
-import ara.api.v1.hosts
-import ara.api.v1.files
-import ara.api.v1.playbooks
-import ara.api.v1.plays
-import ara.api.v1.records
-import ara.api.v1.results
-import ara.api.v1.tasks
 import logging
 import logging.config
 import os
 import yaml
+
+# Note (dmsimard): ARA's configuration, views and API imports are done
+# "just-in-time" because we might end up loading them for nothing and it has a
+# non-negligible cost.
+# It also breaks some assumptions... For example, "ara.config" loads the
+# configuration automatically on import which might not be desirable.
 
 from ara.context_processors import configure_context_processors
 from ara.db.models import db
@@ -40,24 +37,6 @@ from flask import logging as flask_logging
 from flask import send_from_directory
 
 DEFAULT_APP_NAME = 'ara'
-
-views = (
-    (ara.views.about, '/about'),
-    (ara.views.file, '/file'),
-    (ara.views.host, '/host'),
-    (ara.views.reports, ''),
-    (ara.views.result, '/result'),
-)
-
-endpoints = (
-    (ara.api.v1.hosts.blueprint, '/api/v1/hosts'),
-    (ara.api.v1.files.blueprint, '/api/v1/files'),
-    (ara.api.v1.playbooks.blueprint, '/api/v1/playbooks'),
-    (ara.api.v1.plays.blueprint, '/api/v1/plays'),
-    (ara.api.v1.records.blueprint, '/api/v1/records'),
-    (ara.api.v1.results.blueprint, '/api/v1/results'),
-    (ara.api.v1.tasks.blueprint, '/api/v1/tasks'),
-)
 
 
 def create_app(config=None, app_name=None):
@@ -85,11 +64,37 @@ def create_app(config=None, app_name=None):
 
 
 def configure_api(app):
+    import ara.api.v1.hosts  # flake8: noqa
+    import ara.api.v1.files  # flake8: noqa
+    import ara.api.v1.playbooks  # flake8: noqa
+    import ara.api.v1.plays  # flake8: noqa
+    import ara.api.v1.records  # flake8: noqa
+    import ara.api.v1.results  # flake8: noqa
+    import ara.api.v1.tasks  # flake8: noqa
+
+    endpoints = (
+        (ara.api.v1.hosts.blueprint, '/api/v1/hosts'),
+        (ara.api.v1.files.blueprint, '/api/v1/files'),
+        (ara.api.v1.playbooks.blueprint, '/api/v1/playbooks'),
+        (ara.api.v1.plays.blueprint, '/api/v1/plays'),
+        (ara.api.v1.records.blueprint, '/api/v1/records'),
+        (ara.api.v1.results.blueprint, '/api/v1/results'),
+        (ara.api.v1.tasks.blueprint, '/api/v1/tasks'),
+    )
     for endpoint, prefix in endpoints:
         app.register_blueprint(endpoint, url_prefix=prefix)
 
 
 def configure_blueprints(app):
+    import ara.views  # flake8: noqa
+    views = (
+        (ara.views.about, '/about'),
+        (ara.views.file, '/file'),
+        (ara.views.host, '/host'),
+        (ara.views.reports, ''),
+        (ara.views.result, '/result'),
+    )
+
     for view, prefix in views:
         app.register_blueprint(view, url_prefix=prefix)
 
@@ -98,6 +103,7 @@ def configure_blueprints(app):
 
 
 def configure_app(app, config):
+    import ara.config  # flake8: noqa
     app.config.from_object(ara.config)
 
     if config is not None:
