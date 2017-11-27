@@ -16,11 +16,8 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import pytest
 import six
 
-from distutils.version import LooseVersion
-from flask_frozen import MissingURLGeneratorWarning
 from glob import glob
 from lxml import etree
 from oslo_serialization import jsonutils
@@ -606,137 +603,6 @@ class TestCLIGenerate(TestAra):
 
     def tearDown(self):
         super(TestCLIGenerate, self).tearDown()
-
-    def test_generate_empty_html(self):
-        """ Ensures the application is still rendered gracefully """
-        self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = False
-        shell = ara.shell.AraCli()
-        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
-        cmd = ara.cli.generate.GenerateHtml(shell, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([self.tmpdir])
-
-        with pytest.warns(MissingURLGeneratorWarning) as warnings:
-            cmd.take_action(args)
-
-        # pytest 3.0 through 3.1 are backwards incompatible here
-        if LooseVersion(pytest.__version__) >= LooseVersion('3.1.0'):
-            cat = [item._category_name for item in warnings]
-            self.assertTrue(any('MissingURLGeneratorWarning' in c
-                                for c in cat))
-        else:
-            self.assertTrue(any(MissingURLGeneratorWarning == w.category
-                                for w in warnings))
-
-        paths = [
-            os.path.join(self.tmpdir, 'index.html'),
-            os.path.join(self.tmpdir, 'static'),
-        ]
-
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
-
-    def test_generate_empty_html_with_ignore_empty_generation(self):
-        """ Ensures the application is still rendered gracefully """
-        self.app.config['ARA_IGNORE_EMPTY_GENERATION'] = True
-
-        shell = ara.shell.AraCli()
-        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
-        cmd = ara.cli.generate.GenerateHtml(shell, None)
-        parser = cmd.get_parser('test')
-        args = parser.parse_args([self.tmpdir])
-        cmd.take_action(args)
-
-        paths = [
-            os.path.join(self.tmpdir, 'index.html'),
-            os.path.join(self.tmpdir, 'static'),
-        ]
-
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
-
-    def test_generate_html_no_destination(self):
-        """ Ensures generating without a destination fails """
-        FakeRun()
-
-        cmd = ara.cli.generate.GenerateHtml(None, None)
-        parser = cmd.get_parser('test')
-
-        with self.assertRaises(SystemExit):
-            args = parser.parse_args([])
-            cmd.take_action(args)
-
-    def test_generate_html(self):
-        """ Roughly ensures the expected files are generated properly """
-        ctx = FakeRun()
-
-        shell = ara.shell.AraCli()
-        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
-        cmd = ara.cli.generate.GenerateHtml(shell, None)
-        parser = cmd.get_parser('test')
-
-        args = parser.parse_args([self.tmpdir])
-        cmd.take_action(args)
-
-        file_id = ctx.playbook['files'][0]['id']
-        host_id = ctx.playbook['hosts'][0]['id']
-        result_id = ctx.playbook['results'][0]['id']
-        paths = [
-            os.path.join(self.tmpdir, 'index.html'),
-            os.path.join(self.tmpdir, 'static'),
-            os.path.join(self.tmpdir, 'file/index.html'),
-            os.path.join(self.tmpdir, 'file/{0}'.format(file_id)),
-            os.path.join(self.tmpdir, 'host/index.html'),
-            os.path.join(self.tmpdir, 'host/{0}'.format(host_id)),
-            os.path.join(self.tmpdir, 'reports/index.html'),
-            os.path.join(self.tmpdir, 'result/index.html'),
-            os.path.join(self.tmpdir, 'result/{0}'.format(result_id))
-        ]
-
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
-
-    def test_generate_html_for_playbook(self):
-        """ Roughly ensures the expected files are generated properly """
-        # Record two separate playbooks
-        ctx = FakeRun()
-        ctx_two = FakeRun()
-
-        shell = ara.shell.AraCli()
-        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
-        cmd = ara.cli.generate.GenerateHtml(shell, None)
-        parser = cmd.get_parser('test')
-
-        args = parser.parse_args([
-            self.tmpdir,
-            '--playbook',
-            six.text_type(ctx.playbook['id'])
-        ])
-        cmd.take_action(args)
-
-        file_id = ctx.playbook['files'][0]['id']
-        host_id = ctx.playbook['hosts'][0]['id']
-        result_id = ctx.playbook['results'][0]['id']
-        paths = [
-            os.path.join(self.tmpdir, 'index.html'),
-            os.path.join(self.tmpdir, 'static'),
-            os.path.join(self.tmpdir, 'file/index.html'),
-            os.path.join(self.tmpdir, 'file/{0}'.format(file_id)),
-            os.path.join(self.tmpdir, 'host/index.html'),
-            os.path.join(self.tmpdir, 'host/{0}'.format(host_id)),
-            os.path.join(self.tmpdir, 'reports/index.html'),
-            os.path.join(self.tmpdir, 'result/index.html'),
-            os.path.join(self.tmpdir, 'result/{0}'.format(result_id))
-        ]
-
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
-
-        # Retrieve the other playbook and validate that we haven't generated
-        # files for it
-        path = os.path.join(self.tmpdir,
-                            'playbook/{0}'.format(ctx_two.playbook['id']))
-        self.assertFalse(os.path.exists(path))
 
     def test_generate_junit(self):
         """ Roughly ensures the expected xml is generated properly """

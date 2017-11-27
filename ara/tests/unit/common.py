@@ -37,7 +37,7 @@ class TestAra(unittest.TestCase):
         self.app = w.create_app(self)
         self.app_context = self.app.app_context()
         self.app_context.push()
-        self.client = get_client(client='python')
+        self.client = get_client(client='offline')
         self.tmpdir = tempfile.mkdtemp(prefix='ara')
 
         m.db.create_all()

@@ -25,7 +25,7 @@ class PlaybookApi(object):
     """
     def __init__(self, client=None):
         self.client = get_client(client)
-        self.endpoint = '/api/v1/playbooks/'
+        self.endpoint = '/api/v1/playbooks'
 
     def get(self, **kwargs):
         return self.client.get(self.endpoint, query_string=kwargs)

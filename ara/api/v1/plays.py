@@ -281,13 +281,6 @@ def _find_plays(**kwargs):
     return query.order_by(Play.id.desc()).all()
 
 
-# Note (dmsimard)
-# We are (unfortunately) routing /api/v1/<resource>/ instead of
-# /api/v1/<resource> so that flask-frozen creates a <resource> directory
-# instead of a <resource> file.
-# In practice, the endpoint <resource> returns a 301 redirection to <resource>/
-# when used on a live HTTP server.
-api.add_resource(PlayRestApi, '/', '', '/<int:id>')
-
+api.add_resource(PlayRestApi, '', '/<int:id>')
 api.add_resource(ResultRestApi, '/<int:play_id>/results')
 api.add_resource(TaskRestApi, '/<int:play_id>/tasks')

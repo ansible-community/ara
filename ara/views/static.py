@@ -15,10 +15,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from flask import render_template
+from flask import Blueprint
+from flask import abort
+from flask import current_app
+from flask import send_from_directory
+
+static = Blueprint('static', __name__)
 
 
-def configure_errorhandlers(app):
-    @app.errorhandler(404)
-    def page_not_found(error):
-        return render_template('errors/404.html', error=error), 404
+@static.route('/packaged/<module>/<path:filename>')
+def packaged(module, filename):
+    xstatic = current_app.config['XSTATIC']
+
+    if module in xstatic:
+        return send_from_directory(xstatic[module], filename)
+    else:
+        abort(404)

@@ -3,9 +3,10 @@
 Serving ARA sqlite databases over http
 ======================================
 
-Hosting statically generated reports is not very efficient at a large scale.
-The reports are relatively small in size but can contain thousands of files if
-you are generating a report that contains thousands of tasks.
+Before ARA 1.0, it was possible to generate static HTML reports. However,
+hosting statically generated reports was not very efficient at a large scale.
+The reports are relatively small in size but could contain thousands of files
+if you were generating a report that contains thousands of tasks.
 
 However, using a centralized database (such as MySQL) might not be optimal
 either. Perhaps due to the latency or maybe because of the concurrency of the
@@ -33,7 +34,7 @@ job from the OpenStack-Ansible_ project:
 - 53 hosts, of which 39 had gathered host facts
 - 416 saved files
 
-Generating a static report from that database takes ~1min30s on an average
+Generating a static report from that database would take ~1min30s on an average
 machine. It weighs 63MB (27MB recursively gzipped), contains 5321 files and
 5243 directories.
 

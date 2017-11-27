@@ -21,10 +21,10 @@ from oslo_serialization import jsonutils
 from ara.webapp import create_app
 from flask import current_app
 
-SUPPORTED_CLIENTS = ['python', 'http']
+SUPPORTED_CLIENTS = ['online', 'offline']
 
 
-class AraHTTPClient(object):
+class AraOnlineClient(object):
     """
     Provides an interface to the REST API with a basic http client
     """
@@ -77,7 +77,7 @@ class AraHTTPClient(object):
         return self._request('DELETE', url, **kwargs)
 
 
-class AraPythonClient(object):
+class AraOfflineClient(object):
     """
     Provides a passthrough interface to the REST API with Flask's test_client
     """
@@ -128,9 +128,9 @@ def get_client(client=None, **kwargs):
     if client is None:
         client = current_app.config['ARA_API_CLIENT']
 
-    if client == 'http':
-        return AraHTTPClient(**kwargs)
-    elif client == 'python':
-        return AraPythonClient(**kwargs)
+    if client == 'online':
+        return AraOnlineClient(**kwargs)
+    elif client == 'offline':
+        return AraOfflineClient(**kwargs)
     else:
         raise ValueError('Unsupported client: %s' % client)

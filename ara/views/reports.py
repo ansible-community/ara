@@ -29,25 +29,11 @@ from ara.db import models
 reports = Blueprint('reports', __name__)
 
 
-# This is a flask-frozen workaround in order to generate an index.html
-# at the root of the generated report.
-@reports.route('/index.html')
-def main():
-    return redirect('/')
-
-
 @reports.route('/')
-@reports.route('/reports/')
-@reports.route('/reports/list/<int:page>.html')
+@reports.route('/reports')
+@reports.route('/reports/list/<int:page>')
 def report_list(page=1):
-    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
-        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        playbooks = (models.Playbook.query
-                     .filter(models.Playbook.id.in_(override))
-                     .order_by(models.Playbook.started.desc()))
-    else:
-        playbooks = (models.Playbook.query
-                     .order_by(models.Playbook.started.desc()))
+    playbooks = models.Playbook.query.order_by(models.Playbook.started.desc())
 
     if not utils.fast_count(playbooks):
         return redirect(url_for('about.main'))
@@ -70,7 +56,7 @@ def report_list(page=1):
                            stats=stats)
 
 
-@reports.route('/reports/<playbook_id>.html')
+@reports.route('/reports/<playbook_id>')
 def report(playbook_id):
     playbook = models.Playbook.query.get(playbook_id)
     if playbook is None:
@@ -96,7 +82,7 @@ def report(playbook_id):
 # The routes have a text extension for proper mimetype detection.
 
 
-@reports.route('/reports/ajax/parameters/<playbook>.txt')
+@reports.route('/reports/ajax/parameters/<playbook>')
 def ajax_parameters(playbook):
     playbook = models.Playbook.query.get(playbook)
     if playbook is None:
@@ -115,7 +101,7 @@ def ajax_parameters(playbook):
     return jsonify(results)
 
 
-@reports.route('/reports/ajax/plays/<playbook>.txt')
+@reports.route('/reports/ajax/plays/<playbook>')
 def ajax_plays(playbook):
     plays = (models.Play.query
              .filter(models.Play.playbook_id.in_([playbook])))
@@ -139,7 +125,7 @@ def ajax_plays(playbook):
     return jsonify(results)
 
 
-@reports.route('/reports/ajax/records/<playbook>.txt')
+@reports.route('/reports/ajax/records/<playbook>')
 def ajax_records(playbook):
     records = (models.Record.query
                .filter(models.Record.playbook_id.in_([playbook])))
@@ -162,7 +148,7 @@ def ajax_records(playbook):
     return jsonify(results)
 
 
-@reports.route('/reports/ajax/results/<playbook>.txt')
+@reports.route('/reports/ajax/results/<playbook>')
 def ajax_results(playbook):
     results = (models.Result.query
                .join(models.Task)
@@ -191,7 +177,7 @@ def ajax_results(playbook):
     return jsonify(ajax)
 
 
-@reports.route('/reports/ajax/hosts/<playbook>.txt')
+@reports.route('/reports/ajax/hosts/<playbook>')
 def ajax_hosts(playbook):
     hosts = (models.Host.query
              .filter(models.Host.playbook_id.in_([playbook])))

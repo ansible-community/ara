@@ -25,7 +25,7 @@ class PlayApi(object):
     """
     def __init__(self, client=None):
         self.client = get_client(client)
-        self.endpoint = '/api/v1/plays/'
+        self.endpoint = '/api/v1/plays'
 
     def get(self, **kwargs):
         return self.client.get(self.endpoint, query_string=kwargs)

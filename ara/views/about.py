@@ -16,7 +16,6 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import Blueprint
-from flask import current_app
 from flask import render_template
 
 from ara.db import models
@@ -28,34 +27,18 @@ about = Blueprint('about', __name__)
 @about.route('/')
 def main():
     """ Returns the about page """
-    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
-        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        files = (models.File.query
-                 .filter(models.File.playbook_id.in_(override)))
-        hosts = (models.Host.query
-                 .filter(models.Host.playbook_id.in_(override)))
-        playbooks = (models.Playbook.query
-                     .filter(models.Playbook.id.in_(override)))
-        records = (models.Record.query
-                   .filter(models.Record.playbook_id.in_(override)))
-        tasks = (models.Task.query
-                 .filter(models.Task.playbook_id.in_(override)))
-        results = (models.Result.query
-                   .join(models.Task)
-                   .filter(models.Task.playbook_id.in_(override)))
-    else:
-        files = models.File.query
-        hosts = models.Host.query
-        playbooks = models.Playbook.query
-        records = models.Record.query
-        tasks = models.Task.query
-        results = models.Result.query
+    files = fast_count(models.File.query)
+    hosts = fast_count(models.Host.query)
+    playbooks = fast_count(models.Playbook.query)
+    records = fast_count(models.Record.query)
+    tasks = fast_count(models.Task.query)
+    results = fast_count(models.Result.query)
 
     return render_template('about.html',
                            active='about',
-                           files=fast_count(files),
-                           hosts=fast_count(hosts),
-                           playbooks=fast_count(playbooks),
-                           records=fast_count(records),
-                           tasks=fast_count(tasks),
-                           results=fast_count(results))
+                           files=files,
+                           hosts=hosts,
+                           playbooks=playbooks,
+                           records=records,
+                           tasks=tasks,
+                           results=results)

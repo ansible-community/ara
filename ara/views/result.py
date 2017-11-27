@@ -17,7 +17,6 @@
 
 from flask import Blueprint
 from flask import abort
-from flask import current_app
 from flask import render_template
 
 from ara.db import models
@@ -28,24 +27,13 @@ result = Blueprint('result', __name__)
 @result.route('/')
 def index():
     """
-    This is not served anywhere in the web application.
-    It is used explicitly in the context of generating static files since
-    flask-frozen requires url_for's to crawl content.
-    url_for's are not used with result.show_result directly and are instead
-    dynamically generated through javascript for performance purposes.
+    This is not actually meant to serve anything, just a placeholder for
+    URLs later replaced dynamically by javascript to /<id>
     """
-    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
-        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        results = (models.Result.query
-                   .join(models.Task)
-                   .filter(models.Task.playbook_id.in_(override)))
-    else:
-        results = models.Result.query.all()
-
-    return render_template('result_index.html', results=results)
+    abort(404)
 
 
-@result.route('/<item>/')
+@result.route('/<item>')
 def show_result(item):
     result = models.Result.query.get(item)
     if result is None:

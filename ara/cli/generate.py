@@ -24,67 +24,12 @@ import sys
 from ara.db import models
 from ara import utils
 from cliff.command import Command
-from flask_frozen import Freezer, walk_directory
-from flask_frozen import MissingURLGeneratorWarning
-from flask_frozen import NotFoundWarning
 from junit_xml import TestCase
 from junit_xml import TestSuite
 from oslo_utils import encodeutils
 from oslo_serialization import jsonutils
 from subunit import iso8601
 from subunit.v2 import StreamResultToBytes
-from warnings import filterwarnings
-
-
-class GenerateHtml(Command):
-    """ Generates a static tree of the web application """
-    log = logging.getLogger(__name__)
-
-    def get_parser(self, prog_name):
-        parser = super(GenerateHtml, self).get_parser(prog_name)
-        parser.add_argument(
-            'path',
-            metavar='<path>',
-            help='Path where the static files will be built in',
-        )
-        parser.add_argument(
-            '--playbook',
-            metavar='<playbook>',
-            type=int,
-            nargs='+',
-            help='Only include the specified playbooks in the generation.',
-            required=False,
-            default=None,
-        )
-        return parser
-
-    def take_action(self, args):
-        self.app.ara.config['FREEZER_DESTINATION'] = os.path.abspath(args.path)
-
-        if args.playbook is not None:
-            self.app.ara.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
-
-        self.log.warn('Generating static files at %s...', args.path)
-        filterwarnings('ignore', '.*', NotFoundWarning)
-        if self.app.ara.config['ARA_IGNORE_EMPTY_GENERATION']:
-            filterwarnings('ignore', '.*', MissingURLGeneratorWarning)
-        freezer = Freezer(self.app.ara)
-
-        # Patternfly fonts are called from inside the CSS and are therefore
-        # not automatically found by flask-frozen. We need to generate URLs
-        # for the fonts.
-        patternfly = self.app.ara.config['XSTATIC']['patternfly']
-
-        @freezer.register_generator
-        def serve_static_packaged():
-            for font in walk_directory(os.path.join(patternfly, 'fonts')):
-                yield dict(
-                    module='patternfly',
-                    filename='fonts/%s' % font
-                )
-        freezer.freeze()
-
-        print('Done.')
 
 
 class GenerateJunit(Command):

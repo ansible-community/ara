@@ -107,25 +107,15 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_API_ENDPOINT_             | api_endpoint               | http://127.0.0.1:9191/api/v1              |
 +-------------------------------+----------------------------+-------------------------------------------+
-| ARA_API_CLIENT_               | api_client                 | python                                    |
+| ARA_API_CLIENT_               | api_client                 | offline                                   |
 +-------------------------------+----------------------------+-------------------------------------------+
-| ARA_LOG_CONFIG_               | logconfig                  | None                                      |
+| ARA_LOG_CONFIG_               | logconfig                  | ~/.ara/logging.yml                        |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FILE_                 | logfile                    | ~/.ara/ara.log                            |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_LEVEL_                | loglevel                   | INFO                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
-| ARA_LOG_FORMAT_               | logformat                  | %(asctime)s - %(levelname)s - %(message)s |
-+-------------------------------+----------------------------+-------------------------------------------+
-| ARA_SQL_DEBUG_                | sqldebug                   | False                                     |
-+-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_PARAMETERS_        | ignore_parameters          | extra_vars                                |
-+-------------------------------+----------------------------+-------------------------------------------+
-| ARA_IGNORE_EMPTY_GENERATION_  | ignore_empty_generation    | True                                      |
-+-------------------------------+----------------------------+-------------------------------------------+
-| ARA_IGNORE_MIMETYPE_WARNINGS_ | ignore_mimetype_warnings   | True                                      |
-+-------------------------------+----------------------------+-------------------------------------------+
-| ARA_PLAYBOOK_OVERRIDE_        | playbook_override          | None                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_PLAYBOOK_PER_PAGE_        | playbook_per_page          | 10                                        |
 +-------------------------------+----------------------------+-------------------------------------------+
@@ -238,7 +228,8 @@ by ``ARA_API_ENDPOINT`` is required to use this.
 ARA_LOG_CONFIG
 ~~~~~~~~~~~~~~
 
-Path to a python logging config file.
+Path to a python logging config file if not using the default provided by
+ARA.
 
 If the filename ends in ``.yaml`` or ``.yml`` the file will be loaded as yaml.
 If the filename ends in ``.json`` the file will be loaded as json. The
@@ -247,8 +238,6 @@ and passed to `logging.config.dictConfig`.
 
 Otherwise it will be assumed to a `logging config file`_ and the path will be
 passed to `logging.config.fileConfig`.
-
-If this option is given it superseeds the other individual log options.
 
 .. _logging config dict: https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
 .. _logging config file: https://docs.python.org/3/library/logging.config.html#logging-config-fileformat
@@ -262,16 +251,6 @@ ARA_LOG_LEVEL
 ~~~~~~~~~~~~~
 
 The loglevel to adjust debug or verbosity.
-
-ARA_LOG_FORMAT
-~~~~~~~~~~~~~~
-
-The log format of the logs.
-
-ARA_SQL_DEBUG
-~~~~~~~~~~~~~
-
-Enables the SQLAlchemy echo verbose mode.
 
 ARA_IGNORE_PARAMETERS
 ~~~~~~~~~~~~~~~~~~~~~
@@ -287,35 +266,6 @@ This configuration allows you to customize what ARA will and will not save.
 It is a list, provided by a comma-separated values.
 
 .. _extra_vars: https://docs.ansible.com/ansible/playbooks_variables.html#passing-variables-on-the-command-line
-
-ARA_IGNORE_EMPTY_GENERATION
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When using ``ara generate html``, whether or not to ignore warnings provided
-by flask-frozen about endpoints for which the application found no available
-data.
-
-For example, if you do not use the ``ara_record`` module as part of your
-playbooks, this avoids printing a *MissingURLGeneratorWarning* because there
-is no recorded data to render.
-
-ARA_IGNORE_MIMETYPE_WARNINGS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When using ``ara generate html``, whether or not to ignore file mimetype
-warnings provided by flask-frozen.
-
-ARA_PLAYBOOK_OVERRIDE
-~~~~~~~~~~~~~~~~~~~~~
-
-This configuration is exposed mostly for the purposes of the
-``ara generate html`` and ``ara generate junit`` commands but you can use it
-as well.
-
-ARA_PLAYBOOK_OVERRIDE will limit the playbooks displayed in the web application
-to the list of playbook IDs specified.
-This is expected to be playbook IDs (ex: retrieved through
-``ara playbook list``) in a comma-separated list.
 
 ARA_PLAYBOOK_PER_PAGE
 ~~~~~~~~~~~~~~~~~~~~~

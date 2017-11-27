@@ -25,7 +25,7 @@ class RecordApi(object):
     """
     def __init__(self, client=None):
         self.client = get_client(client)
-        self.endpoint = '/api/v1/records/'
+        self.endpoint = '/api/v1/records'
 
     def get(self, **kwargs):
         return self.client.get(self.endpoint, query_string=kwargs)

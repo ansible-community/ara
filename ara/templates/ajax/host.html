@@ -29,4 +29,4 @@
         No host facts recorded for this host.
     {% endif %}
 {% endmacro %}
-<div class="pull-left" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ render_host_facts(host) }}">{% if host.facts -%}<a href="#" data-toggle="modal" data-target="#host_modal" data-load="{{ host.id }}/">{{ host.name }}</a>{% else -%}{{ host.name }}{% endif %}</div>
+<div class="pull-left" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ render_host_facts(host) }}">{% if host.facts -%}<a href="#" data-toggle="modal" data-target="#host_modal" data-load="{{ host.id }}">{{ host.name }}</a>{% else -%}{{ host.name }}{% endif %}</div>

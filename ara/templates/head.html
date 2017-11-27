@@ -7,17 +7,17 @@
     <meta name="description" content="ARA | Ansible Run Analysis records Ansible playbook runs seamlessly to make them easier to visualize, understand and troubleshoot">
     <title>ARA | Ansible Run Analysis</title>
     {% block scripts -%}
-    <script src="{{ url_for('serve_static_packaged', module='jquery', filename='jquery.min.js') }}"></script>
-    <script src="{{ url_for('serve_static_packaged', module='datatables', filename='js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('serve_static_packaged', module='bootstrap', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('serve_static_packaged', module='patternfly_bootstrap_treeview', filename='js/bootstrap-treeview.min.js') }}"></script>
-    <script src="{{ url_for('serve_static_packaged', module='patternfly', filename='js/patternfly.min.js') }}"></script>
+    <script src="{{ url_for('static.packaged', module='jquery', filename='jquery.min.js') }}"></script>
+    <script src="{{ url_for('static.packaged', module='datatables', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static.packaged', module='bootstrap', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static.packaged', module='patternfly_bootstrap_treeview', filename='js/bootstrap-treeview.min.js') }}"></script>
+    <script src="{{ url_for('static.packaged', module='patternfly', filename='js/patternfly.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ara.js') }}"></script>
     {% endblock -%}
     {% block stylesheets -%}
-    <link href="{{ url_for('serve_static_packaged', module='patternfly', filename='css/patternfly.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('serve_static_packaged', module='patternfly', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('serve_static_packaged', module='patternfly_bootstrap_treeview', filename='css/bootstrap-treeview.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static.packaged', module='patternfly', filename='css/patternfly.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static.packaged', module='patternfly', filename='css/patternfly-additions.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static.packaged', module='patternfly_bootstrap_treeview', filename='css/bootstrap-treeview.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/pygments.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/ara.css') }}" rel="stylesheet">
     {% endblock -%}

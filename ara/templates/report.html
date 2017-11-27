@@ -17,7 +17,7 @@
                     <span title="Date at which the playbook started">{{ playbook.started |datefmt }}</span>
                 </div>
                 <div class="list-group-item-heading">
-                    <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}/" title="{{ playbook.path }}">{{ playbook.path | basename }}</a>
+                    <a href="#" data-toggle="modal" data-target="#file_modal" data-load="{{ playbook.file.id }}" title="{{ playbook.path }}">{{ playbook.path | basename }}</a>
                 </div>
             </div>
             <div class="list-view-pf-additional-info">

@@ -13,7 +13,7 @@ ARA provides four things:
 1. An :ref:`Ansible callback plugin <configuration_ansible>` to record playbook runs into a local or remote database
 2. The :ref:`ara_record <ara_record>` and :ref:`ara_read <ara_read>` pair of Ansible modules to record and read persistent data with ARA
 3. A :ref:`CLI client <cli_client>` to query the database
-4. A :ref:`dynamic, database-driven web interface <interface_preview>` that can also be :ref:`generated and served from static files <generating_html>`
+4. A :ref:`dynamic, database-driven web interface <interface_preview>`
 
 .. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/

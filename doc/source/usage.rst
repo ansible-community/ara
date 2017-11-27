@@ -186,26 +186,26 @@ Example commands::
       --debug              Show tracebacks on errors.
 
     Commands:
-      complete       print bash completion command
-      data list      Returns a list of recorded key/value pairs
-      data show      Show details of a recorded key/value pair
-      file list      Returns a list of files
-      file show      Show details of a file
-      generate html  Generates a static tree of the web application
-      generate junit Generate junit stream from ara data
-      help           print detailed help for another command
-      host facts     Show facts for a host
-      host list      Returns a list of hosts
-      host show      Show details of a host
-      play list      Returns a list of plays
-      play show      Show details of a play
+      complete         print bash completion command
+      data list        Returns a list of recorded key/value pairs
+      data show        Show details of a recorded key/value pair
+      file list        Returns a list of files
+      file show        Show details of a file
+      generate junit   Generate junit stream from ara data
+      generate subunit Generate subunit binary stream from ARA data
+      help             print detailed help for another command
+      host facts       Show facts for a host
+      host list        Returns a list of hosts
+      host show        Show details of a host
+      play list        Returns a list of plays
+      play show        Show details of a play
       playbook delete  Delete playbooks from the database.
-      playbook list  Returns a list of playbooks
-      playbook show  Show details of a playbook
-      result list    Returns a list of results
-      result show    Show details of a result
-      task list      Returns a list of tasks
-      task show      Show details of a task
+      playbook list    Returns a list of playbooks
+      playbook show    Show details of a playbook
+      result list      Returns a list of results
+      result show      Show details of a result
+      task list        Returns a list of tasks
+      task show        Show details of a task
 
     # ara help result list
     usage: ara result list [-h] [-f {csv,json,table,value,yaml}] [-c COLUMN]
@@ -288,87 +288,6 @@ applications.
 
 .. _deployment options: http://flask.pocoo.org/docs/0.12/deploying/
 .. _Flask: http://flask.pocoo.org/
-
-.. _generating_html:
-
-Generating a static HTML version of the web application
--------------------------------------------------------
-
-ARA is able to generate a static html version of it's dynamic, database-driven
-web application.
-
-This can be useful if you need to browse the results of playbook runs without
-having to rely on the database backend configured.
-
-For example, in the context of continuous integration, you could run an Ansible
-job with ARA, generate a static version and then recover the resulting build as
-artifacts of the jobs, allowing you to browse the results in-place.
-
-This is done with the ``ara generate html`` command.
-
-By default, ARA will generate a static version for all the recorded playbook
-runs in it's database.
-It is also possible to generate a report for one or many specific playbooks.
-This is done by retrieving the playbook IDs you are interested in with
-``ara playbook list`` and then using the ``ara generate html`` command with the
-``--playbook`` parameter::
-
-    $ ara help generate html
-    usage: ara generate html [-h] [--playbook <playbook> [<playbook> ...]] <path>
-
-    Generates a static tree of the web application
-
-    positional arguments:
-      <path>                Path where the static files will be built in
-
-    optional arguments:
-      -h, --help            show this help message and exit
-      --playbook <playbook> [<playbook> ...]
-                            Only include the specified playbooks in the
-                            generation.
-
-    $ ara generate html /tmp/build/
-    Generating static files at /tmp/build/...
-    Done.
-    $ tree /tmp/build/
-    /tmp/build/
-    ├── host
-    │   ├── anotherhost
-    │   ├── index.html
-    │   └── localhost
-    ├── index.html
-    ├── play
-    │   └── play
-    │       └── 6ec9ef1d-dd73-4378-8347-1242f6be8f1e
-    ├── playbook
-    │   ├── bf81a7db-b549-49d9-b10e-19918225ec60
-    │   │   ├── index.html
-    │   │   └── results
-    │   │       ├── anotherhost
-    │   │       │   ├── index.html
-    │   │       │   └── ok
-    │   │       └── localhost
-    │   │           ├── index.html
-    │   │           └── ok
-    │   └── index.html
-    ├── result
-    │   ├── 136100f7-fba7-44ba-83fc-1194509ad2dd
-    │   ├── 37532523-b2ec-4931-bb73-3c7e5c6fa7bf
-    │   ├── 3cef2a10-8f41-4f01-bc49-12bed179d7e9
-    │   └── e3b7e172-c6e4-4ee4-b4bc-9a51ff84decb
-    ├── static
-    │   ├── css
-    │   │   ├── ara.css
-    │   │   ├── bootstrap.min.css
-    │   │   └── bootstrap-theme.min.css
-    │   └── js
-    │       ├── bootstrap.min.js
-    │       └── jquery-2.2.3.min.js
-    └── task
-        ├── 570fe763-69bb-4141-80d4-578189c5938b
-        └── 946e1bc6-28b9-4f2f-ad4f-75b3c6c9032d
-
-    13 directories, 22 files
 
 Generating a static junit version of the task results
 -----------------------------------------------------

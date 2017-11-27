@@ -7,13 +7,10 @@ Flask-Restful==0.3.5
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Script
-Frozen-Flask
-decorator>=4.0.0
 cliff
 python-subunit
 setuptools>=11.3
 pygments>=1.6
-debtcollector>=1.2.0
 junit-xml>=1.7
 pyfakefs
 requests>=2.14.2

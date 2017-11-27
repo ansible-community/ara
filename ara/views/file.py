@@ -17,7 +17,6 @@
 
 from flask import Blueprint
 from flask import abort
-from flask import current_app
 from flask import render_template
 
 from ara.db import models
@@ -28,23 +27,13 @@ file = Blueprint('file', __name__)
 @file.route('/')
 def index():
     """
-    This is not served anywhere in the web application.
-    It is used explicitly in the context of generating static files since
-    flask-frozen requires url_for's to crawl content.
-    url_for's are not used with file.show_file directly and are instead
-    dynamically generated through javascript for performance purposes.
+    This is not actually meant to serve anything, just a placeholder for
+    URLs later replaced dynamically by javascript to /<id>
     """
-    if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
-        override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        files = (models.File.query
-                 .filter(models.File.playbook_id.in_(override)))
-    else:
-        files = models.File.query.all()
-
-    return render_template('file_index.html', files=files)
+    abort(404)
 
 
-@file.route('/<file_>/')
+@file.route('/<file_>')
 def show_file(file_):
     """
     Returns details of a file

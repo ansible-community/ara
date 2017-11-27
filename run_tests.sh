@@ -164,12 +164,6 @@ ara file show $(ara file list -b $pbid -c ID -f value|head -n1)
 ansible localhost -m ara_record -a "playbook=${pbid} key=output value={{ lookup('file', '${LOGDIR}/smoke.yml.txt') }}"
 ansible localhost -m ara_read -a "playbook=${pbid} key=output"
 
-# We want to test pagination in html generation
-export ARA_PLAYBOOK_PER_PAGE=3
-export ARA_RESULT_PER_PAGE=20
-ara generate html ${LOGDIR}/build
-ara generate html ${LOGDIR}/build-playbook --playbook $pbid
-
 ara generate junit ${LOGDIR}/junit.xml
 ara generate junit ${LOGDIR}/junit-playbook.xml --playbook $pbid
 ara generate junit -
