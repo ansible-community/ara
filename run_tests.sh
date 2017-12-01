@@ -31,18 +31,6 @@ optional arguments:
 EOF
 }
 
-# Some tests only work on certain versions of Ansible.
-# Use Ansible's pseudo semver to determine if we can run something.
-function semver_compare {
-    cat << EOF | python
-from __future__ import print_function
-import sys
-from distutils.version import LooseVersion
-
-print(LooseVersion('${1}') ${2} LooseVersion('${3}'))
-EOF
-}
-
 # Cleanup from any previous runs if necessary
 function cleanup {
     [[ -e "${LOGDIR}" ]] && rm -rf "${LOGDIR}"
@@ -126,13 +114,8 @@ export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
 export ANSIBLE_LIBRARY="ara/plugins/modules"
 export ARA_DATABASE="${DATABASE}"
 
-# Lint
-for file in $(find ara/tests/integration ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
-    ansible-lint ${file}
-done
-for file in $(find ara/tests/integration -maxdepth 1 ! -path '*import*.yml' -regex '.*.y[a]?ml'); do
-    ansible-playbook --syntax-check ${file}
-done
+# Run linters
+bash tests/ansible-linters.sh
 
 # Run test playbooks
 # smoke.yml run output will be re-used later
@@ -149,14 +132,8 @@ kill $!
 # Test include role which is a bit special
 ansible-playbook -vv ara/tests/integration/include_role.yml
 
-if [[ $(semver_compare "${ansible_version}" ">=" "2.4.0.0") == "True" ]]; then
-    ansible-playbook --syntax-check ara/tests/integration/import.yml
-    ansible-lint ara/tests/integration/import.yml
-    ansible-playbook -vv ara/tests/integration/import.yml
-fi
-
 # Run test commands
-pbid=$(ara playbook list -c ID -f value |head -n1)
+pbid=$(ara playbook list | awk '/smoke.yml/ {print $2}')
 
 ara playbook show $pbid -f json
 ara host list -b $pbid -f yaml
