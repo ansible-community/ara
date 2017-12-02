@@ -48,8 +48,8 @@ DETAIL_FIELDS = {
     'handler': fields.Boolean,
     'started': fields.DateTime(dt_format='iso8601'),
     'ended': fields.DateTime(dt_format='iso8601'),
-    'results': api_utils.ResourceUrl('results.resultrestapi',
-                                     resource='tasks'),
+    'results': api_utils.ResourceUrl('tasks.taskrestapi',
+                                     resource='results'),
     'playbook': fields.Nested({
         'id': fields.Integer,
         'href': fields.Url('playbooks.playbookrestapi')
