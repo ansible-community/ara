@@ -504,7 +504,7 @@ def _find_results(**kwargs):
             kwargs['after'] > Result.started
         )
 
-    return query.order_by(Result.id.desc()).all()
+    return query.order_by(Result.id.asc()).all()
 
 
 api.add_resource(ResultRestApi, '', '/<int:id>')

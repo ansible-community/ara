@@ -436,7 +436,7 @@ def _find_tasks(**kwargs):
             kwargs['after'] > Task.started
         )
 
-    return query.order_by(Task.id.desc()).all()
+    return query.order_by(Task.id.asc()).all()
 
 
 api.add_resource(TaskRestApi, '', '/<int:id>')

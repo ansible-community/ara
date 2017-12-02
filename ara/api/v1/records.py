@@ -241,7 +241,7 @@ def _find_records(**kwargs):
     if 'key' in kwargs and kwargs['key'] is not None:
         query = query.filter_by(key=kwargs['key'])
 
-    return query.order_by(Record.id.desc()).all()
+    return query.order_by(Record.id.asc()).all()
 
 
 api.add_resource(RecordRestApi, '', '/<int:id>')

@@ -266,7 +266,7 @@ def _find_files(**kwargs):
     if 'is_playbook' in kwargs and kwargs['is_playbook'] is not None:
         query = query.filter_by(is_playbook=kwargs['is_playbook'])
 
-    return query.order_by(File.id.desc()).all()
+    return query.order_by(File.id.asc()).all()
 
 
 api.add_resource(FileRestApi, '', '/<int:id>')

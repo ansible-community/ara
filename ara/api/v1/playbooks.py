@@ -326,7 +326,7 @@ def _find_playbooks(**kwargs):
             kwargs['after'] > Playbook.started
         )
 
-    return query.order_by(Playbook.id.desc()).all()
+    return query.order_by(Playbook.id.asc()).all()
 
 
 api.add_resource(PlaybookRestApi, '', '/<int:id>')

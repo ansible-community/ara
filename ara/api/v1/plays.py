@@ -278,7 +278,7 @@ def _find_plays(**kwargs):
             kwargs['after'] > Play.started
         )
 
-    return query.order_by(Play.id.desc()).all()
+    return query.order_by(Play.id.asc()).all()
 
 
 api.add_resource(PlayRestApi, '', '/<int:id>')

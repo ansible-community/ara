@@ -324,7 +324,7 @@ def _find_hosts(**kwargs):
             )
         )
 
-    return query.order_by(Host.id.desc()).all()
+    return query.order_by(Host.id.asc()).all()
 
 
 api.add_resource(HostRestApi, '', '/<int:id>')
