@@ -18,6 +18,7 @@
 # These fixtures are automatically loaded by pytest
 # https://docs.pytest.org/en/latest/fixture.html
 
+import flask
 import os
 import pytest
 import shlex
@@ -25,6 +26,33 @@ import shutil
 import subprocess
 import tempfile
 from ara.setup import path as ara_location
+
+
+def clear_localstack(stack):
+    """
+    Clear given werkzeug LocalStack instance.
+
+    :param ctx: local stack instance
+    :type ctx: werkzeug.local.LocalStack
+    """
+    while stack.pop():
+        pass
+
+
+@pytest.fixture(autouse=True, scope='function')
+def clear_flask_context():
+    """
+    Clear flask current_app and request globals.
+
+    When using :meth:`flask.Flask.test_client`, even as context manager,
+    the flask's globals :attr:`flask.current_app` and :attr:`flask.request`
+    are left dirty, so testing code relying on them will probably fail.
+
+    This function clean said globals, and should be called after testing
+    with :meth:`flask.Flask.test_client`.
+    """
+    clear_localstack(flask._app_ctx_stack)
+    clear_localstack(flask._request_ctx_stack)
 
 
 def ansible(env, inventory, playbook, verbose=False):
@@ -49,17 +77,20 @@ def ansible(env, inventory, playbook, verbose=False):
 
 
 @pytest.fixture(scope='module')
-def run_ansible_env(request, inventory='default',
-                    playbook='smoke.yml',
-                    database=None):
+def run_ansible_env(request):
     """
     Runs a set of playbooks once with ARA enabled with environment variables.
     """
+    assert 'ARA_DATABASE' not in os.environ
+    assert 'ARA_DIR' not in os.environ
+
     # Create and destroy a temporary directory for each run
     tmpdir = tempfile.mkdtemp(prefix='ara_')
     request.addfinalizer(lambda: shutil.rmtree(tmpdir))
 
+    params = getattr(request, 'param', {})
     # If no database was specified (i.e, mysql+pymysql://, default to sqlite)
+    database = params.get('database')
     if database is None:
         # Default to sqlite
         handle, database = tempfile.mkstemp(suffix='.sqlite', dir=tmpdir)
@@ -81,7 +112,9 @@ def run_ansible_env(request, inventory='default',
 
     # Path to inventory and playbook we'll be using
     fixtures = os.path.join(ara_location, 'tests/fixtures')
+    inventory = params.get('inventory', 'default')
     inventory = os.path.join(fixtures, 'inventory/%s' % inventory)
+    playbook = params.get('playbook', 'smoke.yml')
     playbook = os.path.join(fixtures, playbook)
 
     # If pytest is verbose, make Ansible verbose

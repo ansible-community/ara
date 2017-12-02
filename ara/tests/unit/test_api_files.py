@@ -16,193 +16,242 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.fakes import FakeRun
-from ara.tests.unit.common import TestAra
 from ara.api.files import FileApi
-from ara.api.v1.files import FILE_FIELDS
+from ara.api.v1.files import (
+    BASE_FIELDS,
+    FILE_FIELDS
+)
 
 
-class TestPythonApiFiles(TestAra):
-    """ Tests for the ARA API interface """
-    def setUp(self):
-        super(TestPythonApiFiles, self).setUp()
-        self.client = FileApi()
+def test_bootstrap(run_ansible_env):
+    # This just takes care of initializing run_ansible_env which runs once
+    pass
 
-    def tearDown(self):
-        super(TestPythonApiFiles, self).tearDown()
 
-    ###########
-    # POST
-    ###########
-    # TODO: Add test for validating that is_playbook is set properly for
-    # playbook files
-    def test_post_with_no_data(self):
-        resp, data = self.client.post()
-        self.assertEqual(resp.status_code, 400)
+###########
+# GET
+###########
+def test_get_not_found(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_post_with_correct_data(self):
-        # Create fake playbook data and create a file in it
-        ctx = FakeRun()
-        resp, file_ = self.client.post(
-            playbook_id=ctx.playbook['id'],
-            path='/root/playbook.yml',
-            content='---\n- name: Task from ünit tests'
-        )
-        self.assertEqual(resp.status_code, 200)
+    resp, data = FileApi().get(id=9001)
+    assert resp.status_code == 404
+    assert 'query_parameters' in data['help']
+    assert 'result_output' in data['help']
+    assert "File 9001 doesn't exist" in data['message']
 
-        # Confirm that the POST returned the full file object ("data")
-        # and that the file was really created properly by fetching it
-        # ("file")
-        resp, data = self.client.get(id=file_['id'])
-        self.assertEqual(len(data), len(file_))
-        self.assertEqual(data, file_)
-        for key in FILE_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, file_)
 
-    def test_post_with_incorrect_data(self):
-        FakeRun()
-        resp, data = self.client.post(
-            playbook_id='1',
-            path=False,
-            content=1
-        )
-        self.assertEqual(resp.status_code, 400)
+def test_get_list(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_post_with_missing_argument(self):
-        FakeRun()
-        resp, data = self.client.post(
-            path='/root/playbook.yml',
-            content='hello world'
-        )
-        self.assertEqual(resp.status_code, 400)
+    resp, data = FileApi().get()
+    assert resp.status_code == 200
+    assert isinstance(data, list)
+    assert data[0]['id'] == 1
+    assert data[0]['href'] == '/api/v1/files/1'
+    for key in BASE_FIELDS.keys():
+        assert key in data[0]
 
-    def test_post_with_nonexistant_playbook(self):
-        resp, data = self.client.post(
-            playbook_id=9001,
-            path='/root/playbook.yml',
-            content='hello world'
-        )
-        self.assertEqual(resp.status_code, 404)
 
-    def test_post_file_already_exists(self):
-        # Posting the same file a second time should yield a 200 and not error
-        # out, files are unique per sha1
-        ctx = FakeRun()
+def test_get_id(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-        # Retrieve the playbook file so we can post the same thing
-        resp, pbfile = self.client.get(
-            playbook_id=ctx.playbook['id'],
-            is_playbook=True
-        )
-        pbfile = pbfile[0]
+    resp, data = FileApi().get(id=1)
+    assert resp.status_code == 200
+    assert data['id'] == 1
+    assert data['href'] == '/api/v1/files/1'
+    assert data['path'] == run_ansible_env['inventory']
+    assert not data['is_playbook']
+    assert data['playbook']['id'] == 1
+    assert data['playbook']['href'] == '/api/v1/playbooks/1'
 
-        # Post the same thing
-        resp, data = self.client.post(
-            playbook_id=pbfile['playbook']['id'],
-            path=pbfile['path'],
-            content=pbfile['content']
-        )
+    for key in FILE_FIELDS.keys():
+        assert key in data
 
-        self.assertEqual(resp.status_code, 200)
-        file_ = data
 
-        self.assertEqual(pbfile['sha1'], file_['sha1'])
+def test_get_by_playbook_id(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    ###########
-    # PATCH
-    ###########
-    def test_patch_with_no_data(self):
-        resp, data = self.client.patch()
-        self.assertEqual(resp.status_code, 400)
+    resp, data = FileApi().get(playbook_id=1)
+    assert resp.status_code == 200
+    assert isinstance(data, list)
+    assert len(data) == 4
+    assert data[0]['id'] == 1
+    assert data[0]['href'] == '/api/v1/files/1'
+    for key in BASE_FIELDS.keys():
+        assert key in data[0]
 
-    def test_patch_existing(self):
-        # Generate fake playbook data
-        ctx = FakeRun()
-        self.assertEqual(ctx.playbook['files'][0]['id'], 1)
 
-        # Get existing file
-        resp, file_ = self.client.get(id=ctx.playbook['files'][0]['id'])
+###########
+# POST
+###########
+def test_post_with_no_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-        # We'll update the content field, assert we are actually
-        # making a change
-        new_content = '# Empty file !'
-        self.assertNotEqual(file_['content'], new_content)
+    resp, data = FileApi().post()
+    assert resp.status_code == 400
 
-        resp, data = self.client.patch(
-            id=file_['id'],
-            content=new_content
-        )
-        self.assertEqual(resp.status_code, 200)
 
-        # The patch endpoint should return the full updated object
-        self.assertEqual(data['content'], new_content)
+def test_post_with_correct_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-        # Confirm by re-fetching file
-        resp, updated = self.client.get(id=file_['id'])
-        self.assertEqual(updated['content'], new_content)
+    # Get the number of files in the playbook before adding a new file
+    resp, before = FileApi().get(playbook_id=1)
+    assert resp.status_code == 200
 
-    def test_patch_with_missing_arg(self):
-        resp, data = self.client.patch(path='/updated/path.yml')
-        self.assertEqual(resp.status_code, 400)
+    # Create fake playbook data and create a file in it
+    resp, file_ = FileApi().post(
+        playbook_id=1,
+        path='/root/playbook.yml',
+        content='---\n- name: Task from ünit tests'
+    )
+    assert resp.status_code == 200
 
-    ###########
-    # PUT
-    ###########
-    # Not implemented yet
-    def test_put_unimplemented(self):
-        resp, data = self.client.put()
-        self.assertEqual(resp.status_code, 405)
+    # Confirm that the POST returned the full file object ("data")
+    # and that the file was really created properly by fetching it
+    # ("file")
+    resp, data = FileApi().get(id=file_['id'])
+    assert resp.status_code == 200
+    assert data == file_
 
-    ###########
-    # DELETE
-    ###########
-    # Not implemented yet
-    def test_delete_unimplemented(self):
-        resp, data = self.client.delete()
-        self.assertEqual(resp.status_code, 405)
+    # Assert that we now have more files
+    resp, after = FileApi().get(playbook_id=1)
+    assert resp.status_code == 200
+    assert len(before) < len(after)
 
-    ###########
-    # GET
-    ###########
-    def test_get_with_bad_params_404_help(self):
-        FakeRun()
-        resp, data = self.client.get(id=0)
-        self.assertEqual(resp.status_code, 404)
-        # TODO: Improve this
-        self.assertTrue('result_output' in data['help'])
-        self.assertTrue('query_parameters' in data['help'])
+    # Assert that the data is correct
+    assert file_['href'] == '/api/v1/files/%s' % file_['id']
+    assert file_['path'] == '/root/playbook.yml'
+    assert file_['content'] == u'---\n- name: Task from ünit tests'
 
-    def test_get_without_parameters_and_data(self):
-        resp, data = self.client.get()
-        self.assertEqual(resp.status_code, 404)
-        # TODO: Improve this
-        self.assertTrue('result_output' in data['help'])
-        self.assertTrue('query_parameters' in data['help'])
+    assert file_['playbook']['id'] == 1
+    assert file_['playbook']['href'] == '/api/v1/playbooks/1'
 
-    def test_get_http_without_parameters(self):
-        ctx = FakeRun()
-        resp, data = self.client.get()
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(ctx.playbook['files']),
-                         len(data))
 
-        data = data[0]
+def test_post_with_incorrect_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-        self.assertEqual(ctx.playbook['files'][0]['id'], data['id'])
-        self.assertEqual(ctx.playbook['id'], data['playbook']['id'])
-        self.assertEqual(ctx.playbook['path'], data['path'])
+    resp, data = FileApi().post(
+        playbook_id='1',
+        path=False,
+        content=1
+    )
+    assert resp.status_code == 400
 
-    def test_get_with_id_parameter(self):
-        # Run twice and assert that we have two files
-        ctx = FakeRun()
-        FakeRun()
-        resp, files = self.client.get()
-        self.assertEqual(len(files), 2)
 
-        # Get the file from our first playbook run
-        resp, data = self.client.get(id=1)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(ctx.playbook['files'][0]['id'], data['id'])
-        self.assertEqual(ctx.playbook['id'], data['playbook']['id'])
-        self.assertEqual(ctx.playbook['path'], data['path'])
+def test_post_with_missing_argument(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().post(
+        path='/root/playbook.yml',
+        content='hello world'
+    )
+    assert resp.status_code == 400
+
+
+def test_post_with_nonexistant_playbook(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().post(
+        playbook_id=9001,
+        path='/root/playbook.yml',
+        content='hello world'
+    )
+    assert resp.status_code == 404
+
+
+def test_post_file_already_exists(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    # Retrieve the playbook file so we can post the same thing
+    resp, file_ = FileApi().get(id=1)
+    assert resp.status_code == 200
+
+    # Post the same thing
+    resp, data = FileApi().post(
+        playbook_id=file_['id'],
+        path=file_['path'],
+        content=file_['content']
+    )
+    assert resp.status_code == 200
+    # Posting a file that already exists doesn't create a new file
+    assert file_ == data
+
+
+###########
+# PATCH
+###########
+def test_patch_with_no_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().patch()
+    assert resp.status_code == 400
+
+
+def test_patch_existing(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    # Get existing file
+    resp, file_ = FileApi().get(id=1)
+    assert resp.status_code == 200
+
+    # We'll update the content field, assert we are actually
+    # making a change
+    new_content = '# Empty file !'
+    assert file_['content'] != new_content
+
+    resp, data = FileApi().patch(
+        id=file_['id'],
+        content=new_content
+    )
+    assert resp.status_code == 200
+
+    # The patch endpoint should return the full updated object
+    assert data['content'] == new_content
+
+    # Confirm by re-fetching file
+    resp, updated = FileApi().get(id=file_['id'])
+    assert resp.status_code == 200
+    assert updated['content'] == new_content
+
+
+def test_patch_with_missing_arg(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().patch(path='/updated/path.yml')
+    assert resp.status_code == 400
+
+
+###########
+# PUT
+###########
+def test_put_unimplemented(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().put()
+    assert resp.status_code == 405
+
+
+###########
+# DELETE
+###########
+def test_delete_unimplemented(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = FileApi().delete()
+    assert resp.status_code == 405

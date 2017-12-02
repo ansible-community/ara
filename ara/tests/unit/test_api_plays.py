@@ -15,169 +15,226 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.tests.unit.fakes import FakeRun
-from ara.tests.unit.common import TestAra
 from ara.api.plays import PlayApi
-from ara.api.v1.plays import PLAY_FIELDS
+from ara.api.v1.plays import (
+    BASE_FIELDS,
+    PLAY_FIELDS
+)
 
 
-class TestApiPlays(TestAra):
-    """ Tests for the ARA API interface """
-    def setUp(self):
-        super(TestApiPlays, self).setUp()
-        self.client = PlayApi()
+def test_bootstrap(run_ansible_env):
+    # This just takes care of initializing run_ansible_env which runs once
+    pass
 
-    def tearDown(self):
-        super(TestApiPlays, self).tearDown()
 
-    ###########
-    # POST
-    ###########
-    def test_post_with_no_data(self):
-        resp, data = self.client.post()
-        self.assertEqual(resp.status_code, 400)
+###########
+# GET
+###########
+def test_get_not_found(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_post_with_correct_data(self):
-        # Create fake playbook data and create a play in it
-        ctx = FakeRun()
-        resp, data = self.client.post(
-            playbook_id=ctx.playbook['id'],
-            name='Play from unit tests',
-            started='1970-08-14T00:52:49.570031'
-        )
-        self.assertEqual(resp.status_code, 200)
+    resp, data = PlayApi().get(id=9001)
+    assert resp.status_code == 404
+    assert 'query_parameters' in data['help']
+    assert 'result_output' in data['help']
+    assert "Play 9001 doesn't exist" in data['message']
 
-        # Confirm that the POST returned the full play object ("data")
-        # and that the play was really created properly by fetching it
-        # ("play")
-        resp, play = self.client.get(id=data['id'])
-        self.assertEqual(len(data), len(play))
-        self.assertEqual(data, play)
-        for key in PLAY_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, play)
 
-    def test_post_with_incorrect_data(self):
-        FakeRun()
-        resp, data = self.client.post(
-            playbook_id='1',
-            name=1,
-            started='a long time ago'
-        )
-        self.assertEqual(resp.status_code, 400)
+def test_get_list(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_post_with_missing_argument(self):
-        FakeRun()
-        resp, data = self.client.post(
-            name='Play from unit tests',
-            started='1970-08-14T00:52:49.570031'
-        )
-        self.assertEqual(resp.status_code, 400)
+    resp, data = PlayApi().get()
+    assert resp.status_code == 200
+    assert isinstance(data, list)
+    assert data[0]['id'] == 1
+    assert data[0]['href'] == '/api/v1/plays/1'
+    for key in BASE_FIELDS.keys():
+        assert key in data[0]
 
-    def test_post_with_nonexistant_playbook(self):
-        resp, data = self.client.post(
-            playbook_id=9001,
-            name='Play from unit tests',
-            started='1970-08-14T00:52:49.570031'
-        )
-        self.assertEqual(resp.status_code, 404)
 
-    ###########
-    # PATCH
-    ###########
-    def test_patch_with_no_data(self):
-        resp, data = self.client.patch()
-        self.assertEqual(resp.status_code, 400)
+def test_get_id(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_patch_existing(self):
-        # Generate fake playbook data
-        ctx = FakeRun()
-        self.assertEqual(ctx.play['id'], 1)
+    resp, data = PlayApi().get(id=1)
+    assert resp.status_code == 200
+    assert data['id'] == 1
+    assert data['href'] == '/api/v1/plays/1'
+    assert data['playbook']['id'] == 1
+    assert data['playbook']['href'] == '/api/v1/playbooks/1'
 
-        # We'll update the name field, assert we are actually
-        # making a change
-        new_name = "Updated play name"
-        self.assertNotEqual(ctx.play['name'], new_name)
+    assert data['results'] == '/api/v1/plays/1/results'
+    assert data['tasks'] == '/api/v1/plays/1/tasks'
 
-        resp, data = self.client.patch(
-            id=ctx.play['id'],
-            name=new_name
-        )
-        self.assertEqual(resp.status_code, 200)
+    for key in PLAY_FIELDS.keys():
+        assert key in data
 
-        # The patch endpoint should return the full updated object
-        self.assertEqual(data['name'], new_name)
 
-        # Confirm by re-fetching play
-        resp, updated = self.client.get(id=ctx.play['id'])
-        self.assertEqual(updated['name'], new_name)
+def test_get_by_playbook_id(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    def test_patch_with_missing_arg(self):
-        FakeRun()
-        resp, data = self.client.patch(
-            name='Updated play name'
-        )
-        self.assertEqual(resp.status_code, 400)
+    resp, data = PlayApi().get(playbook_id=1)
+    assert resp.status_code == 200
+    assert isinstance(data, list)
+    assert len(data) == 4
+    assert data[0]['id'] == 1
+    assert data[0]['href'] == '/api/v1/plays/1'
+    for key in BASE_FIELDS.keys():
+        assert key in data[0]
 
-    ###########
-    # PUT
-    ###########
-    # Not implemented yet
-    def test_put_unimplemented(self):
-        resp, data = self.client.put()
-        self.assertEqual(resp.status_code, 405)
 
-    ###########
-    # DELETE
-    ###########
-    # Not implemented yet
-    def test_delete_unimplemented(self):
-        resp, data = self.client.delete()
-        self.assertEqual(resp.status_code, 405)
+###########
+# POST
+###########
+def test_post_with_no_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-    ###########
-    # GET
-    ###########
-    def test_get_with_bad_params_404_help(self):
-        FakeRun()
-        resp, data = self.client.get(id=0)
-        self.assertEqual(resp.status_code, 404)
-        # TODO: Improve this
-        self.assertTrue('result_output' in data['help'])
-        self.assertTrue('query_parameters' in data['help'])
+    resp, data = PlayApi().post()
+    assert resp.status_code == 400
 
-    def test_get_without_parameters_and_data(self):
-        resp, data = self.client.get()
-        self.assertEqual(resp.status_code, 404)
-        # TODO: Improve this
-        self.assertTrue('result_output' in data['help'])
-        self.assertTrue('query_parameters' in data['help'])
 
-    def test_get_without_parameters(self):
-        ctx = FakeRun()
-        resp, data = self.client.get()
-        self.assertEqual(resp.status_code, 200)
+def test_post_with_correct_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
 
-        data = data[0]
+    # Get the number of plays in the playbook before adding a new play
+    resp, before = PlayApi().get(playbook_id=1)
+    assert resp.status_code == 200
 
-        self.assertEqual(len(data), len(ctx.play))
-        self.assertEqual(data, ctx.play)
-        for key in PLAY_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, ctx.play)
+    resp, play = PlayApi().post(
+        playbook_id=1,
+        name='Play from unit tests',
+        started='1970-08-14T00:52:49.570031'
+    )
+    assert resp.status_code == 200
 
-    def test_get_with_id_parameter(self):
-        FakeRun()
-        # Run twice to get a second play
-        ctx = FakeRun()
-        resp, plays = self.client.get()
-        self.assertEqual(len(plays), 2)
+    # Confirm that the POST returned the full play object ("data")
+    # and that the play was really created properly by fetching it
+    # ("play")
+    resp, data = PlayApi().get(id=play['id'])
+    assert resp.status_code == 200
+    assert data == play
 
-        resp, data = self.client.get(id=2)
-        self.assertEqual(resp.status_code, 200)
+    # Assert that we now have more plays
+    resp, after = PlayApi().get(playbook_id=1)
+    assert resp.status_code == 200
+    assert len(before) < len(after)
 
-        self.assertEqual(len(data), len(ctx.play))
-        self.assertEqual(data, ctx.play)
-        for key in PLAY_FIELDS.keys():
-            self.assertIn(key, data)
-            self.assertIn(key, ctx.play)
+    # Assert that the data is correct
+    assert play['href'] == '/api/v1/plays/%s' % play['id']
+    assert play['name'] == 'Play from unit tests'
+    assert play['started'] == '1970-08-14T00:52:49.570031'
+
+    assert play['playbook']['id'] == 1
+    assert play['playbook']['href'] == '/api/v1/playbooks/1'
+
+
+def test_post_with_incorrect_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().post(
+        playbook_id='1',
+        name=1,
+        started='a long time ago'
+    )
+    assert resp.status_code == 400
+
+
+def test_post_with_missing_argument(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().post(
+        name='Play from unit tests',
+        started='1970-08-14T00:52:49.570031'
+    )
+    assert resp.status_code == 400
+
+
+def test_post_with_nonexistant_playbook(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().post(
+        playbook_id=9001,
+        name='Play from unit tests',
+        started='1970-08-14T00:52:49.570031'
+    )
+    assert resp.status_code == 404
+
+
+###########
+# PATCH
+###########
+def test_patch_with_no_data(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().patch()
+    assert resp.status_code == 400
+
+
+def test_patch_existing(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    # Get existing play
+    resp, play = PlayApi().get(id=1)
+    assert resp.status_code == 200
+
+    # We'll update the name field, assert we are actually
+    # making a change
+    new_name = "Updated play name"
+    assert play['name'] != new_name
+
+    resp, data = PlayApi().patch(
+        id=1,
+        name=new_name
+    )
+    assert resp.status_code == 200
+
+    # The patch endpoint should return the full updated object
+    assert data['name'] == new_name
+
+    # Confirm by re-fetching play
+    resp, updated = PlayApi().get(id=1)
+    assert resp.status_code == 200
+    assert updated['name'] == new_name
+    assert data == updated
+
+
+def test_patch_with_missing_arg(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().patch(
+        name='Updated play name'
+    )
+    assert resp.status_code == 400
+
+
+###########
+# PUT
+###########
+def test_put_unimplemented(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().put()
+    assert resp.status_code == 405
+
+
+###########
+# DELETE
+###########
+def test_delete_unimplemented(run_ansible_env, monkeypatch):
+    monkeypatch.setenv('ARA_DATABASE', run_ansible_env['env']['ARA_DATABASE'])
+    monkeypatch.setenv('ARA_DIR', run_ansible_env['env']['ARA_DIR'])
+
+    resp, data = PlayApi().delete()
+    assert resp.status_code == 405

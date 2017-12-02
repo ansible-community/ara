@@ -16,9 +16,5 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-- name: ARA Tasks test play
-  hosts: localhost
-  gather_facts: no
-  roles:
-    - { role: "ara-features" }
-
+- include: ara-functional.yml
+- include: smoke.yml

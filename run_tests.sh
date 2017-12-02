@@ -137,7 +137,7 @@ done
 
 # Run test playbooks
 # ara-functional.yml run output will be re-used later
-ansible-playbook -vv ara/tests/fixtures/ara-functional.yml | tee ${LOGDIR}/smoke.yml.txt
+ansible-playbook -vv ara/tests/fixtures/full.yml | tee ${LOGDIR}/smoke.yml.txt
 
 # This playbook is meant to fail
 ansible-playbook -vv ara/tests/fixtures/failed.yml || true
