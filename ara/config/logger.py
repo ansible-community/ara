@@ -23,21 +23,8 @@ import os
 import yaml
 from ara.config.compat import ara_config
 
-default_dir = ara_config('dir', 'ARA_DIR', os.path.expanduser('~/.ara'))
-ARA_LOG_CONFIG = ara_config(
-    'logconfig', 'ARA_LOG_CONFIG', os.path.join(default_dir, 'logging.yml')
-)
-ARA_LOG_DIR = ara_config('logdir', 'ARA_LOG_DIR', default_dir)
-ARA_LOG_FILE = ara_config('logfile', 'ARA_LOG_FILE', 'ara.log')
-ARA_LOG_LEVEL = ara_config('loglevel', 'ARA_LOG_LEVEL', 'INFO')
 
-
-def setup_logging():
-    if not os.path.isdir(ARA_LOG_DIR):
-        os.makedirs(ARA_LOG_DIR, mode=0o750)
-
-    if not os.path.exists(ARA_LOG_CONFIG):
-        default_config = """
+DEFAULT_LOG_CONFIG = """
 ---
 version: 1
 formatters:
@@ -89,26 +76,67 @@ root:
     - normal
   level: {level}
 """
-        default_config = default_config.format(
-            dir=ARA_LOG_DIR,
-            file=ARA_LOG_FILE,
-            level=ARA_LOG_LEVEL
-        )
-        with open(ARA_LOG_CONFIG, 'w') as config:
-            config.write(default_config.lstrip())
 
-    if os.path.splitext(ARA_LOG_CONFIG)[1] in ('.yml', '.yaml', '.json'):
+
+class LogConfig(object):
+    def __init__(self):
+        default_dir = ara_config('dir', 'ARA_DIR',
+                                 os.path.expanduser('~/.ara'))
+        self.ARA_LOG_CONFIG = ara_config(
+            'logconfig', 'ARA_LOG_CONFIG', os.path.join(default_dir,
+                                                        'logging.yml')
+        )
+        self.ARA_LOG_DIR = ara_config('logdir', 'ARA_LOG_DIR', default_dir)
+        self.ARA_LOG_FILE = ara_config('logfile', 'ARA_LOG_FILE', 'ara.log')
+        self.ARA_LOG_LEVEL = ara_config('loglevel', 'ARA_LOG_LEVEL', 'INFO')
+        if self.ARA_LOG_LEVEL == 'DEBUG':
+            self.SQLALCHEMY_ECHO = True
+            self.ARA_ENABLE_DEBUG_VIEW = True
+        else:
+            self.SQLALCHEMY_ECHO = False
+            self.ARA_ENABLE_DEBUG_VIEW = False
+
+    @property
+    def config(self):
+        """ Returns a dictionary for the loaded configuration """
+        return {
+            key: self.__dict__[key]
+            for key in dir(self)
+            if key.isupper()
+        }
+
+
+def setup_logging(config=None):
+    if config is None:
+        config = LogConfig().config
+
+    if not os.path.isdir(config['ARA_LOG_DIR']):
+        os.makedirs(config['ARA_LOG_DIR'], mode=0o750)
+
+    if not os.path.exists(config['ARA_LOG_CONFIG']):
+        default_config = DEFAULT_LOG_CONFIG.format(
+            dir=config['ARA_LOG_DIR'],
+            file=config['ARA_LOG_FILE'],
+            level=config['ARA_LOG_LEVEL']
+        )
+        with open(config['ARA_LOG_CONFIG'], 'w') as log_config:
+            log_config.write(default_config.lstrip())
+
+    ext = os.path.splitext(config['ARA_LOG_CONFIG'])[1]
+    if ext in ('.yml', '.yaml', '.json'):
         # yaml.safe_load can load json as well as yaml
-        logging.config.dictConfig(yaml.safe_load(open(ARA_LOG_CONFIG, 'r')))
+        logging.config.dictConfig(yaml.safe_load(
+            open(config['ARA_LOG_CONFIG'], 'r')
+        ))
     else:
-        logging.config.fileConfig(ARA_LOG_CONFIG)
+        logging.config.fileConfig(config['ARA_LOG_CONFIG'])
 
     logger = logging.getLogger('ara.logging')
     msg = 'Logging: Level {level} from {config}, logging to {dir}/{file}'
     msg = msg.format(
-        level=ARA_LOG_LEVEL,
-        config=ARA_LOG_CONFIG,
-        dir=ARA_LOG_DIR,
-        file=ARA_LOG_FILE,
+        level=config['ARA_LOG_LEVEL'],
+        config=config['ARA_LOG_CONFIG'],
+        dir=config['ARA_LOG_DIR'],
+        file=config['ARA_LOG_FILE'],
     )
     logger.debug(msg)

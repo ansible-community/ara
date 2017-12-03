@@ -15,31 +15,40 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import xstatic.main
+from xstatic import main as xs
 import xstatic.pkg.bootstrap_scss
 import xstatic.pkg.datatables
 import xstatic.pkg.jquery
 import xstatic.pkg.patternfly
 import xstatic.pkg.patternfly_bootstrap_treeview
 from ara.config.compat import ara_config
-from ara.config.logger import ARA_LOG_LEVEL
 
-ARA_ENABLE_DEBUG_VIEW = True if ARA_LOG_LEVEL == 'DEBUG' else False
 
-ARA_PLAYBOOK_PER_PAGE = ara_config('playbook_per_page',
-                                   'ARA_PLAYBOOK_PER_PAGE',
-                                   10,
-                                   value_type='integer')
-ARA_RESULT_PER_PAGE = ara_config('result_per_page',
-                                 'ARA_RESULT_PER_PAGE',
-                                 25,
-                                 value_type='integer')
+class WebAppConfig(object):
+    def __init__(self):
+        self.ARA_PLAYBOOK_PER_PAGE = ara_config('playbook_per_page',
+                                                'ARA_PLAYBOOK_PER_PAGE',
+                                                10,
+                                                value_type='integer')
+        self.ARA_RESULT_PER_PAGE = ara_config('result_per_page',
+                                              'ARA_RESULT_PER_PAGE',
+                                              25,
+                                              value_type='integer')
 
-treeview = xstatic.pkg.patternfly_bootstrap_treeview
-XSTATIC = dict(
-    bootstrap=xstatic.main.XStatic(xstatic.pkg.bootstrap_scss).base_dir,
-    datatables=xstatic.main.XStatic(xstatic.pkg.datatables).base_dir,
-    jquery=xstatic.main.XStatic(xstatic.pkg.jquery).base_dir,
-    patternfly=xstatic.main.XStatic(xstatic.pkg.patternfly).base_dir,
-    patternfly_bootstrap_treeview=xstatic.main.XStatic(treeview).base_dir,
-)
+        treeview = xstatic.pkg.patternfly_bootstrap_treeview
+        self.XSTATIC = dict(
+            bootstrap=xs.XStatic(xstatic.pkg.bootstrap_scss).base_dir,
+            datatables=xs.XStatic(xstatic.pkg.datatables).base_dir,
+            jquery=xs.XStatic(xstatic.pkg.jquery).base_dir,
+            patternfly=xs.XStatic(xstatic.pkg.patternfly).base_dir,
+            patternfly_bootstrap_treeview=xs.XStatic(treeview).base_dir,
+        )
+
+    @property
+    def config(self):
+        """ Returns a dictionary for the loaded configuration """
+        return {
+            key: self.__dict__[key]
+            for key in dir(self)
+            if key.isupper()
+        }

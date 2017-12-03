@@ -15,12 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-# Note (dmsimard): ARA's configuration, views and API imports are done
-# "just-in-time" because we might end up loading them for nothing and it has a
-# non-negligible cost.
-# It also breaks some assumptions... For example, "ara.config" loads the
-# configuration automatically on import which might not be desirable.
-
 import datetime
 import logging
 import logging.config
@@ -32,6 +26,10 @@ from ansible import __version__ as ansible_version
 from ara import __release__ as ara_release
 from ara.db import models
 from ara.db.models import db
+from ara.config.base import BaseConfig
+from ara.config.logger import LogConfig
+from ara.config.logger import setup_logging
+from ara.config.webapp import WebAppConfig
 from ara.utils import fast_count
 from ara.utils import playbook_treeview
 
@@ -51,7 +49,7 @@ def create_app():
 
     configure_app(app)
     configure_dirs(app)
-    configure_logging()
+    configure_logging(app)
     configure_errorhandlers(app)
     configure_template_filters(app)
     configure_context_processors(app)
@@ -64,9 +62,9 @@ def create_app():
 
 
 def configure_app(app):
-    app.config.from_object('ara.config.base')
-    app.config.from_object('ara.config.logger')
-    app.config.from_object('ara.config.webapp')
+    app.config.update(BaseConfig().config)
+    app.config.update(LogConfig().config)
+    app.config.update(WebAppConfig().config)
 
 
 def configure_dirs(app):
@@ -74,9 +72,8 @@ def configure_dirs(app):
         os.makedirs(app.config['ARA_DIR'], mode=0o700)
 
 
-def configure_logging():
-    from ara.config.logger import setup_logging
-    setup_logging()
+def configure_logging(app):
+    setup_logging(app.config)
 
 
 def configure_errorhandlers(app):
