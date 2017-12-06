@@ -1,0 +1,5 @@
+Django<2
+django-cors-middleware
+djangorestframework
+drf-nested-routers
+envparse
