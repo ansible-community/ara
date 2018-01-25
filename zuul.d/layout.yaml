@@ -1,5 +1,4 @@
 - project:
-    name: openstack/ara
     check:
       jobs:
         - ara-integration-debian-py27-2.2.3.0
