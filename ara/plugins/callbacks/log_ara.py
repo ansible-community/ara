@@ -370,12 +370,3 @@ class CallbackModule(CallbackBase):
 
         LOG.debug('closing database')
         db.session.close()
-
-    def v2_playbook_on_include(self, included_file):
-        # Before Ansible 2.2.0.0, "include" tasks were not sent to the
-        # callbacks as "native" tasks.
-        if LooseVersion(ansible_version) < LooseVersion('2.2.0'):
-            for host in included_file._hosts:
-                LOG.debug('log include file for host %s', host)
-                self.log_task(IncludeResult(host, included_file._filename),
-                              'ok')
