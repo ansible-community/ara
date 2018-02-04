@@ -1,6 +1,7 @@
 **ansible.sqlite
 *.pyc
 __pycache__/
+.pytest_cache/
 _build/
 build/
 *.egg*
