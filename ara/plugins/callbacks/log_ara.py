@@ -158,6 +158,13 @@ class CallbackModule(CallbackBase):
         else:
             results = jsonutils.loads(self._dump_results(result._result))
 
+        # Ignore errors can be "yes" instead of a proper boolean in <2.3
+        # for some reason
+        ignore_errors = kwargs.get('ignore_errors', False)
+        if LooseVersion(ansible_version) < LooseVersion('2.3.0'):
+            if not isinstance(ignore_errors, bool):
+                ignore_errors = True if ignore_errors == "yes" else False
+
         self.taskresult = models.TaskResult(
             task=self.task,
             host=host,
@@ -169,7 +176,7 @@ class CallbackModule(CallbackBase):
             failed=result._result.get('failed', False),
             skipped=result._result.get('skipped', False),
             unreachable=result._result.get('unreachable', False),
-            ignore_errors=kwargs.get('ignore_errors', False),
+            ignore_errors=ignore_errors,
         )
 
         db.session.add(self.taskresult)

@@ -212,7 +212,7 @@ class TaskResult(object):
         self.ignore_errors = ignore_errors
         self.changed = changed
         self.failed = failed
-        self.skipped = skipped,
+        self.skipped = skipped
         self.unreachable = unreachable
         self.result = result
 

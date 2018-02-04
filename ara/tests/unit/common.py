@@ -139,6 +139,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                                          host=host,
                                          status='ok',
                                          changed=True,
+                                         skipped=skipped,
                                          result=msg).model
 
         data = fakes.Data(playbook=playbook).model
@@ -151,7 +152,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                                          host=host,
                                          status='skipped',
                                          changed=False,
-                                         skipped=True,
+                                         skipped=skipped,
                                          result=msg).model
     task_results.append(record_result)
 
@@ -176,7 +177,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
                                          host=host,
                                          status='skipped',
                                          changed=False,
-                                         skipped=True,
+                                         skipped=skipped,
                                          result=msg).model
     task_results.append(failed_result)
 
