@@ -70,10 +70,9 @@ Otherwise, screenshots highlighting some of ARA's features are available in
 Community and getting help
 ==========================
 
-The ARA community hangs out on IRC, Slack and Discord.
-
-All three chats are seamlessly linked to each other so you can use your
-preferred client to come chat with us !
+The ARA community hangs out on IRC and Slack.
+The two chats are bridged with slack-irc_ which allows everyone to talk to each
+other.
 
 **IRC**
 
@@ -85,11 +84,7 @@ preferred client to come chat with us !
 - https://ara-community.slack.com
 - Join with the `Slack invitation <https://join.slack.com/t/ara-community/shared_invite/MjMxNzI4ODAxMDQxLTE1MDM4MDEzMTEtNzU1NTUwMTcyOQ>`_
 
-**Discord**
-
-- https://discordapp.com
-- Join with the `Discord invitation <https://discord.gg/z2SGdc9>`_
-
+.. _slack-irc: https://github.com/ekmartin/slack-irc
 .. _irc.freenode.net: https://webchat.freenode.net/
 
 Contributing, testing, issues and bugs
