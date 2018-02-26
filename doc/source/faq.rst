@@ -150,14 +150,15 @@ integration or continuous delivery.
 ARA aims to do one thing and do it well: Record Ansible runs and provide means
 to visualize these records to help you be more efficient.
 
-Why don't you use Ansible Tower, Rundeck or Semaphore ?
--------------------------------------------------------
+Why don't you use Ansible Tower (AWX), Rundeck or Semaphore ?
+--------------------------------------------------------------
 
-`Ansible Tower`_ is a product from Red Hat that has not been open sourced
-(*yet*). We do not know when it will be made freely available or when it will
-become open source.
+`Ansible Tower`_ is a product from Red Hat while `Ansible AWX`_ is the upstream
+open source version of Tower. ARA is not mutually exclusive with either: you
+can use it with your Tower or AWX deployment but it's only job is to provide
+reporting.
 
-Ansible Tower, Semaphore_ and Rundeck_ all have something in common.
+Ansible Tower, AWX, Semaphore_ and Rundeck_ all have something in common.
 They are tools that control (or want to control) the whole workflow from
 end-to-end and they do so in a fairly "centralized" fashion where everything
 runs from the place where the software is hosted.
@@ -188,6 +189,7 @@ For more information regarding the core values and the scope for the ARA
 project, refer to the project :ref:`manifesto <manifesto>`.
 
 .. _Ansible Tower: https://www.ansible.com/tower
+.. _Ansible AWX: https://github.com/ansible/awx
 .. _Semaphore: https://github.com/ansible-semaphore/semaphore
 .. _Rundeck: http://rundeck.org/plugins/ansible/2016/03/11/ansible-plugin.html
 
