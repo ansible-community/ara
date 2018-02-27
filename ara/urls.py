@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 admin.site.site_header = 'Administration'
 admin.site.index_title = 'Administration Ara'
 
-urlpatterns = [
-                  url(r'^api/v1/', include('api.urls')),
-                  url(r'^admin/', admin.site.urls),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+routes = [
+    url(r'^api/v1/', include('api.urls')),
+    url(r'^admin/', admin.site.urls),
+]
+urlpatterns = routes + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

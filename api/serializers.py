@@ -9,12 +9,16 @@ class PlaybookSerializer(serializers.ModelSerializer):
 
 
 class FileSerializer(serializers.ModelSerializer):
+    playbook = PlaybookSerializer(source='playbook_id', read_only=True)
+    
     class Meta:
         model = models.File
         fields = '__all__'
 
 
 class RecordSerializer(serializers.ModelSerializer):
+    playbook = PlaybookSerializer(source='playbook_id', read_only=True)
+
     class Meta:
         model = models.Record
         fields = '__all__'
