@@ -20,15 +20,23 @@ from rest_framework.routers import DefaultRouter
 
 from api import views
 
+REST_FRAMEWORK = {
+    # Use URL-based versioning
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ALLOWED_VERSIONS': {'v1'},
+}
+
 router = DefaultRouter()
-router.register(r'playbooks', views.PlaybookViewSet, base_name='playbooks')
-router.register(r'plays', views.PlayViewSet, base_name='plays')
-router.register(r'tasks', views.TaskViewSet, base_name='tasks')
-router.register(r'hosts', views.HostViewSet, base_name='hosts')
-router.register(r'results', views.ResultViewSet, base_name='results')
-router.register(r'records', views.RecordViewSet, base_name='records')
-router.register(r'files', views.FileViewSet, base_name='files')
+router.register(r'playbooks', views.PlaybookViewSet)
+router.register(r'plays', views.PlayViewSet)
+router.register(r'tasks', views.TaskViewSet)
+router.register(r'hosts', views.HostViewSet)
+router.register(r'results', views.ResultViewSet)
+router.register(r'records', views.RecordViewSet)
+router.register(r'files', views.FileViewSet)
+# router.register(r'filecontent', views.FileContentViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    url(r'^(?P<version>[v1]+)/', include(router.urls)),
 ]

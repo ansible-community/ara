@@ -50,6 +50,11 @@ class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecordSerializer
 
 
+# class FileContentViewSet(viewsets.ModelViewSet):
+#     queryset = models.FileContent.objects.all()
+#     serializer_class = serializers.FileContentSerializer
+
+
 class FileViewSet(viewsets.ModelViewSet):
     queryset = models.File.objects.all()
     serializer_class = serializers.FileSerializer
