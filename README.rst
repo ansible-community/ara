@@ -33,6 +33,10 @@ This is python3 only right now.
   # Run test server -> http://127.0.0.1:8000/api/v1/
   tox -e runserver
 
+  # Create mock data
+  source .tox/runserver/bin/activate
+  python standalone/mockdata.py
+
   # Run actual tests or get coverage
   tox -e pep8
   tox -e py35
