@@ -6,7 +6,6 @@ import zlib
 from api import models
 from django.utils import timezone
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 DATE_FORMAT = "(iso-8601: 2016-05-06T17:20:25.749489-04:00)"
 DURATION_FORMAT = "([DD] [HH:[MM:]]ss[.uuuuuu])"
@@ -42,10 +41,12 @@ class BaseSerializer(serializers.ModelSerializer):
     Serializer for the data in the model base
     """
     created = serializers.DateTimeField(
-        read_only=True, help_text='Date of creation %s' % DATE_FORMAT
+        read_only=True,
+        help_text='Date of creation %s' % DATE_FORMAT
     )
     updated = serializers.DateTimeField(
-        read_only=True, help_text='Date of last update %s' % DATE_FORMAT
+        read_only=True,
+        help_text='Date of last update %s' % DATE_FORMAT
     )
     age = serializers.DurationField(
         read_only=True,
@@ -87,15 +88,15 @@ class DurationSerializer(serializers.ModelSerializer):
         abstract = True
 
 
-class PlaybookSerializer(BaseSerializer, DurationSerializer):
+class PlaybookSerializer(serializers.HyperlinkedModelSerializer, BaseSerializer):
     class Meta:
         model = models.Playbook
         fields = '__all__'
 
     plays = serializers.HyperlinkedRelatedField(
         many=True,
+        view_name='play-detail',
         read_only=True,
-        view_name='plays',
         help_text='Plays associated to this playbook'
     )
 #    tasks = serializers.HyperlinkedRelatedField(
@@ -128,11 +129,11 @@ class PlaybookSerializer(BaseSerializer, DurationSerializer):
 #        view_name='files',
 #        help_text='Records associated to this playbook'
 #    )
-
-    parameters = CompressedObjectField(
-        initial={},
-        help_text='A JSON dictionary containing Ansible command parameters'
-    )
+#
+#     parameters = CompressedObjectField(
+#         initial={},
+#         help_text='A JSON dictionary containing Ansible command parameters'
+#     )
     path = serializers.CharField(help_text='Path to the playbook file')
     ansible_version = serializers.CharField(
         help_text='Version of Ansible used to run this playbook'
@@ -147,61 +148,61 @@ class PlaySerializer(BaseSerializer, DurationSerializer):
         model = models.Play
         fields = '__all__'
 
-
-class TaskSerializer(BaseSerializer, DurationSerializer):
-    class Meta:
-        model = models.Task
-        fields = '__all__'
-
-
-class HostSerializer(BaseSerializer):
-    class Meta:
-        model = models.Host
-        fields = '__all__'
-
-
-class ResultSerializer(BaseSerializer, DurationSerializer):
-    class Meta:
-        model = models.Result
-        fields = '__all__'
-
-
-class RecordSerializer(BaseSerializer):
-    class Meta:
-        model = models.Record
-        fields = '__all__'
-
-
-class FileContentSerializer(BaseSerializer):
-    class Meta:
-        model = models.FileContent
-        fields = ('contents', 'sha1')
-
-    contents = CompressedTextField(help_text='Contents of the file')
-    sha1 = serializers.CharField(read_only=True, help_text='sha1 of the file')
-
-    def create(self, validated_data):
-        sha1 = hashlib.sha1(validated_data['contents']).hexdigest()
-        validated_data['sha1'] = sha1
-        obj, created = models.FileContent.objects.get_or_create(
-            **validated_data
-        )
-        return obj
-
-
-class FileSerializer(BaseSerializer):
-    path = serializers.CharField(help_text='Path to the file')
-    content = FileContentSerializer()
-
-    def create(self, validated_data):
-        contents = validated_data.pop('content')['contents']
-        obj, created = models.FileContent.objects.get_or_create(
-            contents=contents,
-            sha1=hashlib.sha1(contents).hexdigest()
-        )
-        validated_data['content'] = obj
-        return models.File.objects.create(**validated_data)
-
-    class Meta:
-        model = models.File
-        fields = ('id', 'path', 'content', 'playbook')
+#
+# class TaskSerializer(BaseSerializer, DurationSerializer):
+#     class Meta:
+#         model = models.Task
+#         fields = '__all__'
+#
+#
+# class HostSerializer(BaseSerializer):
+#     class Meta:
+#         model = models.Host
+#         fields = '__all__'
+#
+#
+# class ResultSerializer(BaseSerializer, DurationSerializer):
+#     class Meta:
+#         model = models.Result
+#         fields = '__all__'
+#
+#
+# class RecordSerializer(BaseSerializer):
+#     class Meta:
+#         model = models.Record
+#         fields = '__all__'
+#
+#
+# class FileContentSerializer(BaseSerializer):
+#     class Meta:
+#         model = models.FileContent
+#         fields = ('contents', 'sha1')
+#
+#     contents = CompressedTextField(help_text='Contents of the file')
+#     sha1 = serializers.CharField(read_only=True, help_text='sha1 of the file')
+#
+#     def create(self, validated_data):
+#         sha1 = hashlib.sha1(validated_data['contents']).hexdigest()
+#         validated_data['sha1'] = sha1
+#         obj, created = models.FileContent.objects.get_or_create(
+#             **validated_data
+#         )
+#         return obj
+#
+#
+# class FileSerializer(BaseSerializer):
+#     path = serializers.CharField(help_text='Path to the file')
+#     content = FileContentSerializer()
+#
+#     def create(self, validated_data):
+#         contents = validated_data.pop('content')['contents']
+#         obj, created = models.FileContent.objects.get_or_create(
+#             contents=contents,
+#             sha1=hashlib.sha1(contents).hexdigest()
+#         )
+#         validated_data['content'] = obj
+#         return models.File.objects.create(**validated_data)
+#
+#     class Meta:
+#         model = models.File
+#         fields = ('id', 'path', 'content', 'playbook')

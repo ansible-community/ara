@@ -14,47 +14,38 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from api import models, serializers
 
-from rest_framework import viewsets
+from rest_framework import generics
 
 
-class PlaybookViewSet(viewsets.ModelViewSet):
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'playbooks': reverse('playbook-list', request=request, format=format),
+        'plays': reverse('play-list', request=request, format=format)
+    })
+
+
+class PlaybookList(generics.ListCreateAPIView):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
 
 
-class PlayViewSet(viewsets.ModelViewSet):
+class PlaybookDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Playbook.objects.all()
+    serializer_class = serializers.PlaybookSerializer
+
+
+class PlayList(generics.ListCreateAPIView):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
 
 
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = models.Task.objects.all()
-    serializer_class = serializers.TaskSerializer
-
-
-class HostViewSet(viewsets.ModelViewSet):
-    queryset = models.Host.objects.all()
-    serializer_class = serializers.HostSerializer
-
-
-class ResultViewSet(viewsets.ModelViewSet):
-    queryset = models.Result.objects.all()
-    serializer_class = serializers.ResultSerializer
-
-
-class RecordViewSet(viewsets.ModelViewSet):
-    queryset = models.Record.objects.all()
-    serializer_class = serializers.RecordSerializer
-
-
-# class FileContentViewSet(viewsets.ModelViewSet):
-#     queryset = models.FileContent.objects.all()
-#     serializer_class = serializers.FileContentSerializer
-
-
-class FileViewSet(viewsets.ModelViewSet):
-    queryset = models.File.objects.all()
-    serializer_class = serializers.FileSerializer
+class PlayDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Play.objects.all()
+    serializer_class = serializers.PlaySerializer

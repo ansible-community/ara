@@ -15,28 +15,16 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, include
-from rest_framework.routers import DefaultRouter
-
+from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
 from api import views
 
-REST_FRAMEWORK = {
-    # Use URL-based versioning
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-    'DEFAULT_VERSION': 'v1',
-    'ALLOWED_VERSIONS': {'v1'},
-}
-
-router = DefaultRouter()
-router.register(r'playbooks', views.PlaybookViewSet)
-router.register(r'plays', views.PlayViewSet)
-router.register(r'tasks', views.TaskViewSet)
-router.register(r'hosts', views.HostViewSet)
-router.register(r'results', views.ResultViewSet)
-router.register(r'records', views.RecordViewSet)
-router.register(r'files', views.FileViewSet)
-# router.register(r'filecontent', views.FileContentViewSet)
-
 urlpatterns = [
-    url(r'^(?P<version>[v1]+)/', include(router.urls)),
+    url(r'^$', views.api_root),
+    url(r'^playbooks/$', views.PlaybookList.as_view(), name='playbook-list'),
+    url(r'^playbooks/(?P<pk>[0-9]+)/$', views.PlaybookDetail.as_view(), name='playbook-detail'),
+    url(r'^plays/$', views.PlayList.as_view(), name='play-list'),
+    url(r'^plays/(?P<pk>[0-9]+)/$', views.PlayDetail.as_view(), name='play-detail'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
