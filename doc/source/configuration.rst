@@ -181,10 +181,10 @@ Be sure you update your pg_hba.conf afterwards if needed.
 
 Then, setup the database connection::
 
-    export ARA_DATABASE="postgresql+psycopg2://ara:password@localhost:5432/ara"
+    export ARA_DATABASE="postgresql+psycopg2://ara:password@localhost:5432/ara?binary_prefix=true"
     # or
     [ara]
-    database = postgresql+psycopg2://ara:password@localhost:5432/ara
+    database = postgresql+psycopg2://ara:password@localhost:5432/ara?binary_prefix=true
 
 You will need to install the database driver by::
 
