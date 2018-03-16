@@ -25,6 +25,10 @@ urlpatterns = [
     url(r'^playbooks/(?P<pk>[0-9]+)/$', views.PlaybookDetail.as_view(), name='playbook-detail'),
     url(r'^plays/$', views.PlayList.as_view(), name='play-list'),
     url(r'^plays/(?P<pk>[0-9]+)/$', views.PlayDetail.as_view(), name='play-detail'),
+    url(r'^tasks/$', views.TaskList.as_view(), name='task-list'),
+    url(r'^tasks/(?P<pk>[0-9]+)/$', views.TaskDetail.as_view(), name='task-detail'),
+    url(r'^files/$', views.FileList.as_view(), name='file-list'),
+    url(r'^files/(?P<pk>[0-9]+)/$', views.FileDetail.as_view(), name='file-detail'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

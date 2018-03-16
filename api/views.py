@@ -27,7 +27,9 @@ from rest_framework import generics
 def api_root(request, format=None):
     return Response({
         'playbooks': reverse('playbook-list', request=request, format=format),
-        'plays': reverse('play-list', request=request, format=format)
+        'plays': reverse('play-list', request=request, format=format),
+        'tasks': reverse('task-list', request=request, format=format),
+        'files': reverse('file-list', request=request, format=format)
     })
 
 
@@ -49,3 +51,23 @@ class PlayList(generics.ListCreateAPIView):
 class PlayDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
+
+
+class TaskList(generics.ListCreateAPIView):
+    queryset = models.Task.objects.all()
+    serializer_class = serializers.TaskSerializer
+
+
+class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Task.objects.all()
+    serializer_class = serializers.TaskSerializer
+
+
+class FileList(generics.ListCreateAPIView):
+    queryset = models.File.objects.all()
+    serializer_class = serializers.FileSerializer
+
+
+class FileDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.File.objects.all()
+    serializer_class = serializers.FileSerializer

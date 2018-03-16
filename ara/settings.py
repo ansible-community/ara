@@ -17,7 +17,7 @@ SECRET_KEY = env('SECRET_KEY', preprocessor=get_secret_key, default=None)
 
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
-ALLOWED_HOSTS = env('ALLOWED_HOSTS', cast=list, default=['localhost', '127.0.0.1'])
+ALLOWED_HOSTS = env('ALLOWED_HOSTS', cast=list, default=['localhost', '127.0.0.1', 'testserver'])
 
 ADMINS = (('Guillaume Vincent', 'gvincent@redhat.com'),)
 

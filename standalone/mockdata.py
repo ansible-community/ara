@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-# Creates fake data in the database, bypassing the API.
+# Creates mock data offline leveraging the API
 import django
 import hashlib
+import json
 import os
 import sys
 from django.core import serializers
@@ -29,40 +30,75 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.settings')
 django.setup()
 
 from api import models
+from django.test import Client
 
-playbook, _ = models.Playbook.objects.get_or_create(
-    started='2016-05-06T17:20:25.749489-04:00',
-    path='/tmp/test.yml',
-    ansible_version='2.3.4',
-    completed=False,
-)
-print(serializers.serialize('json',
-                            models.Playbook.objects.all(),
-                            indent=2))
 
-play, _ = models.Play.objects.get_or_create(
-    started='2016-05-06T17:20:25.749489-04:00',
-    name='Test play',
-    playbook=playbook,
-)
-print(serializers.serialize('json',
-                            models.Play.objects.all(),
-                            indent=2))
+def post(endpoint, data):
+    client = Client()
+    print("Posting to %s..." % endpoint)
+    obj = client.post(endpoint, data)
+    print("HTTP %s" % obj.status_code)
+    print("Got: %s" % json.dumps(obj.json(), indent=2))
+    print("#" * 40)
 
-content = 'foo'.encode('utf8')
-filecontent, _ = models.FileContent.objects.get_or_create(
-    contents=content,
-    sha1=hashlib.sha1(content).hexdigest()
-)
-print(serializers.serialize('json',
-                            models.FileContent.objects.all(),
-                            indent=2))
+    return obj
 
-file, _ = models.File.objects.get_or_create(
-    playbook=playbook,
-    content=filecontent,
-    path='/tmp/anothertest.yml'
+
+playbook = post(
+    '/api/v1/playbooks/',
+    dict(
+        started='2016-05-06T17:20:25.749489-04:00',
+        path='/tmp/playbook.yml',
+        ansible_version='2.3.4',
+        completed=False,
+        parameters=json.dumps(dict(
+            foo='bar'
+        ))
+    )
 )
-print(serializers.serialize('json',
-                            models.File.objects.all(),
-                            indent=2))
+
+play = post(
+    '/api/v1/plays/',
+    dict(
+        started='2016-05-06T17:20:25.749489-04:00',
+        name='Test play',
+        playbook=playbook.json()['url']
+    )
+)
+
+playbook_file = post(
+    '/api/v1/files/',
+    dict(
+        path=playbook.json()['path'],
+        # TODO: Fix this somehow
+        content='# playbook',
+        playbook=playbook.json()['url'],
+        is_playbook=True
+    )
+)
+
+task_file = post(
+    '/api/v1/files/',
+    dict(
+        playbook=playbook.json()['url'],
+        path='/tmp/task.yml',
+        # TODO: Fix this somehow
+        content='# task',
+        is_playbook=True
+    )
+)
+
+task = post(
+    '/api/v1/tasks/',
+    dict(
+        playbook=playbook.json()['url'],
+        play=play.json()['url'],
+        file=task_file.json()['url'],
+        name='Task name',
+        action='action',
+        lineno=1,
+        tags=json.dumps(['one', 'two']),
+        handler=False,
+        started='2016-05-06T17:20:25.749489-04:00'
+    )
+)

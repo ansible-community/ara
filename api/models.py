@@ -19,44 +19,70 @@ import logging
 from django.db import models
 from django.utils import timezone
 
+# Ansible statuses
+OK = 'ok'
+FAILED = 'failed'
+SKIPPED = 'skipped'
+UNREACHABLE = 'unreachable'
+# ARA specific statuses (derived or assumed)
+CHANGED = 'changed'
+IGNORED = 'ignored'
+UNKNOWN = 'unknown'
+
+RESULT_STATUS = (
+    (OK, 'ok'),
+    (FAILED, 'failed'),
+    (SKIPPED, 'skipped'),
+    (UNREACHABLE, 'unreachable'),
+    (UNKNOWN, 'unknown')
+)
+
 logger = logging.getLogger('ara_backend.models')
+
+# TODO: Figure out what to do when creating the first playbook file
+# -> create playbook first
+# -> create file/file_content and link to playbook_id (foreign key)
+# -> make is_playbook = True because it's a playbook file
+# -> Add a unique constraint on "is_playbook = True" for a given playbook id ?
+
+# TODO: Get feedback on model
+# playbook -> play -> task -> host -> result
+#                  -> host (hosts are associated/filtered to a play)
+# playbook -> file <- file_content
+# task -> file <- file_content
+# statistics for a playbook are cumulated per host
+# facts are retrieved for a host (printing those in CLI is terrible)
+
+# - There's multiple results for a host throughout a playbook
+# - There's multiple hosts for a task
+# - There's multiple tasks in a play
+# - There's multiple play in a playbook
+# - Hosts need to be associated to a play
+# - Should all the binary things be in a single table so it's easier to shard ?
+# - e.g, Reddit's ThingDB
 
 
 class Base(models.Model):
+    """
+    Abstract base model part of every model
+    """
+    class Meta:
+        abstract = True
+
     id = models.BigAutoField(primary_key=True, editable=False)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     updated = models.DateTimeField(auto_now=True, editable=False)
 
-    @property
-    def age(self):
-        """
-        Calculates duration between created and updated.
-        """
-        return self.updated - self.created
-
-    class Meta:
-        abstract = True
-
 
 class DurationMixin(models.Model):
-    started = models.DateTimeField(default=timezone.now)
-    ended = models.DateTimeField(blank=True, null=True)
-
-    @property
-    def duration(self):
-        """
-        Calculates duration between started and ended or between started and
-        updated if we do not yet have an end.
-        """
-        if self.ended is None:
-            if self.started is None:
-                return timezone.timedelta(seconds=0)
-            else:
-                return self.updated - self.started
-        return self.ended - self.started
-
+    """
+    Abstract model for models with a concept of duration
+    """
     class Meta:
         abstract = True
+
+    started = models.DateTimeField(default=timezone.now)
+    ended = models.DateTimeField(blank=True, null=True)
 
 
 class Playbook(Base, DurationMixin):
@@ -75,10 +101,14 @@ class Playbook(Base, DurationMixin):
 
     def __str__(self):
         return '<Playbook %s:%s>' % (self.id, self.path)
-    __repr__ = __str__
 
 
 class FileContent(Base):
+    """
+    Contents of a uniquely stored and compressed file.
+    Running the same playbook twice will yield two playbook files but just
+    one file contents.
+    """
     class Meta:
         db_table = 'file_contents'
 
@@ -87,10 +117,13 @@ class FileContent(Base):
 
     def __str__(self):
         return '<FileContent %s:%s>' % (self.id, self.sha1)
-    __repr__ = __str__
 
 
 class File(Base):
+    """
+    Data about Ansible files (playbooks, tasks, role files, var files, etc).
+    Multiple files can reference the same FileContent record.
+    """
     class Meta:
         db_table = 'files'
         unique_together = ('path', 'playbook',)
@@ -106,10 +139,13 @@ class File(Base):
 
     def __str__(self):
         return '<File %s:%s>' % (self.id, self.path)
-    __repr__ = __str__
 
 
 class Record(Base):
+    """
+    A rudimentary key/value table to associate arbitrary data to a playbook.
+    Used with the ara_record and ara_read Ansible modules.
+    """
     class Meta:
         db_table = 'records'
         unique_together = ('key', 'playbook',)
@@ -123,10 +159,31 @@ class Record(Base):
 
     def __str__(self):
         return '<Record %s:%s>' % (self.id, self.key)
-    __repr__ = __str__
+
+
+class Play(Base, DurationMixin):
+    """
+    Data about Ansible plays.
+    Hosts, tasks and results are childrens of an Ansible play.
+    """
+    class Meta:
+        db_table = 'plays'
+
+    name = models.TextField(blank=True, null=True)
+    playbook = models.ForeignKey(Playbook,
+                                 on_delete=models.CASCADE,
+                                 related_name='plays')
+
+    def __str__(self):
+        return '<Play %s:%s>' % (self.name, self.id)
 
 
 class Host(Base):
+    """
+    Data about Ansible hosts.
+    Contains compressed host facts and statistics about the host for the
+    playbook.
+    """
     class Meta:
         db_table = 'hosts'
         unique_together = ('name', 'playbook',)
@@ -141,35 +198,23 @@ class Host(Base):
     playbook = models.ForeignKey(Playbook,
                                  on_delete=models.CASCADE,
                                  related_name='hosts')
+    play = models.ForeignKey(Play,
+                             on_delete=models.DO_NOTHING,
+                             related_name='hosts')
 
     def __str__(self):
         return '<Host %s:%s>' % (self.id, self.name)
-    __repr__ = __str__
-
-
-class Play(Base, DurationMixin):
-    class Meta:
-        db_table = 'plays'
-
-    name = models.TextField()
-    playbook = models.ForeignKey(Playbook,
-                                 on_delete=models.CASCADE,
-                                 related_name='plays')
-
-    @property
-    def offset_from_playbook(self):
-        return self.started - self.playbook.started
-
-    def __str__(self):
-        return '<Play %s:%s>' % (self.name, self.id)
-    __repr__ = __str__
 
 
 class Task(Base, DurationMixin):
+    """
+    Data about Ansible tasks.
+    Results are children of Ansible tasks.
+    """
     class Meta:
         db_table = 'tasks'
 
-    name = models.TextField()
+    name = models.TextField(blank=True, null=True)
     action = models.TextField()
     lineno = models.IntegerField()
     tags = models.BinaryField(max_length=(2 ** 32) - 1)
@@ -178,47 +223,24 @@ class Task(Base, DurationMixin):
     playbook = models.ForeignKey(Playbook,
                                  on_delete=models.CASCADE,
                                  related_name='tasks')
+    play = models.ForeignKey(Play,
+                             on_delete=models.CASCADE,
+                             related_name='tasks')
     file = models.ForeignKey(File,
                              on_delete=models.DO_NOTHING,
                              related_name='tasks')
-    play = models.ForeignKey(Play,
-                             on_delete=models.DO_NOTHING,
-                             related_name='tasks')
-
-    @property
-    def offset_from_playbook(self):
-        return self.started - self.playbook.started
-
-    @property
-    def offset_from_play(self):
-        return self.started - self.play.started
 
     def __str__(self):
         return '<Task %s:%s>' % (self.name, self.id)
-    __repr__ = __str__
 
 
 class Result(Base, DurationMixin):
+    """
+    Data about Ansible results.
+    A task can have many results if the task is run on multiple hosts.
+    """
     class Meta:
         db_table = 'results'
-
-    # Ansible statuses
-    OK = 'ok'
-    FAILED = 'failed'
-    SKIPPED = 'skipped'
-    UNREACHABLE = 'unreachable'
-    # ARA specific statuses (derived or assumed)
-    CHANGED = 'changed'
-    IGNORED = 'ignored'
-    UNKNOWN = 'unknown'
-
-    RESULT_STATUS = (
-        (OK, 'ok'),
-        (FAILED, 'failed'),
-        (SKIPPED, 'skipped'),
-        (UNREACHABLE, 'unreachable'),
-        (UNKNOWN, 'unknown')
-    )
 
     status = models.CharField(max_length=25,
                               choices=RESULT_STATUS,
@@ -229,23 +251,19 @@ class Result(Base, DurationMixin):
     unreachable = models.BooleanField(default=False)
     ignore_errors = models.BooleanField(default=False)
     result = models.BinaryField(max_length=(2 ** 32) - 1)
+
     playbook = models.ForeignKey(Playbook,
                                  on_delete=models.CASCADE,
                                  related_name='results')
-
-    @property
-    def derived_status(self):
-        if self.status == self.OK and self.changed:
-            return self.CHANGED
-        elif self.status == self.FAILED and self.ignore_errors:
-            return self.IGNORED
-        elif self.status not in [
-            self.OK, self.FAILED, self.SKIPPED, self.UNREACHABLE
-        ]:
-            return self.UNKNOWN
-        else:
-            return self.status
+    play = models.ForeignKey(Play,
+                             on_delete=models.CASCADE,
+                             related_name='results')
+    task = models.ForeignKey(Task,
+                             on_delete=models.CASCADE,
+                             related_name='results')
+    host = models.ForeignKey(Host,
+                             on_delete=models.CASCADE,
+                             related_name='results')
 
     def __str__(self):
-        return '<Result %s:%s>' % (self.id, self.derived_status)
-    __repr__ = __str__
+        return '<Result %s, %s:%s>' % (self.id, self.host.name, self.status)
