@@ -18,87 +18,83 @@
 
 # Creates mock data offline leveraging the API
 import django
-import hashlib
 import json
 import os
 import sys
-from django.core import serializers
 
 parent_directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(parent_directory)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.settings')
 django.setup()
 
-from api import models
 from django.test import Client
 
 
 def post(endpoint, data):
     client = Client()
     print("Posting to %s..." % endpoint)
-    obj = client.post(endpoint, data)
+    obj = client.post(endpoint,
+                      json.dumps(data),
+                      content_type="application/json")
     print("HTTP %s" % obj.status_code)
     print("Got: %s" % json.dumps(obj.json(), indent=2))
     print("#" * 40)
-
-    return obj
+    return obj.json()
 
 
 playbook = post(
     '/api/v1/playbooks/',
-    dict(
-        started='2016-05-06T17:20:25.749489-04:00',
-        path='/tmp/playbook.yml',
-        ansible_version='2.3.4',
-        completed=False,
-        parameters=json.dumps(dict(
-            foo='bar'
-        ))
-    )
+    {
+        'started': '2016-05-06T17:20:25.749489-04:00',
+        'path': '/tmp/playbook.yml',
+        'ansible_version': '2.3.4',
+        'completed': False,
+        'parameters': {'foo': 'bar'}
+    }
 )
 
 play = post(
     '/api/v1/plays/',
-    dict(
-        started='2016-05-06T17:20:25.749489-04:00',
-        name='Test play',
-        playbook=playbook.json()['url']
-    )
+    {
+        'started': '2016-05-06T17:20:25.749489-04:00',
+        'name': 'Test play',
+        'playbook': playbook['id']
+    }
 )
 
 playbook_file = post(
     '/api/v1/files/',
-    dict(
-        path=playbook.json()['path'],
+    {
+        'path': playbook['path'],
         # TODO: Fix this somehow
-        content='# playbook',
-        playbook=playbook.json()['url'],
-        is_playbook=True
-    )
+        'content': '# playbook',
+        'playbook': playbook['id'],
+        'is_playbook': True
+    }
 )
 
 task_file = post(
     '/api/v1/files/',
-    dict(
-        playbook=playbook.json()['url'],
-        path='/tmp/task.yml',
+    {
+        'playbook': playbook['id'],
+        'path': '/tmp/task.yml',
         # TODO: Fix this somehow
-        content='# task',
-        is_playbook=True
-    )
+        'content': '# task',
+        'is_playbook': True
+    }
 )
 
 task = post(
     '/api/v1/tasks/',
-    dict(
-        playbook=playbook.json()['url'],
-        play=play.json()['url'],
-        file=task_file.json()['url'],
-        name='Task name',
-        action='action',
-        lineno=1,
-        tags=json.dumps(['one', 'two']),
-        handler=False,
-        started='2016-05-06T17:20:25.749489-04:00'
-    )
+    {
+        'playbook': playbook['id'],
+        'play': play['id'],
+        'file': task_file['id'],
+        'name': 'Task name',
+        'action': 'action',
+        'lineno': 1,
+        'tags': ['one', 'two'],
+        'handler': False,
+        'started': '2016-05-06T17:20:25.749489-04:00'
+    }
 )

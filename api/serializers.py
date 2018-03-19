@@ -33,6 +33,7 @@ class CompressedTextField(serializers.CharField):
     Compresses text before storing it in the database.
     Decompresses text from the database before serving it.
     """
+
     def to_representation(self, obj):
         return zlib.decompress(obj).decode('utf8')
 
@@ -46,11 +47,12 @@ class CompressedObjectField(serializers.JSONField):
     database.
     Decompresses/deserializes an object before serving it.
     """
+
     def to_representation(self, obj):
         return json.loads(zlib.decompress(obj).decode('utf8'))
 
     def to_internal_value(self, data):
-        return zlib.compress(data.encode('utf8'))
+        return zlib.compress(json.dumps(data).encode('utf8'))
 
 
 class ItemDurationField(serializers.DurationField):
@@ -58,6 +60,7 @@ class ItemDurationField(serializers.DurationField):
     Calculates duration between started and ended or between started and
     updated if we do not yet have an end.
     """
+
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
         super(ItemDurationField, self).__init__(**kwargs)
@@ -75,6 +78,7 @@ class BaseSerializer(serializers.ModelSerializer):
     """
     Serializer for the data in the model base
     """
+
     class Meta:
         abstract = True
 
@@ -93,190 +97,59 @@ class DurationSerializer(serializers.ModelSerializer):
     """
     Serializer for duration-based fields
     """
+
     class Meta:
         abstract = True
 
-    started = serializers.DateTimeField(
-        initial=timezone.now().isoformat(),
-        help_text='Date this item started %s' % DATE_FORMAT
-    )
-    ended = serializers.DateTimeField(
-        required=False,
-        help_text='Date this item ended %s' % DATE_FORMAT
-    )
-    duration = ItemDurationField(source='*')
+    duration = serializers.SerializerMethodField()
 
-    def validate(self, data):
-        """
-        Check that the start is before the end.
-        """
-        if 'ended' in data and (data['started'] > data['ended']):
-            raise serializers.ValidationError(
-                "'Ended' must be before 'started'"
-            )
-        return data
+    @staticmethod
+    def get_duration(obj):
+        if obj.ended is None:
+            return timezone.now() - obj.started
+        return obj.ended - obj.started
 
 
-class PlaybookSerializer(serializers.HyperlinkedModelSerializer, BaseSerializer, DurationSerializer):
+class PlaybookSerializer(DurationSerializer):
     class Meta:
         model = models.Playbook
         fields = '__all__'
 
-    plays = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='play-detail',
-        read_only=True,
-        help_text='Plays associated to this playbook'
-    )
-    tasks = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='task-detail',
-        read_only=True,
-        help_text='Tasks associated to this playbook'
-    )
-
-#    hosts = serializers.HyperlinkedRelatedField(
-#        many=True,
-#        read_only=True,
-#        view_name='hosts',
-#        help_text='Hosts associated to this playbook'
-#    )
-#    results = serializers.HyperlinkedRelatedField(
-#        many=True,
-#        read_only=True,
-#        view_name='results',
-#        help_text='Results associated to this playbook'
-#    )
-#    records = serializers.HyperlinkedRelatedField(
-#        many=True,
-#        read_only=True,
-#        view_name='records',
-#        help_text='Records associated to this playbook'
-#    )
-    files = serializers.HyperlinkedRelatedField(
-        many=True,
-        view_name='file-detail',
-        read_only=True,
-        help_text='Files associated to this playbook'
-    )
-    parameters = CompressedObjectField(
-        initial={},
-        help_text='A JSON dictionary containing Ansible command parameters'
-    )
     path = serializers.CharField(help_text='Path to the playbook file')
     ansible_version = serializers.CharField(
         help_text='Version of Ansible used to run this playbook'
     )
+    parameters = CompressedObjectField(
+        default=zlib.compress(json.dumps({}).encode('utf8')),
+        help_text='A JSON dictionary containing Ansible command parameters'
+    )
     completed = serializers.BooleanField(
+        default=False,
         help_text='If the completion of the execution has been acknowledged'
     )
+    plays = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    tasks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    files = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    hosts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    results = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    records = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
-class PlaySerializer(serializers.HyperlinkedModelSerializer, BaseSerializer, DurationSerializer):
+class PlaySerializer(DurationSerializer):
     class Meta:
         model = models.Play
         fields = '__all__'
 
-        playbook = serializers.HyperlinkedRelatedField(
-            view_name='playbook-detail',
-            read_only=True,
-            help_text='Playbook associated to this play'
-        )
-        tasks = serializers.HyperlinkedRelatedField(
-            many=True,
-            view_name='task-detail',
-            read_only=True,
-            help_text='Tasks associated to this play'
-        )
-        name = serializers.CharField(
-            help_text='Name of the play',
-            allow_blank=True,
-            allow_null=True,
-        )
-        # hosts = serializers.HyperlinkedRelatedField(
-        #    many=True,
-        #    view_name='host-detail',
-        #    read_only=True,
-        #    help_text='Hosts associated to this play'
-        #)
 
-
-class TaskSerializer(serializers.HyperlinkedModelSerializer, BaseSerializer, DurationSerializer):
+class TaskSerializer(DurationSerializer):
     class Meta:
         model = models.Task
         fields = '__all__'
 
-        playbook = serializers.HyperlinkedRelatedField(
-            view_name='playbook-detail',
-            read_only=True,
-            help_text='Playbook associated to this task'
-        )
-        play = serializers.HyperlinkedRelatedField(
-            view_name='play-detail',
-            read_only=True,
-            help_text='Play associated to this task'
-        )
-        file = serializers.HyperlinkedRelatedField(
-            view_name='file-detail',
-            read_only=True,
-            help_text='File associated to this task'
-        )
-        # results = serializers.HyperlinkedRelatedField(
-        #     many=True,
-        #     view_name='result-detail',
-        #     read_only=True,
-        #     help_text='Results associated to this task'
-        # )
-        name = serializers.CharField(
-            help_text='Name of the task',
-            allow_blank=True,
-            allow_null=True
-        )
-        action = serializers.CharField(help_text='Action of the task')
-        lineno = serializers.IntegerField(
-            help_text='Line number in the file of the task'
-        )
-        tags = CompressedObjectField(
-            help_text='A JSON list containing Ansible tags',
-            initial=[],
-            default=[],
-        )
-        handler = serializers.BooleanField(
-            help_text='Whether or not this task was a handler',
-            initial=False,
-            default=False,
-        )
-
-#
-#
-# class HostSerializer(BaseSerializer):
-#     class Meta:
-#         model = models.Host
-#         fields = '__all__'
-#
-#
-# class ResultSerializer(BaseSerializer, DurationSerializer):
-#     class Meta:
-#         model = models.Result
-#         fields = '__all__'
-#     @property
-#      def derived_status(self):
-#          if self.status == self.OK and self.changed:
-#              return self.CHANGED
-#          elif self.status == self.FAILED and self.ignore_errors:
-#              return self.IGNORED
-#          elif self.status not in [
-#              self.OK, self.FAILED, self.SKIPPED, self.UNREACHABLE
-#          ]:
-#              return self.UNKNOWN
-#          else:
-#              return self.status
-#
-# class RecordSerializer(BaseSerializer):
-#     class Meta:
-#         model = models.Record
-#         fields = '__all__'
-#
+    tags = CompressedObjectField(
+        default=zlib.compress(json.dumps([]).encode('utf8')),
+        help_text='A JSON list containing Ansible tags'
+    )
 
 
 class FileContentSerializer(BaseSerializer):
@@ -284,19 +157,16 @@ class FileContentSerializer(BaseSerializer):
         model = models.FileContent
         fields = '__all__'
 
-    contents = CompressedTextField(help_text='Contents of the file')
     sha1 = serializers.CharField(read_only=True, help_text='sha1 of the file')
+    contents = CompressedTextField(help_text='Contents of the file')
 
     def create(self, validated_data):
         sha1 = hashlib.sha1(validated_data['contents']).hexdigest()
         validated_data['sha1'] = sha1
-        obj, created = models.FileContent.objects.get_or_create(
-            **validated_data
-        )
-        return obj
+        return models.FileContent.objects.create(**validated_data)
 
 
-class FileSerializer(serializers.HyperlinkedModelSerializer, BaseSerializer):
+class FileSerializer(BaseSerializer):
     class Meta:
         model = models.File
         fields = '__all__'

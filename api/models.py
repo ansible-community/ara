@@ -68,10 +68,10 @@ class Base(models.Model):
     """
     class Meta:
         abstract = True
-
+    # note: GV better is  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     id = models.BigAutoField(primary_key=True, editable=False)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    updated = models.DateTimeField(auto_now=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class DurationMixin(models.Model):
