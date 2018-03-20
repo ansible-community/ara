@@ -46,10 +46,23 @@ playbook = post(
     '/api/v1/playbooks/',
     {
         'started': '2016-05-06T17:20:25.749489-04:00',
-        'path': '/tmp/playbook.yml',
         'ansible_version': '2.3.4',
         'completed': False,
         'parameters': {'foo': 'bar'}
+    }
+)
+
+playbook_with_files = post(
+    '/api/v1/playbooks/',
+    {
+        'started': '2016-05-06T17:20:25.749489-04:00',
+        'ansible_version': '2.3.4',
+        'completed': False,
+        'parameters': {'foo': 'bar'},
+        'files': [
+            {'path': '/tmp/1/playbook.yml', 'content': '# playbook'},
+            {'path': '/tmp/2/playbook.yml', 'content': '# playbook'}
+        ],
     }
 )
 
@@ -59,42 +72,5 @@ play = post(
         'started': '2016-05-06T17:20:25.749489-04:00',
         'name': 'Test play',
         'playbook': playbook['id']
-    }
-)
-
-playbook_file = post(
-    '/api/v1/files/',
-    {
-        'path': playbook['path'],
-        # TODO: Fix this somehow
-        'content': '# playbook',
-        'playbook': playbook['id'],
-        'is_playbook': True
-    }
-)
-
-task_file = post(
-    '/api/v1/files/',
-    {
-        'playbook': playbook['id'],
-        'path': '/tmp/task.yml',
-        # TODO: Fix this somehow
-        'content': '# task',
-        'is_playbook': True
-    }
-)
-
-task = post(
-    '/api/v1/tasks/',
-    {
-        'playbook': playbook['id'],
-        'play': play['id'],
-        'file': task_file['id'],
-        'name': 'Task name',
-        'action': 'action',
-        'lineno': 1,
-        'tags': ['one', 'two'],
-        'handler': False,
-        'started': '2016-05-06T17:20:25.749489-04:00'
     }
 )

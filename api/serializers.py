@@ -55,44 +55,6 @@ class CompressedObjectField(serializers.JSONField):
         return zlib.compress(json.dumps(data).encode('utf8'))
 
 
-class ItemDurationField(serializers.DurationField):
-    """
-    Calculates duration between started and ended or between started and
-    updated if we do not yet have an end.
-    """
-
-    def __init__(self, **kwargs):
-        kwargs['read_only'] = True
-        super(ItemDurationField, self).__init__(**kwargs)
-
-    def to_representation(self, obj):
-        if obj.ended is None:
-            if obj.started is None:
-                return timezone.timedelta(seconds=0)
-            else:
-                return obj.updated - obj.started
-        return obj.ended - obj.started
-
-
-class BaseSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the data in the model base
-    """
-
-    class Meta:
-        abstract = True
-
-    id = serializers.IntegerField(read_only=True)
-    created = serializers.DateTimeField(
-        read_only=True,
-        help_text='Date of creation %s' % DATE_FORMAT
-    )
-    updated = serializers.DateTimeField(
-        read_only=True,
-        help_text='Date of last update %s' % DATE_FORMAT
-    )
-
-
 class DurationSerializer(serializers.ModelSerializer):
     """
     Serializer for duration-based fields
@@ -110,35 +72,75 @@ class DurationSerializer(serializers.ModelSerializer):
         return obj.ended - obj.started
 
 
+class FileContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FileContent
+        fields = '__all__'
+
+
+class FileContentField(serializers.CharField):
+    """
+    Compresses text before storing it in the database.
+    Decompresses text from the database before serving it.
+    """
+
+    def to_representation(self, obj):
+        return zlib.decompress(obj.contents).decode('utf8')
+
+    def to_internal_value(self, data):
+        contents = zlib.compress(data.encode('utf8'))
+        sha1 = hashlib.sha1(contents).hexdigest()
+        content_file, created = models.FileContent.objects.get_or_create(sha1=sha1, defaults={
+            'sha1': sha1,
+            'contents': contents
+        })
+        return content_file
+
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.File
+        fields = '__all__'
+
+    content = FileContentField()
+
+
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Result
+        fields = '__all__'
+
+
 class PlaybookSerializer(DurationSerializer):
     class Meta:
         model = models.Playbook
         fields = '__all__'
 
-    path = serializers.CharField(help_text='Path to the playbook file')
-    ansible_version = serializers.CharField(
-        help_text='Version of Ansible used to run this playbook'
-    )
     parameters = CompressedObjectField(
         default=zlib.compress(json.dumps({}).encode('utf8')),
         help_text='A JSON dictionary containing Ansible command parameters'
     )
-    completed = serializers.BooleanField(
-        default=False,
-        help_text='If the completion of the execution has been acknowledged'
-    )
-    plays = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    tasks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    files = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    hosts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    results = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    records = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    files = FileSerializer(many=True, default=[])
+    results = ResultSerializer(read_only=True, many=True)
+
+    def create(self, validated_data):
+        files = validated_data.pop('files')
+        playbook = models.Playbook.objects.create(**validated_data)
+        for file in files:
+            playbook.files.add(models.File.objects.create(**file))
+        return playbook
+
+    def update(self, instance, validated_data):
+        files = validated_data.pop('files')
+        return super(PlaybookSerializer, self).update(instance, validated_data)
 
 
 class PlaySerializer(DurationSerializer):
     class Meta:
         model = models.Play
         fields = '__all__'
+
+    results = ResultSerializer(read_only=True, many=True)
 
 
 class TaskSerializer(DurationSerializer):
@@ -150,44 +152,3 @@ class TaskSerializer(DurationSerializer):
         default=zlib.compress(json.dumps([]).encode('utf8')),
         help_text='A JSON list containing Ansible tags'
     )
-
-
-class FileContentSerializer(BaseSerializer):
-    class Meta:
-        model = models.FileContent
-        fields = '__all__'
-
-    sha1 = serializers.CharField(read_only=True, help_text='sha1 of the file')
-    contents = CompressedTextField(help_text='Contents of the file')
-
-    def create(self, validated_data):
-        sha1 = hashlib.sha1(validated_data['contents']).hexdigest()
-        validated_data['sha1'] = sha1
-        return models.FileContent.objects.create(**validated_data)
-
-
-class FileSerializer(BaseSerializer):
-    class Meta:
-        model = models.File
-        fields = '__all__'
-
-    # TODO: Why doesn't this work ? There's no playbook field shown.
-    # Works just fine in other serializers (ex: task)
-    # playbook = serializers.HyperlinkedRelatedField(
-    #     view_name='playbook-detail',
-    #     read_only=True,
-    #     help_text='Playbook associated to this file'
-    # )
-    path = serializers.CharField(help_text='Path to the file')
-    # TODO: This probably needs to be a related field to filecontent serializer
-    content = serializers.CharField()
-    is_playbook = serializers.BooleanField(default=False)
-
-    def create(self, validated_data):
-        content = validated_data.pop('content')
-        obj, created = models.FileContent.objects.get_or_create(
-            contents=content.encode('utf8'),
-            sha1=hashlib.sha1(content.encode('utf8')).hexdigest()
-        )
-        validated_data['content'] = obj
-        return models.File.objects.create(**validated_data)
