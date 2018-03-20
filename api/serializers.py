@@ -116,23 +116,18 @@ class PlaybookSerializer(DurationSerializer):
         model = models.Playbook
         fields = '__all__'
 
-    parameters = CompressedObjectField(
-        default=zlib.compress(json.dumps({}).encode('utf8')),
-        help_text='A JSON dictionary containing Ansible command parameters'
-    )
+    parameters = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
+    file = FileSerializer()
     files = FileSerializer(many=True, default=[])
-    results = ResultSerializer(read_only=True, many=True)
 
     def create(self, validated_data):
+        file_dict = validated_data.pop('file')
+        validated_data['file'] = models.File.objects.create(**file_dict)
         files = validated_data.pop('files')
         playbook = models.Playbook.objects.create(**validated_data)
         for file in files:
             playbook.files.add(models.File.objects.create(**file))
         return playbook
-
-    def update(self, instance, validated_data):
-        files = validated_data.pop('files')
-        return super(PlaybookSerializer, self).update(instance, validated_data)
 
 
 class PlaySerializer(DurationSerializer):

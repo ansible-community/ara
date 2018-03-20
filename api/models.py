@@ -77,42 +77,6 @@ class File(Base):
         return '<File %s:%s>' % (self.id, self.path)
 
 
-class Result(Duration):
-    """
-    Data about Ansible results.
-    A task can have many results if the task is run on multiple hosts.
-    """
-
-    class Meta:
-        db_table = 'results'
-
-    # Ansible statuses
-    OK = 'ok'
-    FAILED = 'failed'
-    SKIPPED = 'skipped'
-    UNREACHABLE = 'unreachable'
-    # ARA specific statuses (derived or assumed)
-    CHANGED = 'changed'
-    IGNORED = 'ignored'
-    UNKNOWN = 'unknown'
-
-    STATUS = (
-        (OK, 'ok'),
-        (FAILED, 'failed'),
-        (SKIPPED, 'skipped'),
-        (UNREACHABLE, 'unreachable'),
-        (CHANGED, 'changed'),
-        (IGNORED, 'ignored'),
-        (UNKNOWN, 'unknown')
-    )
-
-    status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
-    content = models.BinaryField(max_length=(2 ** 32) - 1)
-
-    def __str__(self):
-        return '<Result %s, %s>' % (self.id, self.status)
-
-
 class Playbook(Duration):
     """
     An entry in the 'playbooks' table represents a single execution of the
@@ -126,8 +90,8 @@ class Playbook(Duration):
     ansible_version = models.CharField(max_length=255)
     completed = models.BooleanField(default=False)
     parameters = models.BinaryField(max_length=(2 ** 32) - 1)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='playbooks')
     files = models.ManyToManyField(File)
-    results = models.ManyToManyField(Result)
 
     def __str__(self):
         return '<Playbook %s>' % self.id
@@ -163,7 +127,6 @@ class Play(Duration):
 
     name = models.CharField(max_length=255, blank=True, null=True)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='plays')
-    results = models.ManyToManyField(Result)
 
     def __str__(self):
         return '<Play %s:%s>' % (self.id, self.name)
@@ -182,7 +145,7 @@ class Task(Duration):
     handler = models.BooleanField()
 
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name='tasks')
-    results = models.ManyToManyField(Result)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='tasks')
     files = models.ManyToManyField(File)
 
     def __str__(self):
@@ -208,7 +171,45 @@ class Host(Base):
     skipped = models.IntegerField(default=0)
     unreachable = models.IntegerField(default=0)
     play = models.ForeignKey(Play, on_delete=models.DO_NOTHING, related_name='hosts')
-    results = models.ManyToManyField(Result)
 
     def __str__(self):
         return '<Host %s:%s>' % (self.id, self.name)
+
+
+class Result(Duration):
+    """
+    Data about Ansible results.
+    A task can have many results if the task is run on multiple hosts.
+    """
+
+    class Meta:
+        db_table = 'results'
+
+    # Ansible statuses
+    OK = 'ok'
+    FAILED = 'failed'
+    SKIPPED = 'skipped'
+    UNREACHABLE = 'unreachable'
+    # ARA specific statuses (derived or assumed)
+    CHANGED = 'changed'
+    IGNORED = 'ignored'
+    UNKNOWN = 'unknown'
+
+    STATUS = (
+        (OK, 'ok'),
+        (FAILED, 'failed'),
+        (SKIPPED, 'skipped'),
+        (UNREACHABLE, 'unreachable'),
+        (CHANGED, 'changed'),
+        (IGNORED, 'ignored'),
+        (UNKNOWN, 'unknown')
+    )
+
+    status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
+    # todo use a single Content table
+    content = models.BinaryField(max_length=(2 ** 32) - 1)
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name='results')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='results')
+
+    def __str__(self):
+        return '<Result %s, %s>' % (self.id, self.status)

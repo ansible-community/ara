@@ -3,15 +3,6 @@ import factory
 from api import models
 
 
-class PlaybookFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = models.Playbook
-
-    ansible_version = '2.4.0'
-    completed = True
-    parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
-
-
 class FileContentFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.FileContent
@@ -27,3 +18,13 @@ class FileFactory(factory.DjangoModelFactory):
 
     path = '/tmp/playbook.yml'
     content = factory.SubFactory(FileContentFactory)
+
+
+class PlaybookFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Playbook
+
+    ansible_version = '2.4.0'
+    completed = True
+    parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    file = factory.SubFactory(FileFactory)

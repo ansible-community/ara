@@ -13,7 +13,11 @@ class PlaybookTestCase(APITestCase):
 
     def test_playbook_serializer(self):
         serializer = serializers.PlaybookSerializer(data={
-            'ansible_version': '2.4.0'
+            'ansible_version': '2.4.0',
+            'file': {
+                'path': '/tmp/playbook.yml',
+                'content': '# playbook'
+            }
         })
         serializer.is_valid()
         playbook = serializer.save()
@@ -23,6 +27,10 @@ class PlaybookTestCase(APITestCase):
     def test_playbook_serializer_compress_parameters(self):
         serializer = serializers.PlaybookSerializer(data={
             'ansible_version': '2.4.0',
+            'file': {
+                'path': '/tmp/playbook.yml',
+                'content': '# playbook'
+            },
             'parameters': {'foo': 'bar'}
         })
         serializer.is_valid()
@@ -56,14 +64,18 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(0, models.Playbook.objects.count())
         request = self.client.post('/api/v1/playbooks/', {
             "ansible_version": "2.4.0",
+            'file': {
+                'path': '/tmp/playbook.yml',
+                'content': '# playbook'
+            }
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Playbook.objects.count())
 
-    def test_update_playbook(self):
+    def test_partial_update_playbook(self):
         playbook = factories.PlaybookFactory()
         self.assertNotEqual('2.3.0', playbook.ansible_version)
-        request = self.client.put('/api/v1/playbooks/%s/' % playbook.id, {
+        request = self.client.patch('/api/v1/playbooks/%s/' % playbook.id, {
             "ansible_version": "2.3.0",
         })
         self.assertEqual(200, request.status_code)
