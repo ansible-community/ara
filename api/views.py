@@ -14,13 +14,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, detail_route
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from api import models, serializers
 
-from rest_framework import generics
+from rest_framework import generics, status
 
 
 @api_view(['GET'])
@@ -41,6 +41,20 @@ class PlaybookList(generics.ListCreateAPIView):
 class PlaybookDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
+
+
+class PlaybookFilesDetail(generics.CreateAPIView):
+    queryset = models.Playbook.objects.all()
+    serializer_class = serializers.FileSerializer
+
+    def post(self, request, *args, **kwargs):
+        playbook = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        playbook.files.add(serializer.data['id'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class PlayList(generics.ListCreateAPIView):

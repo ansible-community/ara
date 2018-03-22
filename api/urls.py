@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^$', views.api_root),
     url(r'^playbooks/$', views.PlaybookList.as_view(), name='playbook-list'),
     url(r'^playbooks/(?P<pk>[0-9]+)/$', views.PlaybookDetail.as_view(), name='playbook-detail'),
+    url(r'^playbooks/(?P<pk>[0-9]+)/files/$', views.PlaybookFilesDetail.as_view(), name='playbook-file-detail'),
     url(r'^plays/$', views.PlayList.as_view(), name='play-list'),
     url(r'^plays/(?P<pk>[0-9]+)/$', views.PlayDetail.as_view(), name='play-detail'),
     url(r'^tasks/$', views.TaskList.as_view(), name='task-list'),
