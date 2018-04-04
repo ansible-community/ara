@@ -118,6 +118,11 @@ def application(environ, start_response):
 
     # Path to the ARA database
     os.environ['ARA_DATABASE'] = 'sqlite:///{}'.format(database)
+    # The intent is that we are dealing with databases that already exist.
+    # Therefore, we're not really interested in creating the database and
+    # making sure that the SQL migrations are done. Toggle that off.
+    # This needs to be a string, we're setting an environment variable
+    os.environ['ARA_AUTOCREATE_DATABASE'] = 'false'
 
     from ara.webapp import create_app
     try:
