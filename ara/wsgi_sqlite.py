@@ -124,6 +124,13 @@ def application(environ, start_response):
     # This needs to be a string, we're setting an environment variable
     os.environ['ARA_AUTOCREATE_DATABASE'] = 'false'
 
+    msg = 'Request {request} mapped to {database} with root {root}'.format(
+        request=request,
+        database='sqlite:///{}'.format(database),
+        root=match.group('path')
+    )
+    logger.debug(msg)
+
     from ara.webapp import create_app
     try:
         app = create_app()
