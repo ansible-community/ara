@@ -121,6 +121,7 @@ class TestRead(TestAra):
 
         self.task = MagicMock(Task)
         self.task.async = 0
+        self.task.async_val = False
         self.task.args = {
             'key': 'test-key',
             'value': 'test-value',
@@ -162,6 +163,7 @@ class TestRead(TestAra):
     def _test_task(self, playbook):
         name = 'test-task-%s' % self.tag
         task = Task(name, playbook.path)
+        task.async_val = False
         self.cb.v2_playbook_on_task_start(task, False)
         return task
 
@@ -174,6 +176,7 @@ class TestRead(TestAra):
 
         task = MagicMock(Task)
         task.async = 0
+        task.async_val = False
         task.args = {
             'playbook': r_playbook.id,
             'key': 'test-key',
@@ -203,6 +206,7 @@ class TestRead(TestAra):
         """
         task = MagicMock(Task)
         task.async = 0
+        task.async_val = False
         task.args = {
             'key': 'test-key',
         }
@@ -234,6 +238,7 @@ class TestRead(TestAra):
         """
         task = MagicMock(Task)
         task.async = 0
+        task.async_val = False
         task.args = {
             'key': 'key',
         }
