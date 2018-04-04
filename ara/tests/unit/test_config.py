@@ -17,6 +17,9 @@
 
 import os
 
+from ara.config.base import BaseConfig
+from ara.setup import path as ara_location
+
 from ara.tests.unit.common import TestAra
 
 
@@ -28,40 +31,28 @@ class TestConfig(TestAra):
     def tearDown(self):
         super(TestConfig, self).tearDown()
 
-    def test_default_config(self):
-        """ Ensure we have expected default parameters """
-        keys = [
-            'ARA_AUTOCREATE_DATABASE',
-            'ARA_DIR',
-            'ARA_ENABLE_DEBUG_VIEW',
-            'ARA_HOST',
-            'ARA_IGNORE_EMPTY_GENERATION',
-            'ARA_LOG_FILE',
-            'ARA_LOG_FORMAT',
-            'ARA_LOG_LEVEL',
-            'ARA_PORT',
-            'ARA_PLAYBOOK_OVERRIDE',
-            'ARA_PLAYBOOK_PER_PAGE',
-            'ARA_RESULT_PER_PAGE',
-        ]
+    # TODO: Improve those
+    def test_config_base(self):
+        base_config = BaseConfig()
+        db = "sqlite:///%s/ansible.sqlite" % os.path.expanduser('~/.ara')
+        defaults = {
+            "FREEZER_IGNORE_MIMETYPE_WARNINGS": True,
+            "FREEZER_DEFAULT_MIMETYPE": "text/html",
+            "FREEZER_IGNORE_404_NOT_FOUND": True,
+            "ARA_DIR": os.path.expanduser('~/.ara'),
+            "SQLALCHEMY_DATABASE_URI": db,
+            "ARA_HOST": "127.0.0.1",
+            "ARA_AUTOCREATE_DATABASE": True,
+            "ARA_PORT": "9191",
+            "ARA_DATABASE": db,
+            "ARA_IGNORE_EMPTY_GENERATION": True,
+            "ARA_IGNORE_PARAMETERS": [
+                "extra_vars"
+            ],
+            "FREEZER_RELATIVE_URLS": True,
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            "DB_MIGRATIONS": os.path.join(ara_location, 'db')
+        }
 
-        defaults = self.app.config['DEFAULTS']
-
-        for key in keys:
-            self.assertEqual(defaults[key],
-                             self.app.config[key])
-
-        self.assertEqual(defaults['ARA_DATABASE'],
-                         self.app.config['SQLALCHEMY_DATABASE_URI'])
-        self.assertEqual(defaults['ARA_SQL_DEBUG'],
-                         self.app.config['SQLALCHEMY_ECHO'])
-        self.assertEqual(defaults['ARA_TMP_DIR'],
-                         os.path.split(self.app.config['ARA_TMP_DIR'])[:-1][0])
-        self.assertEqual(defaults['ARA_IGNORE_MIMETYPE_WARNINGS'],
-                         self.app.config['FREEZER_IGNORE_MIMETYPE_WARNINGS'])
-
-    # TODO:
-    # - Add tests for config from hash (create_app(config))
-    # - Possibly test config from envvars
-    #   ( Needs config.py not to configure things at import time )
-    # - Mock out or control filesystem operations (i.e, webapp.configure_dirs)
+        for key, value in base_config.config.items():
+            assert value == defaults[key]

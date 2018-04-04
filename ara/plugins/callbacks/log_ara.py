@@ -17,7 +17,6 @@
 
 from __future__ import (absolute_import, division, print_function)
 
-import flask
 import itertools
 import logging
 import os
@@ -29,6 +28,7 @@ from ara.models import db
 from ara.webapp import create_app
 from datetime import datetime
 from distutils.version import LooseVersion
+from flask import current_app
 from oslo_serialization import jsonutils
 
 # To retrieve Ansible CLI options
@@ -62,7 +62,7 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         super(CallbackModule, self).__init__()
 
-        if not flask.current_app:
+        if not current_app:
             ctx = app.app_context()
             ctx.push()
 
@@ -333,15 +333,8 @@ class CallbackModule(CallbackBase):
         file_ = self.get_or_create_file(path)
         file_.is_playbook = True
 
-        # We need to persist the playbook id so it can be used by the modules
-        data = {
-            'playbook': {
-                'id': self.playbook.id
-            }
-        }
-        tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
-        with open(tmpfile, 'w') as file:
-            file.write(jsonutils.dumps(data))
+        # Cache the playbook data in memory for ara_record/ara_read
+        current_app._cache['playbook'] = self.playbook.id
 
     def v2_playbook_on_play_start(self, play):
         self.close_task()

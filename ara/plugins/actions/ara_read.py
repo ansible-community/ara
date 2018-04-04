@@ -15,10 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-
 from ansible.plugins.action import ActionBase
-from oslo_serialization import jsonutils
 
 try:
     from ara import models
@@ -109,11 +106,6 @@ class ActionModule(ActionBase):
             }
             return result
 
-        app = create_app()
-        if not current_app:
-            context = app.app_context()
-            context.push()
-
         for arg in self._task.args:
             if arg not in self.VALID_ARGS:
                 result = {
@@ -134,12 +126,14 @@ class ActionModule(ActionBase):
                 result['msg'] = '{0} parameter is required'.format(parameter)
                 return result
 
+        app = create_app()
+        if not current_app:
+            context = app.app_context()
+            context.push()
+
         if playbook_id is None:
-            # Retrieve the persisted playbook_id from tmpfile
-            tmpfile = os.path.join(app.config['ARA_TMP_DIR'], 'ara.json')
-            with open(tmpfile, 'rb') as file:
-                data = jsonutils.load(file)
-            playbook_id = data['playbook']['id']
+            # Retrieve playbook_id from the cached context
+            playbook_id = current_app._cache['playbook']
 
         try:
             data = self.get_key(playbook_id, key)

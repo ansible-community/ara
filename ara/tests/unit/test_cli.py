@@ -16,13 +16,10 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import pytest
 import shutil
 import six
 import tempfile
 
-from distutils.version import LooseVersion
-from flask_frozen import MissingURLGeneratorWarning
 from glob import glob
 from lxml import etree
 from oslo_serialization import jsonutils
@@ -679,18 +676,7 @@ class TestCLIGenerate(TestAra):
         cmd = ara.cli.generate.GenerateHtml(shell, None)
         parser = cmd.get_parser('test')
         args = parser.parse_args([dir])
-
-        with pytest.warns(MissingURLGeneratorWarning) as warnings:
-            cmd.take_action(args)
-
-        # pytest 3.0 through 3.1 are backwards incompatible here
-        if LooseVersion(pytest.__version__) >= LooseVersion('3.1.0'):
-            cat = [item._category_name for item in warnings]
-            self.assertTrue(any('MissingURLGeneratorWarning' in c
-                                for c in cat))
-        else:
-            self.assertTrue(any(MissingURLGeneratorWarning == w.category
-                                for w in warnings))
+        cmd.take_action(args)
 
         paths = [
             os.path.join(dir, 'index.html'),
@@ -734,8 +720,7 @@ class TestCLIGenerate(TestAra):
     def test_generate_html(self):
         """ Roughly ensures the expected files are generated properly """
         dir = self.generate_dir
-
-        ctx = ansible_run()
+        ansible_run()
 
         shell = ara.shell.AraCli()
         shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
@@ -745,68 +730,17 @@ class TestCLIGenerate(TestAra):
         args = parser.parse_args([dir])
         cmd.take_action(args)
 
-        file_id = ctx['task'].file_id
-        host_id = ctx['host'].id
-        result_id = ctx['result'].id
         paths = [
             os.path.join(dir, 'index.html'),
             os.path.join(dir, 'static'),
             os.path.join(dir, 'file/index.html'),
-            os.path.join(dir, 'file/{0}'.format(file_id)),
             os.path.join(dir, 'host/index.html'),
-            os.path.join(dir, 'host/{0}'.format(host_id)),
             os.path.join(dir, 'reports/index.html'),
             os.path.join(dir, 'result/index.html'),
-            os.path.join(dir, 'result/{0}'.format(result_id))
         ]
 
         for path in paths:
             self.assertTrue(os.path.exists(path))
-
-    def test_generate_html_for_playbook(self):
-        """ Roughly ensures the expected files are generated properly """
-        dir = self.generate_dir
-
-        # Record two separate playbooks
-        ctx = ansible_run()
-        ansible_run()
-
-        shell = ara.shell.AraCli()
-        shell.prepare_to_run_command(ara.cli.generate.GenerateHtml)
-        cmd = ara.cli.generate.GenerateHtml(shell, None)
-        parser = cmd.get_parser('test')
-
-        args = parser.parse_args([dir, '--playbook', ctx['playbook'].id])
-        cmd.take_action(args)
-
-        file_id = ctx['task'].file_id
-        host_id = ctx['host'].id
-        result_id = ctx['result'].id
-        paths = [
-            os.path.join(dir, 'index.html'),
-            os.path.join(dir, 'static'),
-            os.path.join(dir, 'file/index.html'),
-            os.path.join(dir, 'file/{0}'.format(file_id)),
-            os.path.join(dir, 'host/index.html'),
-            os.path.join(dir, 'host/{0}'.format(host_id)),
-            os.path.join(dir, 'reports/index.html'),
-            os.path.join(dir, 'result/index.html'),
-            os.path.join(dir, 'result/{0}'.format(result_id))
-        ]
-
-        for path in paths:
-            self.assertTrue(os.path.exists(path))
-
-        # Test that we effectively have two playbooks
-        playbooks = m.Playbook.query.all()
-        self.assertTrue(len(playbooks) == 2)
-
-        # Retrieve the other playbook and validate that we haven't generated
-        # files for it
-        playbook_two = (m.Playbook.query
-                        .filter(m.Playbook.id != ctx['playbook'].id).one())
-        path = os.path.join(dir, 'playbook/{0}'.format(playbook_two.id))
-        self.assertFalse(os.path.exists(path))
 
     def test_generate_junit(self):
         """ Roughly ensures the expected xml is generated properly """

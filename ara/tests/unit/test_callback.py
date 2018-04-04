@@ -16,7 +16,6 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
-import os
 
 import ara.models as m
 import ara.utils as u
@@ -25,7 +24,6 @@ import ara.plugins.callbacks.log_ara as l
 from ara.tests.unit.common import TestAra
 from ara.tests.unit import fakes
 from collections import defaultdict
-from oslo_serialization import jsonutils
 
 
 class TestCallback(TestAra):
@@ -85,14 +83,6 @@ class TestCallback(TestAra):
         r_playbook = m.Playbook.query.first()
         self.assertIsNotNone(r_playbook)
         self.assertEqual(r_playbook.path, self.playbook.path)
-
-    def test_playbook_persistence(self):
-        r_playbook = m.Playbook.query.first()
-        tmpfile = os.path.join(self.app.config['ARA_TMP_DIR'], 'ara.json')
-
-        with open(tmpfile, 'rb') as file:
-            data = jsonutils.load(file)
-        self.assertEqual(r_playbook.id, data['playbook']['id'])
 
     def test_callback_play(self):
         r_play = m.Play.query.first()

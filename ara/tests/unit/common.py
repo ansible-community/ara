@@ -29,12 +29,14 @@ class TestAra(unittest.TestCase):
     Common setup/teardown for ARA tests
     """
     def setUp(self):
+        # TODO: Fix this, it's not used in create_app() and makes the databases
+        # live on the filesystem rather than memory.
         self.config = {
             'SQLALCHEMY_DATABASE_URI': 'sqlite://',
             'TESTING': True
         }
 
-        self.app = w.create_app(self)
+        self.app = w.create_app()
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.client = self.app.test_client()

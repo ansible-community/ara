@@ -15,11 +15,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara import models
-from ara.utils import fast_count
 from flask import Blueprint
 from flask import current_app
 from flask import render_template
+
+from ara import models
+from ara.utils import fast_count
 
 about = Blueprint('about', __name__)
 
@@ -27,39 +28,36 @@ about = Blueprint('about', __name__)
 @about.route('/')
 def main():
     """ Returns the about page """
+    files = models.File.query
+    hosts = models.Host.query
+    facts = models.HostFacts.query
+    playbooks = models.Playbook.query
+    records = models.Data.query
+    tasks = models.Task.query
+    results = models.TaskResult.query
+
     if current_app.config['ARA_PLAYBOOK_OVERRIDE'] is not None:
         override = current_app.config['ARA_PLAYBOOK_OVERRIDE']
-        files = (models.File.query
-                 .filter(models.File.playbook_id.in_(override)))
-        host_facts = (models.HostFacts.query
-                      .join(models.Host)
-                      .filter(models.Host.playbook_id.in_(override)))
-        hosts = (models.Host.query
+        files = files.filter(models.File.playbook_id.in_(override))
+        facts = (facts
+                 .join(models.Host)
                  .filter(models.Host.playbook_id.in_(override)))
-        playbooks = (models.Playbook.query
-                     .filter(models.Playbook.id.in_(override)))
-        records = (models.Data.query
-                   .filter(models.Data.playbook_id.in_(override)))
-        tasks = (models.Task.query
-                 .filter(models.Task.playbook_id.in_(override)))
-        task_results = (models.TaskResult.query
-                        .join(models.Task)
-                        .filter(models.Task.playbook_id.in_(override)))
-    else:
-        files = models.File.query
-        host_facts = models.HostFacts.query
-        hosts = models.Host.query
-        playbooks = models.Playbook.query
-        records = models.Data.query
-        tasks = models.Task.query
-        task_results = models.TaskResult.query
+        hosts = hosts.filter(models.Host.playbook_id.in_(override))
+        playbooks = playbooks.filter(models.Playbook.id.in_(override))
+        records = records.filter(models.Data.playbook_id.in_(override))
+        tasks = tasks.filter(models.Task.playbook_id.in_(override))
+        results = (results
+                   .join(models.Task)
+                   .filter(models.Task.playbook_id.in_(override)))
 
-    return render_template('about.html',
-                           active='about',
-                           files=fast_count(files),
-                           host_facts=fast_count(host_facts),
-                           hosts=fast_count(hosts),
-                           playbooks=fast_count(playbooks),
-                           records=fast_count(records),
-                           tasks=fast_count(tasks),
-                           task_results=fast_count(task_results))
+    return render_template(
+        'about.html',
+        active='about',
+        files=fast_count(files),
+        hosts=fast_count(hosts),
+        facts=fast_count(facts),
+        playbooks=fast_count(playbooks),
+        records=fast_count(records),
+        tasks=fast_count(tasks),
+        results=fast_count(results)
+    )
