@@ -166,8 +166,6 @@ Documentation tests::
 
 Integration tests:
 
-::
-
 At the root of the ARA source, you'll find the ``run_tests.sh`` script that
 allows you to easily run integration tests across a range of different
 configurations.
