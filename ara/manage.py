@@ -37,7 +37,8 @@ manager.add_command(
     "runserver",
     commands.Server(host=app.config['ARA_HOST'],
                     port=app.config['ARA_PORT'],
-                    threaded=True)
+                    processes=8,
+                    threaded=False)
 )
 
 
