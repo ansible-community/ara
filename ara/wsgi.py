@@ -21,7 +21,11 @@
 import os
 import logging
 
+from ara.webapp import create_app
+from flask import current_app
+
 log = logging.getLogger(__name__)
+app = create_app()
 
 
 def application(environ, start_response):
@@ -31,9 +35,12 @@ def application(environ, start_response):
         if 'ANSIBLE_CONFIG' not in os.environ:
             log.warn('ANSIBLE_CONFIG environment variable not found.')
 
-    from ara.webapp import create_app
-    app = create_app()
-    return app(environ, start_response)
+    if not current_app:
+        ctx = app.app_context()
+        ctx.push()
+        return app(environ, start_response)
+    else:
+        return current_app(environ, start_response)
 
 
 def main():
