@@ -134,6 +134,7 @@ def application(environ, start_response):
     from ara.webapp import create_app
     try:
         app = create_app()
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(database)
         app.config['APPLICATION_ROOT'] = match.group('path')
         return app(environ, start_response)
     except Exception as e:
