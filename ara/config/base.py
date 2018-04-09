@@ -41,6 +41,24 @@ class BaseConfig(object):
         )
         self.SQLALCHEMY_DATABASE_URI = self.ARA_DATABASE
         self.SQLALCHEMY_TRACK_MODIFICATIONS = False
+        self.SQLALCHEMY_POOL_SIZE = ara_config(
+            'sqlalchemy_pool_size',
+            'SQLALCHEMY_POOL_SIZE',
+            None,
+            value_type='integer'
+        )
+        self.SQLALCHEMY_POOL_TIMEOUT = ara_config(
+            'sqlalchemy_pool_timeout',
+            'SQLALCHEMY_POOL_TIMEOUT',
+            None,
+            value_type='integer'
+        )
+        self.SQLALCHEMY_POOL_RECYCLE = ara_config(
+            'sqlalchemy_pool_recycle',
+            'SQLALCHEMY_POOL_RECYCLE',
+            None,
+            value_type='integer'
+        )
         self.DB_MIGRATIONS = os.path.join(ara_location, 'db')
 
         self.ARA_HOST = ara_config('host', 'ARA_HOST', '127.0.0.1')

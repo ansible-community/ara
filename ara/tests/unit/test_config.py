@@ -34,24 +34,27 @@ class TestConfig(TestAra):
     # TODO: Improve those
     def test_config_base(self):
         base_config = BaseConfig()
-        db = "sqlite:///%s/ansible.sqlite" % os.path.expanduser('~/.ara')
+        db = 'sqlite:///%s/ansible.sqlite' % os.path.expanduser('~/.ara')
         defaults = {
-            "FREEZER_IGNORE_MIMETYPE_WARNINGS": True,
-            "FREEZER_DEFAULT_MIMETYPE": "text/html",
-            "FREEZER_IGNORE_404_NOT_FOUND": True,
-            "ARA_DIR": os.path.expanduser('~/.ara'),
-            "SQLALCHEMY_DATABASE_URI": db,
-            "ARA_HOST": "127.0.0.1",
-            "ARA_AUTOCREATE_DATABASE": True,
-            "ARA_PORT": "9191",
-            "ARA_DATABASE": db,
-            "ARA_IGNORE_EMPTY_GENERATION": True,
-            "ARA_IGNORE_PARAMETERS": [
-                "extra_vars"
+            'FREEZER_IGNORE_MIMETYPE_WARNINGS': True,
+            'FREEZER_DEFAULT_MIMETYPE': 'text/html',
+            'FREEZER_IGNORE_404_NOT_FOUND': True,
+            'ARA_DIR': os.path.expanduser('~/.ara'),
+            'SQLALCHEMY_DATABASE_URI': db,
+            'ARA_HOST': '127.0.0.1',
+            'ARA_AUTOCREATE_DATABASE': True,
+            'ARA_PORT': "9191",
+            'ARA_DATABASE': db,
+            'ARA_IGNORE_EMPTY_GENERATION': True,
+            'ARA_IGNORE_PARAMETERS': [
+                'extra_vars'
             ],
-            "FREEZER_RELATIVE_URLS": True,
-            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-            "DB_MIGRATIONS": os.path.join(ara_location, 'db')
+            'FREEZER_RELATIVE_URLS': True,
+            'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+            'SQLALCHEMY_POOL_SIZE': None,
+            'SQLALCHEMY_POOL_TIMEOUT': None,
+            'SQLALCHEMY_POOL_RECYCLE': None,
+            'DB_MIGRATIONS': os.path.join(ara_location, 'db')
         }
 
         for key, value in base_config.config.items():
