@@ -25,6 +25,8 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 
+YIELD_PER = 100
+
 reports = Blueprint('reports', __name__)
 
 
@@ -117,7 +119,7 @@ def ajax_parameters(playbook):
 @reports.route('/reports/ajax/plays/<playbook>.txt')
 def ajax_plays(playbook):
     plays = (models.Play.query
-             .filter(models.Play.playbook_id.in_([playbook])))
+             .filter(models.Play.playbook_id == playbook))
     if not utils.fast_count(plays):
         abort(404)
 
@@ -128,7 +130,7 @@ def ajax_plays(playbook):
     results = dict()
     results['data'] = list()
 
-    for play in plays:
+    for play in plays.yield_per(YIELD_PER):
         name = u"<span class='pull-left'>{0}</span>".format(play.name)
         start = date.render(date=play.time_start)
         end = date.render(date=play.time_end)
@@ -141,7 +143,7 @@ def ajax_plays(playbook):
 @reports.route('/reports/ajax/records/<playbook>.txt')
 def ajax_records(playbook):
     records = (models.Data.query
-               .filter(models.Data.playbook_id.in_([playbook])))
+               .filter(models.Data.playbook_id == playbook))
     if not utils.fast_count(records):
         abort(404)
 
@@ -152,7 +154,7 @@ def ajax_records(playbook):
     results = dict()
     results['data'] = list()
 
-    for record in records:
+    for record in records.yield_per(YIELD_PER):
         key = record_key.render(record=record)
         value = record_value.render(record=record)
 
@@ -165,7 +167,7 @@ def ajax_records(playbook):
 def ajax_results(playbook):
     task_results = (models.TaskResult.query
                     .join(models.Task)
-                    .filter(models.Task.playbook_id.in_([playbook])))
+                    .filter(models.Task.playbook_id == playbook))
     if not utils.fast_count(task_results):
         abort(404)
 
@@ -178,13 +180,16 @@ def ajax_results(playbook):
     results = dict()
     results['data'] = list()
 
-    for result in task_results:
-        name = name_cell.render(result=result)
+    for result in task_results.yield_per(YIELD_PER):
+        name = name_cell.render(tags=result.task.tags, name=result.task.name)
         host = result.host.name
-        action = action_link.render(result=result)
+        action = action_link.render(file=result.task.file,
+                                    lineno=result.task.lineno,
+                                    action=result.task.action)
         elapsed = time.render(time=result.task.offset_from_playbook)
         duration = time.render(time=result.duration)
-        status = task_status_link.render(result=result)
+        status = task_status_link.render(id=result.id,
+                                         derived_status=result.derived_status)
 
         results['data'].append([name, host, action, elapsed, duration, status])
     return jsonify(results)
@@ -193,7 +198,7 @@ def ajax_results(playbook):
 @reports.route('/reports/ajax/stats/<playbook>.txt')
 def ajax_stats(playbook):
     stats = (models.Stats.query
-             .filter(models.Stats.playbook_id.in_([playbook])))
+             .filter(models.Stats.playbook_id == playbook))
     if not utils.fast_count(stats):
         abort(404)
 
@@ -203,8 +208,8 @@ def ajax_stats(playbook):
     results = dict()
     results['data'] = list()
 
-    for stat in stats:
-        host = host_link.render(stat=stat)
+    for stat in stats.yield_per(YIELD_PER):
+        host = host_link.render(host=stat.host)
         ok = stat.ok if stat.ok >= 1 else 0
         changed = stat.changed if stat.changed >= 1 else 0
         failed = stat.failed if stat.failed >= 1 else 0
