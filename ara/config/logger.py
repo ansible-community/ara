@@ -30,18 +30,16 @@ version: 1
 formatters:
     normal:
         format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
-    console:
-        format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
 handlers:
     console:
         class: logging.StreamHandler
-        formatter: console
+        formatter: normal
         level: INFO
         stream: ext://sys.stdout
-    normal:
+    file:
         class: logging.handlers.TimedRotatingFileHandler
         formatter: normal
-        level: DEBUG
+        level: {level}
         filename: '{dir}/{file}'
         when: 'midnight'
         interval: 1
@@ -49,31 +47,29 @@ handlers:
 loggers:
     ara:
         handlers:
-            - console
-            - normal
+            - file
         level: {level}
         propagate: 0
     alembic:
         handlers:
             - console
-            - normal
+            - file
         level: WARN
         propagate: 0
     sqlalchemy.engine:
         handlers:
-            - console
-            - normal
+            - file
         level: WARN
         propagate: 0
     werkzeug:
         handlers:
             - console
-            - normal
+            - file
         level: INFO
         propagate: 0
 root:
   handlers:
-    - normal
+    - file
   level: {level}
 """
 
@@ -90,10 +86,8 @@ class LogConfig(object):
         self.ARA_LOG_FILE = ara_config('logfile', 'ARA_LOG_FILE', 'ara.log')
         self.ARA_LOG_LEVEL = ara_config('loglevel', 'ARA_LOG_LEVEL', 'INFO')
         if self.ARA_LOG_LEVEL == 'DEBUG':
-            self.SQLALCHEMY_ECHO = True
             self.ARA_ENABLE_DEBUG_VIEW = True
         else:
-            self.SQLALCHEMY_ECHO = False
             self.ARA_ENABLE_DEBUG_VIEW = False
 
     @property
@@ -131,7 +125,7 @@ def setup_logging(config=None):
     else:
         logging.config.fileConfig(config['ARA_LOG_CONFIG'])
 
-    logger = logging.getLogger('ara.logging')
+    logger = logging.getLogger('ara.config.logging')
     msg = 'Logging: Level {level} from {config}, logging to {dir}/{file}'
     msg = msg.format(
         level=config['ARA_LOG_LEVEL'],

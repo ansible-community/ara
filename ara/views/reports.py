@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 from ara import models
 from ara import utils
 from flask import abort
@@ -28,6 +30,7 @@ from flask import url_for
 YIELD_PER = 100
 
 reports = Blueprint('reports', __name__)
+log = logging.getLogger(__name__)
 
 
 # This is a flask-frozen workaround in order to generate an index.html
@@ -109,10 +112,12 @@ def ajax_parameters(playbook):
     results['data'].append(['playbook_path', playbook.path])
     results['data'].append(['ansible_version', playbook.ansible_version])
 
+    log.debug('Loading playbook parameters')
     if playbook.options:
         for option in playbook.options:
             results['data'].append([option, playbook.options[option]])
 
+    log.debug('%s playbook parameters loaded' % len(results['data']))
     return jsonify(results)
 
 
@@ -130,6 +135,7 @@ def ajax_plays(playbook):
     results = dict()
     results['data'] = list()
 
+    log.debug('Loading plays')
     for play in plays.yield_per(YIELD_PER):
         name = u"<span class='pull-left'>{0}</span>".format(play.name)
         start = date.render(date=play.time_start)
@@ -137,6 +143,7 @@ def ajax_plays(playbook):
         duration = time.render(time=play.duration)
         results['data'].append([name, start, end, duration])
 
+    log.debug('%s plays loaded' % len(results['data']))
     return jsonify(results)
 
 
@@ -154,12 +161,14 @@ def ajax_records(playbook):
     results = dict()
     results['data'] = list()
 
+    log.debug('Loading records')
     for record in records.yield_per(YIELD_PER):
         key = record_key.render(record=record)
         value = record_value.render(record=record)
 
         results['data'].append([key, value])
 
+    log.debug('%s records loaded' % len(results['data']))
     return jsonify(results)
 
 
@@ -180,6 +189,8 @@ def ajax_results(playbook):
     results = dict()
     results['data'] = list()
 
+    log.debug('Loading results')
+    log.debug('* If this part eats your RAM, please help us fix this :)')
     for result in task_results.yield_per(YIELD_PER):
         name = name_cell.render(tags=result.task.tags, name=result.task.name)
         host = result.host.name
@@ -192,6 +203,8 @@ def ajax_results(playbook):
                                          derived_status=result.derived_status)
 
         results['data'].append([name, host, action, elapsed, duration, status])
+
+    log.debug('%s results loaded' % len(results['data']))
     return jsonify(results)
 
 
@@ -208,6 +221,7 @@ def ajax_stats(playbook):
     results = dict()
     results['data'] = list()
 
+    log.debug('Loading host statistics and facts')
     for stat in stats.yield_per(YIELD_PER):
         host = host_link.render(host=stat.host)
         ok = stat.ok if stat.ok >= 1 else 0
@@ -219,4 +233,5 @@ def ajax_stats(playbook):
         data = [host, ok, changed, failed, skipped, unreachable]
         results['data'].append(data)
 
+    log.debug('%s host stats and facts loaded' % len(results['data']))
     return jsonify(results)

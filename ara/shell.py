@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 
 from ara import __version__
@@ -22,6 +23,9 @@ from ara.webapp import create_app
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 from flask import current_app
+
+
+log = logging.getLogger('ara.shell')
 
 
 class AraCli(App):
@@ -44,10 +48,10 @@ class AraCli(App):
         return parser
 
     def initialize_app(self, argv):
-        self.LOG.debug('initialize_app')
+        log.debug('initialize_app')
 
     def prepare_to_run_command(self, cmd):
-        self.LOG.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+        log.debug('prepare_to_run_command: %s', cmd.__class__.__name__)
 
         # Note: cliff uses self.app for itself, this gets folded back into
         # self.app.ara
@@ -57,9 +61,9 @@ class AraCli(App):
             self.ara_context.push()
 
     def clean_up(self, cmd, result, err):
-        self.LOG.debug('clean_up %s', cmd.__class__.__name__)
+        log.debug('clean_up %s', cmd.__class__.__name__)
         if err:
-            self.LOG.debug('got an error: %s', err)
+            log.debug('got an error: %s', err)
 
         self.ara_context.pop()
 

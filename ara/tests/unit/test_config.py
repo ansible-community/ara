@@ -51,6 +51,7 @@ class TestConfig(TestAra):
             ],
             'FREEZER_RELATIVE_URLS': True,
             'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+            'SQLALCHEMY_ECHO': False,
             'SQLALCHEMY_POOL_SIZE': None,
             'SQLALCHEMY_POOL_TIMEOUT': None,
             'SQLALCHEMY_POOL_RECYCLE': None,

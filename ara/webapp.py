@@ -187,6 +187,9 @@ def configure_template_filters(app):
 
 
 def configure_context_processors(app):
+    log = logging.getLogger('ara.webapp.context_processors')
+    log.debug('Loading context_processors...')
+
     @app.context_processor
     def ctx_add_nav_data():
         """
@@ -210,6 +213,9 @@ def configure_context_processors(app):
 
 
 def configure_blueprints(app):
+    log = logging.getLogger('ara.webapp.configure_blueprints')
+    log.debug('Loading blueprints...')
+
     import ara.views  # flake8: noqa
     views = (
         (ara.views.about, '/about'),
@@ -222,7 +228,7 @@ def configure_blueprints(app):
     for view, prefix in views:
         app.register_blueprint(view, url_prefix=prefix)
 
-    if app.config.get('ARA_ENABLE_DEBUG_VIEW'):
+    if app.config.get('ARA_LOG_LEVEL') == 'DEBUG':
         app.register_blueprint(ara.views.debug, url_prefix='/debug')
 
 
@@ -235,7 +241,8 @@ def configure_db(app):
     revision which contains the latest state of the database prior to this.
     """
     models.db.init_app(app)
-    log = logging.getLogger(app.logger_name)
+    log = logging.getLogger('ara.webapp.configure_db')
+    log.debug('Setting up database...')
 
     if app.config.get('ARA_AUTOCREATE_DATABASE'):
         with app.app_context():
@@ -282,6 +289,9 @@ def configure_static_route(app):
     # dots and we can decorate "serve_static_packaged" instead of, say,
     # "static.serve_packaged".
 
+    log = logging.getLogger('ara.webapp.configure_static_route')
+    log.debug('Loading static routes...')
+
     @app.route('/static/packaged/<module>/<path:filename>')
     def serve_static_packaged(module, filename):
         xstatic = app.config['XSTATIC']
@@ -294,5 +304,8 @@ def configure_static_route(app):
 
 def configure_cache(app):
     """ Sets up an attribute to cache data in the app context """
+    log = logging.getLogger('ara.webapp.configure_cache')
+    log.debug('Configuring cache')
+
     if not getattr(app, '_cache', None):
         app._cache = {}

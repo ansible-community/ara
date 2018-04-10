@@ -125,8 +125,6 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FORMAT_               | logformat                  | %(asctime)s - %(levelname)s - %(message)s |
 +-------------------------------+----------------------------+-------------------------------------------+
-| ARA_SQL_DEBUG_                | sqldebug                   | False                                     |
-+-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_PARAMETERS_        | ignore_parameters          | extra_vars                                |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_EMPTY_GENERATION_  | ignore_empty_generation    | True                                      |
@@ -139,6 +137,8 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_RESULT_PER_PAGE_          | result_per_page            | 25                                        |
 +-------------------------------+----------------------------+-------------------------------------------+
+| SQLALCHEMY_ECHO_              | sqlalchemy_echo            | False                                     |
++-------------------------------+----------------------------+-------------------------------------------+
 | SQLALCHEMY_POOL_SIZE_         | sqlalchemy_pool_size       | None (default managed by flask-sqlalchemy)|
 +-------------------------------+----------------------------+-------------------------------------------+
 | SQLALCHEMY_POOL_TIMEOUT_      | sqlalchemy_pool_timeout    | None (default managed by flask-sqlalchemy)|
@@ -146,6 +146,7 @@ Parameters and their defaults
 | SQLALCHEMY_POOL_RECYCLE_      | sqlalchemy_pool_recycle    | None (default managed by flask-sqlalchemy)|
 +-------------------------------+----------------------------+-------------------------------------------+
 
+.. _SQLALCHEMY_ECHO: http://flask-sqlalchemy.pocoo.org/2.3/config/#configuration-keys
 .. _SQLALCHEMY_POOL_SIZE: http://flask-sqlalchemy.pocoo.org/2.3/config/#configuration-keys
 .. _SQLALCHEMY_POOL_TIMEOUT: http://flask-sqlalchemy.pocoo.org/2.3/config/#configuration-keys
 .. _SQLALCHEMY_POOL_RECYCLE: http://flask-sqlalchemy.pocoo.org/2.3/config/#configuration-keys
@@ -268,11 +269,6 @@ ARA_LOG_FORMAT
 ~~~~~~~~~~~~~~
 
 The log format of the logs.
-
-ARA_SQL_DEBUG
-~~~~~~~~~~~~~
-
-Enables the SQLAlchemy echo verbose mode.
 
 ARA_IGNORE_PARAMETERS
 ~~~~~~~~~~~~~~~~~~~~~

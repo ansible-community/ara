@@ -37,7 +37,7 @@ try:
 except ImportError:
     cli = None
 
-LOG = logging.getLogger('ara.callback')
+log = logging.getLogger('ara.callback')
 app = create_app()
 
 
@@ -62,6 +62,7 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         super(CallbackModule, self).__init__()
 
+        log.debug('Initializing callback')
         if not current_app:
             ctx = app.app_context()
             ctx.push()
@@ -80,6 +81,7 @@ class CallbackModule(CallbackBase):
             self._options = cli.options
         else:
             self._options = None
+    log.debug('Callback initialized')
 
     def get_or_create_host(self, hostname):
         try:
@@ -120,7 +122,7 @@ class CallbackModule(CallbackBase):
 
             file_.content = content
         except IOError:
-            LOG.warn('failed to open %s for reading', path)
+            log.warn('failed to open %s for reading', path)
 
         return file_
 
@@ -130,7 +132,7 @@ class CallbackModule(CallbackBase):
         host completes. It is responsible for logging a single
         'TaskResult' record to the database.
         """
-        LOG.debug('logging task result for task %s (%s), host %s',
+        log.debug('Logging task result for task %s (%s), host %s',
                   self.task.name, self.task.id, result._host.get_name())
 
         # An include_role task might end up putting an IncludeRole object
@@ -194,7 +196,7 @@ class CallbackModule(CallbackBase):
         """
         Logs playbook statistics to the database.
         """
-        LOG.debug('logging stats')
+        log.debug('logging stats')
         hosts = sorted(stats.processed.keys())
         for hostname in hosts:
             host = self.get_or_create_host(hostname)
@@ -215,7 +217,7 @@ class CallbackModule(CallbackBase):
         Marks the completion time of the currently active task.
         """
         if self.task is not None:
-            LOG.debug('closing task %s (%s)',
+            log.debug('Closing task %s (%s)',
                       self.task.name,
                       self.task.id)
             self.task.stop()
@@ -230,7 +232,7 @@ class CallbackModule(CallbackBase):
         Marks the completion time of the currently active play.
         """
         if self.play is not None:
-            LOG.debug('closing play %s (%s)', self.play.name, self.play.id)
+            log.debug('Closing play %s (%s)', self.play.name, self.play.id)
             self.play.stop()
             db.session.add(self.play)
             db.session.commit()
@@ -242,7 +244,7 @@ class CallbackModule(CallbackBase):
         Marks the completion time of the currently active playbook.
         """
         if self.playbook is not None:
-            LOG.debug('closing playbook %s', self.playbook.path)
+            log.debug('Closing playbook %s', self.playbook.path)
             self.playbook.stop()
             self.playbook.complete = True
             db.session.add(self.playbook)
@@ -276,7 +278,7 @@ class CallbackModule(CallbackBase):
                                   is_handler=False):
         self.close_task()
 
-        LOG.debug('starting task %s (action %s)',
+        log.debug('Starting task %s (action %s)',
                   task.name, task.action)
         pathspec = task.get_path()
         if pathspec:
@@ -319,7 +321,7 @@ class CallbackModule(CallbackBase):
                 msg = "Parameter not saved by ARA due to configuration"
                 options[parameter] = msg
 
-        LOG.debug('starting playbook %s', path)
+        log.debug('Starting playbook %s', path)
         self.playbook = models.Playbook(
             ansible_version=ansible_version,
             path=path,
@@ -340,7 +342,7 @@ class CallbackModule(CallbackBase):
         self.close_task()
         self.close_play()
 
-        LOG.debug('starting play %s', play.name)
+        log.debug('Starting play %s', play.name)
         if self.play is not None:
             self.play.stop()
 
@@ -361,5 +363,5 @@ class CallbackModule(CallbackBase):
         self.close_play()
         self.close_playbook()
 
-        LOG.debug('closing database')
+        log.debug('Closing database')
         db.session.close()

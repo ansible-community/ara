@@ -41,6 +41,12 @@ class BaseConfig(object):
         )
         self.SQLALCHEMY_DATABASE_URI = self.ARA_DATABASE
         self.SQLALCHEMY_TRACK_MODIFICATIONS = False
+        self.SQLALCHEMY_ECHO = ara_config(
+            'sqlalchemy_echo',
+            'SQLALCHEMY_ECHO',
+            False,
+            value_type='boolean'
+        )
         self.SQLALCHEMY_POOL_SIZE = ara_config(
             'sqlalchemy_pool_size',
             'SQLALCHEMY_POOL_SIZE',
