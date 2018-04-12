@@ -17,6 +17,7 @@
 
 import functools
 import hashlib
+import logging
 import uuid
 import zlib
 
@@ -32,6 +33,7 @@ from sqlalchemy.orm import backref
 import sqlalchemy.types as types
 
 db = SQLAlchemy()
+log = logging.getLogger('ara.models')
 
 
 def mkuuid():
@@ -196,9 +198,31 @@ class Playbook(db.Model, TimedEntity):
 
     @property
     def file(self):
-        return (self.files
-                .filter(File.playbook_id == self.id)
-                .filter(File.is_playbook)).one()
+        # Handle rare occurrences where an ansible-playbook run may have been
+        # interrupted after the playbook was created but the file has not yet.
+        try:
+            return (self.files
+                    .filter(File.playbook_id == self.id)
+                    .filter(File.is_playbook)).one()
+        except NoResultFound:  # noqa
+            log.debug('NoResultFound for the file of playbook %s' % self.id)
+            # Doing this in the model is kind of ugly, sorry.
+            file = File(
+                path=self.path,
+                playbook=self,
+                is_playbook=True,
+            )
+            msg = 'Playbook file could not be recovered'
+            sha1 = content_sha1(msg)
+            content = FileContent.query.get(sha1)
+
+            if content is None:
+                content = FileContent(content=msg)
+            file.content = content
+            db.session.add(file)
+            db.session.commit()
+            log.warn('Recovered file reference for playbook %s' % self.id)
+            return file
 
     def __repr__(self):
         return '<Playbook %s>' % self.path
