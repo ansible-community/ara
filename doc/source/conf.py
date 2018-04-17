@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-#  Copyright (c) 2017 Red Hat, Inc.
+#  Copyright (c) 2018 Red Hat, Inc.
 #
-#  This file is part of ARA: Ansible Run Analysis.
+#  This file is part of ARA Records Ansible.
 #
 #  ARA is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ara'
-copyright = u'2017, Red Hat'
-author = 'RDO Community'
+copyright = u'2018, Red Hat'
+author = 'OpenStack Community'
 
 # The short X.Y version.
 version = version_info.version_string()

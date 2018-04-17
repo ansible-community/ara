@@ -1,8 +1,8 @@
-ARA: Ansible Run Analysis
-=========================
+ARA Records Ansible
+===================
 .. image:: doc/source/_static/ara-with-icon.png
 
-ARA records Ansible playbook runs and makes the recorded data available and
+ARA Records Ansible playbook runs and makes the recorded data available and
 intuitive for users and systems.
 
 ARA doesn't run your playbooks for you: it integrates with Ansible as a
@@ -153,7 +153,7 @@ Copyright
 
 ::
 
-    Copyright (c) 2017 Red Hat, Inc.
+    Copyright (c) 2018 Red Hat, Inc.
 
     ARA is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

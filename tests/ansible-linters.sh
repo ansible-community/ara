@@ -1,7 +1,7 @@
 #!/bin/bash
-#  Copyright (c) 2017 Red Hat, Inc.
+#  Copyright (c) 2018 Red Hat, Inc.
 #
-#  This file is part of ARA: Ansible Run Analysis.
+#  This file is part of ARA Records Ansible.
 #
 #  ARA is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
