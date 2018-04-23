@@ -25,10 +25,11 @@ Quickstart
     # Install ARA
     pip install ara
 
-    # Make Ansible use the ARA callback plugin regardless of location or python version
-    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
+    # Load environment variables that inform Ansible to use ARA regardless
+    # of its location or python version
+    source <(python -m ara.setup.env)
 
-    # Run your playbook
+    # Run your Ansible playbook or commands
     # ansible-playbook myplaybook.yml
 
     # Start the ARA standalone webserver
