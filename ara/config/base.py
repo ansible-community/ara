@@ -39,6 +39,11 @@ class BaseConfig(object):
             True,
             value_type='boolean'
         )
+        self.APPLICATION_ROOT = ara_config(
+            'application_root',
+            'ARA_APPLICATION_ROOT',
+            '/'
+        )
         self.SQLALCHEMY_DATABASE_URI = self.ARA_DATABASE
         self.SQLALCHEMY_TRACK_MODIFICATIONS = False
         self.SQLALCHEMY_ECHO = ara_config(

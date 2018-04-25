@@ -41,6 +41,7 @@ class TestConfig(TestAra):
             'FREEZER_IGNORE_404_NOT_FOUND': True,
             'ARA_DIR': os.path.expanduser('~/.ara'),
             'SQLALCHEMY_DATABASE_URI': db,
+            'APPLICATION_ROOT': '/',
             'ARA_HOST': '127.0.0.1',
             'ARA_AUTOCREATE_DATABASE': True,
             'ARA_PORT': "9191",

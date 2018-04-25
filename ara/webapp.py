@@ -62,6 +62,7 @@ def create_app():
     configure_app(app)
     configure_dirs(app)
     configure_logging(app)
+    configure_app_root(app)
     configure_blueprints(app)
     configure_static_route(app)
     configure_db(app)
@@ -86,6 +87,14 @@ def configure_dirs(app):
 
 def configure_logging(app):
     setup_logging(app.config)
+
+
+def configure_app_root(app):
+    log = logging.getLogger('ara.webapp.configure_app_root')
+    # Don't load the middleware needlessly if the root is actually '/'
+    if app.config['APPLICATION_ROOT'] != '/':
+        app.wsgi_app = AppRootMiddleware(app, app.wsgi_app)
+    log.debug('Application root loaded: %s' % app.config['APPLICATION_ROOT'])
 
 
 def configure_errorhandlers(app):
@@ -309,3 +318,37 @@ def configure_cache(app):
 
     if not getattr(app, '_cache', None):
         app._cache = {}
+
+
+class AppRootMiddleware(object):
+    """
+    Middleware to manage route prefixes, for example when hosting ARA in a
+    subdirectory.
+    """
+    def __init__(self, app, wsgi_app):
+        self.log = logging.getLogger('ara.webapp.AppRootMiddleware')
+        self.log.debug('Initializing AppRootMiddleware')
+        self.app = app
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        root = self.app.config['APPLICATION_ROOT']
+        if environ['PATH_INFO'].startswith(root):
+            environ['PATH_INFO'] = environ['PATH_INFO'][len(root):]
+            environ['SCRIPT_NAME'] = root
+            self.log.debug('Returning with root %s' % root)
+            return self.wsgi_app(environ, start_response)
+        else:
+            self.log.debug('Returning 404 for %s' % environ['PATH_INFO'])
+            url = "{scheme}://{host}{root}".format(
+                scheme=environ['wsgi.url_scheme'],
+                host=environ['HTTP_HOST'],
+                root=root,
+            )
+            msg = """
+            This URL doesn't belong to an ARA application. <br />
+            <br />
+            Did you mean to browse to <a href='{url}'>{url}</a> instead ?
+            """.format(url=url)
+            start_response('404', [('Content-Type', 'text/html')])
+            return [msg.strip().encode()]

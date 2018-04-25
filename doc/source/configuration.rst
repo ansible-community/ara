@@ -117,6 +117,8 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_PORT_                     | port                       | 9191                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_APPLICATION_ROOT_         | application_root           | /                                         |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_CONFIG_               | logconfig                  | None                                      |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FILE_                 | logfile                    | ~/.ara/ara.log                            |
@@ -236,6 +238,18 @@ the ``ara-manage runserver`` command.
 
 It is equivalent to the ``-p`` or ``--port`` argument of the
 ``ara-manage runserver`` command.
+
+ARA_APPLICATION_ROOT
+~~~~~~~~~~~~~~~~~~~~
+
+The path at which the web application should be loaded.
+
+The default behavior is to load the application at the root (``/``) of your
+host.
+Change this parameter if you'd like to host your application elsewhere.
+
+For example, ``/ara`` would make the application available under
+``http://host/ara`` instead of ``http://host/``.
 
 ARA_LOG_CONFIG
 ~~~~~~~~~~~~~~
