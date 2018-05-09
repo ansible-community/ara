@@ -15,14 +15,35 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-# WSGI file to run the ARA server, it is expected that the server passes an
-# ANSIBLE_CONFIG environment variable in order to configure Ansible and ARA.
+# WSGI file to run the ARA server.
+# It is expected that the server at least passes an ANSIBLE_CONFIG environment
+# variable in order to configure Ansible and ARA.
+
+# Can be configured using environment variables (i.e, Apache SetEnv) with the
+# following variables:
+
+# ARA_WSGI_USE_VIRTUALENV
+#   Enable virtual environment usage if ARA is installed in a virtual
+#   environment.
+#   Defaults to '0', set to '1' to enable.
+# ARA_WSGI_VIRTUALENV_PATH
+#   When using a virtual environment, where the virtualenv is located.
+#   Defaults to None, set to the absolute path of your virtualenv.
 
 import os
 import logging
+import six
 
-from ara.webapp import create_app
-from flask import current_app
+if (int(os.getenv('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
+   os.getenv('ARA_WSGI_VIRTUALENV_PATH')):
+    activate_this = os.getenv('ARA_WSGI_VIRTUALENV_PATH')
+    if six.PY2:
+        execfile(activate_this, dict(__file__=activate_this))  # nosec
+    else:
+        exec(open(activate_this).read())  # nosec
+
+from ara.webapp import create_app  # flake8: noqa
+from flask import current_app  # flake8: noqa
 
 log = logging.getLogger(__name__)
 app = create_app()
