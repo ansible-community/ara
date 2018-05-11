@@ -50,7 +50,6 @@ from ara.webapp import create_app  # flake8: noqa
 from flask import current_app  # flake8: noqa
 
 log = logging.getLogger(__name__)
-app = create_app()
 
 
 def application(environ, start_response):
@@ -60,6 +59,7 @@ def application(environ, start_response):
         if 'ANSIBLE_CONFIG' not in os.environ:
             log.warn('ANSIBLE_CONFIG environment variable not found.')
 
+    app = create_app()
     if not current_app:
         ctx = app.app_context()
         ctx.push()
