@@ -262,3 +262,28 @@ Restart Apache and you're done::
     systemctl restart apache2
 
 You should now be able to access the web interface at the domain you set up !
+
+Serving static HTML reports
+---------------------------
+
+Nginx Configuration
+~~~~~~~~~~~~~~~~~~~
+
+Assuming that you are storing ARA reports as static html using a Nginx server
+you may find this configuration useful as it assures that prezipped files
+(like ``index.html.gz``) are served transparently by the server. ::
+
+    location /artifacts {
+        gzip_static on;
+        root /var/www/html;
+        autoindex on;
+        index index.html index.htm;
+        rewrite ^(.*)/$ $1/index.html;
+    }
+
+You may need a different nginx build that has the ngx_http_gzip_static_module_
+compiled. For example nginx from EPEL_ (CentOS/RHEL)
+yum repositories includes this module.
+
+.. _ngx_http_gzip_static_module: http://nginx.org/en/docs/http/ngx_http_gzip_static_module.html
+.. _EPEL: https://fedoraproject.org/wiki/EPEL
