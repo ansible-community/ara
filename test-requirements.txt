@@ -1,3 +1,5 @@
+cmd2!=0.8.3,<0.9.0;python_version<'3.0'  # MIT
+cmd2!=0.8.3;python_version>='3.0'  # MIT
 bandit>=1.1.0 # Apache-2.0
 bashate>=0.2
 coverage
