@@ -110,15 +110,55 @@ middleware. In order to do so, the vhost must look like the following::
       LogLevel warn
       CustomLog /var/log/httpd/logs.domain.tld-access.log combined
 
+      # Look out for the user/group which is different based on your distro
+      WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
+
       SetEnv ARA_WSGI_TMPDIR_MAX_AGE 3600
       SetEnv ARA_WSGI_LOG_ROOT /srv/static/logs
       SetEnv ARA_WSGI_DATABASE_DIRECTORY ara-report
-      WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1
-      WSGIScriptAliasMatch ^.*/ara-report /var/www/cgi-bin/ara-wsgi-sqlite
+
+      <Directory "/usr/bin">
+        <Files "ara-wsgi-sqlite">
+          Require all granted
+        </Files>
+      </Directory>
+
+      # Redirect everything after /ara-report to the middleware
+      WSGIScriptAliasMatch ^.*/ara-report /usr/bin/ara-wsgi-sqlite
     </VirtualHost>
 
-You'll notice the ``WSGIScriptAliasMatch`` directive pointing to the WSGI
-script. This is bundled when installing ARA and can be copied to the location
-of your choice by doing::
+Using a virtual environment
+---------------------------
 
-    cp -p $(which ara-wsgi-sqlite) /var/www/cgi-bin/
+When using ARA from a virtual environment, you need to adjust your configuration
+accordingly.
+
+For example, your vhost might need to look like this instead::
+
+    <VirtualHost *:80>
+      # Remember that DocumentRoot and ARA_WSGI_LOG_ROOT must match
+      DocumentRoot /srv/static/logs
+      ServerName logs.domain.tld
+
+      ErrorLog /var/log/httpd/logs.domain.tld-error.log
+      LogLevel warn
+      CustomLog /var/log/httpd/logs.domain.tld-access.log combined
+
+      # Look out for the user/group which is different based on your distro
+      WSGIDaemonProcess ara user=apache group=apache processes=4 threads=1 python-home=/opt/venv/ara
+
+      SetEnv ARA_WSGI_USE_VIRTUALENV 1
+      SetEnv ARA_WSGI_VIRTUALENV_PATH /opt/venv/ara
+      SetEnv ARA_WSGI_TMPDIR_MAX_AGE 3600
+      SetEnv ARA_WSGI_LOG_ROOT /srv/static/logs
+      SetEnv ARA_WSGI_DATABASE_DIRECTORY ara-report
+
+      <Directory "/opt/venv/ara/bin">
+        <Files "ara-wsgi-sqlite">
+          Require all granted
+        </Files>
+      </Directory>
+
+      # Redirect everything after /ara-report to the middleware
+      WSGIScriptAliasMatch ^.*/ara-report /opt/venv/ara/bin/ara-wsgi-sqlite
+    </VirtualHost>

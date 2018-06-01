@@ -51,22 +51,6 @@ import shutil
 import six
 import time
 
-if (int(os.getenv('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
-   os.getenv('ARA_WSGI_VIRTUALENV_PATH')):
-    # Backwards compatibility, we did not always suffix activate_this.py
-    activate_this = os.getenv('ARA_WSGI_VIRTUALENV_PATH')
-    if 'activate_this.py' not in activate_this:
-        activate_this = os.path.join(activate_this, 'bin/activate_this.py')
-
-    if six.PY2:
-        execfile(activate_this, dict(__file__=activate_this))  # nosec
-    else:
-        exec(open(activate_this).read())  # nosec
-
-TMPDIR_MAX_AGE = int(os.getenv('ARA_WSGI_TMPDIR_MAX_AGE', 3600))
-LOG_ROOT = os.getenv('ARA_WSGI_LOG_ROOT', '/srv/static/logs')
-DATABASE_DIRECTORY = os.getenv('ARA_WSGI_DATABASE_DIRECTORY', 'ara-report')
-
 logger = logging.getLogger('ara.wsgi_sqlite')
 if not logger.handlers:
     logging.basicConfig(format='%(name)s:%(levelname)s:%(message)s')
@@ -86,6 +70,26 @@ def bad_request(environ, start_response, message):
 
 
 def application(environ, start_response):
+    # Apache SetEnv variables are passed only in environ variable
+    if (int(environ.get('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
+       environ.get('ARA_WSGI_VIRTUALENV_PATH')):
+        # Backwards compatibility, we did not always suffix activate_this.py
+        activate_this = environ.get('ARA_WSGI_VIRTUALENV_PATH')
+        if 'activate_this.py' not in activate_this:
+            activate_this = os.path.join(activate_this, 'bin/activate_this.py')
+
+        if six.PY2:
+            execfile(activate_this, dict(__file__=activate_this))  # nosec
+        else:
+            exec(open(activate_this).read())  # nosec
+
+    TMPDIR_MAX_AGE = int(environ.get('ARA_WSGI_TMPDIR_MAX_AGE', 3600))
+    LOG_ROOT = environ.get('ARA_WSGI_LOG_ROOT', '/srv/static/logs')
+    DATABASE_DIRECTORY = environ.get(
+        'ARA_WSGI_DATABASE_DIRECTORY',
+        'ara-report'
+    )
+
     request = environ['REQUEST_URI']
     match = re.search('/(?P<path>.*/{}/)'.format(DATABASE_DIRECTORY), request)
     if not match:
