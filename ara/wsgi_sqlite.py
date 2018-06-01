@@ -53,7 +53,11 @@ import time
 
 if (int(os.getenv('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
    os.getenv('ARA_WSGI_VIRTUALENV_PATH')):
+    # Backwards compatibility, we did not always suffix activate_this.py
     activate_this = os.getenv('ARA_WSGI_VIRTUALENV_PATH')
+    if 'activate_this.py' not in activate_this:
+        activate_this = os.path.join(activate_this, 'bin/activate_this.py')
+
     if six.PY2:
         execfile(activate_this, dict(__file__=activate_this))  # nosec
     else:
