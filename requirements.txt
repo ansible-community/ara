@@ -1,18 +1,16 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
 
 jinja2>=2.9
-ansible>=2.2.0.0,!=2.4.0.0
+ansible>=2.4.1.0
 Flask>=0.11,<0.13,!=0.12.3
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Script
 Frozen-Flask
-decorator>=4.0.0
 cliff
 python-subunit
 setuptools>=11.3
 pygments>=1.6
-debtcollector>=1.2.0
 junit-xml>=1.7
 pyfakefs
 six
