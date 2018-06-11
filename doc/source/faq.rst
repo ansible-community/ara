@@ -105,9 +105,9 @@ The upstream Ansible community and maintainers provide support for the latest
 two major stable releases and ARA follows the same support cycle.
 
 At this time, the minimum required version of Ansible to run the latest version
-of ARA is **2.2.0.0**.
-New development is tested against the latest versions of **2.2**, **2.3** as
-well as ``devel`` which is currently the future version of Ansible, **2.4**.
+of ARA is **2.4.1.0**.
+New development is tested against the latest versions of **2.4**, **2.5** as
+well as ``devel`` which is currently the future version of Ansible, **2.6**.
 
 If you are using a release of Ansible that is no longer supported, we strongly
 encourage you to upgrade as soon as possible in order to benefit from the
