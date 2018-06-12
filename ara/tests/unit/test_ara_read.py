@@ -234,7 +234,7 @@ class TestRead(TestAra):
 
     def test_read_record_with_no_key(self):
         """
-        Read a existing record that does not exist with ara_read
+        Read an existing record that does not exist with ara_read
         """
         task = MagicMock(Task)
         task.async = 0

@@ -15,7 +15,7 @@ you're good to go.
 .. image:: doc/source/_static/reports.png
 
 .. _install ARA: https://ara.readthedocs.io/en/latest/installation.html
-.. _configure Ansible to use ARA: http://ara.readthedocs.io/en/latest/configuration.html
+.. _configure Ansible to use ARA: https://ara.readthedocs.io/en/latest/configuration.html
 
 Quickstart
 ==========
@@ -53,8 +53,8 @@ ARA has four main components:
 .. _ARA: https://github.com/openstack/ara
 .. _Ansible: https://www.ansible.com/
 .. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
-.. _ara_record: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
-.. _ara_read: http://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
+.. _ara_record: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
+.. _ara_read: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
 .. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
 .. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
 .. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-html-version-of-the-web-application

@@ -285,5 +285,5 @@ You may need a different nginx build that has the ngx_http_gzip_static_module_
 compiled. For example nginx from EPEL_ (CentOS/RHEL)
 yum repositories includes this module.
 
-.. _ngx_http_gzip_static_module: http://nginx.org/en/docs/http/ngx_http_gzip_static_module.html
+.. _ngx_http_gzip_static_module: https://nginx.org/en/docs/http/ngx_http_gzip_static_module.html
 .. _EPEL: https://fedoraproject.org/wiki/EPEL
