@@ -105,6 +105,8 @@ def setup_logging(config=None):
         os.makedirs(config['ARA_LOG_DIR'], mode=0o750)
 
     if not os.path.exists(config['ARA_LOG_CONFIG']):
+        if not config.get('ARA_LOG_FILE'):
+            config['ARA_LOG_FILE'] = 'ara.log'
         default_config = DEFAULT_LOG_CONFIG.format(
             dir=config['ARA_LOG_DIR'],
             file=config['ARA_LOG_FILE'],
