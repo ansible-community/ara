@@ -95,7 +95,7 @@ install it to be able to send patches for code reviews.
 
 There are different ways to install git-review, `choose your favorite`_.
 
-.. _choose your favorite: https://docs.openstack.org/infra/manual/developers.html#installing-git-review
+.. _choose your favorite: https://docs.openstack.org/infra/manual/developers.html#install-the-git-review-utility
 
 Install development dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
