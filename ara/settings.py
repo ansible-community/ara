@@ -103,9 +103,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'www', 'media')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'normal': {
+            'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'
+        }
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'normal',
+            'level': env('DJANGO_LOG_LEVEL', default='INFO'),
+            'stream': sys.stdout
+        }
+    },
+    'loggers': {
+        'ara': {
+            'handlers': ['console'],
+            'level': env('DJANGO_LOG_LEVEL', default='INFO'),
+            'propagate': 0
         }
     },
     'root': {
