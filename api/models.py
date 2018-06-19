@@ -126,6 +126,7 @@ class Play(Duration):
         db_table = 'plays'
 
     name = models.CharField(max_length=255, blank=True, null=True)
+    completed = models.BooleanField(default=False)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='plays')
 
     def __str__(self):
@@ -143,10 +144,10 @@ class Task(Duration):
     lineno = models.IntegerField()
     tags = models.BinaryField(max_length=(2 ** 32) - 1)
     handler = models.BooleanField()
+    completed = models.BooleanField(default=False)
 
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name='tasks')
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='tasks')
-    files = models.ManyToManyField(File)
 
     def __str__(self):
         return '<Task %s:%s>' % (self.name, self.id)
