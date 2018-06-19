@@ -1,0 +1,22 @@
+- name: A test play
+  hosts: localhost
+  tasks:
+    - name: Include a role
+      include_role:
+        name: hacking
+
+- name: Another test play
+  hosts: localhost
+  gather_facts: no
+  pre_tasks:
+    - name: Pre task
+      debug:
+        msg: Task from a pre-task
+  tasks:
+    - name: Task
+      debug:
+        msg: Task from a task
+  post_tasks:
+    - name: Post Task
+      debug:
+        msg: Task from a post-task

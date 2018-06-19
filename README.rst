@@ -24,18 +24,17 @@ This is python3 only right now.
 **TL;DR**: Using tox is convenient for the time being::
 
   # Use the source Luke
-  git clone https://github.com/dmsimard/ara-django
-  cd ara-django
+  git clone https://github.com/openstack/ara-server
+  cd ara-server
 
   # Install tox
   pip install tox # (or the tox python library from your distro packages)
 
+  # Create data from a test playbook and callback
+  tox -e ansible-playbook
+
   # Run test server -> http://127.0.0.1:8000/api/v1/
   tox -e runserver
-
-  # Create mock data
-  source .tox/runserver/bin/activate
-  python standalone/mockdata.py
 
   # Run actual tests or get coverage
   tox -e pep8
@@ -45,12 +44,14 @@ This is python3 only right now.
   # Build docs
   tox -e docs
 
+See the ``hacking`` directory for testing resources.
+
 Contributors
 ============
 
 See contributors on GitHub_.
 
-.. _GitHub: https://github.com/dmsimard/ara-django/graphs/contributors
+.. _GitHub: https://github.com/openstack/ara-server/graphs/contributors
 
 Copyright
 =========
