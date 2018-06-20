@@ -6,3 +6,4 @@
     gate:
       jobs:
         - tox-py35
+        - tox-pep8
