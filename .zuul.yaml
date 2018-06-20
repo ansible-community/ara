@@ -1,0 +1,9 @@
+- project:
+    check:
+      jobs:
+        - tox-py35
+        - tox-pep8:
+            voting: false
+    gate:
+      jobs:
+        - tox-py35
