@@ -28,6 +28,8 @@ urlpatterns = [
     url(r'^plays/(?P<pk>[0-9]+)/$', views.PlayDetail.as_view(), name='play-detail'),
     url(r'^tasks/$', views.TaskList.as_view(), name='task-list'),
     url(r'^tasks/(?P<pk>[0-9]+)/$', views.TaskDetail.as_view(), name='task-detail'),
+    url(r'^hosts/$', views.HostList.as_view(), name='host-list'),
+    url(r'^hosts/(?P<pk>[0-9]+)/$', views.HostDetail.as_view(), name='host-detail'),
     url(r'^files/$', views.FileList.as_view(), name='file-list'),
     url(r'^files/(?P<pk>[0-9]+)/$', views.FileDetail.as_view(), name='file-detail'),
 ]

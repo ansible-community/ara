@@ -51,3 +51,17 @@ class TaskFactory(factory.DjangoModelFactory):
     tags = b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06'
     play = factory.SubFactory(PlayFactory)
     file = factory.SubFactory(FileFactory)
+
+
+class HostFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Host
+
+    facts = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    name = 'hostname'
+    changed = 1
+    failed = 0
+    ok = 2
+    skipped = 1
+    unreachable = 0
+    play = factory.SubFactory(PlayFactory)

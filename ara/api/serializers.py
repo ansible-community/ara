@@ -105,6 +105,14 @@ class FileSerializer(serializers.ModelSerializer):
     content = FileContentField()
 
 
+class HostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Host
+        fields = '__all__'
+
+    facts = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
+
+
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Result

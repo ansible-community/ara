@@ -29,7 +29,8 @@ def api_root(request, format=None):
         'playbooks': reverse('playbook-list', request=request, format=format),
         'plays': reverse('play-list', request=request, format=format),
         'tasks': reverse('task-list', request=request, format=format),
-        'files': reverse('file-list', request=request, format=format)
+        'files': reverse('file-list', request=request, format=format),
+        'hosts': reverse('host-list', request=request, format=format)
     })
 
 
@@ -75,6 +76,16 @@ class TaskList(generics.ListCreateAPIView):
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Task.objects.all()
     serializer_class = serializers.TaskSerializer
+
+
+class HostList(generics.ListCreateAPIView):
+    queryset = models.Host.objects.all()
+    serializer_class = serializers.HostSerializer
+
+
+class HostDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Host.objects.all()
+    serializer_class = serializers.HostSerializer
 
 
 class FileList(generics.ListCreateAPIView):
