@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view, detail_route
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from api import models, serializers
+from ara.api import models, serializers
 
 from rest_framework import generics, status
 

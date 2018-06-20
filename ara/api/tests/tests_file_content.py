@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 
-from api import serializers, models
-from api.tests import factories
+from ara.api import serializers, models
+from ara.api.tests import factories
 
 
 class FileContentTestCase(APITestCase):

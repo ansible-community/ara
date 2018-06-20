@@ -1,6 +1,6 @@
 import factory
 
-from api import models
+from ara.api import models
 
 
 class FileContentFactory(factory.DjangoModelFactory):

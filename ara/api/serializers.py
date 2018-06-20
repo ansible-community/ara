@@ -19,13 +19,13 @@ import json
 import hashlib
 import logging
 import zlib
-from api import models
+from ara.api import models
 from django.utils import timezone
 from rest_framework import serializers
 
 DATE_FORMAT = "(iso-8601: 2016-05-06T17:20:25.749489-04:00)"
 DURATION_FORMAT = "([DD] [HH:[MM:]]ss[.uuuuuu])"
-logger = logging.getLogger('api.serializers')
+logger = logging.getLogger('ara.api.serializers')
 
 
 class CompressedTextField(serializers.CharField):

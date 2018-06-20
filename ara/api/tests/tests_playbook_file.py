@@ -1,8 +1,8 @@
 import time
 from rest_framework.test import APITestCase
 
-from api import models
-from api.tests import factories
+from ara.api import models
+from ara.api.tests import factories
 
 
 class PlaybookFileTestCase(APITestCase):

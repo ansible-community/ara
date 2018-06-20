@@ -2,8 +2,8 @@ import datetime
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from api import models, serializers
-from api.tests import factories
+from ara.api import models, serializers
+from ara.api.tests import factories
 
 
 class PlaybookTestCase(APITestCase):
