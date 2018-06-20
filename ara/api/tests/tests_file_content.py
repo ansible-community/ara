@@ -1,6 +1,5 @@
 from rest_framework.test import APITestCase
 
-from ara.api import serializers, models
 from ara.api.tests import factories
 
 

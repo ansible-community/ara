@@ -2,8 +2,7 @@
     check:
       jobs:
         - tox-py35
-        - tox-pep8:
-            voting: false
+        - tox-pep8
     gate:
       jobs:
         - tox-py35

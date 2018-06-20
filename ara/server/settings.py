@@ -1,15 +1,15 @@
 import logging
 import os
-import random
 import sys
 from envparse import env
+from django.utils.crypto import get_random_string
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def get_secret_key(secret_key):
     if not secret_key:
-        return "".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$^&*(-_=+)") for i in range(50)])
+        return get_random_string(length=50)
     return secret_key
 
 

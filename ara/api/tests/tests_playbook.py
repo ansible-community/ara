@@ -15,7 +15,7 @@ class PlaybookTestCase(APITestCase):
         serializer = serializers.PlaybookSerializer(data={
             'ansible_version': '2.4.0',
             'file': {
-                'path': '/tmp/playbook.yml',
+                'path': '/path/playbook.yml',
                 'content': '# playbook'
             }
         })
@@ -28,7 +28,7 @@ class PlaybookTestCase(APITestCase):
         serializer = serializers.PlaybookSerializer(data={
             'ansible_version': '2.4.0',
             'file': {
-                'path': '/tmp/playbook.yml',
+                'path': '/path/playbook.yml',
                 'content': '# playbook'
             },
             'parameters': {'foo': 'bar'}
@@ -65,7 +65,7 @@ class PlaybookTestCase(APITestCase):
         request = self.client.post('/api/v1/playbooks/', {
             "ansible_version": "2.4.0",
             'file': {
-                'path': '/tmp/playbook.yml',
+                'path': '/path/playbook.yml',
                 'content': '# playbook'
             }
         })

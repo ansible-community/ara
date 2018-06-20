@@ -16,7 +16,7 @@ class FileFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.File
 
-    path = '/tmp/playbook.yml'
+    path = '/path/playbook.yml'
     content = factory.SubFactory(FileContentFactory)
 
 

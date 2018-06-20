@@ -7,13 +7,13 @@ from ara.api.tests import factories
 class FileTestCase(APITestCase):
     def test_file_factory(self):
         file_content = factories.FileContentFactory()
-        file = factories.FileFactory(path='/tmp/playbook.yml', content=file_content)
-        self.assertEqual(file.path, '/tmp/playbook.yml')
+        file = factories.FileFactory(path='/path/playbook.yml', content=file_content)
+        self.assertEqual(file.path, '/path/playbook.yml')
         self.assertEqual(file.content.sha1, file_content.sha1)
 
     def test_file_serializer(self):
         serializer = serializers.FileSerializer(data={
-            'path': '/tmp/playbook.yml',
+            'path': '/path/playbook.yml',
             'content': '# playbook'
         })
         serializer.is_valid()
@@ -25,7 +25,7 @@ class FileTestCase(APITestCase):
         content = '# playbook'
 
         serializer = serializers.FileSerializer(data={
-            'path': '/tmp/1/playbook.yml',
+            'path': '/path/1/playbook.yml',
             'content': content
         })
         serializer.is_valid()
@@ -33,7 +33,7 @@ class FileTestCase(APITestCase):
         file_content.refresh_from_db()
 
         serializer2 = serializers.FileSerializer(data={
-            'path': '/tmp/2/playbook.yml',
+            'path': '/path/2/playbook.yml',
             'content': content
         })
         serializer2.is_valid()
@@ -46,7 +46,7 @@ class FileTestCase(APITestCase):
     def test_create_file(self):
         self.assertEqual(0, models.File.objects.count())
         request = self.client.post('/api/v1/files/', {
-            'path': '/tmp/playbook.yml',
+            'path': '/path/playbook.yml',
             'content': '# playbook'
         })
         self.assertEqual(201, request.status_code)
@@ -69,24 +69,24 @@ class FileTestCase(APITestCase):
 
     def test_update_file(self):
         file = factories.FileFactory()
-        self.assertNotEqual('/tmp/new_playbook.yml', file.path)
+        self.assertNotEqual('/path/new_playbook.yml', file.path)
         request = self.client.put('/api/v1/files/%s/' % file.id, {
-            "path": "/tmp/new_playbook.yml",
+            "path": "/path/new_playbook.yml",
             'content': '# playbook'
         })
         self.assertEqual(200, request.status_code)
         file_updated = models.File.objects.get(id=file.id)
-        self.assertEqual('/tmp/new_playbook.yml', file_updated.path)
+        self.assertEqual('/path/new_playbook.yml', file_updated.path)
 
     def test_partial_update_file(self):
         file = factories.FileFactory()
-        self.assertNotEqual('/tmp/new_playbook.yml', file.path)
+        self.assertNotEqual('/path/new_playbook.yml', file.path)
         request = self.client.patch('/api/v1/files/%s/' % file.id, {
-            "path": "/tmp/new_playbook.yml",
+            "path": "/path/new_playbook.yml",
         })
         self.assertEqual(200, request.status_code)
         file_updated = models.File.objects.get(id=file.id)
-        self.assertEqual('/tmp/new_playbook.yml', file_updated.path)
+        self.assertEqual('/path/new_playbook.yml', file_updated.path)
 
     def test_delete_file(self):
         file = factories.FileFactory()

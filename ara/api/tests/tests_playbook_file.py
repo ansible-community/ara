@@ -12,11 +12,11 @@ class PlaybookFileTestCase(APITestCase):
         self.client.post('/api/v1/playbooks/', {
             'ansible_version': '2.4.0',
             'file': {
-                'path': '/tmp/playbook.yml',
+                'path': '/path/playbook.yml',
                 'content': '# playbook'
             },
             'files': [{
-                'path': '/tmp/host',
+                'path': '/path/host',
                 'content': '# host'
             }],
         })
@@ -27,7 +27,7 @@ class PlaybookFileTestCase(APITestCase):
         playbook = factories.PlaybookFactory()
         self.assertEqual(1, models.File.objects.all().count())
         self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
-            'path': '/tmp/playbook.yml',
+            'path': '/path/playbook.yml',
             'content': '# playbook'
         })
         self.assertEqual(2, models.File.objects.all().count())
@@ -39,11 +39,11 @@ class PlaybookFileTestCase(APITestCase):
         number_file_contents = models.FileContent.objects.all().count()
         content = '# playbook %s' % time.time()
         self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
-            'path': '/tmp/1/playbook.yml',
+            'path': '/path/1/playbook.yml',
             'content': content
         })
         self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
-            'path': '/tmp/2/playbook.yml',
+            'path': '/path/2/playbook.yml',
             'content': content
         })
         self.assertEqual(number_playbooks + 2, models.File.objects.all().count())
