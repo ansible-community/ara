@@ -1,0 +1,74 @@
+import datetime
+from django.utils import timezone
+from rest_framework.test import APITestCase
+
+from ara.api import models, serializers
+from ara.api.tests import factories
+
+
+class PlayTestCase(APITestCase):
+    def test_play_factory(self):
+        play = factories.PlayFactory(name='play factory')
+        self.assertEqual(play.name, 'play factory')
+
+    def test_play_serializer(self):
+        playbook = factories.PlaybookFactory()
+        serializer = serializers.PlaySerializer(data={
+            'name': 'serializer',
+            'completed': True,
+            'playbook': playbook.id
+        })
+        serializer.is_valid()
+        play = serializer.save()
+        play.refresh_from_db()
+        self.assertEqual(play.name, 'serializer')
+
+    def test_get_no_plays(self):
+        request = self.client.get('/api/v1/plays/')
+        self.assertEqual(0, len(request.data['results']))
+
+    def test_get_plays(self):
+        play = factories.PlayFactory()
+        request = self.client.get('/api/v1/plays/')
+        self.assertEqual(1, len(request.data['results']))
+        self.assertEqual(play.name, request.data['results'][0]['name'])
+
+    def test_delete_play(self):
+        play = factories.PlayFactory()
+        self.assertEqual(1, models.Play.objects.all().count())
+        request = self.client.delete('/api/v1/plays/%s/' % play.id)
+        self.assertEqual(204, request.status_code)
+        self.assertEqual(0, models.Play.objects.all().count())
+
+    def test_create_play(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.Play.objects.count())
+        request = self.client.post('/api/v1/plays/', {
+            'name': 'create',
+            'completed': False,
+            'playbook': playbook.id
+        })
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Play.objects.count())
+
+    def test_partial_update_play(self):
+        play = factories.PlayFactory()
+        self.assertNotEqual('update', play.name)
+        request = self.client.patch('/api/v1/plays/%s/' % play.id, {
+            'name': 'update',
+        })
+        self.assertEqual(200, request.status_code)
+        play_updated = models.Play.objects.get(id=play.id)
+        self.assertEqual('update', play_updated.name)
+
+    def test_get_play(self):
+        play = factories.PlayFactory()
+        request = self.client.get('/api/v1/plays/%s/' % play.id)
+        self.assertEqual(play.name, request.data['name'])
+
+    def test_get_play_duration(self):
+        started = timezone.now()
+        ended = started + datetime.timedelta(hours=1)
+        play = factories.PlayFactory(started=started, ended=ended)
+        request = self.client.get('/api/v1/plays/%s/' % play.id)
+        self.assertEqual(request.data['duration'], datetime.timedelta(0, 3600))

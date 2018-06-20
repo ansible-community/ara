@@ -28,3 +28,12 @@ class PlaybookFactory(factory.DjangoModelFactory):
     completed = True
     parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
     file = factory.SubFactory(FileFactory)
+
+
+class PlayFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Play
+
+    name = 'test play'
+    completed = True
+    playbook = factory.SubFactory(PlaybookFactory)
