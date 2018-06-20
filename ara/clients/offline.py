@@ -27,10 +27,10 @@ from django.core.management import execute_from_command_line
 from django.test import Client
 
 
-class OfflineClient(object):
+class AraOfflineClient(object):
     def __init__(self):
-        self.client = self.bootstrap_django_client()
         self.log = logging.getLogger('ara.clients.offline')
+        self.client = self._bootstrap_django_client()
 
     def _bootstrap_django_client(self):
         self.log.debug('Bootstrapping Django offline client')
