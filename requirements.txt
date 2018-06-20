@@ -1,1 +1,3 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
+ansible>=2.5.5
+git+https://git.openstack.org/openstack/ara-clients@master#egg=ara-clients
