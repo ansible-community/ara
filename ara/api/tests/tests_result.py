@@ -36,12 +36,12 @@ class ResultTestCase(APITestCase):
         result = serializer.save()
         result.refresh_from_db()
         self.assertEqual(
-            result.content, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+            result.content, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
         )
 
     def test_result_serializer_decompress_content(self):
         result = factories.ResultFactory(
-            content=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+            content=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
         )
         serializer = serializers.ResultSerializer(instance=result)
         self.assertEqual(serializer.data['content'], {'foo': 'bar'})

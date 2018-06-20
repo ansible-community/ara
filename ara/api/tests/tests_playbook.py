@@ -36,10 +36,15 @@ class PlaybookTestCase(APITestCase):
         serializer.is_valid()
         playbook = serializer.save()
         playbook.refresh_from_db()
-        self.assertEqual(playbook.parameters, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')
+        self.assertEqual(
+            playbook.parameters,
+            b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
+        )
 
     def test_playbook_serializer_decompress_parameters(self):
-        playbook = factories.PlaybookFactory(parameters=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')
+        playbook = factories.PlaybookFactory(
+            parameters=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
+        )
         serializer = serializers.PlaybookSerializer(instance=playbook)
         self.assertEqual(serializer.data['parameters'], {'foo': 'bar'})
 

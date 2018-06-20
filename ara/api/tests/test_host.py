@@ -31,10 +31,10 @@ class HostTestCase(APITestCase):
         serializer.is_valid()
         host = serializer.save()
         host.refresh_from_db()
-        self.assertEqual(host.facts, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')
+        self.assertEqual(host.facts, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')  # {'foo': 'bar'}
 
     def test_host_serializer_decompress_facts(self):
-        host = factories.HostFactory(facts=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')
+        host = factories.HostFactory(facts=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')  # {'foo': 'bar'}
         serializer = serializers.HostSerializer(instance=host)
         self.assertEqual(serializer.data['facts'], {'foo': 'bar'})
 

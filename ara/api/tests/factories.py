@@ -9,7 +9,7 @@ class FileContentFactory(factory.DjangoModelFactory):
         django_get_or_create = ('sha1',)
 
     sha1 = '1e58ead094c920fad631d2c22df34dc0314dab0c'
-    contents = b'x\x9cSV(\xc8I\xacL\xca\xcf\xcf\x06\x00\x11\xbd\x03\xa5'
+    contents = b'x\x9cSV(\xc8I\xacL\xca\xcf\xcf\x06\x00\x11\xbd\x03\xa5'  # '# playbook'
 
 
 class FileFactory(factory.DjangoModelFactory):
@@ -26,7 +26,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
 
     ansible_version = '2.4.0'
     completed = True
-    parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
     file = factory.SubFactory(FileFactory)
 
 
@@ -48,7 +48,7 @@ class TaskFactory(factory.DjangoModelFactory):
     action = 'setup'
     lineno = 2
     handler = False
-    tags = b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06'
+    tags = b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06'  # ['foo', 'bar']
     play = factory.SubFactory(PlayFactory)
     file = factory.SubFactory(FileFactory)
 
@@ -57,7 +57,7 @@ class HostFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Host
 
-    facts = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    facts = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo', 'bar'}
     name = 'hostname'
     changed = 1
     failed = 0
@@ -71,7 +71,7 @@ class ResultFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Result
 
-    content = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    content = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo', 'bar'}
     status = 'ok'
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)

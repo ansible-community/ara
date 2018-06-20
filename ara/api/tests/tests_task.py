@@ -44,10 +44,10 @@ class TaskTestCase(APITestCase):
         serializer.is_valid()
         task = serializer.save()
         task.refresh_from_db()
-        self.assertEqual(task.tags, b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06')
+        self.assertEqual(task.tags, b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06')  # ['foo', 'bar']
 
     def test_task_serializer_decompress_tags(self):
-        task = factories.TaskFactory(tags=b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06')
+        task = factories.TaskFactory(tags=b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06')  # ['foo', 'bar']
         serializer = serializers.TaskSerializer(instance=task)
         self.assertEqual(serializer.data['tags'], ['foo', 'bar'])
 
