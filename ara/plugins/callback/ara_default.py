@@ -39,7 +39,7 @@ class CallbackModule(CallbackBase):
     """
     CALLBACK_VERSION = 2.0
     CALLBACK_TYPE = 'awesome'
-    CALLBACK_NAME = 'ara'
+    CALLBACK_NAME = 'ara_default'
 
     def __init__(self):
         super(CallbackModule, self).__init__()
