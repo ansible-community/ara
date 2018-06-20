@@ -1,0 +1,5 @@
+- job:
+    name: ara-server-ansible-integration
+    parent: tox
+    vars:
+      tox_envlist: ansible-integration
