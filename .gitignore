@@ -1,0 +1,16 @@
+**ansible.sqlite
+*.pyc
+__pycache__/
+.pytest_cache/
+_build/
+build/
+*.egg*
+dist
+build
+eggs
+.tox/
+.cache/
+.coverage
+*.retry
+cover/
+*.tmp
