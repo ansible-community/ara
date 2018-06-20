@@ -30,6 +30,8 @@ urlpatterns = [
     url(r'^tasks/(?P<pk>[0-9]+)/$', views.TaskDetail.as_view(), name='task-detail'),
     url(r'^hosts/$', views.HostList.as_view(), name='host-list'),
     url(r'^hosts/(?P<pk>[0-9]+)/$', views.HostDetail.as_view(), name='host-detail'),
+    url(r'^results/$', views.ResultList.as_view(), name='result-list'),
+    url(r'^results/(?P<pk>[0-9]+)/$', views.ResultDetail.as_view(), name='result-detail'),
     url(r'^files/$', views.FileList.as_view(), name='file-list'),
     url(r'^files/(?P<pk>[0-9]+)/$', views.FileDetail.as_view(), name='file-detail'),
 ]

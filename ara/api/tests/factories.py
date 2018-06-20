@@ -65,3 +65,13 @@ class HostFactory(factory.DjangoModelFactory):
     skipped = 1
     unreachable = 0
     play = factory.SubFactory(PlayFactory)
+
+
+class ResultFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Result
+
+    content = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'
+    status = 'ok'
+    host = factory.SubFactory(HostFactory)
+    task = factory.SubFactory(TaskFactory)

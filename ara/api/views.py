@@ -30,7 +30,8 @@ def api_root(request, format=None):
         'plays': reverse('play-list', request=request, format=format),
         'tasks': reverse('task-list', request=request, format=format),
         'files': reverse('file-list', request=request, format=format),
-        'hosts': reverse('host-list', request=request, format=format)
+        'hosts': reverse('host-list', request=request, format=format),
+        'results': reverse('result-list', request=request, format=format)
     })
 
 
@@ -86,6 +87,16 @@ class HostList(generics.ListCreateAPIView):
 class HostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Host.objects.all()
     serializer_class = serializers.HostSerializer
+
+
+class ResultList(generics.ListCreateAPIView):
+    queryset = models.Result.objects.all()
+    serializer_class = serializers.ResultSerializer
+
+
+class ResultDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Result.objects.all()
+    serializer_class = serializers.ResultSerializer
 
 
 class FileList(generics.ListCreateAPIView):

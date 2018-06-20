@@ -118,6 +118,8 @@ class ResultSerializer(serializers.ModelSerializer):
         model = models.Result
         fields = '__all__'
 
+    content = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
+
 
 class PlaybookSerializer(DurationSerializer):
     class Meta:
