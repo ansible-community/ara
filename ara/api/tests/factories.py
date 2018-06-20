@@ -37,3 +37,17 @@ class PlayFactory(factory.DjangoModelFactory):
     name = 'test play'
     completed = True
     playbook = factory.SubFactory(PlaybookFactory)
+
+
+class TaskFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Task
+
+    name = 'test task'
+    completed = True
+    action = 'setup'
+    lineno = 2
+    handler = False
+    tags = b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06'
+    play = factory.SubFactory(PlayFactory)
+    file = factory.SubFactory(FileFactory)
