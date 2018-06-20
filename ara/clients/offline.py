@@ -46,11 +46,18 @@ class AraOfflineClient(object):
 
     def _request(self, method, endpoint, **kwargs):
         func = getattr(self.client, method)
-        response = func(
-            endpoint,
-            json.dumps(kwargs),
-            content_type='application/json'
-        )
+        # TODO: Is there a better way than doing this if/else ?
+        if kwargs:
+            response = func(
+                endpoint,
+                json.dumps(kwargs),
+                content_type='application/json'
+            )
+        else:
+            response = func(
+                endpoint,
+                content_type='application/json'
+            )
 
         self.log.debug('HTTP {status}: {method} on {endpoint}'.format(
             status=response.status_code,
