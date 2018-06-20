@@ -22,8 +22,8 @@ import logging
 import os
 import six
 
-from ara.clients.offline import Client as offline_client
-# from ara.clients.online import Client as online_client
+from ara.clients.offline import AraOfflineClient
+# from ara.clients.online import AraOnlineClient
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
 # To retrieve Ansible CLI options
@@ -46,7 +46,7 @@ class CallbackModule(CallbackBase):
         self.log = logging.getLogger('ara.plugins.callback.default')
 
         # TODO: logic for picking between offline and online client
-        self.client = offline_client()
+        self.client = AraOfflineClient()
 
         self.result = None
         self.task = None
