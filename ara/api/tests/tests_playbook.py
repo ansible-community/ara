@@ -98,3 +98,5 @@ class PlaybookTestCase(APITestCase):
         playbook = factories.PlaybookFactory(started=started, ended=ended)
         request = self.client.get('/api/v1/playbooks/%s/' % playbook.id)
         self.assertEqual(request.data['duration'], datetime.timedelta(0, 3600))
+
+    # TODO: Add tests for incrementally updating files

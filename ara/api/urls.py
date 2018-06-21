@@ -21,6 +21,8 @@ from ara.api import views
 
 urlpatterns = [
     url(r'^$', views.api_root),
+    url(r'^reports/$', views.ReportList.as_view(), name='report-list'),
+    url(r'^reports/(?P<pk>[0-9]+)/$', views.ReportDetail.as_view(), name='report-detail'),
     url(r'^playbooks/$', views.PlaybookList.as_view(), name='playbook-list'),
     url(r'^playbooks/(?P<pk>[0-9]+)/$', views.PlaybookDetail.as_view(), name='playbook-detail'),
     url(r'^playbooks/(?P<pk>[0-9]+)/files/$', views.PlaybookFilesDetail.as_view(), name='playbook-file-detail'),

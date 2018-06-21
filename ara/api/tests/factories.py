@@ -20,6 +20,14 @@ class FileFactory(factory.DjangoModelFactory):
     content = factory.SubFactory(FileContentFactory)
 
 
+class ReportFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Report
+
+    name = 'test report'
+    description = b'x\x9cKI-N.\xca,(\xc9\xcc\xcf\x03\x00\x1b\x87\x04\xa5'  # 'description'
+
+
 class PlaybookFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Playbook

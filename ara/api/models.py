@@ -77,6 +77,28 @@ class File(Base):
         return '<File %s:%s>' % (self.id, self.path)
 
 
+class Report(Base):
+    """
+    A report is a generic container meant to group or correlate different
+    playbooks. It could be a single playbook run. It could be a "group" of
+    playbooks. It could be nested and have several groups of playbooks, etc.
+    It could represent phases or dynamic logical grouping and tagging of
+    playbook runs.
+    You could have a report named "failures" and make it so failed playbooks
+    are added to this report, for example.
+    The main purpose of this is to make the reports customizable by the user.
+    """
+
+    class Meta:
+        db_table = 'reports'
+
+    name = models.CharField(max_length=255)
+    description = models.BinaryField(max_length=(2 ** 32) - 1)
+
+    def __str__(self):
+        return '<Report %s: %s>' % (self.id, self.name)
+
+
 class Playbook(Duration):
     """
     An entry in the 'playbooks' table represents a single execution of the
@@ -92,6 +114,7 @@ class Playbook(Duration):
     parameters = models.BinaryField(max_length=(2 ** 32) - 1)
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='playbooks')
     files = models.ManyToManyField(File)
+    reports = models.ManyToManyField(Report)
 
     def __str__(self):
         return '<Playbook %s>' % self.id
