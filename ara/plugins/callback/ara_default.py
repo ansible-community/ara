@@ -100,6 +100,9 @@ class CallbackModule(CallbackBase):
             playbook=self.playbook['id']
         )
 
+        # Record all the hosts involved in the play
+        self._load_hosts(play._variable_manager._inventory._restriction)
+
         return self.play
 
     def v2_playbook_on_task_start(self, task, is_conditional, handler=False):
@@ -182,6 +185,17 @@ class CallbackModule(CallbackBase):
                     '/api/v1/playbooks/%s/files/' % self.playbook['id'],
                     path=file,
                     content=self._read_file(file)
+                )
+
+    def _load_hosts(self, hosts):
+        self.log.debug('Loading %s hosts(s)...' % len(hosts))
+        play_hosts = [host['name'] for host in self.play['hosts']]
+        for host in hosts:
+            if host not in play_hosts:
+                self.client.post(
+                    '/api/v1/hosts/',
+                    name=host,
+                    play=self.play['id']
                 )
 
     def _read_file(self, path):
