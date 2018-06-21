@@ -1,7 +1,25 @@
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
 from ara.api.tests import factories
+from ara.api.tests import utils
 
 
 class ResultTestCase(APITestCase):
@@ -30,21 +48,17 @@ class ResultTestCase(APITestCase):
         serializer = serializers.ResultSerializer(data={
             'host': host.id,
             'task': task.id,
-            'content': {'foo': 'bar'}
+            'content': factories.RESULT_CONTENTS
         })
         serializer.is_valid()
         result = serializer.save()
         result.refresh_from_db()
-        self.assertEqual(
-            result.content, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
-        )
+        self.assertEqual(result.content, utils.compressed_obj(factories.RESULT_CONTENTS))
 
     def test_result_serializer_decompress_content(self):
-        result = factories.ResultFactory(
-            content=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
-        )
+        result = factories.ResultFactory(content=utils.compressed_obj(factories.RESULT_CONTENTS))
         serializer = serializers.ResultSerializer(instance=result)
-        self.assertEqual(serializer.data['content'], {'foo': 'bar'})
+        self.assertEqual(serializer.data['content'], factories.RESULT_CONTENTS)
 
     def test_get_no_results(self):
         request = self.client.get('/api/v1/results/')
@@ -71,7 +85,7 @@ class ResultTestCase(APITestCase):
             'status': 'ok',
             'host': host.id,
             'task': task.id,
-            'content': {'foo': 'bar'}
+            'content': factories.RESULT_CONTENTS
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Result.objects.count())

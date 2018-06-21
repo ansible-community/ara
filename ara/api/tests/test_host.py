@@ -1,7 +1,25 @@
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
 from ara.api.tests import factories
+from ara.api.tests import utils
 
 
 class HostTestCase(APITestCase):
@@ -25,18 +43,20 @@ class HostTestCase(APITestCase):
         play = factories.PlayFactory()
         serializer = serializers.HostSerializer(data={
             'name': 'compress',
-            'facts': {'foo': 'bar'},
+            'facts': factories.HOST_FACTS,
             'play': play.id,
         })
         serializer.is_valid()
         host = serializer.save()
         host.refresh_from_db()
-        self.assertEqual(host.facts, b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')  # {'foo': 'bar'}
+        self.assertEqual(host.facts, utils.compressed_obj(factories.HOST_FACTS))
 
     def test_host_serializer_decompress_facts(self):
-        host = factories.HostFactory(facts=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T')  # {'foo': 'bar'}
+        host = factories.HostFactory(
+            facts=utils.compressed_obj(factories.HOST_FACTS)
+        )
         serializer = serializers.HostSerializer(instance=host)
-        self.assertEqual(serializer.data['facts'], {'foo': 'bar'})
+        self.assertEqual(serializer.data['facts'], factories.HOST_FACTS)
 
     def test_get_no_hosts(self):
         request = self.client.get('/api/v1/hosts/')

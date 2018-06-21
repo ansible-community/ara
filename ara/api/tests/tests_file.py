@@ -1,7 +1,25 @@
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
 from ara.api.tests import factories
+from ara.api.tests import utils
 
 
 class FileTestCase(APITestCase):
@@ -14,19 +32,17 @@ class FileTestCase(APITestCase):
     def test_file_serializer(self):
         serializer = serializers.FileSerializer(data={
             'path': '/path/playbook.yml',
-            'content': '# playbook'
+            'content': factories.FILE_CONTENTS
         })
         serializer.is_valid()
         file = serializer.save()
         file.refresh_from_db()
-        self.assertEqual(file.content.sha1, '1e58ead094c920fad631d2c22df34dc0314dab0c')
+        self.assertEqual(file.content.sha1, utils.sha1(factories.FILE_CONTENTS))
 
     def test_create_file_with_same_content_create_only_one_file_content(self):
-        content = '# playbook'
-
         serializer = serializers.FileSerializer(data={
             'path': '/path/1/playbook.yml',
-            'content': content
+            'content': factories.FILE_CONTENTS
         })
         serializer.is_valid()
         file_content = serializer.save()
@@ -34,7 +50,7 @@ class FileTestCase(APITestCase):
 
         serializer2 = serializers.FileSerializer(data={
             'path': '/path/2/playbook.yml',
-            'content': content
+            'content': factories.FILE_CONTENTS
         })
         serializer2.is_valid()
         file_content = serializer2.save()
@@ -47,7 +63,7 @@ class FileTestCase(APITestCase):
         self.assertEqual(0, models.File.objects.count())
         request = self.client.post('/api/v1/files/', {
             'path': '/path/playbook.yml',
-            'content': '# playbook'
+            'content': factories.FILE_CONTENTS
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.File.objects.count())

@@ -15,12 +15,28 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from rest_framework.test import APITestCase
+import hashlib
+import json
+import zlib
 
-from ara.api.tests import factories
+
+def compressed_obj(obj):
+    """
+    Returns a zlib compressed representation of an object
+    """
+    return zlib.compress(json.dumps(obj).encode('utf-8'))
 
 
-class FileContentTestCase(APITestCase):
-    def test_file_content_factory(self):
-        file_content = factories.FileContentFactory(sha1='413a2f16b8689267b7d0c2e10cdd19bf3e54208d')
-        self.assertEqual(file_content.sha1, '413a2f16b8689267b7d0c2e10cdd19bf3e54208d')
+def compressed_str(obj):
+    """
+    Returns a zlib compressed representation of a string
+    """
+    return zlib.compress(obj.encode('utf-8'))
+
+
+def sha1(obj):
+    """
+    Returns the sha1 of a compressed string or an object
+    """
+    contents = zlib.compress(obj.encode('utf8'))
+    return hashlib.sha1(contents).hexdigest()

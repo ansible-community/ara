@@ -1,6 +1,43 @@
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
 import factory
 
 from ara.api import models
+from ara.api.tests import utils
+
+
+# constants for things like compressed byte strings or objects
+FILE_CONTENTS = '---\n# Example file'
+HOST_FACTS = {
+    'ansible_fqdn': 'hostname',
+    'ansible_distribution': 'CentOS'
+}
+PLAYBOOK_PARAMETERS = {
+    'ansible_version': '2.5.5',
+    'inventory': '/etc/ansible/hosts'
+}
+RESULT_CONTENTS = {
+    'results': [{
+        'msg': 'something happened'
+    }]
+}
+REPORT_DESCRIPTION = 'report description'
+TASK_TAGS = ['always', 'never']
 
 
 class FileContentFactory(factory.DjangoModelFactory):
@@ -8,8 +45,8 @@ class FileContentFactory(factory.DjangoModelFactory):
         model = models.FileContent
         django_get_or_create = ('sha1',)
 
-    sha1 = '1e58ead094c920fad631d2c22df34dc0314dab0c'
-    contents = b'x\x9cSV(\xc8I\xacL\xca\xcf\xcf\x06\x00\x11\xbd\x03\xa5'  # '# playbook'
+    sha1 = utils.sha1(FILE_CONTENTS)
+    contents = utils.compressed_str(FILE_CONTENTS)
 
 
 class FileFactory(factory.DjangoModelFactory):
@@ -25,7 +62,7 @@ class ReportFactory(factory.DjangoModelFactory):
         model = models.Report
 
     name = 'test report'
-    description = b'x\x9cKI-N.\xca,(\xc9\xcc\xcf\x03\x00\x1b\x87\x04\xa5'  # 'description'
+    description = utils.compressed_str(REPORT_DESCRIPTION)
 
 
 class PlaybookFactory(factory.DjangoModelFactory):
@@ -34,7 +71,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
 
     ansible_version = '2.4.0'
     completed = True
-    parameters = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
+    parameters = utils.compressed_obj(PLAYBOOK_PARAMETERS)
     file = factory.SubFactory(FileFactory)
 
 
@@ -56,7 +93,7 @@ class TaskFactory(factory.DjangoModelFactory):
     action = 'setup'
     lineno = 2
     handler = False
-    tags = b'x\x9c\x8bVJ\xcb\xcfW\xd2QPJJ,R\x8a\x05\x00\x1eH\x04\x06'  # ['foo', 'bar']
+    tags = utils.compressed_obj(TASK_TAGS)
     play = factory.SubFactory(PlayFactory)
     file = factory.SubFactory(FileFactory)
 
@@ -65,7 +102,7 @@ class HostFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Host
 
-    facts = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo', 'bar'}
+    facts = utils.compressed_obj(HOST_FACTS)
     name = 'hostname'
     changed = 1
     failed = 0
@@ -79,7 +116,7 @@ class ResultFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Result
 
-    content = b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo', 'bar'}
+    content = utils.compressed_obj(RESULT_CONTENTS)
     status = 'ok'
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)

@@ -1,9 +1,27 @@
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
 import datetime
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
 from ara.api.tests import factories
+from ara.api.tests import utils
 
 
 class PlaybookTestCase(APITestCase):
@@ -16,7 +34,7 @@ class PlaybookTestCase(APITestCase):
             'ansible_version': '2.4.0',
             'file': {
                 'path': '/path/playbook.yml',
-                'content': '# playbook'
+                'content': factories.FILE_CONTENTS
             }
         })
         serializer.is_valid()
@@ -29,24 +47,23 @@ class PlaybookTestCase(APITestCase):
             'ansible_version': '2.4.0',
             'file': {
                 'path': '/path/playbook.yml',
-                'content': '# playbook'
+                'content': factories.FILE_CONTENTS
             },
-            'parameters': {'foo': 'bar'}
+            'parameters': factories.PLAYBOOK_PARAMETERS
         })
         serializer.is_valid()
         playbook = serializer.save()
         playbook.refresh_from_db()
         self.assertEqual(
-            playbook.parameters,
-            b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
+            playbook.parameters, utils.compressed_obj(factories.PLAYBOOK_PARAMETERS)
         )
 
     def test_playbook_serializer_decompress_parameters(self):
         playbook = factories.PlaybookFactory(
-            parameters=b'x\x9c\xabVJ\xcb\xcfW\xb2RPJJ,R\xaa\x05\x00 \x98\x04T'  # {'foo': 'bar'}
+            parameters=utils.compressed_obj(factories.PLAYBOOK_PARAMETERS)
         )
         serializer = serializers.PlaybookSerializer(instance=playbook)
-        self.assertEqual(serializer.data['parameters'], {'foo': 'bar'})
+        self.assertEqual(serializer.data['parameters'], factories.PLAYBOOK_PARAMETERS)
 
     def test_get_no_playbooks(self):
         request = self.client.get('/api/v1/playbooks/')
@@ -71,7 +88,7 @@ class PlaybookTestCase(APITestCase):
             "ansible_version": "2.4.0",
             'file': {
                 'path': '/path/playbook.yml',
-                'content': '# playbook'
+                'content': factories.FILE_CONTENTS
             }
         })
         self.assertEqual(201, request.status_code)
