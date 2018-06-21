@@ -166,6 +166,7 @@ class PlaySerializer(DurationSerializer):
         model = models.Play
         fields = '__all__'
 
+    hosts = HostSerializer(read_only=True, many=True)
     results = ResultSerializer(read_only=True, many=True)
 
 
