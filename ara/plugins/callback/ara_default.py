@@ -18,6 +18,7 @@
 from __future__ import (absolute_import, division, print_function)
 
 import datetime
+import json
 import logging
 import os
 import six
@@ -143,6 +144,18 @@ class CallbackModule(CallbackBase):
 
         return self.task
 
+    def v2_runner_on_ok(self, result, **kwargs):
+        self._load_result(result, 'ok', **kwargs)
+
+    def v2_runner_on_unreachable(self, result, **kwargs):
+        self._load_result(result, 'unreachable', **kwargs)
+
+    def v2_runner_on_failed(self, result, **kwargs):
+        self._load_result(result, 'failed', **kwargs)
+
+    def v2_runner_on_skipped(self, result, **kwargs):
+        self._load_result(result, 'skipped', **kwargs)
+
     def v2_playbook_on_stats(self, stats):
         self.log.debug('v2_playbook_on_stats')
 
@@ -187,6 +200,24 @@ class CallbackModule(CallbackBase):
                     content=self._read_file(file)
                 )
 
+    def _get_or_create_play_host(self, host):
+        self.log.debug('Getting or creating play host: %s' % host)
+        # Don't query the API if we already have this host
+        for play_host in self.play['hosts']:
+            if host == play_host['name']:
+                return play_host
+
+        play_host = self.client.post(
+            '/api/v1/hosts/',
+            name=host,
+            play=self.play['id']
+        )
+
+        # Refresh cached play
+        self.play = self.client.get('/api/v1/plays/%s/' % self.play['id'])
+
+        return play_host
+
     def _load_hosts(self, hosts):
         self.log.debug('Loading %s hosts(s)...' % len(hosts))
         play_hosts = [host['name'] for host in self.play['hosts']]
@@ -197,6 +228,53 @@ class CallbackModule(CallbackBase):
                     name=host,
                     play=self.play['id']
                 )
+
+        # Refresh cached play
+        self.play = self.client.get('/api/v1/plays/%s/' % self.play['id'])
+
+    def _load_result(self, result, status, **kwargs):
+        """
+        This method is called when an individual task instance on a single
+        host completes. It is responsible for logging a single result to the
+        database.
+        """
+        host = self._get_or_create_play_host(result._host.get_name())
+
+        # Use Ansible's CallbackBase._dump_results in order to strip internal
+        # keys, respect no_log directive, etc.
+        if self.loop_items:
+            # NOTE (dmsimard): There is a known issue in which Ansible can send
+            # callback hooks out of order and "exit" the task before all items
+            # have returned, this can cause one of the items to be missing
+            # from the task result in ARA.
+            # https://github.com/ansible/ansible/issues/24207
+            results = [self._dump_results(result._result)]
+            for item in self.loop_items:
+                results.append(self._dump_results(item._result))
+            results = json.loads(json.dumps(results))
+        else:
+            results = json.loads(self._dump_results(result._result))
+
+        self.result = self.client.post(
+            '/api/v1/results/',
+            task=self.task['id'],
+            host=host['id'],
+            content=results,
+            status=status,
+            started=self.task['started'],
+            ended=datetime.datetime.now().isoformat(),
+            changed=result._result.get('changed', False),
+            failed=result._result.get('failed', False),
+            skipped=result._result.get('skipped', False),
+            unreachable=result._result.get('unreachable', False),
+            ignore_errors=kwargs.get('ignore_errors', False)
+        )
+
+        if self.task['action'] == 'setup' and 'ansible_facts' in result._result:
+            self.client.patch(
+                '/api/v1/hosts/%s/' % host['id'],
+                facts=result._result['ansible_facts']
+            )
 
     def _read_file(self, path):
         try:
