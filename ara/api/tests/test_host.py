@@ -85,6 +85,28 @@ class HostTestCase(APITestCase):
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Host.objects.count())
 
+    def test_post_same_host_for_a_play(self):
+        play = factories.PlayFactory()
+        self.assertEqual(0, models.Host.objects.count())
+        request = self.client.post('/api/v1/hosts/', {
+            'name': 'create',
+            'play': play.id,
+            'ok': 1
+        })
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Host.objects.count())
+        self.assertEqual(1, request.data['ok'])
+
+        request = self.client.post('/api/v1/hosts/', {
+            'name': 'create',
+            'play': play.id,
+            'ok': 2
+        })
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Host.objects.count())
+        # This isn't expected to update the count for 'ok', it's not a patch
+        self.assertEqual(1, request.data['ok'])
+
     def test_partial_update_host(self):
         host = factories.HostFactory()
         self.assertNotEqual(1, host.ok)

@@ -112,6 +112,23 @@ class HostSerializer(serializers.ModelSerializer):
 
     facts = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
 
+    def get_unique_together_validators(self):
+        '''
+        Hosts have a "unique together" constraint for host.name and play.id.
+        We want to have a "get_or_create" facility and in order to do that, we
+        must manage the validation during the creation, not before.
+        Overriding this method effectively disables this validator.
+        '''
+        return []
+
+    def create(self, validated_data):
+        host, created = models.Host.objects.get_or_create(
+            name=validated_data['name'],
+            play=validated_data['play'],
+            defaults=validated_data
+        )
+        return host
+
 
 class ResultSerializer(serializers.ModelSerializer):
     class Meta:
