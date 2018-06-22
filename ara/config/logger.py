@@ -27,18 +27,19 @@ from ara.config.compat import ara_config
 DEFAULT_LOG_CONFIG = """
 ---
 version: 1
+disable_existing_loggers: false
 formatters:
-    normal:
+    ara_standard:
         format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
 handlers:
-    console:
+    ara_console:
         class: logging.StreamHandler
-        formatter: normal
+        formatter: ara_standard
         level: INFO
         stream: ext://sys.stdout
-    file:
+    ara_file:
         class: logging.handlers.TimedRotatingFileHandler
-        formatter: normal
+        formatter: ara_standard
         level: {level}
         filename: '{dir}/{file}'
         when: 'midnight'
@@ -47,30 +48,26 @@ handlers:
 loggers:
     ara:
         handlers:
-            - file
+            - ara_file
         level: {level}
         propagate: 0
     alembic:
         handlers:
-            - console
-            - file
+            - ara_console
+            - ara_file
         level: WARN
         propagate: 0
     sqlalchemy.engine:
         handlers:
-            - file
+            - ara_file
         level: WARN
         propagate: 0
     werkzeug:
         handlers:
-            - console
-            - file
+            - ara_console
+            - ara_file
         level: INFO
         propagate: 0
-root:
-  handlers:
-    - file
-  level: {level}
 """
 
 
@@ -119,11 +116,14 @@ def setup_logging(config=None):
     ext = os.path.splitext(config['ARA_LOG_CONFIG'])[1]
     if ext in ('.yml', '.yaml', '.json'):
         # yaml.safe_load can load json as well as yaml
-        logging.config.dictConfig(yaml.safe_load(
-            open(config['ARA_LOG_CONFIG'], 'r')
-        ))
+        logging.config.dictConfig(
+            yaml.safe_load(open(config['ARA_LOG_CONFIG'], 'r'))
+        )
     else:
-        logging.config.fileConfig(config['ARA_LOG_CONFIG'])
+        logging.config.fileConfig(
+            config['ARA_LOG_CONFIG'],
+            disable_existing_loggers=False
+        )
 
     logger = logging.getLogger('ara.config.logging')
     msg = 'Logging: Level {level} from {config}, logging to {dir}/{file}'
