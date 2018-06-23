@@ -61,7 +61,7 @@ class FileTestCase(APITestCase):
 
     def test_create_file(self):
         self.assertEqual(0, models.File.objects.count())
-        request = self.client.post('/api/v1/files/', {
+        request = self.client.post('/api/v1/files', {
             'path': '/path/playbook.yml',
             'content': factories.FILE_CONTENTS
         })
@@ -69,24 +69,24 @@ class FileTestCase(APITestCase):
         self.assertEqual(1, models.File.objects.count())
 
     def test_get_no_files(self):
-        request = self.client.get('/api/v1/files/')
+        request = self.client.get('/api/v1/files')
         self.assertEqual(0, len(request.data['results']))
 
     def test_get_files(self):
         file = factories.FileFactory()
-        request = self.client.get('/api/v1/files/')
+        request = self.client.get('/api/v1/files')
         self.assertEqual(1, len(request.data['results']))
         self.assertEqual(file.path, request.data['results'][0]['path'])
 
     def test_get_file(self):
         file = factories.FileFactory()
-        request = self.client.get('/api/v1/files/%s/' % file.id)
+        request = self.client.get('/api/v1/files/%s' % file.id)
         self.assertEqual(file.path, request.data['path'])
 
     def test_update_file(self):
         file = factories.FileFactory()
         self.assertNotEqual('/path/new_playbook.yml', file.path)
-        request = self.client.put('/api/v1/files/%s/' % file.id, {
+        request = self.client.put('/api/v1/files/%s' % file.id, {
             "path": "/path/new_playbook.yml",
             'content': '# playbook'
         })
@@ -97,7 +97,7 @@ class FileTestCase(APITestCase):
     def test_partial_update_file(self):
         file = factories.FileFactory()
         self.assertNotEqual('/path/new_playbook.yml', file.path)
-        request = self.client.patch('/api/v1/files/%s/' % file.id, {
+        request = self.client.patch('/api/v1/files/%s' % file.id, {
             "path": "/path/new_playbook.yml",
         })
         self.assertEqual(200, request.status_code)
@@ -107,6 +107,6 @@ class FileTestCase(APITestCase):
     def test_delete_file(self):
         file = factories.FileFactory()
         self.assertEqual(1, models.File.objects.all().count())
-        request = self.client.delete('/api/v1/files/%s/' % file.id)
+        request = self.client.delete('/api/v1/files/%s' % file.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.File.objects.all().count())

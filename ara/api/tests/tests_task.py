@@ -70,19 +70,19 @@ class TaskTestCase(APITestCase):
         self.assertEqual(serializer.data['tags'], factories.TASK_TAGS)
 
     def test_get_no_tasks(self):
-        request = self.client.get('/api/v1/tasks/')
+        request = self.client.get('/api/v1/tasks')
         self.assertEqual(0, len(request.data['results']))
 
     def test_get_tasks(self):
         task = factories.TaskFactory()
-        request = self.client.get('/api/v1/tasks/')
+        request = self.client.get('/api/v1/tasks')
         self.assertEqual(1, len(request.data['results']))
         self.assertEqual(task.name, request.data['results'][0]['name'])
 
     def test_delete_task(self):
         task = factories.TaskFactory()
         self.assertEqual(1, models.Task.objects.all().count())
-        request = self.client.delete('/api/v1/tasks/%s/' % task.id)
+        request = self.client.delete('/api/v1/tasks/%s' % task.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.Task.objects.all().count())
 
@@ -90,7 +90,7 @@ class TaskTestCase(APITestCase):
         play = factories.PlayFactory()
         file = factories.FileFactory()
         self.assertEqual(0, models.Task.objects.count())
-        request = self.client.post('/api/v1/tasks/', {
+        request = self.client.post('/api/v1/tasks', {
             'name': 'create',
             'action': 'test',
             'lineno': 2,
@@ -105,7 +105,7 @@ class TaskTestCase(APITestCase):
     def test_partial_update_task(self):
         task = factories.TaskFactory()
         self.assertNotEqual('update', task.name)
-        request = self.client.patch('/api/v1/tasks/%s/' % task.id, {
+        request = self.client.patch('/api/v1/tasks/%s' % task.id, {
             'name': 'update'
         })
         self.assertEqual(200, request.status_code)
@@ -114,12 +114,12 @@ class TaskTestCase(APITestCase):
 
     def test_get_task(self):
         task = factories.TaskFactory()
-        request = self.client.get('/api/v1/tasks/%s/' % task.id)
+        request = self.client.get('/api/v1/tasks/%s' % task.id)
         self.assertEqual(task.name, request.data['name'])
 
     def test_get_task_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
         task = factories.TaskFactory(started=started, ended=ended)
-        request = self.client.get('/api/v1/tasks/%s/' % task.id)
+        request = self.client.get('/api/v1/tasks/%s' % task.id)
         self.assertEqual(request.data['duration'], datetime.timedelta(0, 3600))

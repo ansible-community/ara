@@ -55,7 +55,7 @@ class ReportTestCase(APITestCase):
 
     def test_create_report(self):
         self.assertEqual(0, models.Report.objects.count())
-        request = self.client.post('/api/v1/reports/', {
+        request = self.client.post('/api/v1/reports', {
             'name': 'compress',
             'description': factories.REPORT_DESCRIPTION
         })
@@ -63,24 +63,24 @@ class ReportTestCase(APITestCase):
         self.assertEqual(1, models.Report.objects.count())
 
     def test_get_no_reports(self):
-        request = self.client.get('/api/v1/reports/')
+        request = self.client.get('/api/v1/reports')
         self.assertEqual(0, len(request.data['results']))
 
     def test_get_reports(self):
         report = factories.ReportFactory()
-        request = self.client.get('/api/v1/reports/')
+        request = self.client.get('/api/v1/reports')
         self.assertEqual(1, len(request.data['results']))
         self.assertEqual(report.name, request.data['results'][0]['name'])
 
     def test_get_report(self):
         report = factories.ReportFactory()
-        request = self.client.get('/api/v1/reports/%s/' % report.id)
+        request = self.client.get('/api/v1/reports/%s' % report.id)
         self.assertEqual(report.name, request.data['name'])
 
     def test_partial_update_report(self):
         report = factories.ReportFactory()
         self.assertNotEqual('updated', report.name)
-        request = self.client.patch('/api/v1/reports/%s/' % report.id, {
+        request = self.client.patch('/api/v1/reports/%s' % report.id, {
             'name': 'updated'
         })
         self.assertEqual(200, request.status_code)
@@ -90,6 +90,6 @@ class ReportTestCase(APITestCase):
     def test_delete_report(self):
         report = factories.ReportFactory()
         self.assertEqual(1, models.Report.objects.all().count())
-        request = self.client.delete('/api/v1/reports/%s/' % report.id)
+        request = self.client.delete('/api/v1/reports/%s' % report.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.Report.objects.all().count())

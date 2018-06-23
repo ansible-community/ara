@@ -25,7 +25,7 @@ class PlaybookFileTestCase(APITestCase):
     def test_create_a_file_and_a_playbook_directly(self):
         self.assertEqual(0, models.Playbook.objects.all().count())
         self.assertEqual(0, models.File.objects.all().count())
-        self.client.post('/api/v1/playbooks/', {
+        self.client.post('/api/v1/playbooks', {
             'ansible_version': '2.4.0',
             'file': {
                 'path': '/path/playbook.yml',
@@ -42,7 +42,7 @@ class PlaybookFileTestCase(APITestCase):
     def test_create_file_to_a_playbook(self):
         playbook = factories.PlaybookFactory()
         self.assertEqual(1, models.File.objects.all().count())
-        self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
+        self.client.post('/api/v1/playbooks/%s/files' % playbook.id, {
             'path': '/path/playbook.yml',
             'content': factories.FILE_CONTENTS
         })
@@ -54,11 +54,11 @@ class PlaybookFileTestCase(APITestCase):
         number_playbooks = models.File.objects.all().count()
         number_file_contents = models.FileContent.objects.all().count()
         content = '# %s' % factories.FILE_CONTENTS
-        self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
+        self.client.post('/api/v1/playbooks/%s/files' % playbook.id, {
             'path': '/path/1/playbook.yml',
             'content': content
         })
-        self.client.post('/api/v1/playbooks/%s/files/' % playbook.id, {
+        self.client.post('/api/v1/playbooks/%s/files' % playbook.id, {
             'path': '/path/2/playbook.yml',
             'content': content
         })

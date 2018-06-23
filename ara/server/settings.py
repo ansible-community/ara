@@ -45,6 +45,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'ara.server.urls'
+APPEND_SLASH = False
 
 TEMPLATES = [
     {

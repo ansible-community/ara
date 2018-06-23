@@ -61,19 +61,19 @@ class ResultTestCase(APITestCase):
         self.assertEqual(serializer.data['content'], factories.RESULT_CONTENTS)
 
     def test_get_no_results(self):
-        request = self.client.get('/api/v1/results/')
+        request = self.client.get('/api/v1/results')
         self.assertEqual(0, len(request.data['results']))
 
     def test_get_results(self):
         result = factories.ResultFactory()
-        request = self.client.get('/api/v1/results/')
+        request = self.client.get('/api/v1/results')
         self.assertEqual(1, len(request.data['results']))
         self.assertEqual(result.status, request.data['results'][0]['status'])
 
     def test_delete_result(self):
         result = factories.ResultFactory()
         self.assertEqual(1, models.Result.objects.all().count())
-        request = self.client.delete('/api/v1/results/%s/' % result.id)
+        request = self.client.delete('/api/v1/results/%s' % result.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.Result.objects.all().count())
 
@@ -81,7 +81,7 @@ class ResultTestCase(APITestCase):
         host = factories.HostFactory()
         task = factories.TaskFactory()
         self.assertEqual(0, models.Result.objects.count())
-        request = self.client.post('/api/v1/results/', {
+        request = self.client.post('/api/v1/results', {
             'status': 'ok',
             'host': host.id,
             'task': task.id,
@@ -93,7 +93,7 @@ class ResultTestCase(APITestCase):
     def test_partial_update_result(self):
         result = factories.ResultFactory()
         self.assertNotEqual('unreachable', result.status)
-        request = self.client.patch('/api/v1/results/%s/' % result.id, {
+        request = self.client.patch('/api/v1/results/%s' % result.id, {
             'status': 'unreachable'
         })
         self.assertEqual(200, request.status_code)
@@ -102,5 +102,5 @@ class ResultTestCase(APITestCase):
 
     def test_get_result(self):
         result = factories.ResultFactory()
-        request = self.client.get('/api/v1/results/%s/' % result.id)
+        request = self.client.get('/api/v1/results/%s' % result.id)
         self.assertEqual(result.status, request.data['status'])

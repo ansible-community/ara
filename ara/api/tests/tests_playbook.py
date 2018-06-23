@@ -66,25 +66,25 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(serializer.data['parameters'], factories.PLAYBOOK_PARAMETERS)
 
     def test_get_no_playbooks(self):
-        request = self.client.get('/api/v1/playbooks/')
+        request = self.client.get('/api/v1/playbooks')
         self.assertEqual(0, len(request.data['results']))
 
     def test_get_playbooks(self):
         playbook = factories.PlaybookFactory()
-        request = self.client.get('/api/v1/playbooks/')
+        request = self.client.get('/api/v1/playbooks')
         self.assertEqual(1, len(request.data['results']))
         self.assertEqual(playbook.ansible_version, request.data['results'][0]['ansible_version'])
 
     def test_delete_playbook(self):
         playbook = factories.PlaybookFactory()
         self.assertEqual(1, models.Playbook.objects.all().count())
-        request = self.client.delete('/api/v1/playbooks/%s/' % playbook.id)
+        request = self.client.delete('/api/v1/playbooks/%s' % playbook.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.Playbook.objects.all().count())
 
     def test_create_playbook(self):
         self.assertEqual(0, models.Playbook.objects.count())
-        request = self.client.post('/api/v1/playbooks/', {
+        request = self.client.post('/api/v1/playbooks', {
             "ansible_version": "2.4.0",
             'file': {
                 'path': '/path/playbook.yml',
@@ -97,7 +97,7 @@ class PlaybookTestCase(APITestCase):
     def test_partial_update_playbook(self):
         playbook = factories.PlaybookFactory()
         self.assertNotEqual('2.3.0', playbook.ansible_version)
-        request = self.client.patch('/api/v1/playbooks/%s/' % playbook.id, {
+        request = self.client.patch('/api/v1/playbooks/%s' % playbook.id, {
             "ansible_version": "2.3.0",
         })
         self.assertEqual(200, request.status_code)
@@ -106,14 +106,14 @@ class PlaybookTestCase(APITestCase):
 
     def test_get_playbook(self):
         playbook = factories.PlaybookFactory()
-        request = self.client.get('/api/v1/playbooks/%s/' % playbook.id)
+        request = self.client.get('/api/v1/playbooks/%s' % playbook.id)
         self.assertEqual(playbook.ansible_version, request.data['ansible_version'])
 
     def test_get_playbook_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
         playbook = factories.PlaybookFactory(started=started, ended=ended)
-        request = self.client.get('/api/v1/playbooks/%s/' % playbook.id)
+        request = self.client.get('/api/v1/playbooks/%s' % playbook.id)
         self.assertEqual(request.data['duration'], datetime.timedelta(0, 3600))
 
     # TODO: Add tests for incrementally updating files

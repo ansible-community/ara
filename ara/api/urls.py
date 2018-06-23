@@ -20,22 +20,22 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from ara.api import views
 
 urlpatterns = [
-    url(r'^$', views.api_root),
-    url(r'^reports/$', views.ReportList.as_view(), name='report-list'),
-    url(r'^reports/(?P<pk>[0-9]+)/$', views.ReportDetail.as_view(), name='report-detail'),
-    url(r'^playbooks/$', views.PlaybookList.as_view(), name='playbook-list'),
-    url(r'^playbooks/(?P<pk>[0-9]+)/$', views.PlaybookDetail.as_view(), name='playbook-detail'),
-    url(r'^playbooks/(?P<pk>[0-9]+)/files/$', views.PlaybookFilesDetail.as_view(), name='playbook-file-detail'),
-    url(r'^plays/$', views.PlayList.as_view(), name='play-list'),
-    url(r'^plays/(?P<pk>[0-9]+)/$', views.PlayDetail.as_view(), name='play-detail'),
-    url(r'^tasks/$', views.TaskList.as_view(), name='task-list'),
-    url(r'^tasks/(?P<pk>[0-9]+)/$', views.TaskDetail.as_view(), name='task-detail'),
-    url(r'^hosts/$', views.HostList.as_view(), name='host-list'),
-    url(r'^hosts/(?P<pk>[0-9]+)/$', views.HostDetail.as_view(), name='host-detail'),
-    url(r'^results/$', views.ResultList.as_view(), name='result-list'),
-    url(r'^results/(?P<pk>[0-9]+)/$', views.ResultDetail.as_view(), name='result-detail'),
-    url(r'^files/$', views.FileList.as_view(), name='file-list'),
-    url(r'^files/(?P<pk>[0-9]+)/$', views.FileDetail.as_view(), name='file-detail'),
+    url(r'^/$', views.api_root),
+    url(r'^/reports$', views.ReportList.as_view(), name='report-list'),
+    url(r'^/reports/(?P<pk>[0-9]+)$', views.ReportDetail.as_view(), name='report-detail'),
+    url(r'^/playbooks$', views.PlaybookList.as_view(), name='playbook-list'),
+    url(r'^/playbooks/(?P<pk>[0-9]+)$', views.PlaybookDetail.as_view(), name='playbook-detail'),
+    url(r'^/playbooks/(?P<pk>[0-9]+)/files$', views.PlaybookFilesDetail.as_view(), name='playbook-file-detail'),
+    url(r'^/plays$', views.PlayList.as_view(), name='play-list'),
+    url(r'^/plays/(?P<pk>[0-9]+)$', views.PlayDetail.as_view(), name='play-detail'),
+    url(r'^/tasks$', views.TaskList.as_view(), name='task-list'),
+    url(r'^/tasks/(?P<pk>[0-9]+)$', views.TaskDetail.as_view(), name='task-detail'),
+    url(r'^/hosts$', views.HostList.as_view(), name='host-list'),
+    url(r'^/hosts/(?P<pk>[0-9]+)$', views.HostDetail.as_view(), name='host-detail'),
+    url(r'^/results$', views.ResultList.as_view(), name='result-list'),
+    url(r'^/results/(?P<pk>[0-9]+)$', views.ResultDetail.as_view(), name='result-detail'),
+    url(r'^/files$', views.FileList.as_view(), name='file-list'),
+    url(r'^/files/(?P<pk>[0-9]+)$', views.FileDetail.as_view(), name='file-detail'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
