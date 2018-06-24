@@ -72,7 +72,7 @@ class CallbackModule(CallbackBase):
 
         # Create the playbook
         self.playbook = self.client.post(
-            '/api/v1/playbooks/',
+            '/api/v1/playbooks',
             ansible_version=ansible_version,
             parameters=parameters,
             file=dict(
@@ -96,7 +96,7 @@ class CallbackModule(CallbackBase):
 
         # Create the play
         self.play = self.client.post(
-            '/api/v1/plays/',
+            '/api/v1/plays',
             name=play.name,
             playbook=self.playbook['id']
         )
@@ -131,7 +131,7 @@ class CallbackModule(CallbackBase):
                 break
 
         self.task = self.client.post(
-            '/api/v1/tasks/',
+            '/api/v1/tasks',
             name=task.get_name(),
             action=task.action,
             play=self.play['id'],
@@ -166,7 +166,7 @@ class CallbackModule(CallbackBase):
     def _end_task(self):
         if self.task is not None:
             self.client.patch(
-                '/api/v1/tasks/%s/' % self.task['id'],
+                '/api/v1/tasks/%s' % self.task['id'],
                 completed=True,
                 ended=datetime.datetime.now().isoformat()
             )
@@ -176,7 +176,7 @@ class CallbackModule(CallbackBase):
     def _end_play(self):
         if self.play is not None:
             self.client.patch(
-                '/api/v1/plays/%s/' % self.play['id'],
+                '/api/v1/plays/%s' % self.play['id'],
                 completed=True,
                 ended=datetime.datetime.now().isoformat()
             )
@@ -184,7 +184,7 @@ class CallbackModule(CallbackBase):
 
     def _end_playbook(self):
         self.playbook = self.client.patch(
-            '/api/v1/playbooks/%s/' % self.playbook['id'],
+            '/api/v1/playbooks/%s' % self.playbook['id'],
             completed=True,
             ended=datetime.datetime.now().isoformat()
         )
@@ -195,7 +195,7 @@ class CallbackModule(CallbackBase):
         for file in files:
             if file not in playbook_files:
                 self.client.post(
-                    '/api/v1/playbooks/%s/files/' % self.playbook['id'],
+                    '/api/v1/playbooks/%s/files' % self.playbook['id'],
                     path=file,
                     content=self._read_file(file)
                 )
@@ -208,13 +208,13 @@ class CallbackModule(CallbackBase):
                 return play_host
 
         play_host = self.client.post(
-            '/api/v1/hosts/',
+            '/api/v1/hosts',
             name=host,
             play=self.play['id']
         )
 
         # Refresh cached play
-        self.play = self.client.get('/api/v1/plays/%s/' % self.play['id'])
+        self.play = self.client.get('/api/v1/plays/%s' % self.play['id'])
 
         return play_host
 
@@ -224,13 +224,13 @@ class CallbackModule(CallbackBase):
         for host in hosts:
             if host not in play_hosts:
                 self.client.post(
-                    '/api/v1/hosts/',
+                    '/api/v1/hosts',
                     name=host,
                     play=self.play['id']
                 )
 
         # Refresh cached play
-        self.play = self.client.get('/api/v1/plays/%s/' % self.play['id'])
+        self.play = self.client.get('/api/v1/plays/%s' % self.play['id'])
 
     def _load_result(self, result, status, **kwargs):
         """
@@ -256,7 +256,7 @@ class CallbackModule(CallbackBase):
             results = json.loads(self._dump_results(result._result))
 
         self.result = self.client.post(
-            '/api/v1/results/',
+            '/api/v1/results',
             task=self.task['id'],
             host=host['id'],
             content=results,
@@ -272,7 +272,7 @@ class CallbackModule(CallbackBase):
 
         if self.task['action'] == 'setup' and 'ansible_facts' in result._result:
             self.client.patch(
-                '/api/v1/hosts/%s/' % host['id'],
+                '/api/v1/hosts/%s' % host['id'],
                 facts=result._result['ansible_facts']
             )
 
