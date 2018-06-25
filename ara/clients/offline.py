@@ -54,13 +54,7 @@ class AraOfflineClient(object):
                 content_type='application/json'
             )
 
-        self.log.debug('HTTP {status}: {method} on {endpoint}'.format(
-            status=response.status_code,
-            method=method,
-            endpoint=endpoint
-        ))
-
-        if response.status_code not in [200, 201]:
+        if response.status_code >= 500:
             self.log.error(
                 'Failed to {method} on {endpoint}: {content}'.format(
                     method=method,
@@ -68,7 +62,24 @@ class AraOfflineClient(object):
                     content=kwargs
                 )
             )
-            self.log.fatal(response.content)
+
+        self.log.debug('HTTP {status}: {method} on {endpoint}'.format(
+            status=response.status_code,
+            method=method,
+            endpoint=endpoint
+        ))
+
+        if response.status_code not in [200, 201, 204]:
+            self.log.error(
+                'Failed to {method} on {endpoint}: {content}'.format(
+                    method=method,
+                    endpoint=endpoint,
+                    content=kwargs
+                )
+            )
+
+        if response.status_code == 204:
+            return response
 
         return response.json()
 
