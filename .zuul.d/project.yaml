@@ -1,11 +1,11 @@
 - project:
     check:
       jobs:
-        - ara-server-ansible-integration
+        - ara-server-ansible-integration:
+            voting: false
         - tox-py35
         - tox-pep8
     gate:
       jobs:
-        - ara-server-ansible-integration
         - tox-py35
         - tox-pep8
