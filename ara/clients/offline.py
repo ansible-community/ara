@@ -26,23 +26,18 @@ from django import setup as django_setup
 from django.core.management import execute_from_command_line
 from django.test import Client
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.server.settings')
+# Automatically create the database and run migrations (is there a better way?)
+execute_from_command_line(['django', 'migrate'])
+
+# Set up the things Django needs
+django_setup()
+
 
 class AraOfflineClient(object):
     def __init__(self):
-        self.log = logging.getLogger('ara.clients.offline')
-        self.client = self._bootstrap_django_client()
-
-    def _bootstrap_django_client(self):
-        self.log.debug('Bootstrapping Django offline client')
-
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.server.settings')
-        # Automatically create the database and run migrations (is there a better way?)
-        execute_from_command_line(['django', 'migrate'])
-
-        # Set up the things Django needs
-        django_setup()
-
-        return Client()
+        self.log = logging.getLogger(__name__)
+        self.client = Client()
 
     def _request(self, method, endpoint, **kwargs):
         func = getattr(self.client, method)
