@@ -205,24 +205,38 @@ class Playbook(db.Model, TimedEntity):
                     .filter(File.playbook_id == self.id)
                     .filter(File.is_playbook)).one()
         except NoResultFound:  # noqa
-            log.debug('NoResultFound for the file of playbook %s' % self.id)
-            # Doing this in the model is kind of ugly, sorry.
-            file = File(
-                path=self.path,
-                playbook=self,
-                is_playbook=True,
+            log.warn(
+                'Recovering from NoResultFound file on playbook %s' % self.id
             )
-            msg = 'Playbook file could not be recovered'
-            sha1 = content_sha1(msg)
-            content = FileContent.query.get(sha1)
 
-            if content is None:
-                content = FileContent(content=msg)
-            file.content = content
-            db.session.add(file)
-            db.session.commit()
-            log.warn('Recovered file reference for playbook %s' % self.id)
-            return file
+            # Option #1, file was created but is_playbook did not have time to
+            # be set
+            try:
+                playbook_file = (self.files
+                                 .filter(File.playbook_id == self.id)
+                                 .filter(File.path == self.path)).one()
+                playbook_file.is_playbook = True
+                log.warn('Recovered file reference for playbook %s' % self.id)
+                return playbook_file
+            except NoResultFound:  # noqa
+                # Option #2: The playbook was created but was interrupted
+                # before the file was created. Create it.
+                playbook_file = File(
+                    path=self.path,
+                    playbook=self,
+                    is_playbook=True
+                )
+                msg = 'Playbook file could not be recovered'
+                sha1 = content_sha1(msg)
+                content = FileContent.query.get(sha1)
+
+                if content is None:
+                    content = FileContent(content=msg)
+                playbook_file.content = content
+                db.session.add(playbook_file)
+                db.session.commit()
+                log.warn('Recovered file reference for playbook %s' % self.id)
+                return playbook_file
 
     def __repr__(self):
         return '<Playbook %s>' % self.path
