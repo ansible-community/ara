@@ -37,38 +37,68 @@ def validate_task(task):
     assert task['completed']
 
 
+def validate_host(host):
+    assert 'facts' in host
+    assert 'ansible_user_id' in host['facts']
+
+
+def validate_result(result):
+    assert 'content' in result
+    assert 'ansible_facts' in result['content']
+    assert 'status' in result
+    assert result['status'] == 'ok'
+
+
 def main():
     client = AraOfflineClient()
 
-    playbooks = client.get('/api/v1/playbooks/')
+    playbooks = client.get('/api/v1/playbooks')
     assert len(playbooks['results']) == 1
     assert playbooks['count'] == 1
     validate_playbook(playbooks['results'][0])
 
     playbook = client.get(
-        '/api/v1/playbooks/%s/' % playbooks['results'][0]['id']
+        '/api/v1/playbooks/%s' % playbooks['results'][0]['id']
     )
     validate_playbook(playbook)
 
-    plays = client.get('/api/v1/plays/')
+    plays = client.get('/api/v1/plays')
     assert len(plays['results']) == 2
     assert plays['count'] == 2
     validate_play(plays['results'][0])
 
     play = client.get(
-        '/api/v1/plays/%s/' % plays['results'][0]['id']
+        '/api/v1/plays/%s' % plays['results'][0]['id']
     )
     validate_play(play)
 
-    tasks = client.get('/api/v1/tasks/')
+    tasks = client.get('/api/v1/tasks')
     assert len(tasks['results']) == 8
     assert tasks['count'] == 8
     validate_task(tasks['results'][0])
 
     task = client.get(
-        '/api/v1/tasks/%s/' % tasks['results'][0]['id']
+        '/api/v1/tasks/%s' % tasks['results'][0]['id']
     )
     validate_task(task)
+
+    hosts = client.get('/api/v1/hosts')
+    assert len(hosts['results']) == 2
+    assert hosts['count'] == 2
+    validate_host(hosts['results'][0])
+
+    host = client.get(
+        '/api/v1/hosts/%s' % plays['results'][0]['hosts'][0]['id']
+    )
+    validate_host(host)
+
+    results = client.get('/api/v1/results')
+    assert len(results['results']) == 8
+    assert results['count'] == 8
+    validate_result(results['results'][0])
+
+    result = client.get('/api/v1/results/1')
+    validate_result(result)
 
     client.log.info('All assertions passed.')
 
