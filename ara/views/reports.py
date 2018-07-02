@@ -174,10 +174,9 @@ def ajax_records(playbook):
 
 @reports.route('/reports/ajax/results/<playbook>.txt')
 def ajax_results(playbook):
-    task_results = (models.TaskResult.query
-                    .join(models.Task)
-                    .filter(models.Task.playbook_id == playbook))
-    if not utils.fast_count(task_results):
+    tasks_in_playbook = models.Task.query.filter(
+        models.Task.playbook_id == playbook)
+    if not utils.fast_count(tasks_in_playbook):
         abort(404)
 
     jinja = current_app.jinja_env
@@ -190,19 +189,23 @@ def ajax_results(playbook):
     results['data'] = list()
 
     log.debug('Loading results')
-    log.debug('* If this part eats your RAM, please help us fix this :)')
-    for result in task_results.yield_per(YIELD_PER):
-        name = name_cell.render(tags=result.task.tags, name=result.task.name)
-        host = result.host.name
-        action = action_link.render(file=result.task.file,
-                                    lineno=result.task.lineno,
-                                    action=result.task.action)
-        elapsed = time.render(time=result.task.offset_from_playbook)
-        duration = time.render(time=result.duration)
-        status = task_status_link.render(id=result.id,
-                                         derived_status=result.derived_status)
-
-        results['data'].append([name, host, action, elapsed, duration, status])
+    for task in tasks_in_playbook:
+        task_results = task.task_results
+        for result in task_results:
+            name = name_cell.render(tags=result.task.tags,
+                                    name=result.task.name)
+            host = result.host.name
+            action = action_link.render(file=result.task.file,
+                                        lineno=result.task.lineno,
+                                        action=result.task.action)
+            elapsed = time.render(time=result.task.offset_from_playbook)
+            duration = time.render(time=result.duration)
+            status = task_status_link.render(
+                id=result.id, derived_status=result.derived_status)
+            results['data'].append([name, host, action,
+                                    elapsed, duration, status])
+        del task_results
+        del task
 
     log.debug('%s results loaded' % len(results['data']))
     return jsonify(results)
