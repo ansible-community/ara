@@ -27,8 +27,6 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 
-YIELD_PER = 100
-
 reports = Blueprint('reports', __name__)
 log = logging.getLogger(__name__)
 
@@ -136,7 +134,7 @@ def ajax_plays(playbook):
     results['data'] = list()
 
     log.debug('Loading plays')
-    for play in plays.yield_per(YIELD_PER):
+    for play in plays:
         name = u"<span class='pull-left'>{0}</span>".format(play.name)
         start = date.render(date=play.time_start)
         end = date.render(date=play.time_end)
@@ -162,7 +160,7 @@ def ajax_records(playbook):
     results['data'] = list()
 
     log.debug('Loading records')
-    for record in records.yield_per(YIELD_PER):
+    for record in records:
         key = record_key.render(record=record)
         value = record_value.render(record=record)
 
@@ -225,7 +223,7 @@ def ajax_stats(playbook):
     results['data'] = list()
 
     log.debug('Loading host statistics and facts')
-    for stat in stats.yield_per(YIELD_PER):
+    for stat in stats:
         host = host_link.render(host=stat.host)
         ok = stat.ok if stat.ok >= 1 else 0
         changed = stat.changed if stat.changed >= 1 else 0
