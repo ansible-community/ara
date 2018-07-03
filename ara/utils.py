@@ -136,7 +136,7 @@ def generate_tree(root, paths, mock_os):
             node['dataAttr'] = {
                 'toggle': 'modal',
                 'target': '#file_modal',
-                'load': paths[full_path]
+                'load': paths[full_path] + '/'
             }
         tree.append(node)
     return tree
