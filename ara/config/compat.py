@@ -17,19 +17,13 @@
 
 # Compatibility layer between ARA and the different version of Ansible
 
-from ansible import __version__ as ansible_version
 from ansible.constants import get_config
-try:
-    from ansible.constants import load_config_file
-except ImportError:
-    # Ansible 2.4 no longer provides load_config_file, this is handled further
-    # down
-    from ansible.config.manager import find_ini_config_file
-    # Also, don't scream deprecated things at us
-    import ansible.constants
-    ansible.constants._deprecated = lambda *args: None
-from distutils.version import LooseVersion
+from ansible.config.manager import find_ini_config_file
+import ansible.constants
 from six.moves import configparser
+
+# Please don't scream deprecated warnings at us
+ansible.constants._deprecated = lambda *args: None
 
 
 def ara_config(key, env_var, default, section='ara', value_type=None):
@@ -38,28 +32,11 @@ def ara_config(key, env_var, default, section='ara', value_type=None):
     """
     # Bootstrap Ansible configuration
     # Ansible >=2.4 takes care of loading the configuration file itself
-    if LooseVersion(ansible_version) < LooseVersion('2.4.0'):
-        config, path = load_config_file()
-    else:
-        path = find_ini_config_file()
-        config = configparser.ConfigParser()
-        if path is not None:
-            config.read(path)
+    path = find_ini_config_file()
+    config = configparser.ConfigParser()
+    if path is not None:
+        config.read(path)
 
-    # >= 2.3.0.0 (NOTE: Ansible trunk versioning scheme has 3 digits, not 4)
-    if LooseVersion(ansible_version) >= LooseVersion('2.3.0'):
-        return get_config(config, section, key, env_var, default,
-                          value_type=value_type)
-
-    # < 2.3.0.0 compatibility
-    if value_type is None:
-        return get_config(config, section, key, env_var, default)
-
-    args = {
-        'boolean': dict(boolean=True),
-        'integer': dict(integer=True),
-        'list': dict(islist=True),
-        'tmppath': dict(istmppath=True)
-    }
-    return get_config(config, section, key, env_var, default,
-                      **args[value_type])
+    return get_config(
+        config, section, key, env_var, default, value_type=value_type
+    )
