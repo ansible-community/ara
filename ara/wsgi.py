@@ -33,6 +33,7 @@
 import os
 import logging
 import six
+import threading
 
 if (int(os.getenv('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
    os.getenv('ARA_WSGI_VIRTUALENV_PATH')):
@@ -49,6 +50,8 @@ if (int(os.getenv('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
 from ara.webapp import create_app  # flake8: noqa
 from flask import current_app  # flake8: noqa
 
+app = None
+app_making_lock = threading.Lock()
 log = logging.getLogger(__name__)
 
 
@@ -58,13 +61,10 @@ def application(environ, start_response):
     else:
         if 'ANSIBLE_CONFIG' not in os.environ:
             log.warn('ANSIBLE_CONFIG environment variable not found.')
-
-    app = create_app()
-    if not current_app:
-        ctx = app.app_context()
-        ctx.push()
-        return app(environ, start_response)
-    else:
+    with app_making_lock:
+        if app is None:
+            app = create_app()
+    with app.app_context():
         return current_app(environ, start_response)
 
 
