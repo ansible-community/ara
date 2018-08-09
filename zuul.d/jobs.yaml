@@ -51,7 +51,7 @@
     vars:
       python_test_version: py35
       ansible_test_version: latest
-    nodeset: fedora-27
+    nodeset: fedora-latest
 
 - job:
     name: ara-integration-fedora-py35-devel
@@ -59,4 +59,4 @@
     vars:
       python_test_version: py35
       ansible_test_version: devel
-    nodeset: fedora-27
+    nodeset: fedora-latest
