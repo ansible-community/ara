@@ -120,7 +120,7 @@ class TestRead(TestAra):
         self.connection = Mock()
 
         self.task = MagicMock(Task)
-        self.task.async = 0
+        self.task.async_ = 0
         self.task.async_val = False
         self.task.args = {
             'key': 'test-key',
@@ -175,7 +175,7 @@ class TestRead(TestAra):
         self.assertIsNotNone(r_playbook)
 
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'playbook': r_playbook.id,
@@ -205,7 +205,7 @@ class TestRead(TestAra):
         Read an existing record with ara_read
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-key',
@@ -237,7 +237,7 @@ class TestRead(TestAra):
         Read an existing record that does not exist with ara_read
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'key',

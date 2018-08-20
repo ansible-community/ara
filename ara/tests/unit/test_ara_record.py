@@ -158,7 +158,7 @@ class TestRecord(TestAra):
         self.assertIsNotNone(r_playbook)
 
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'playbook': r_playbook.id,
@@ -185,7 +185,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-text',
@@ -214,7 +214,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-url',
@@ -243,7 +243,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-json',
@@ -272,7 +272,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-list',
@@ -301,7 +301,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-dict',
@@ -330,7 +330,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record with no type specified.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-notype',
@@ -358,7 +358,7 @@ class TestRecord(TestAra):
         Create a new record with ara_record.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-wrongtype',
@@ -388,7 +388,7 @@ class TestRecord(TestAra):
         same key.
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-update',
@@ -433,7 +433,7 @@ class TestRecord(TestAra):
         Trying to use ara_record with no key parameter should properly fail
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'value': 'test-value'
@@ -458,7 +458,7 @@ class TestRecord(TestAra):
         Trying to use ara_record with no value parameter should properly fail
         """
         task = MagicMock(Task)
-        task.async = 0
+        task.async_ = 0
         task.async_val = False
         task.args = {
             'key': 'test-key',
