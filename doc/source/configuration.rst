@@ -127,6 +127,8 @@ Parameters and their defaults
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_LOG_FORMAT_               | logformat                  | %(asctime)s - %(levelname)s - %(message)s |
 +-------------------------------+----------------------------+-------------------------------------------+
+| ARA_IGNORE_FACTS_             | ignore_facts               | ansible_env                               |
++-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_PARAMETERS_        | ignore_parameters          | extra_vars                                |
 +-------------------------------+----------------------------+-------------------------------------------+
 | ARA_IGNORE_EMPTY_GENERATION_  | ignore_empty_generation    | True                                      |
@@ -284,6 +286,19 @@ ARA_LOG_FORMAT
 
 The log format of the logs.
 
+ARA_IGNORE_FACTS
+~~~~~~~~~~~~~~~~
+
+When Ansible gathers host facts or uses the setup module, your host facts are
+recorded by ARA and are also available as part of your reports.
+
+By default, only the host fact ``ansible_env`` is not saved due to the
+sensitivity of the information it could contain such as tokens, passwords or
+otherwise privileged information.
+
+This configuration allows you to customize what ARA will and will not save.
+It is a list, provided by comma-separated values.
+
 ARA_IGNORE_PARAMETERS
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -295,7 +310,7 @@ If, for example, you use `extra_vars`_ to send a password or secret variable
 to your playbooks, it is likely you don't want this saved in ARA's database.
 
 This configuration allows you to customize what ARA will and will not save.
-It is a list, provided by a comma-separated values.
+It is a list, provided by comma-separated values.
 
 .. _extra_vars: https://docs.ansible.com/ansible/playbooks_variables.html#passing-variables-on-the-command-line
 

@@ -167,6 +167,21 @@ class CallbackModule(CallbackBase):
             if not isinstance(ignore_errors, bool):
                 ignore_errors = True if ignore_errors == "yes" else False
 
+        if self.task.action == 'setup' and 'ansible_facts' in results:
+            # Potentially sanitize some Ansible facts to prevent them from
+            # being saved both in the host facts and in the task results.
+            for fact in app.config['ARA_IGNORE_FACTS']:
+                if fact in results['ansible_facts']:
+                    msg = "Not saved by ARA as configured by ARA_IGNORE_FACTS"
+                    results['ansible_facts'][fact] = msg
+
+            values = jsonutils.dumps(result._result['ansible_facts'])
+            facts = models.HostFacts(values=values)
+            host.facts = facts
+
+            db.session.add(facts)
+            db.session.commit()
+
         self.taskresult = models.TaskResult(
             task=self.task,
             host=host,
@@ -183,14 +198,6 @@ class CallbackModule(CallbackBase):
 
         db.session.add(self.taskresult)
         db.session.commit()
-
-        if self.task.action == 'setup' and 'ansible_facts' in result._result:
-            values = jsonutils.dumps(result._result['ansible_facts'])
-            facts = models.HostFacts(values=values)
-            host.facts = facts
-
-            db.session.add(facts)
-            db.session.commit()
 
     def log_stats(self, stats):
         """
@@ -318,7 +325,7 @@ class CallbackModule(CallbackBase):
         # Potentially sanitize some user-specified keys
         for parameter in app.config['ARA_IGNORE_PARAMETERS']:
             if parameter in options:
-                msg = "Parameter not saved by ARA due to configuration"
+                msg = "Not saved by ARA as configured by ARA_IGNORE_PARAMETERS"
                 options[parameter] = msg
 
         log.debug('Starting playbook %s', path)

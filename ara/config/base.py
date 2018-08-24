@@ -80,6 +80,12 @@ class BaseConfig(object):
             ['extra_vars'],
             value_type='list'
         )
+        self.ARA_IGNORE_FACTS = ara_config(
+            'ignore_facts',
+            'ARA_IGNORE_FACTS',
+            ['ansible_env'],
+            value_type='list'
+        )
 
         # Static generation with flask-frozen
         self.ARA_IGNORE_EMPTY_GENERATION = ara_config(
