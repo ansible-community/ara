@@ -47,6 +47,9 @@ class TestConfig(TestAra):
             'ARA_PORT': "9191",
             'ARA_DATABASE': db,
             'ARA_IGNORE_EMPTY_GENERATION': True,
+            'ARA_IGNORE_FACTS': [
+                'ansible_env'
+            ],
             'ARA_IGNORE_PARAMETERS': [
                 'extra_vars'
             ],
