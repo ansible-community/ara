@@ -1,19 +1,19 @@
 - project:
     check:
       jobs:
-        - ara-integration-debian-py27-2.5.5
-        - ara-integration-centos-py27-2.4.5.0
-        - ara-integration-opensuse-py27-2.6.0
-        - ara-integration-ubuntu-py35-2.6.0
+        - ara-integration-debian-py27-2.5.8
+        - ara-integration-centos-py27-2.4.6.0
+        - ara-integration-opensuse-py27-2.6.3
+        - ara-integration-ubuntu-py35-2.6.3
         - ara-integration-ubuntu-py35-devel:
             voting: false
-        - ara-integration-fedora-py35-2.6.0
+        - ara-integration-fedora-py35-2.6.3
         - ara-integration-fedora-py35-devel:
             voting: false
     gate:
       jobs:
-        - ara-integration-debian-py27-2.5.5
-        - ara-integration-centos-py27-2.4.5.0
-        - ara-integration-opensuse-py27-2.6.0
-        - ara-integration-ubuntu-py35-2.6.0
-        - ara-integration-fedora-py35-2.6.0
+        - ara-integration-debian-py27-2.5.8
+        - ara-integration-centos-py27-2.4.6.0
+        - ara-integration-opensuse-py27-2.6.3
+        - ara-integration-ubuntu-py35-2.6.3
+        - ara-integration-fedora-py35-2.6.3
