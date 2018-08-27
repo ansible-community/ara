@@ -56,6 +56,7 @@ log = logging.getLogger(__name__)
 
 
 def application(environ, start_response):
+    global app
     if 'ANSIBLE_CONFIG' in environ:
         os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
     else:
