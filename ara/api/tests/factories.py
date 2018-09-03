@@ -36,7 +36,7 @@ RESULT_CONTENTS = {
         'msg': 'something happened'
     }]
 }
-REPORT_DESCRIPTION = 'report description'
+LABEL_DESCRIPTION = 'label description'
 TASK_TAGS = ['always', 'never']
 
 
@@ -57,12 +57,12 @@ class FileFactory(factory.DjangoModelFactory):
     content = factory.SubFactory(FileContentFactory)
 
 
-class ReportFactory(factory.DjangoModelFactory):
+class LabelFactory(factory.DjangoModelFactory):
     class Meta:
-        model = models.Report
+        model = models.Label
 
-    name = 'test report'
-    description = utils.compressed_str(REPORT_DESCRIPTION)
+    name = 'test label'
+    description = utils.compressed_str(LABEL_DESCRIPTION)
 
 
 class PlaybookFactory(factory.DjangoModelFactory):

@@ -138,14 +138,14 @@ class ResultSerializer(serializers.ModelSerializer):
     content = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
 
 
-class ReportSerializer(serializers.ModelSerializer):
+class LabelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Report
+        model = models.Label
         fields = '__all__'
 
     description = CompressedTextField(
         default=zlib.compress(json.dumps("").encode('utf8')),
-        help_text='A textual description of the report'
+        help_text='A textual description of the label'
     )
 
 
@@ -157,23 +157,23 @@ class PlaybookSerializer(DurationSerializer):
     parameters = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
     file = FileSerializer()
     files = FileSerializer(many=True, default=[])
-    reports = ReportSerializer(many=True, default=[])
+    labels = LabelSerializer(many=True, default=[])
 
     def create(self, validated_data):
         # Create the file for the playbook
         file_dict = validated_data.pop('file')
         validated_data['file'] = models.File.objects.create(**file_dict)
 
-        # Create the playbook without the file and report references for now
+        # Create the playbook without the file and label references for now
         files = validated_data.pop('files')
-        reports = validated_data.pop('reports')
+        labels = validated_data.pop('labels')
         playbook = models.Playbook.objects.create(**validated_data)
 
-        # Add the files and the reports in
+        # Add the files and the labels in
         for file in files:
             playbook.files.add(models.File.objects.create(**file))
-        for report in reports:
-            playbook.reports.add(models.Report.objects.create(**report))
+        for label in labels:
+            playbook.labels.add(models.Label.objects.create(**label))
 
         return playbook
 

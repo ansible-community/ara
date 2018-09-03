@@ -26,7 +26,7 @@ from rest_framework import generics, status
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'reports': reverse('report-list', request=request, format=format),
+        'labels': reverse('label-list', request=request, format=format),
         'playbooks': reverse('playbook-list', request=request, format=format),
         'plays': reverse('play-list', request=request, format=format),
         'tasks': reverse('task-list', request=request, format=format),
@@ -36,14 +36,14 @@ def api_root(request, format=None):
     })
 
 
-class ReportList(generics.ListCreateAPIView):
-    queryset = models.Report.objects.all()
-    serializer_class = serializers.ReportSerializer
+class LabelList(generics.ListCreateAPIView):
+    queryset = models.Label.objects.all()
+    serializer_class = serializers.LabelSerializer
 
 
-class ReportDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Report.objects.all()
-    serializer_class = serializers.ReportSerializer
+class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Label.objects.all()
+    serializer_class = serializers.LabelSerializer
 
 
 class PlaybookList(generics.ListCreateAPIView):
