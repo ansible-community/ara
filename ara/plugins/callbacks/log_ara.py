@@ -175,7 +175,7 @@ class CallbackModule(CallbackBase):
                     msg = "Not saved by ARA as configured by ARA_IGNORE_FACTS"
                     results['ansible_facts'][fact] = msg
 
-            values = jsonutils.dumps(result._result['ansible_facts'])
+            values = jsonutils.dumps(results['ansible_facts'])
             facts = models.HostFacts(values=values)
             host.facts = facts
 
