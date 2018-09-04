@@ -109,6 +109,7 @@ class HostFactory(factory.DjangoModelFactory):
     ok = 2
     skipped = 1
     unreachable = 0
+    alias = "9f5d3ba7-e43d-4f3b-ab17-f90c39e43d07"
     play = factory.SubFactory(PlayFactory)
 
 

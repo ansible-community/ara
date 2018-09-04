@@ -194,6 +194,16 @@ class Host(Base):
     ok = models.IntegerField(default=0)
     skipped = models.IntegerField(default=0)
     unreachable = models.IntegerField(default=0)
+    # Ansible doesn't supply a mechanism to uniquely identify a host out of
+    # the box.
+    # ARA can attempt to reconcile what it believes are the results same hosts
+    # based on user-supplied configuration or through a hashing algorithm.
+    # The goal is to "regroup" all unique hosts under a single alias if they
+    # are the same host.
+    # The logic for supplying aliases does not live here, it's provided by the
+    # clients and consumers.
+    alias = models.CharField(max_length=255, null=True)
+
     play = models.ForeignKey(Play, on_delete=models.DO_NOTHING, related_name='hosts')
 
     def __str__(self):
