@@ -32,7 +32,8 @@ def api_root(request, format=None):
         'tasks': reverse('task-list', request=request, format=format),
         'files': reverse('file-list', request=request, format=format),
         'hosts': reverse('host-list', request=request, format=format),
-        'results': reverse('result-list', request=request, format=format)
+        'results': reverse('result-list', request=request, format=format),
+        'stats': reverse('stats-list', request=request, format=format)
     })
 
 
@@ -118,3 +119,13 @@ class FileList(generics.ListCreateAPIView):
 class FileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.File.objects.all()
     serializer_class = serializers.FileSerializer
+
+
+class StatsList(generics.ListCreateAPIView):
+    queryset = models.Stats.objects.all()
+    serializer_class = serializers.StatsSerializer
+
+
+class StatsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = models.Stats.objects.all()
+    serializer_class = serializers.StatsSerializer

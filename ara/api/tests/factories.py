@@ -104,13 +104,8 @@ class HostFactory(factory.DjangoModelFactory):
 
     facts = utils.compressed_obj(HOST_FACTS)
     name = 'hostname'
-    changed = 1
-    failed = 0
-    ok = 2
-    skipped = 1
-    unreachable = 0
     alias = "9f5d3ba7-e43d-4f3b-ab17-f90c39e43d07"
-    play = factory.SubFactory(PlayFactory)
+    playbook = factory.SubFactory(PlaybookFactory)
 
 
 class ResultFactory(factory.DjangoModelFactory):
@@ -121,3 +116,16 @@ class ResultFactory(factory.DjangoModelFactory):
     status = 'ok'
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)
+
+
+class StatsFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Stats
+
+    changed = 1
+    failed = 0
+    ok = 2
+    skipped = 1
+    unreachable = 0
+    playbook = factory.SubFactory(PlaybookFactory)
+    host = factory.SubFactory(HostFactory)

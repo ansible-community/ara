@@ -28,23 +28,23 @@ class HostTestCase(APITestCase):
         self.assertEqual(host.name, 'testhost')
 
     def test_host_serializer(self):
-        play = factories.PlayFactory()
+        playbook = factories.PlaybookFactory()
         serializer = serializers.HostSerializer(data={
             'name': 'serializer',
-            'play': play.id
+            'playbook': playbook.id
         })
         serializer.is_valid()
         host = serializer.save()
         host.refresh_from_db()
         self.assertEqual(host.name, 'serializer')
-        self.assertEqual(host.play.id, play.id)
+        self.assertEqual(host.playbook.id, playbook.id)
 
     def test_host_serializer_compress_facts(self):
-        play = factories.PlayFactory()
+        playbook = factories.PlaybookFactory()
         serializer = serializers.HostSerializer(data={
             'name': 'compress',
             'facts': factories.HOST_FACTS,
-            'play': play.id,
+            'playbook': playbook.id,
         })
         serializer.is_valid()
         host = serializer.save()
@@ -76,46 +76,41 @@ class HostTestCase(APITestCase):
         self.assertEqual(0, models.Host.objects.all().count())
 
     def test_create_host(self):
-        play = factories.PlayFactory()
+        playbook = factories.PlaybookFactory()
         self.assertEqual(0, models.Host.objects.count())
         request = self.client.post('/api/v1/hosts', {
             'name': 'create',
-            'play': play.id
+            'playbook': playbook.id
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Host.objects.count())
 
-    def test_post_same_host_for_a_play(self):
-        play = factories.PlayFactory()
+    def test_post_same_host_for_a_playbook(self):
+        playbook = factories.PlaybookFactory()
         self.assertEqual(0, models.Host.objects.count())
         request = self.client.post('/api/v1/hosts', {
             'name': 'create',
-            'play': play.id,
-            'ok': 1
+            'playbook': playbook.id
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Host.objects.count())
-        self.assertEqual(1, request.data['ok'])
 
         request = self.client.post('/api/v1/hosts', {
             'name': 'create',
-            'play': play.id,
-            'ok': 2
+            'playbook': playbook.id
         })
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Host.objects.count())
-        # This isn't expected to update the count for 'ok', it's not a patch
-        self.assertEqual(1, request.data['ok'])
 
     def test_partial_update_host(self):
         host = factories.HostFactory()
-        self.assertNotEqual(1, host.ok)
+        self.assertNotEqual('foo', host.name)
         request = self.client.patch('/api/v1/hosts/%s' % host.id, {
-            'ok': 1
+            'name': 'foo'
         })
         self.assertEqual(200, request.status_code)
         host_updated = models.Host.objects.get(id=host.id)
-        self.assertEqual(1, host_updated.ok)
+        self.assertEqual('foo', host_updated.name)
 
     def test_get_host(self):
         host = factories.HostFactory()

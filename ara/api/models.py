@@ -179,21 +179,14 @@ class Task(Duration):
 class Host(Base):
     """
     Data about Ansible hosts.
-    Contains compressed host facts and statistics about the host for the
-    playbook.
     """
 
     class Meta:
         db_table = 'hosts'
-        unique_together = ('name', 'play',)
+        unique_together = ('name', 'playbook',)
 
     name = models.CharField(max_length=255)
     facts = models.BinaryField(max_length=(2 ** 32) - 1)
-    changed = models.IntegerField(default=0)
-    failed = models.IntegerField(default=0)
-    ok = models.IntegerField(default=0)
-    skipped = models.IntegerField(default=0)
-    unreachable = models.IntegerField(default=0)
     # Ansible doesn't supply a mechanism to uniquely identify a host out of
     # the box.
     # ARA can attempt to reconcile what it believes are the results same hosts
@@ -203,11 +196,36 @@ class Host(Base):
     # The logic for supplying aliases does not live here, it's provided by the
     # clients and consumers.
     alias = models.CharField(max_length=255, null=True)
-
-    play = models.ForeignKey(Play, on_delete=models.DO_NOTHING, related_name='hosts')
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='hosts')
 
     def __str__(self):
         return '<Host %s:%s>' % (self.id, self.name)
+
+
+class Stats(Base):
+    """
+    Stats for a host for a playbook.
+    """
+
+    class Meta:
+        db_table = 'stats'
+        unique_together = ('host', 'playbook',)
+
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='stats')
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name='stats')
+    changed = models.IntegerField(default=0)
+    failed = models.IntegerField(default=0)
+    ok = models.IntegerField(default=0)
+    skipped = models.IntegerField(default=0)
+    unreachable = models.IntegerField(default=0)
+
+    def __str__(self):
+        # Verbose because it's otherwise kind of useless
+        return '<Stats for {host} ({id}) in playbook {playbook}>'.format(
+            host=self.host.name,
+            id=self.host.id,
+            playbook=self.playbook.id
+        )
 
 
 class Result(Duration):

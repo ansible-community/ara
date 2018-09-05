@@ -49,6 +49,13 @@ def validate_result(result):
     assert result['status'] == 'ok'
 
 
+def validate_stats(stats):
+    assert 'failed' in stats
+    assert stats['failed'] == 0
+    assert 'playbook' in stats
+    assert 'host' in stats
+
+
 def main():
     client = AraOfflineClient()
 
@@ -99,6 +106,11 @@ def main():
 
     result = client.get('/api/v1/results/1')
     validate_result(result)
+
+    stats = client.get('/api/v1/stats')
+    assert len(stats['results']) == 1
+    assert len(stats['count']) == 1
+    validate_stats(stats['results'][0])
 
     client.log.info('All assertions passed.')
 

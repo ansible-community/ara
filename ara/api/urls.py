@@ -36,6 +36,8 @@ urlpatterns = [
     url(r'^/results/(?P<pk>[0-9]+)$', views.ResultDetail.as_view(), name='result-detail'),
     url(r'^/files$', views.FileList.as_view(), name='file-list'),
     url(r'^/files/(?P<pk>[0-9]+)$', views.FileDetail.as_view(), name='file-detail'),
+    url(r'^/stats$', views.StatsList.as_view(), name='stats-list'),
+    url(r'^/stats/(?P<pk>[0-9]+)$', views.StatsDetail.as_view(), name='stats-detail'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

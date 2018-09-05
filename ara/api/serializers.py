@@ -124,7 +124,7 @@ class HostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         host, created = models.Host.objects.get_or_create(
             name=validated_data['name'],
-            play=validated_data['play'],
+            playbook=validated_data['playbook'],
             defaults=validated_data
         )
         return host
@@ -157,6 +157,7 @@ class PlaybookSerializer(DurationSerializer):
     parameters = CompressedObjectField(default=zlib.compress(json.dumps({}).encode('utf8')))
     file = FileSerializer()
     files = FileSerializer(many=True, default=[])
+    hosts = HostSerializer(many=True, default=[])
     labels = LabelSerializer(many=True, default=[])
 
     def create(self, validated_data):
@@ -166,12 +167,15 @@ class PlaybookSerializer(DurationSerializer):
 
         # Create the playbook without the file and label references for now
         files = validated_data.pop('files')
+        hosts = validated_data.pop('hosts')
         labels = validated_data.pop('labels')
         playbook = models.Playbook.objects.create(**validated_data)
 
-        # Add the files and the labels in
+        # Add the files, hosts and the labels in
         for file in files:
             playbook.files.add(models.File.objects.create(**file))
+        for host in hosts:
+            playbook.hosts.add(models.Host.objects.create(**host))
         for label in labels:
             playbook.labels.add(models.Label.objects.create(**label))
 
@@ -196,3 +200,9 @@ class TaskSerializer(DurationSerializer):
         default=zlib.compress(json.dumps([]).encode('utf8')),
         help_text='A JSON list containing Ansible tags'
     )
+
+
+class StatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Stats
+        fields = '__all__'
