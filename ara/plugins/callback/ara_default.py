@@ -159,6 +159,7 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_stats(self, stats):
         self.log.debug('v2_playbook_on_stats')
 
+        self._load_stats(stats)
         self._end_task()
         self._end_play()
         self._end_playbook()
@@ -200,37 +201,30 @@ class CallbackModule(CallbackBase):
                     content=self._read_file(file)
                 )
 
-    def _get_or_create_play_host(self, host):
-        self.log.debug('Getting or creating play host: %s' % host)
+    def _get_or_create_host(self, host):
+        self.log.debug('Getting or creating host: %s' % host)
         # Don't query the API if we already have this host
-        for play_host in self.play['hosts']:
-            if host == play_host['name']:
-                return play_host
+        for playbook_host in self.playbook['hosts']:
+            if host == playbook_host['name']:
+                return playbook_host
 
-        play_host = self.client.post(
+        # TODO: Implement logic for computing the host alias
+        playbook_host = self.client.post(
             '/api/v1/hosts',
             name=host,
-            play=self.play['id']
+            alias=host,
+            playbook=self.playbook['id']
         )
 
-        # Refresh cached play
-        self.play = self.client.get('/api/v1/plays/%s' % self.play['id'])
+        # Refresh cached playbook
+        self.playbook = self.client.get('/api/v1/playbooks/%s' % self.playbook['id'])
 
-        return play_host
+        return playbook_host
 
     def _load_hosts(self, hosts):
         self.log.debug('Loading %s hosts(s)...' % len(hosts))
-        play_hosts = [host['name'] for host in self.play['hosts']]
         for host in hosts:
-            if host not in play_hosts:
-                self.client.post(
-                    '/api/v1/hosts',
-                    name=host,
-                    play=self.play['id']
-                )
-
-        # Refresh cached play
-        self.play = self.client.get('/api/v1/plays/%s' % self.play['id'])
+            self._get_or_create_host(host)
 
     def _load_result(self, result, status, **kwargs):
         """
@@ -238,7 +232,7 @@ class CallbackModule(CallbackBase):
         host completes. It is responsible for logging a single result to the
         database.
         """
-        host = self._get_or_create_play_host(result._host.get_name())
+        host = self._get_or_create_host(result._host.get_name())
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal
         # keys, respect no_log directive, etc.
@@ -287,3 +281,19 @@ class CallbackModule(CallbackBase):
             content = """ARA was not able to read this file successfully.
                       Refer to the logs for more information"""
         return content
+
+    def _load_stats(self, stats):
+        hosts = sorted(stats.processed.keys())
+        for hostname in hosts:
+            host = self._get_or_create_host(hostname)
+            host_stats = stats.summarize(hostname)
+            self.client.post(
+                '/api/v1/stats',
+                playbook=self.playbook['id'],
+                host=host['id'],
+                changed=host_stats['changed'],
+                unreachable=host_stats['unreachable'],
+                failed=host_stats['failures'],
+                ok=host_stats['ok'],
+                skipped=host_stats['skipped']
+            )
