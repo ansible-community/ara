@@ -31,6 +31,7 @@ class PlaybookTestCase(APITestCase):
 
     def test_playbook_serializer(self):
         serializer = serializers.PlaybookSerializer(data={
+            'name': 'serializer-playbook',
             'ansible_version': '2.4.0',
             'file': {
                 'path': '/path/playbook.yml',
@@ -40,6 +41,7 @@ class PlaybookTestCase(APITestCase):
         serializer.is_valid()
         playbook = serializer.save()
         playbook.refresh_from_db()
+        self.assertEqual(playbook.name, 'serializer-playbook')
         self.assertEqual(playbook.ansible_version, '2.4.0')
 
     def test_playbook_serializer_compress_parameters(self):

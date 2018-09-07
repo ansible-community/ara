@@ -109,6 +109,7 @@ class Playbook(Duration):
     class Meta:
         db_table = 'playbooks'
 
+    name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
     completed = models.BooleanField(default=False)
     parameters = models.BinaryField(max_length=(2 ** 32) - 1)
