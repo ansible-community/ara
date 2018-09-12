@@ -25,7 +25,7 @@ from ara.clients.offline import AraOfflineClient
 def validate_playbook(playbook):
     assert len(playbook['parameters']) == 40
     assert 'hacking/test-playbook.yml' in playbook['file']['path']
-    assert len(playbook['files']) == 15
+    assert len(playbook['files']) == 9
     assert playbook['completed']
 
 
@@ -90,12 +90,12 @@ def main():
     validate_task(task)
 
     hosts = client.get('/api/v1/hosts')
-    assert len(hosts['results']) == 2
-    assert hosts['count'] == 2
+    assert len(hosts['results']) == 1
+    assert hosts['count'] == 1
     validate_host(hosts['results'][0])
 
     host = client.get(
-        '/api/v1/hosts/%s' % plays['results'][0]['hosts'][0]['id']
+        '/api/v1/hosts/%s' % hosts['results'][0]['id']
     )
     validate_host(host)
 
@@ -109,7 +109,7 @@ def main():
 
     stats = client.get('/api/v1/stats')
     assert len(stats['results']) == 1
-    assert len(stats['count']) == 1
+    assert stats['count'] == 1
     validate_stats(stats['results'][0])
 
     client.log.info('All assertions passed.')
