@@ -20,65 +20,88 @@
 
 import json
 import logging
-import os
-
-try:
-    from django import setup as django_setup
-    from django.core.management import execute_from_command_line
-    from django.test import Client
-
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.server.settings')
-
-    # Automatically create the database and run migrations (is there a better way?)
-    execute_from_command_line(['django', 'migrate'])
-
-    # Set up the things Django needs
-    django_setup()
-except ImportError as e:
-    print('ERROR: The offline client requires ara-server to be installed')
-    raise e
+import requests
 
 
-class AraOfflineClient(object):
+class HttpClient(object):
+    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30, **params):
+        self.endpoint = endpoint
+        self.timeout = timeout
+        self.params = params
+
+        self.log = logging.getLogger(__name__)
+        self.user_agent = 'ara-http-client'
+        self.log.debug("%s: %s" % (self.user_agent, str(self.params)))
+
+        self.http = requests.Session()
+
+    def _request(self, method, url, **kwargs):
+        # Override timeout and headers only if user supplied
+        kwargs.setdefault('timeout', self.timeout)
+        kwargs.setdefault('headers', kwargs.get('headers', {}))
+
+        # Headers we're enforcing (kind of)
+        kwargs['headers']['User-Agent'] = self.user_agent
+        kwargs['headers']['Accept'] = 'application/json'
+        kwargs['headers']['Content-Type'] = 'application/json'
+
+        self.log.debug("%s on %s" % (method, url))
+
+        # Use requests.Session to do the query
+        # The actual endpoint is:
+        # <endpoint>              <url>
+        # http://127.0.0.1:8000 / api/v1/playbooks
+        return self.http.request(method, self.endpoint + url, **kwargs)
+
+    def get(self, url, **kwargs):
+        return self._request('get', url, **kwargs)
+
+    def patch(self, url, **kwargs):
+        return self._request('patch', url, **kwargs)
+
+    def post(self, url, **kwargs):
+        return self._request('post', url, **kwargs)
+
+    def put(self, url, **kwargs):
+        return self._request('put', url, **kwargs)
+
+    def delete(self, url, **kwargs):
+        return self._request('delete', url, **kwargs)
+
+
+class AraHttpClient(object):
     def __init__(self):
         self.log = logging.getLogger(__name__)
-        self.client = Client()
+        self.client = HttpClient()
 
-    def _request(self, method, endpoint, **kwargs):
+    def _request(self, method, url, **kwargs):
         func = getattr(self.client, method)
         # TODO: Is there a better way than doing this if/else ?
         if kwargs:
-            response = func(
-                endpoint,
-                json.dumps(kwargs),
-                content_type='application/json'
-            )
+            response = func(url, json.dumps(kwargs))
         else:
-            response = func(
-                endpoint,
-                content_type='application/json'
-            )
+            response = func(url)
 
         if response.status_code >= 500:
             self.log.error(
-                'Failed to {method} on {endpoint}: {content}'.format(
+                'Failed to {method} on {url}: {content}'.format(
                     method=method,
-                    endpoint=endpoint,
+                    url=url,
                     content=kwargs
                 )
             )
 
-        self.log.debug('HTTP {status}: {method} on {endpoint}'.format(
+        self.log.debug('HTTP {status}: {method} on {url}'.format(
             status=response.status_code,
             method=method,
-            endpoint=endpoint
+            url=url
         ))
 
         if response.status_code not in [200, 201, 204]:
             self.log.error(
-                'Failed to {method} on {endpoint}: {content}'.format(
+                'Failed to {method} on {url}: {content}'.format(
                     method=method,
-                    endpoint=endpoint,
+                    url=url,
                     content=kwargs
                 )
             )
