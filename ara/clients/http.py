@@ -24,63 +24,58 @@ import requests
 
 
 class HttpClient(object):
-    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30, **params):
+    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30):
+        self.log = logging.getLogger(__name__)
+
         self.endpoint = endpoint
         self.timeout = timeout
-        self.params = params
-
-        self.log = logging.getLogger(__name__)
-        self.user_agent = 'ara-http-client'
-        self.log.debug("%s: %s" % (self.user_agent, str(self.params)))
-
+        self.headers = {
+            'User-Agent': 'ara-http-client',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         self.http = requests.Session()
+        self.http.headers.update(self.headers)
 
-    def _request(self, method, url, **kwargs):
-        # Override timeout and headers only if user supplied
-        kwargs.setdefault('timeout', self.timeout)
-        kwargs.setdefault('headers', kwargs.get('headers', {}))
-
-        # Headers we're enforcing (kind of)
-        kwargs['headers']['User-Agent'] = self.user_agent
-        kwargs['headers']['Accept'] = 'application/json'
-        kwargs['headers']['Content-Type'] = 'application/json'
-
+    def _request(self, method, url, **payload):
         self.log.debug("%s on %s" % (method, url))
 
         # Use requests.Session to do the query
         # The actual endpoint is:
         # <endpoint>              <url>
         # http://127.0.0.1:8000 / api/v1/playbooks
-        return self.http.request(method, self.endpoint + url, **kwargs)
+        return self.http.request(method, self.endpoint + url, timeout=self.timeout, **payload)
 
-    def get(self, url, **kwargs):
-        return self._request('get', url, **kwargs)
+    def get(self, url, **payload):
+        if payload:
+            return self._request('get', url, params=json.dumps(payload))
+        else:
+            return self._request('get', url)
 
-    def patch(self, url, **kwargs):
-        return self._request('patch', url, **kwargs)
+    def patch(self, url, **payload):
+        return self._request('patch', url, data=json.dumps(payload))
 
-    def post(self, url, **kwargs):
-        return self._request('post', url, **kwargs)
+    def post(self, url, **payload):
+        return self._request('post', url, data=json.dumps(payload))
 
-    def put(self, url, **kwargs):
-        return self._request('put', url, **kwargs)
+    def put(self, url, **payload):
+        return self._request('put', url, data=json.dumps(payload))
 
-    def delete(self, url, **kwargs):
-        return self._request('delete', url, **kwargs)
+    def delete(self, url):
+        return self._request('delete', url)
 
 
 class AraHttpClient(object):
-    def __init__(self):
+    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30):
         self.log = logging.getLogger(__name__)
-        self.client = HttpClient()
+        self.client = HttpClient(endpoint, timeout)
 
     def _request(self, method, url, **kwargs):
         func = getattr(self.client, method)
-        # TODO: Is there a better way than doing this if/else ?
-        if kwargs:
-            response = func(url, json.dumps(kwargs))
-        else:
+        if method == 'delete':
             response = func(url)
+        else:
+            response = func(url, **kwargs)
 
         if response.status_code >= 500:
             self.log.error(
@@ -124,4 +119,4 @@ class AraHttpClient(object):
         return self._request('put', endpoint, **kwargs)
 
     def delete(self, endpoint, **kwargs):
-        return self._request('delete', endpoint, **kwargs)
+        return self._request('delete', endpoint)
