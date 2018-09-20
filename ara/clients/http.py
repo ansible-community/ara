@@ -21,6 +21,9 @@
 import json
 import logging
 import requests
+import pbr.version
+
+CLIENT_VERSION = pbr.version.VersionInfo(__name__).release_string()
 
 
 class HttpClient(object):
@@ -30,7 +33,7 @@ class HttpClient(object):
         self.endpoint = endpoint
         self.timeout = timeout
         self.headers = {
-            'User-Agent': 'ara-http-client',
+            'User-Agent': 'ara-http-client_%s' % CLIENT_VERSION,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
