@@ -1,4 +1,8 @@
 - project:
+    vars:
+      rtd_webhook_id: '49230'
+    templates:
+      - docs-on-readthedocs
     check:
       jobs:
         - ara-server-ansible-integration:

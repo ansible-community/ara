@@ -1,0 +1,7 @@
+graph image files
+=================
+
+These are image files for the ARA diagrams and graphs made through draw.io.
+
+The source files used to generate these graphs are located in
+``doc/source/_graphs``.
