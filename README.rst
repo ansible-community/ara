@@ -1,17 +1,32 @@
-ara-django
+ara-server
 ==========
+
+.. image:: doc/source/_static/ara-with-icon.png
+
+ARA Records Ansible playbook runs and makes the recorded data available and
+intuitive for users and systems.
+
+``ara-server`` is a component of ARA which provides an API to store and query
+Ansible execution results:
 
 .. image:: doc/source/_static/screenshot.png
 
-An experiment with Django at the core of the ARA 1.0 backend.
-This is not stable or production-ready.
+Disclaimer
+==========
 
-If you are looking for ARA Records Ansible, the Ansible callback plugin and
-reporting interface, you will find the repository here_.
+``ara-server`` is not yet stable and will be shipped as part of a coordinated
+ARA 1.0 release. It is not currently recommended for production use.
 
-We are prototyping outside the main repository due to the vast changes
-involved and will merge back as appropriate.
+While most of the major work has landed, please keep in mind that we can still
+introduce backwards incompatible changes until we ship the first release.
 
+You are free to use this project and in fact, you are more than welcome to
+contribute feedback, bug fixes or improvements !
+
+If you are looking for a stable version of ARA, you can find the latest 0.x
+version on PyPi_ and the source is available here_.
+
+.. _PyPi: https://pypi.org/project/ara/
 .. _here: https://github.com/openstack/ara
 
 Documentation
@@ -19,19 +34,18 @@ Documentation
 
 *Work in progress*
 
-This is python3 only right now.
-
 **TL;DR**: Using tox is convenient for the time being::
 
-  # Use the source Luke
+  # Retrieve the source
   git clone https://github.com/openstack/ara-server
   cd ara-server
 
   # Install tox
   pip install tox # (or the tox python library from your distro packages)
 
-  # Create data from a test playbook and callback
-  tox -e ansible-playbook
+  # Run an Ansible playbook integrated ara-server, ara-clients and ara-plugins
+  # This will exercise all three components and record real data from Ansible
+  tox -e ansible-integration
 
   # Run test server -> http://127.0.0.1:8000/api/v1/
   tox -e runserver
@@ -44,12 +58,11 @@ This is python3 only right now.
   # Build docs
   tox -e docs
 
-See the ``hacking`` directory for testing resources.
+Authors and contributors
+========================
 
-Contributors
-============
-
-See contributors on GitHub_.
+ARA was created by David Moreau Simard (@dmsimard) and contributors can be
+found on GitHub_.
 
 .. _GitHub: https://github.com/openstack/ara-server/graphs/contributors
 
