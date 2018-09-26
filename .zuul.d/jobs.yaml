@@ -3,3 +3,9 @@
     parent: tox
     vars:
       tox_envlist: ansible-integration
+
+- job:
+    name: tox-py3
+    parent: tox
+    vars:
+      tox_envlist: py3
