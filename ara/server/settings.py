@@ -19,10 +19,9 @@ DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS', cast=list, default=['localhost', '127.0.0.1', 'testserver'])
 
-ADMINS = (('Guillaume Vincent', 'gvincent@redhat.com'),)
+ADMINS = ()
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -30,7 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'ara.api'
+    'ara.api',
+    'ara.server.apps.AraAdminConfig',
 ]
 
 MIDDLEWARE = [

@@ -14,118 +14,57 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
+from rest_framework import viewsets
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from ara.api import models, serializers
 
-from rest_framework import generics, status
 
-
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'labels': reverse('label-list', request=request, format=format),
-        'playbooks': reverse('playbook-list', request=request, format=format),
-        'plays': reverse('play-list', request=request, format=format),
-        'tasks': reverse('task-list', request=request, format=format),
-        'files': reverse('file-list', request=request, format=format),
-        'hosts': reverse('host-list', request=request, format=format),
-        'results': reverse('result-list', request=request, format=format),
-        'stats': reverse('stats-list', request=request, format=format)
-    })
-
-
-class LabelList(generics.ListCreateAPIView):
+class LabelViewSet(viewsets.ModelViewSet):
     queryset = models.Label.objects.all()
     serializer_class = serializers.LabelSerializer
 
 
-class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Label.objects.all()
-    serializer_class = serializers.LabelSerializer
-
-
-class PlaybookList(generics.ListCreateAPIView):
+class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
 
 
-class PlaybookDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Playbook.objects.all()
-    serializer_class = serializers.PlaybookSerializer
-
-
-class PlaybookFilesDetail(generics.CreateAPIView):
-    queryset = models.Playbook.objects.all()
+class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
+    queryset = models.File.objects.all()
     serializer_class = serializers.FileSerializer
 
-    def post(self, request, *args, **kwargs):
-        playbook = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        playbook.files.add(serializer.data['id'])
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def perform_create(self, serializer):
+        playbook = models.Playbook.objects.get(pk=self.get_parents_query_dict()['playbooks'])
+        instance = serializer.save()
+        playbook.files.add(instance)
 
 
-class PlayList(generics.ListCreateAPIView):
+class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
 
 
-class PlayDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Play.objects.all()
-    serializer_class = serializers.PlaySerializer
-
-
-class TaskList(generics.ListCreateAPIView):
+class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
     serializer_class = serializers.TaskSerializer
 
 
-class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Task.objects.all()
-    serializer_class = serializers.TaskSerializer
-
-
-class HostList(generics.ListCreateAPIView):
+class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
     serializer_class = serializers.HostSerializer
 
 
-class HostDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Host.objects.all()
-    serializer_class = serializers.HostSerializer
-
-
-class ResultList(generics.ListCreateAPIView):
+class ResultViewSet(viewsets.ModelViewSet):
     queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
 
 
-class ResultDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Result.objects.all()
-    serializer_class = serializers.ResultSerializer
-
-
-class FileList(generics.ListCreateAPIView):
+class FileViewSet(viewsets.ModelViewSet):
     queryset = models.File.objects.all()
     serializer_class = serializers.FileSerializer
 
 
-class FileDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.File.objects.all()
-    serializer_class = serializers.FileSerializer
-
-
-class StatsList(generics.ListCreateAPIView):
-    queryset = models.Stats.objects.all()
-    serializer_class = serializers.StatsSerializer
-
-
-class StatsDetail(generics.RetrieveUpdateDestroyAPIView):
+class StatsViewSet(viewsets.ModelViewSet):
     queryset = models.Stats.objects.all()
     serializer_class = serializers.StatsSerializer
