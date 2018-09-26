@@ -16,6 +16,7 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from rest_framework_extensions.routers import ExtendedDefaultRouter
+
 from ara.api import views
 
 router = ExtendedDefaultRouter(trailing_slash=False)

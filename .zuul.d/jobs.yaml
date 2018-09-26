@@ -9,3 +9,10 @@
     parent: tox
     vars:
       tox_envlist: py3
+
+- job:
+    name: tox-format
+    parent: tox
+    nodeset: ubuntu-bionic
+    vars:
+      tox_envlist: format

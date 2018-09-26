@@ -15,13 +15,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
 import hashlib
+import json
 import logging
 import zlib
-from ara.api import models
+
 from django.utils import timezone
 from rest_framework import serializers
+
+from ara.api import models
 
 DATE_FORMAT = "(iso-8601: 2016-05-06T17:20:25.749489-04:00)"
 DURATION_FORMAT = "([DD] [HH:[MM:]]ss[.uuuuuu])"

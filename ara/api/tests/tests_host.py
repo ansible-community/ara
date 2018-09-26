@@ -18,8 +18,7 @@
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
-from ara.api.tests import factories
-from ara.api.tests import utils
+from ara.api.tests import factories, utils
 
 
 class HostTestCase(APITestCase):

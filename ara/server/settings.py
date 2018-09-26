@@ -1,8 +1,9 @@
 import logging
 import os
 import sys
-from envparse import env
+
 from django.utils.crypto import get_random_string
+from envparse import env
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

@@ -20,7 +20,6 @@ import factory
 from ara.api import models
 from ara.api.tests import utils
 
-
 # constants for things like compressed byte strings or objects
 FILE_CONTENTS = "---\n# Example file"
 HOST_FACTS = {"ansible_fqdn": "hostname", "ansible_distribution": "CentOS"}
