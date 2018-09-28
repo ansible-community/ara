@@ -14,6 +14,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -36,8 +37,9 @@ class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         playbook = models.Playbook.objects.get(pk=self.get_parents_query_dict()['playbooks'])
-        instance = serializer.save()
-        playbook.files.add(instance)
+        with transaction.atomic(savepoint=False):
+            instance = serializer.save()
+            playbook.files.add(instance)
 
 
 class PlayViewSet(viewsets.ModelViewSet):
