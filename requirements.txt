@@ -1,3 +1,2 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
-git+https://git.openstack.org/openstack/ara-server@master#egg=ara_server
 
