@@ -22,28 +22,18 @@ from ara.api.tests import utils
 
 
 # constants for things like compressed byte strings or objects
-FILE_CONTENTS = '---\n# Example file'
-HOST_FACTS = {
-    'ansible_fqdn': 'hostname',
-    'ansible_distribution': 'CentOS'
-}
-PLAYBOOK_PARAMETERS = {
-    'ansible_version': '2.5.5',
-    'inventory': '/etc/ansible/hosts'
-}
-RESULT_CONTENTS = {
-    'results': [{
-        'msg': 'something happened'
-    }]
-}
-LABEL_DESCRIPTION = 'label description'
-TASK_TAGS = ['always', 'never']
+FILE_CONTENTS = "---\n# Example file"
+HOST_FACTS = {"ansible_fqdn": "hostname", "ansible_distribution": "CentOS"}
+PLAYBOOK_PARAMETERS = {"ansible_version": "2.5.5", "inventory": "/etc/ansible/hosts"}
+RESULT_CONTENTS = {"results": [{"msg": "something happened"}]}
+LABEL_DESCRIPTION = "label description"
+TASK_TAGS = ["always", "never"]
 
 
 class FileContentFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.FileContent
-        django_get_or_create = ('sha1',)
+        django_get_or_create = ("sha1",)
 
     sha1 = utils.sha1(FILE_CONTENTS)
     contents = utils.compressed_str(FILE_CONTENTS)
@@ -53,7 +43,7 @@ class FileFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.File
 
-    path = '/path/playbook.yml'
+    path = "/path/playbook.yml"
     content = factory.SubFactory(FileContentFactory)
 
 
@@ -61,7 +51,7 @@ class LabelFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Label
 
-    name = 'test label'
+    name = "test label"
     description = utils.compressed_str(LABEL_DESCRIPTION)
 
 
@@ -69,7 +59,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Playbook
 
-    ansible_version = '2.4.0'
+    ansible_version = "2.4.0"
     completed = True
     parameters = utils.compressed_obj(PLAYBOOK_PARAMETERS)
     file = factory.SubFactory(FileFactory)
@@ -79,7 +69,7 @@ class PlayFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Play
 
-    name = 'test play'
+    name = "test play"
     completed = True
     playbook = factory.SubFactory(PlaybookFactory)
 
@@ -88,9 +78,9 @@ class TaskFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Task
 
-    name = 'test task'
+    name = "test task"
     completed = True
-    action = 'setup'
+    action = "setup"
     lineno = 2
     handler = False
     tags = utils.compressed_obj(TASK_TAGS)
@@ -103,7 +93,7 @@ class HostFactory(factory.DjangoModelFactory):
         model = models.Host
 
     facts = utils.compressed_obj(HOST_FACTS)
-    name = 'hostname'
+    name = "hostname"
     alias = "9f5d3ba7-e43d-4f3b-ab17-f90c39e43d07"
     playbook = factory.SubFactory(PlaybookFactory)
 
@@ -113,7 +103,7 @@ class ResultFactory(factory.DjangoModelFactory):
         model = models.Result
 
     content = utils.compressed_obj(RESULT_CONTENTS)
-    status = 'ok'
+    status = "ok"
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)
 
