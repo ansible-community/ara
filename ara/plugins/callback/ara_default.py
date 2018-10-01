@@ -24,14 +24,53 @@ import os
 import six
 
 from ara.clients.offline import AraOfflineClient
-# from ara.clients.online import AraOnlineClient
+from ara.clients.http import AraHttpClient
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
+
 # To retrieve Ansible CLI options
 try:
     from __main__ import cli
 except ImportError:
     cli = None
+
+
+DOCUMENTATION = """
+callback: ara
+callback_type: notification
+requirements:
+  - ara-plugins
+  - ara-server (when using the offline API client)
+short_description: Sends playbook execution data to the ARA API internally or over HTTP
+description:
+  - Sends playbook execution data to the ARA API internally or over HTTP
+options:
+  api_client:
+    description: The client to use for communicating with the API
+    default: offline
+    env:
+      - name: ARA_API_CLIENT
+    ini:
+      - section: ara
+        key: api_client
+    choices: ['offline', 'http']
+  api_server:
+    description: When using the HTTP client, the base URL to the ARA API server
+    default: http://127.0.0.1:8000
+    env:
+      - name: ARA_API_SERVER
+    ini:
+      - section: ara
+        key: api_server
+  api_timeout:
+    description: Timeout, in seconds, before giving up on HTTP requests
+    default: 30
+    env:
+      - name: ARA_API_TIMEOUT
+    ini:
+      - section: ara
+        key: api_timeout
+"""
 
 
 class CallbackModule(CallbackBase):
@@ -46,9 +85,6 @@ class CallbackModule(CallbackBase):
         super(CallbackModule, self).__init__()
         self.log = logging.getLogger('ara.plugins.callback.default')
 
-        # TODO: logic for picking between offline and online client
-        self.client = AraOfflineClient()
-
         self.result = None
         self.task = None
         self.play = None
@@ -60,6 +96,19 @@ class CallbackModule(CallbackBase):
             self._options = cli.options
         else:
             self._options = None
+
+    def set_options(self, task_keys=None, var_options=None, direct=None):
+        super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
+
+        api_client = self.get_option("api_client")
+        if api_client == "offline":
+            self.client = AraOfflineClient()
+        elif api_client == "http":
+            server = self.get_option("api_server")
+            timeout = self.get_option("api_timeout")
+            self.client = AraHttpClient(endpoint=server, timeout=timeout)
+        else:
+            raise Exception("Unsupported API client: %s. Please use 'offline' or 'http'" % api_client)
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug('v2_playbook_on_start')
