@@ -1,33 +1,55 @@
 ara-plugins
 ===========
 
-**This repository does not contain production ready software.**
+.. image:: doc/source/_static/ara-with-icon.png
 
-If you are looking for the latest stable release of ARA Records Ansible, please
-refer to the `openstack/ara`_ repository.
+ARA Records Ansible playbook runs and makes the recorded data available and
+intuitive for users and systems.
 
-.. _openstack/ara: https://github.com/openstack/ara
+``ara-plugins`` is a component of ARA which provides:
+
+- An Ansible callback plugin to send Ansible execution data to the ARA API
+- Ansible modules to interact with ARA
+
+Disclaimer
+==========
+
+``ara-plugins`` is not yet stable and will be shipped as part of a coordinated
+ARA 1.0 release. It is not currently recommended for production use.
+
+While most of the major work has landed, please keep in mind that we can still
+introduce backwards incompatible changes until we ship the first release.
+
+You are free to use this project and in fact, you are more than welcome to
+contribute feedback, bug fixes or improvements !
+
+If you are looking for a stable version of ARA, you can find the latest 0.x
+version on PyPi_ and the source is available here_.
+
+.. _PyPi: https://pypi.org/project/ara/
+.. _here: https://github.com/openstack/ara
 
 Documentation
 =============
 
-*Work in progress*
+Documentation is a work in progress.
 
-**TL;DR**: Using tox is convenient for the time being::
+To install ara-plugins::
 
-  # Use the source Luke
-  git clone https://github.com/openstack/ara-plugins
-  cd ara-plugins
+    pip install git+https://github.com/openstack/ara-plugins
 
-  # Install tox
-  pip install tox # (or the tox python library from your distro packages)
+The callback can be configured through an ``ansible.cfg`` file::
 
-  # Run actual tests or get coverage
-  tox -e pep8
-  tox -e cover
+    [ara]
+    api_client = http
+    api_timeout = 30
+    api_server = http://127.0.0.1:8000
 
-  # Build docs
-  tox -e docs
+Or through environment variables::
+
+    export ARA_API_CLIENT=http
+    export ARA_API_TIMEOUT=30
+    export ARA_SERVER=http://127.0.0.1:8000
 
 Contributors
 ============
