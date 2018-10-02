@@ -107,6 +107,16 @@ class ResultFactory(factory.DjangoModelFactory):
     task = factory.SubFactory(TaskFactory)
 
 
+class RecordFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Record
+
+    key = "record-key"
+    value = "some-value"
+    type = "text"
+    playbook = factory.SubFactory(PlaybookFactory)
+
+
 class StatsFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Stats

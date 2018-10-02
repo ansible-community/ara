@@ -199,6 +199,12 @@ class TaskSerializer(DurationSerializer):
     )
 
 
+class RecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Record
+        fields = "__all__"
+
+
 class StatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Stats
