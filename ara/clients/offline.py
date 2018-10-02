@@ -32,15 +32,15 @@ class AraOfflineClient(object):
             from django.core.management import execute_from_command_line
             from django.test import Client
 
-            os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ara.server.settings')
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 
             # Automatically create the database and run migrations (is there a better way?)
-            execute_from_command_line(['django', 'migrate'])
+            execute_from_command_line(["django", "migrate"])
 
             # Set up the things Django needs
             django_setup()
         except ImportError as e:
-            self.log.error('The offline client requires ara-server to be installed')
+            self.log.error("The offline client requires ara-server to be installed")
             raise e
 
         self.client = Client()
@@ -49,39 +49,24 @@ class AraOfflineClient(object):
         func = getattr(self.client, method)
         # TODO: Is there a better way than doing this if/else ?
         if kwargs:
-            response = func(
-                endpoint,
-                json.dumps(kwargs),
-                content_type='application/json'
-            )
+            response = func(endpoint, json.dumps(kwargs), content_type="application/json")
         else:
-            response = func(
-                endpoint,
-                content_type='application/json'
-            )
+            response = func(endpoint, content_type="application/json")
 
         if response.status_code >= 500:
             self.log.error(
-                'Failed to {method} on {endpoint}: {content}'.format(
-                    method=method,
-                    endpoint=endpoint,
-                    content=kwargs
-                )
+                "Failed to {method} on {endpoint}: {content}".format(method=method, endpoint=endpoint, content=kwargs)
             )
 
-        self.log.debug('HTTP {status}: {method} on {endpoint}'.format(
-            status=response.status_code,
-            method=method,
-            endpoint=endpoint
-        ))
+        self.log.debug(
+            "HTTP {status}: {method} on {endpoint}".format(
+                status=response.status_code, method=method, endpoint=endpoint
+            )
+        )
 
         if response.status_code not in [200, 201, 204]:
             self.log.error(
-                'Failed to {method} on {endpoint}: {content}'.format(
-                    method=method,
-                    endpoint=endpoint,
-                    content=kwargs
-                )
+                "Failed to {method} on {endpoint}: {content}".format(method=method, endpoint=endpoint, content=kwargs)
             )
 
         if response.status_code == 204:
@@ -90,16 +75,16 @@ class AraOfflineClient(object):
         return response.json()
 
     def get(self, endpoint, **kwargs):
-        return self._request('get', endpoint, **kwargs)
+        return self._request("get", endpoint, **kwargs)
 
     def patch(self, endpoint, **kwargs):
-        return self._request('patch', endpoint, **kwargs)
+        return self._request("patch", endpoint, **kwargs)
 
     def post(self, endpoint, **kwargs):
-        return self._request('post', endpoint, **kwargs)
+        return self._request("post", endpoint, **kwargs)
 
     def put(self, endpoint, **kwargs):
-        return self._request('put', endpoint, **kwargs)
+        return self._request("put", endpoint, **kwargs)
 
     def delete(self, endpoint, **kwargs):
-        return self._request('delete', endpoint, **kwargs)
+        return self._request("delete", endpoint, **kwargs)

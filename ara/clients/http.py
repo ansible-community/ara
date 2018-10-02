@@ -20,22 +20,23 @@
 
 import json
 import logging
-import requests
+
 import pbr.version
+import requests
 
 CLIENT_VERSION = pbr.version.VersionInfo(__name__).release_string()
 
 
 class HttpClient(object):
-    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30):
+    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30):
         self.log = logging.getLogger(__name__)
 
         self.endpoint = endpoint
         self.timeout = timeout
         self.headers = {
-            'User-Agent': 'ara-http-client_%s' % CLIENT_VERSION,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            "User-Agent": "ara-http-client_%s" % CLIENT_VERSION,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
         }
         self.http = requests.Session()
         self.http.headers.update(self.headers)
@@ -51,58 +52,42 @@ class HttpClient(object):
 
     def get(self, url, **payload):
         if payload:
-            return self._request('get', url, params=json.dumps(payload))
+            return self._request("get", url, params=json.dumps(payload))
         else:
-            return self._request('get', url)
+            return self._request("get", url)
 
     def patch(self, url, **payload):
-        return self._request('patch', url, data=json.dumps(payload))
+        return self._request("patch", url, data=json.dumps(payload))
 
     def post(self, url, **payload):
-        return self._request('post', url, data=json.dumps(payload))
+        return self._request("post", url, data=json.dumps(payload))
 
     def put(self, url, **payload):
-        return self._request('put', url, data=json.dumps(payload))
+        return self._request("put", url, data=json.dumps(payload))
 
     def delete(self, url):
-        return self._request('delete', url)
+        return self._request("delete", url)
 
 
 class AraHttpClient(object):
-    def __init__(self, endpoint='http://127.0.0.1:8000', timeout=30):
+    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30):
         self.log = logging.getLogger(__name__)
         self.client = HttpClient(endpoint, timeout)
 
     def _request(self, method, url, **kwargs):
         func = getattr(self.client, method)
-        if method == 'delete':
+        if method == "delete":
             response = func(url)
         else:
             response = func(url, **kwargs)
 
         if response.status_code >= 500:
-            self.log.error(
-                'Failed to {method} on {url}: {content}'.format(
-                    method=method,
-                    url=url,
-                    content=kwargs
-                )
-            )
+            self.log.error("Failed to {method} on {url}: {content}".format(method=method, url=url, content=kwargs))
 
-        self.log.debug('HTTP {status}: {method} on {url}'.format(
-            status=response.status_code,
-            method=method,
-            url=url
-        ))
+        self.log.debug("HTTP {status}: {method} on {url}".format(status=response.status_code, method=method, url=url))
 
         if response.status_code not in [200, 201, 204]:
-            self.log.error(
-                'Failed to {method} on {url}: {content}'.format(
-                    method=method,
-                    url=url,
-                    content=kwargs
-                )
-            )
+            self.log.error("Failed to {method} on {url}: {content}".format(method=method, url=url, content=kwargs))
 
         if response.status_code == 204:
             return response
@@ -110,16 +95,16 @@ class AraHttpClient(object):
         return response.json()
 
     def get(self, endpoint, **kwargs):
-        return self._request('get', endpoint, **kwargs)
+        return self._request("get", endpoint, **kwargs)
 
     def patch(self, endpoint, **kwargs):
-        return self._request('patch', endpoint, **kwargs)
+        return self._request("patch", endpoint, **kwargs)
 
     def post(self, endpoint, **kwargs):
-        return self._request('post', endpoint, **kwargs)
+        return self._request("post", endpoint, **kwargs)
 
     def put(self, endpoint, **kwargs):
-        return self._request('put', endpoint, **kwargs)
+        return self._request("put", endpoint, **kwargs)
 
     def delete(self, endpoint, **kwargs):
-        return self._request('delete', endpoint)
+        return self._request("delete", endpoint)

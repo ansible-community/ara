@@ -15,14 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ara.clients.offline import AraOfflineClient
 from ara.clients.http import AraHttpClient
+from ara.clients.offline import AraOfflineClient
 
 
 def get_client(client=None, **kwargs):
-    if client is None or client == 'offline':
+    if client is None or client == "offline":
         return AraOfflineClient(**kwargs)
-    elif client == 'http':
+    elif client == "http":
         return AraHttpClient(**kwargs)
     else:
-        raise ValueError('Unsupported client: %s' % client)
+        raise ValueError("Unsupported client: %s" % client)
