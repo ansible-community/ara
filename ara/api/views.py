@@ -36,7 +36,7 @@ class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = serializers.FileSerializer
 
     def perform_create(self, serializer):
-        playbook = models.Playbook.objects.get(pk=self.get_parents_query_dict()['playbooks'])
+        playbook = models.Playbook.objects.get(pk=self.get_parents_query_dict()["playbooks"])
         with transaction.atomic(savepoint=False):
             instance = serializer.save()
             playbook.files.add(instance)

@@ -52,13 +52,13 @@ class FileContent(Base):
     """
 
     class Meta:
-        db_table = 'file_contents'
+        db_table = "file_contents"
 
     sha1 = models.CharField(max_length=40, unique=True)
     contents = models.BinaryField(max_length=(2 ** 32) - 1)
 
     def __str__(self):
-        return '<FileContent %s:%s>' % (self.id, self.sha1)
+        return "<FileContent %s:%s>" % (self.id, self.sha1)
 
 
 class File(Base):
@@ -68,13 +68,13 @@ class File(Base):
     """
 
     class Meta:
-        db_table = 'files'
+        db_table = "files"
 
     path = models.CharField(max_length=255)
-    content = models.ForeignKey(FileContent, on_delete=models.CASCADE, related_name='files')
+    content = models.ForeignKey(FileContent, on_delete=models.CASCADE, related_name="files")
 
     def __str__(self):
-        return '<File %s:%s>' % (self.id, self.path)
+        return "<File %s:%s>" % (self.id, self.path)
 
 
 class Label(Base):
@@ -90,13 +90,13 @@ class Label(Base):
     """
 
     class Meta:
-        db_table = 'labels'
+        db_table = "labels"
 
     name = models.CharField(max_length=255)
     description = models.BinaryField(max_length=(2 ** 32) - 1)
 
     def __str__(self):
-        return '<Label %s: %s>' % (self.id, self.name)
+        return "<Label %s: %s>" % (self.id, self.name)
 
 
 class Playbook(Duration):
@@ -107,18 +107,18 @@ class Playbook(Duration):
     """
 
     class Meta:
-        db_table = 'playbooks'
+        db_table = "playbooks"
 
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
     completed = models.BooleanField(default=False)
     parameters = models.BinaryField(max_length=(2 ** 32) - 1)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='playbooks')
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="playbooks")
     files = models.ManyToManyField(File)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):
-        return '<Playbook %s>' % self.id
+        return "<Playbook %s>" % self.id
 
 
 class Record(Base):
@@ -128,16 +128,16 @@ class Record(Base):
     """
 
     class Meta:
-        db_table = 'records'
-        unique_together = ('key', 'playbook',)
+        db_table = "records"
+        unique_together = ("key", "playbook")
 
     key = models.CharField(max_length=255)
     value = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=255)
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='records')
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="records")
 
     def __str__(self):
-        return '<Record %s:%s>' % (self.id, self.key)
+        return "<Record %s:%s>" % (self.id, self.key)
 
 
 class Play(Duration):
@@ -147,21 +147,21 @@ class Play(Duration):
     """
 
     class Meta:
-        db_table = 'plays'
+        db_table = "plays"
 
     name = models.CharField(max_length=255, blank=True, null=True)
     completed = models.BooleanField(default=False)
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='plays')
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
 
     def __str__(self):
-        return '<Play %s:%s>' % (self.id, self.name)
+        return "<Play %s:%s>" % (self.id, self.name)
 
 
 class Task(Duration):
     """Data about Ansible tasks."""
 
     class Meta:
-        db_table = 'tasks'
+        db_table = "tasks"
 
     name = models.TextField(blank=True, null=True)
     action = models.TextField()
@@ -170,11 +170,11 @@ class Task(Duration):
     handler = models.BooleanField()
     completed = models.BooleanField(default=False)
 
-    play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name='tasks')
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name='tasks')
+    play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="tasks")
+    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="tasks")
 
     def __str__(self):
-        return '<Task %s:%s>' % (self.name, self.id)
+        return "<Task %s:%s>" % (self.name, self.id)
 
 
 class Host(Base):
@@ -183,8 +183,8 @@ class Host(Base):
     """
 
     class Meta:
-        db_table = 'hosts'
-        unique_together = ('name', 'playbook',)
+        db_table = "hosts"
+        unique_together = ("name", "playbook")
 
     name = models.CharField(max_length=255)
     facts = models.BinaryField(max_length=(2 ** 32) - 1)
@@ -197,10 +197,10 @@ class Host(Base):
     # The logic for supplying aliases does not live here, it's provided by the
     # clients and consumers.
     alias = models.CharField(max_length=255, null=True)
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='hosts')
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="hosts")
 
     def __str__(self):
-        return '<Host %s:%s>' % (self.id, self.name)
+        return "<Host %s:%s>" % (self.id, self.name)
 
 
 class Stats(Base):
@@ -209,11 +209,11 @@ class Stats(Base):
     """
 
     class Meta:
-        db_table = 'stats'
-        unique_together = ('host', 'playbook',)
+        db_table = "stats"
+        unique_together = ("host", "playbook")
 
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name='stats')
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name='stats')
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="stats")
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="stats")
     changed = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)
     ok = models.IntegerField(default=0)
@@ -222,10 +222,8 @@ class Stats(Base):
 
     def __str__(self):
         # Verbose because it's otherwise kind of useless
-        return '<Stats for {host} ({id}) in playbook {playbook}>'.format(
-            host=self.host.name,
-            id=self.host.id,
-            playbook=self.playbook.id
+        return "<Stats for {host} ({id}) in playbook {playbook}>".format(
+            host=self.host.name, id=self.host.id, playbook=self.playbook.id
         )
 
 
@@ -236,33 +234,33 @@ class Result(Duration):
     """
 
     class Meta:
-        db_table = 'results'
+        db_table = "results"
 
     # Ansible statuses
-    OK = 'ok'
-    FAILED = 'failed'
-    SKIPPED = 'skipped'
-    UNREACHABLE = 'unreachable'
+    OK = "ok"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+    UNREACHABLE = "unreachable"
     # ARA specific statuses (derived or assumed)
-    CHANGED = 'changed'
-    IGNORED = 'ignored'
-    UNKNOWN = 'unknown'
+    CHANGED = "changed"
+    IGNORED = "ignored"
+    UNKNOWN = "unknown"
 
     STATUS = (
-        (OK, 'ok'),
-        (FAILED, 'failed'),
-        (SKIPPED, 'skipped'),
-        (UNREACHABLE, 'unreachable'),
-        (CHANGED, 'changed'),
-        (IGNORED, 'ignored'),
-        (UNKNOWN, 'unknown')
+        (OK, "ok"),
+        (FAILED, "failed"),
+        (SKIPPED, "skipped"),
+        (UNREACHABLE, "unreachable"),
+        (CHANGED, "changed"),
+        (IGNORED, "ignored"),
+        (UNKNOWN, "unknown"),
     )
 
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     # todo use a single Content table
     content = models.BinaryField(max_length=(2 ** 32) - 1)
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name='results')
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='results')
+    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="results")
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="results")
 
     def __str__(self):
-        return '<Result %s, %s>' % (self.id, self.status)
+        return "<Result %s, %s>" % (self.id, self.status)

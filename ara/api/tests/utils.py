@@ -24,19 +24,19 @@ def compressed_obj(obj):
     """
     Returns a zlib compressed representation of an object
     """
-    return zlib.compress(json.dumps(obj).encode('utf-8'))
+    return zlib.compress(json.dumps(obj).encode("utf-8"))
 
 
 def compressed_str(obj):
     """
     Returns a zlib compressed representation of a string
     """
-    return zlib.compress(obj.encode('utf-8'))
+    return zlib.compress(obj.encode("utf-8"))
 
 
 def sha1(obj):
     """
     Returns the sha1 of a compressed string or an object
     """
-    contents = zlib.compress(obj.encode('utf8'))
+    contents = zlib.compress(obj.encode("utf8"))
     return hashlib.sha1(contents).hexdigest()
