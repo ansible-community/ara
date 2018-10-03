@@ -90,10 +90,10 @@ class FileContentField(serializers.CharField):
         return zlib.decompress(obj.contents).decode("utf8")
 
     def to_internal_value(self, data):
-        contents = zlib.compress(data.encode("utf8"))
+        contents = data.encode("utf8")
         sha1 = hashlib.sha1(contents).hexdigest()
         content_file, created = models.FileContent.objects.get_or_create(
-            sha1=sha1, defaults={"sha1": sha1, "contents": contents}
+            sha1=sha1, defaults={"sha1": sha1, "contents": zlib.compress(contents)}
         )
         return content_file
 

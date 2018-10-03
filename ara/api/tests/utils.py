@@ -38,5 +38,4 @@ def sha1(obj):
     """
     Returns the sha1 of a compressed string or an object
     """
-    contents = zlib.compress(obj.encode("utf8"))
-    return hashlib.sha1(contents).hexdigest()
+    return hashlib.sha1(obj.encode("utf8")).hexdigest()
