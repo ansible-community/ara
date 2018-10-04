@@ -103,7 +103,12 @@ class FileSerializer(serializers.ModelSerializer):
         model = models.File
         fields = "__all__"
 
+    sha1 = serializers.SerializerMethodField()
     content = FileContentField()
+
+    @staticmethod
+    def get_sha1(obj):
+        return obj.content.sha1
 
 
 class HostSerializer(serializers.ModelSerializer):
