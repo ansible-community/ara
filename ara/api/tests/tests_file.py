@@ -73,9 +73,11 @@ class FileTestCase(APITestCase):
         file = factories.FileFactory()
         request = self.client.get("/api/v1/files/%s" % file.id)
         self.assertEqual(file.path, request.data["path"])
+        self.assertEqual(file.content.sha1, request.data["sha1"])
 
     def test_update_file(self):
         file = factories.FileFactory()
+        old_sha1 = file.content.sha1
         self.assertNotEqual("/path/new_playbook.yml", file.path)
         request = self.client.put(
             "/api/v1/files/%s" % file.id, {"path": "/path/new_playbook.yml", "content": "# playbook"}
@@ -83,6 +85,7 @@ class FileTestCase(APITestCase):
         self.assertEqual(200, request.status_code)
         file_updated = models.File.objects.get(id=file.id)
         self.assertEqual("/path/new_playbook.yml", file_updated.path)
+        self.assertNotEqual(old_sha1, file_updated.content.sha1)
 
     def test_partial_update_file(self):
         file = factories.FileFactory()
