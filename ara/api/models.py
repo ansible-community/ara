@@ -150,6 +150,7 @@ class Play(Duration):
         db_table = "plays"
 
     name = models.CharField(max_length=255, blank=True, null=True)
+    uuid = models.UUIDField()
     completed = models.BooleanField(default=False)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
 
