@@ -70,6 +70,7 @@ class PlayFactory(factory.DjangoModelFactory):
 
     name = "test play"
     completed = True
+    uuid = "5c5f67b9-e63c-6297-80da-000000000005"
     playbook = factory.SubFactory(PlaybookFactory)
 
 
