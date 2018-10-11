@@ -143,7 +143,7 @@ class CallbackModule(CallbackBase):
         self._load_files(play._loader._FILE_CACHE.keys())
 
         # Create the play
-        self.play = self.client.post("/api/v1/plays", name=play.name, playbook=self.playbook["id"])
+        self.play = self.client.post("/api/v1/plays", name=play.name, uuid=play._uuid, playbook=self.playbook["id"])
 
         # Record all the hosts involved in the play
         self._load_hosts(play._variable_manager._inventory._restriction)
