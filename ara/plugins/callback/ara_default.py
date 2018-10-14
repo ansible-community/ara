@@ -71,6 +71,15 @@ options:
     ini:
       - section: ara
         key: api_timeout
+  ignored_facts:
+    description: List of host facts that will not be saved by ARA
+    type: list
+    default: ["ansible_env"]
+    env:
+      - name: ARA_IGNORED_FACTS
+    ini:
+      - section: ara
+        key: ignored_facts
 """
 
 
@@ -101,6 +110,8 @@ class CallbackModule(CallbackBase):
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
+
+        self.ignored_facts = self.get_option("ignored_facts")
 
         api_client = self.get_option("api_client")
         if api_client == "offline":
@@ -295,8 +306,15 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get("ignore_errors", False),
         )
 
-        if self.task["action"] == "setup" and "ansible_facts" in result._result:
-            self.client.patch("/api/v1/hosts/%s" % host["id"], facts=result._result["ansible_facts"])
+        if self.task["action"] == "setup" and "ansible_facts" in results:
+            # Potentially sanitize some Ansible facts to prevent them from
+            # being saved both in the host facts and in the task results.
+            for fact in self.ignored_facts:
+                if fact in results["ansible_facts"]:
+                    self.log.debug("Ignoring fact: %s" % fact)
+                    results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
+
+            self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
 
     def _read_file(self, path):
         try:
