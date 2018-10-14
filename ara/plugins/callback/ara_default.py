@@ -80,6 +80,15 @@ options:
     ini:
       - section: ara
         key: ignored_facts
+  ignored_arguments:
+    description: List of Ansible arguments that will not be saved by ARA
+    type: list
+    default: ["extra_vars"]
+    env:
+      - name: ARA_IGNORED_ARGUMENTS
+    ini:
+      - section: ara
+        key: ignored_arguments
 """
 
 
@@ -112,6 +121,7 @@ class CallbackModule(CallbackBase):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
         self.ignored_facts = self.get_option("ignored_facts")
+        self.ignored_arguments = self.get_option("ignored_arguments")
 
         api_client = self.get_option("api_client")
         if api_client == "offline":
@@ -128,15 +138,21 @@ class CallbackModule(CallbackBase):
 
         path = os.path.abspath(playbook._file_name)
         if self._options is not None:
-            parameters = self._options.__dict__.copy()
+            arguments = self._options.__dict__.copy()
         else:
-            parameters = {}
+            arguments = {}
+
+        # Potentially sanitize some user-specified keys
+        for argument in self.ignored_arguments:
+            if argument in arguments:
+                self.log.debug("Ignoring argument: %s" % argument)
+                arguments[argument] = "Not saved by ARA as configured by 'ignored_arguments'"
 
         # Create the playbook
         self.playbook = self.client.post(
             "/api/v1/playbooks",
             ansible_version=ansible_version,
-            parameters=parameters,
+            arguments=arguments,
             file=dict(path=path, content=self._read_file(path)),
         )
 
