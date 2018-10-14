@@ -43,23 +43,23 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(playbook.name, "serializer-playbook")
         self.assertEqual(playbook.ansible_version, "2.4.0")
 
-    def test_playbook_serializer_compress_parameters(self):
+    def test_playbook_serializer_compress_arguments(self):
         serializer = serializers.PlaybookSerializer(
             data={
                 "ansible_version": "2.4.0",
                 "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS},
-                "parameters": factories.PLAYBOOK_PARAMETERS,
+                "arguments": factories.PLAYBOOK_ARGUMENTS,
             }
         )
         serializer.is_valid()
         playbook = serializer.save()
         playbook.refresh_from_db()
-        self.assertEqual(playbook.parameters, utils.compressed_obj(factories.PLAYBOOK_PARAMETERS))
+        self.assertEqual(playbook.arguments, utils.compressed_obj(factories.PLAYBOOK_ARGUMENTS))
 
-    def test_playbook_serializer_decompress_parameters(self):
-        playbook = factories.PlaybookFactory(parameters=utils.compressed_obj(factories.PLAYBOOK_PARAMETERS))
+    def test_playbook_serializer_decompress_arguments(self):
+        playbook = factories.PlaybookFactory(arguments=utils.compressed_obj(factories.PLAYBOOK_ARGUMENTS))
         serializer = serializers.PlaybookSerializer(instance=playbook)
-        self.assertEqual(serializer.data["parameters"], factories.PLAYBOOK_PARAMETERS)
+        self.assertEqual(serializer.data["arguments"], factories.PLAYBOOK_ARGUMENTS)
 
     def test_get_no_playbooks(self):
         request = self.client.get("/api/v1/playbooks")
