@@ -309,6 +309,7 @@ class CallbackModule(CallbackBase):
 
         self.result = self.client.post(
             "/api/v1/results",
+            playbook=self.playbook["id"],
             task=self.task["id"],
             host=host["id"],
             content=results,
