@@ -41,6 +41,7 @@ class TaskTestCase(APITestCase):
                 "handler": False,
                 "play": play.id,
                 "file": file.id,
+                "playbook": play.playbook.id,
             }
         )
         serializer.is_valid()
@@ -61,6 +62,7 @@ class TaskTestCase(APITestCase):
                 "play": play.id,
                 "file": file.id,
                 "tags": factories.TASK_TAGS,
+                "playbook": play.playbook.id,
             }
         )
         serializer.is_valid()
@@ -104,6 +106,7 @@ class TaskTestCase(APITestCase):
                 "completed": True,
                 "play": play.id,
                 "file": file.id,
+                "playbook": play.playbook.id,
             },
         )
         self.assertEqual(201, request.status_code)

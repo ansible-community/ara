@@ -29,7 +29,9 @@ class ResultTestCase(APITestCase):
     def test_result_serializer(self):
         host = factories.HostFactory()
         task = factories.TaskFactory()
-        serializer = serializers.ResultSerializer(data={"status": "skipped", "host": host.id, "task": task.id})
+        serializer = serializers.ResultSerializer(
+            data={"status": "skipped", "host": host.id, "task": task.id, "playbook": task.playbook.id}
+        )
         serializer.is_valid()
         result = serializer.save()
         result.refresh_from_db()
@@ -41,7 +43,7 @@ class ResultTestCase(APITestCase):
         host = factories.HostFactory()
         task = factories.TaskFactory()
         serializer = serializers.ResultSerializer(
-            data={"host": host.id, "task": task.id, "content": factories.RESULT_CONTENTS}
+            data={"host": host.id, "task": task.id, "content": factories.RESULT_CONTENTS, "playbook": task.playbook.id}
         )
         serializer.is_valid()
         result = serializer.save()
@@ -75,7 +77,14 @@ class ResultTestCase(APITestCase):
         task = factories.TaskFactory()
         self.assertEqual(0, models.Result.objects.count())
         request = self.client.post(
-            "/api/v1/results", {"status": "ok", "host": host.id, "task": task.id, "content": factories.RESULT_CONTENTS}
+            "/api/v1/results",
+            {
+                "status": "ok",
+                "host": host.id,
+                "task": task.id,
+                "content": factories.RESULT_CONTENTS,
+                "playbook": task.playbook.id,
+            },
         )
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Result.objects.count())

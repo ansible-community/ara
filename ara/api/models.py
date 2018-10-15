@@ -173,6 +173,7 @@ class Task(Duration):
 
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="tasks")
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="tasks")
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="tasks")
 
     def __str__(self):
         return "<Task %s:%s>" % (self.name, self.id)
@@ -262,6 +263,7 @@ class Result(Duration):
     content = models.BinaryField(max_length=(2 ** 32) - 1)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="results")
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="results")
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="results")
 
     def __str__(self):
         return "<Result %s, %s>" % (self.id, self.status)

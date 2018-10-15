@@ -86,6 +86,7 @@ class TaskFactory(factory.DjangoModelFactory):
     tags = utils.compressed_obj(TASK_TAGS)
     play = factory.SubFactory(PlayFactory)
     file = factory.SubFactory(FileFactory)
+    playbook = factory.SubFactory(PlaybookFactory)
 
 
 class HostFactory(factory.DjangoModelFactory):
@@ -106,6 +107,7 @@ class ResultFactory(factory.DjangoModelFactory):
     status = "ok"
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)
+    playbook = factory.SubFactory(PlaybookFactory)
 
 
 class RecordFactory(factory.DjangoModelFactory):
