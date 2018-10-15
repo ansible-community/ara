@@ -112,7 +112,7 @@ class Playbook(Duration):
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
     completed = models.BooleanField(default=False)
-    parameters = models.BinaryField(max_length=(2 ** 32) - 1)
+    arguments = models.BinaryField(max_length=(2 ** 32) - 1)
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="playbooks")
     files = models.ManyToManyField(File)
     labels = models.ManyToManyField(Label)

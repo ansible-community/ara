@@ -23,7 +23,7 @@ from ara.api.tests import utils
 # constants for things like compressed byte strings or objects
 FILE_CONTENTS = "---\n# Example file"
 HOST_FACTS = {"ansible_fqdn": "hostname", "ansible_distribution": "CentOS"}
-PLAYBOOK_PARAMETERS = {"ansible_version": "2.5.5", "inventory": "/etc/ansible/hosts"}
+PLAYBOOK_ARGUMENTS = {"ansible_version": "2.5.5", "inventory": "/etc/ansible/hosts"}
 RESULT_CONTENTS = {"results": [{"msg": "something happened"}]}
 LABEL_DESCRIPTION = "label description"
 TASK_TAGS = ["always", "never"]
@@ -60,7 +60,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
 
     ansible_version = "2.4.0"
     completed = True
-    parameters = utils.compressed_obj(PLAYBOOK_PARAMETERS)
+    arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
     file = factory.SubFactory(FileFactory)
 
 

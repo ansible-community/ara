@@ -157,7 +157,7 @@ class PlaybookSerializer(DurationSerializer):
         model = models.Playbook
         fields = "__all__"
 
-    parameters = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
+    arguments = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
     file = FileSerializer()
     files = FileSerializer(many=True, default=[])
     hosts = HostSerializer(many=True, default=[])
