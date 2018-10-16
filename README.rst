@@ -40,8 +40,8 @@ Documentation
   git clone https://github.com/openstack/ara-server
   cd ara-server
 
-  # Install tox
-  pip install tox # (or the tox python library from your distro packages)
+  # Install tox from pip or from your distro packages
+  pip install tox
 
   # Run an Ansible playbook integrated ara-server, ara-clients and ara-plugins
   # This will exercise all three components and record real data from Ansible
@@ -51,8 +51,8 @@ Documentation
   tox -e runserver
 
   # Run actual tests or get coverage
-  tox -e pep8
-  tox -e py35
+  tox -e linters
+  tox -e py3
   tox -e cover
 
   # Build docs

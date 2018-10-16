@@ -7,12 +7,9 @@
       jobs:
         - ara-server-ansible-integration:
             voting: false
-        - tox-format
+        - tox-linters
         - tox-py3
-        - tox-pep8
     gate:
       jobs:
-        - tox-format
+        - tox-linters
         - tox-py3
-        - tox-pep8
-
