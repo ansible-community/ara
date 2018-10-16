@@ -5,3 +5,4 @@ djangorestframework
 django-cors-headers
 drf-extensions
 envparse
+django-filter

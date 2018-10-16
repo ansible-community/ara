@@ -100,6 +100,13 @@ class PlaybookTestCase(APITestCase):
         request = self.client.get("/api/v1/playbooks/%s" % playbook.id)
         self.assertEqual(playbook.ansible_version, request.data["ansible_version"])
 
+    def test_get_playbook_by_name(self):
+        playbook = factories.PlaybookFactory(name="playbook1")
+        factories.PlaybookFactory(name="playbook2")
+        request = self.client.get("/api/v1/playbooks?name=playbook1")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
     def test_get_playbook_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
