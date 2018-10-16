@@ -101,3 +101,14 @@ class ResultTestCase(APITestCase):
         result = factories.ResultFactory()
         request = self.client.get("/api/v1/results/%s" % result.id)
         self.assertEqual(result.status, request.data["status"])
+
+    def test_get_result_by_playbook(self):
+        playbook = factories.PlaybookFactory()
+        host_one = factories.HostFactory(name="one")
+        host_two = factories.HostFactory(name="two")
+        result = factories.ResultFactory(playbook=playbook, host=host_one, status="failed")
+        factories.ResultFactory(playbook=playbook, host=host_two, status="skipped")
+        request = self.client.get("/api/v1/results?playbook=%s" % playbook.id)
+        self.assertEqual(2, len(request.data["results"]))
+        self.assertEqual(result.status, request.data["results"][0]["status"])
+        self.assertEqual("skipped", request.data["results"][1]["status"])
