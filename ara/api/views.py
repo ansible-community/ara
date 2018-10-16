@@ -70,7 +70,7 @@ class ResultViewSet(viewsets.ModelViewSet):
     queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ("playbook",)
+    filter_fields = ("playbook", "status")
 
 
 class FileViewSet(viewsets.ModelViewSet):

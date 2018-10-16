@@ -112,3 +112,13 @@ class ResultTestCase(APITestCase):
         self.assertEqual(2, len(request.data["results"]))
         self.assertEqual(result.status, request.data["results"][0]["status"])
         self.assertEqual("skipped", request.data["results"][1]["status"])
+
+    def test_get_result_by_status(self):
+        playbook = factories.PlaybookFactory()
+        host_one = factories.HostFactory(name="one")
+        host_two = factories.HostFactory(name="two")
+        result = factories.ResultFactory(playbook=playbook, host=host_one, status="failed")
+        factories.ResultFactory(playbook=playbook, host=host_two, status="skipped")
+        request = self.client.get("/api/v1/results?status=failed")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(result.status, request.data["results"][0]["status"])
