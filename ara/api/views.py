@@ -84,3 +84,5 @@ class RecordViewSet(viewsets.ModelViewSet):
 class StatsViewSet(viewsets.ModelViewSet):
     queryset = models.Stats.objects.all()
     serializer_class = serializers.StatsSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("playbook",)
