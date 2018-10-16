@@ -15,7 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import transaction
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -30,7 +29,6 @@ class LabelViewSet(viewsets.ModelViewSet):
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("name",)
 
 
@@ -48,28 +46,24 @@ class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("playbook", "uuid")
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
     serializer_class = serializers.TaskSerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("playbook",)
 
 
 class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
     serializer_class = serializers.HostSerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("playbook",)
 
 
 class ResultViewSet(viewsets.ModelViewSet):
     queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("playbook", "status")
 
 
@@ -86,5 +80,4 @@ class RecordViewSet(viewsets.ModelViewSet):
 class StatsViewSet(viewsets.ModelViewSet):
     queryset = models.Stats.objects.all()
     serializer_class = serializers.StatsSerializer
-    filter_backends = (DjangoFilterBackend,)
     filter_fields = ("playbook", "host")
