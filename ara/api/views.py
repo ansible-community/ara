@@ -69,6 +69,8 @@ class HostViewSet(viewsets.ModelViewSet):
 class ResultViewSet(viewsets.ModelViewSet):
     queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("playbook",)
 
 
 class FileViewSet(viewsets.ModelViewSet):
