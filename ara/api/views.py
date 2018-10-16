@@ -62,6 +62,8 @@ class TaskViewSet(viewsets.ModelViewSet):
 class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
     serializer_class = serializers.HostSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("playbook",)
 
 
 class ResultViewSet(viewsets.ModelViewSet):
