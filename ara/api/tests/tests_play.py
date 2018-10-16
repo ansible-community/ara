@@ -89,6 +89,13 @@ class PlayTestCase(APITestCase):
         request = self.client.get("/api/v1/plays/%s" % play.id)
         self.assertEqual(play.name, request.data["name"])
 
+    def test_get_play_by_playbook(self):
+        play = factories.PlayFactory(name="play1")
+        factories.PlayFactory(name="play2")
+        request = self.client.get("/api/v1/plays?playbook=1")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(play.name, request.data["results"][0]["name"])
+
     def test_get_play_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)

@@ -48,6 +48,8 @@ class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("playbook",)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
