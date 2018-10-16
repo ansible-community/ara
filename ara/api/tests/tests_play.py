@@ -96,6 +96,13 @@ class PlayTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(play.name, request.data["results"][0]["name"])
 
+    def test_get_play_by_uuid(self):
+        play = factories.PlayFactory(name="play1", uuid="6b838b6f-cfc7-4e11-a264-73df8683ee0e")
+        factories.PlayFactory(name="play2")
+        request = self.client.get("/api/v1/plays?uuid=6b838b6f-cfc7-4e11-a264-73df8683ee0e")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(play.name, request.data["results"][0]["name"])
+
     def test_get_play_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)

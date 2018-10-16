@@ -49,7 +49,7 @@ class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
     serializer_class = serializers.PlaySerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ("playbook",)
+    filter_fields = ("playbook", "uuid")
 
 
 class TaskViewSet(viewsets.ModelViewSet):
