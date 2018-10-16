@@ -55,6 +55,8 @@ class PlayViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
     serializer_class = serializers.TaskSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("playbook",)
 
 
 class HostViewSet(viewsets.ModelViewSet):

@@ -125,6 +125,15 @@ class TaskTestCase(APITestCase):
         request = self.client.get("/api/v1/tasks/%s" % task.id)
         self.assertEqual(task.name, request.data["name"])
 
+    def test_get_tasks_by_playbook(self):
+        playbook = factories.PlaybookFactory()
+        task = factories.TaskFactory(name="task1", playbook=playbook)
+        factories.TaskFactory(name="task2", playbook=playbook)
+        request = self.client.get("/api/v1/tasks?playbook=%s" % playbook.id)
+        self.assertEqual(2, len(request.data["results"]))
+        self.assertEqual(task.name, request.data["results"][0]["name"])
+        self.assertEqual("task2", request.data["results"][1]["name"])
+
     def test_get_task_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
