@@ -59,6 +59,18 @@ class StatsTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(stats.ok, request.data["results"][0]["ok"])
 
+    def test_get_stats_by_playbook(self):
+        playbook = factories.PlaybookFactory()
+        host_one = factories.HostFactory(name="one")
+        host_two = factories.HostFactory(name="two")
+        stats = factories.StatsFactory(host=host_one, playbook=playbook, ok=9001)
+        factories.StatsFactory(host=host_two, playbook=playbook)
+        request = self.client.get("/api/v1/stats?playbook=%s" % playbook.id)
+        self.assertEqual(2, len(request.data["results"]))
+        self.assertEqual(host_one.id, request.data["results"][0]["id"])
+        self.assertEqual(stats.ok, request.data["results"][0]["ok"])
+        self.assertEqual(host_two.id, request.data["results"][1]["id"])
+
     def test_get_stats_id(self):
         stats = factories.StatsFactory()
         request = self.client.get("/api/v1/stats/%s" % stats.id)
