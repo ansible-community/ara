@@ -42,6 +42,7 @@ class PlaybookTestCase(APITestCase):
         playbook.refresh_from_db()
         self.assertEqual(playbook.name, "serializer-playbook")
         self.assertEqual(playbook.ansible_version, "2.4.0")
+        self.assertEqual(playbook.status, "unknown")
 
     def test_playbook_serializer_compress_arguments(self):
         serializer = serializers.PlaybookSerializer(
@@ -82,18 +83,31 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(0, models.Playbook.objects.count())
         request = self.client.post(
             "/api/v1/playbooks",
-            {"ansible_version": "2.4.0", "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS}},
+            {
+                "ansible_version": "2.4.0",
+                "status": "running",
+                "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS},
+            },
         )
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Playbook.objects.count())
+        self.assertEqual(request.data["status"], "running")
 
     def test_partial_update_playbook(self):
         playbook = factories.PlaybookFactory()
-        self.assertNotEqual("2.3.0", playbook.ansible_version)
-        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"ansible_version": "2.3.0"})
+        self.assertNotEqual("completed", playbook.status)
+        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"status": "completed"})
         self.assertEqual(200, request.status_code)
         playbook_updated = models.Playbook.objects.get(id=playbook.id)
-        self.assertEqual("2.3.0", playbook_updated.ansible_version)
+        self.assertEqual("completed", playbook_updated.status)
+
+    def test_update_wrong_playbook_status(self):
+        playbook = factories.PlaybookFactory()
+        self.assertNotEqual("wrong", playbook.status)
+        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"status": "wrong"})
+        self.assertEqual(400, request.status_code)
+        playbook_updated = models.Playbook.objects.get(id=playbook.id)
+        self.assertNotEqual("wrong", playbook_updated.status)
 
     def test_get_playbook(self):
         playbook = factories.PlaybookFactory()

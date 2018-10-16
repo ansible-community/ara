@@ -109,9 +109,16 @@ class Playbook(Duration):
     class Meta:
         db_table = "playbooks"
 
+    # A playbook in ARA can be running (in progress), completed (succeeded) or failed.
+    UNKNOWN = "unknown"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (FAILED, "failed"))
+
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
-    completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     arguments = models.BinaryField(max_length=(2 ** 32) - 1)
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="playbooks")
     files = models.ManyToManyField(File)

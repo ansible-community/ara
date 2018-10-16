@@ -59,7 +59,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
         model = models.Playbook
 
     ansible_version = "2.4.0"
-    completed = True
+    status = "running"
     arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
     file = factory.SubFactory(FileFactory)
 
