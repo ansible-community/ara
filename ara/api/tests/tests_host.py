@@ -97,3 +97,12 @@ class HostTestCase(APITestCase):
         host = factories.HostFactory()
         request = self.client.get("/api/v1/hosts/%s" % host.id)
         self.assertEqual(host.name, request.data["name"])
+
+    def test_get_hosts_by_playbook(self):
+        playbook = factories.PlaybookFactory()
+        host = factories.HostFactory(name="host1", playbook=playbook)
+        factories.HostFactory(name="host2", playbook=playbook)
+        request = self.client.get("/api/v1/hosts?playbook=%s" % playbook.id)
+        self.assertEqual(2, len(request.data["results"]))
+        self.assertEqual(host.name, request.data["results"][0]["name"])
+        self.assertEqual("host2", request.data["results"][1]["name"])
