@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 from django.db import transaction
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -29,6 +30,8 @@ class LabelViewSet(viewsets.ModelViewSet):
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("name",)
 
 
 class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
