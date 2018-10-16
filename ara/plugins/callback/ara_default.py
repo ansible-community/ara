@@ -153,6 +153,7 @@ class CallbackModule(CallbackBase):
             "/api/v1/playbooks",
             ansible_version=ansible_version,
             arguments=arguments,
+            status="running",
             file=dict(path=path, content=self._read_file(path)),
         )
 
@@ -229,11 +230,10 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_stats(self, stats):
         self.log.debug("v2_playbook_on_stats")
-
-        self._load_stats(stats)
         self._end_task()
         self._end_play()
-        self._end_playbook()
+        self._load_stats(stats)
+        self._end_playbook(stats)
 
     def _end_task(self):
         if self.task is not None:
@@ -250,9 +250,15 @@ class CallbackModule(CallbackBase):
             )
             self.play = None
 
-    def _end_playbook(self):
+    def _end_playbook(self, stats):
+        status = "unknown"
+        if len(stats.failures) >= 1 or len(stats.dark) >= 1:
+            status = "failed"
+        else:
+            status = "completed"
+
         self.playbook = self.client.patch(
-            "/api/v1/playbooks/%s" % self.playbook["id"], completed=True, ended=datetime.datetime.now().isoformat()
+            "/api/v1/playbooks/%s" % self.playbook["id"], status=status, ended=datetime.datetime.now().isoformat()
         )
 
     def _load_files(self, files):
