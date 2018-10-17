@@ -20,7 +20,6 @@ import json
 import logging
 import zlib
 
-from django.utils import timezone
 from rest_framework import serializers
 
 from ara.api import models
@@ -70,7 +69,7 @@ class DurationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_duration(obj):
         if obj.ended is None:
-            return timezone.now() - obj.started
+            return obj.updated - obj.started
         return obj.ended - obj.started
 
 
