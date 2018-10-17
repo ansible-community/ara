@@ -10,6 +10,7 @@
     vars:
       tox_envlist: py3
 
+# TODO: Delete this, all linters have been merged into tox-linters
 - job:
     name: tox-format
     parent: tox
