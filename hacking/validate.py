@@ -26,7 +26,7 @@ def validate_playbook(playbook):
     assert len(playbook['arguments']) == 40
     assert 'hacking/test-playbook.yml' in playbook['file']['path']
     assert len(playbook['files']) == 9
-    assert playbook['completed']
+    assert playbook['status'] == 'completed'
 
 
 def validate_play(play):
