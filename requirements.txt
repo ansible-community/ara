@@ -4,5 +4,6 @@ Django>=2
 djangorestframework
 django-cors-headers
 drf-extensions
-envparse
 django-filter
+django-environ
+everett
