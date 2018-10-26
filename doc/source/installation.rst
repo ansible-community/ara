@@ -59,7 +59,7 @@ Installing ARA from latest release on PyPi
 When installing ARA using ``--user``, command line scripts will be installed
 inside ``~/.local/bin`` folder which may not be in ``PATH``. You may want to
 assure that this folder is in PATH or to use the alternative calling method
-``pyhton -m ara`` which calls Ansible module directly.
+``python -m ara`` which calls Ansible module directly.
 
 The alternative calling method has the advantage that allows user to control
 which python interpreter would be used. For example you could install ARA in
