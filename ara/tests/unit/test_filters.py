@@ -21,7 +21,6 @@ import ara.models as m
 
 from ara.tests.unit.common import TestAra
 from ara.tests.unit.common import ansible_run
-from oslo_utils import encodeutils
 
 
 class TestFilters(TestAra):
@@ -121,7 +120,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_string_json(self):
@@ -131,9 +130,9 @@ class TestFilters(TestAra):
 
         # This is ugly, sorry
         if six.PY2:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # noqa
         else:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''   # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_unicode(self):
@@ -142,7 +141,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>string\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_list(self):
@@ -152,9 +151,9 @@ class TestFilters(TestAra):
 
         # This is ugly, sorry
         if six.PY2:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span> \n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n''' # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span> \n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n'''  # noqa
         else:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span>\n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n'''  # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">[</span>\n    <span class="s2">&quot;one&quot;</span><span class="p">,</span>\n    <span class="s2">&quot;two&quot;</span>\n<span class="p">]</span>\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_dict(self):
@@ -164,9 +163,9 @@ class TestFilters(TestAra):
 
         # This is ugly, sorry
         if six.PY2:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n''' # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> \n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # noqa
         else:
-            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # flake8: noqa
+            expected = '''<div class="codehilite"><pre><span></span><span class="p">{</span>\n    <span class="nt">&quot;one&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span>\n    <span class="nt">&quot;two&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>\n<span class="p">}</span>\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_integer(self):
@@ -175,7 +174,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<div class="codehilite"><pre><span></span>1\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>1\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_pygments_formatter_boolean(self):
@@ -184,7 +183,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<div class="codehilite"><pre><span></span>True\n</pre></div>\n''' # flake8: noqa
+        expected = '''<div class="codehilite"><pre><span></span>True\n</pre></div>\n'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_yamlhighlight(self):
@@ -197,7 +196,7 @@ class TestFilters(TestAra):
         res = t.render(data=data)
 
         # This is ugly, sorry
-        expected = '''<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#line-1">1</a>\n<a href="#line-2">2</a>\n<a href="#line-3">3</a>\n<a href="#line-4">4</a>\n<a href="#line-5">5</a></pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span id="line-1"><a name="line-1"></a><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Test thing</span>\n</span><span id="line-2"><a name="line-2"></a>    <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>\n</span><span id="line-3"><a name="line-3"></a>    <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>\n</span><span id="line-4"><a name="line-4"></a>      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">debug</span><span class="p p-Indicator">:</span>\n</span><span id="line-5"><a name="line-5"></a>          <span class="l l-Scalar l-Scalar-Plain">msg</span><span class="p p-Indicator">:</span> <span class="s">&quot;foo</span>\n</span></pre></div>\n</td></tr></table>'''  # flake8: noqa
+        expected = '''<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#line-1">1</a>\n<a href="#line-2">2</a>\n<a href="#line-3">3</a>\n<a href="#line-4">4</a>\n<a href="#line-5">5</a></pre></div></td><td class="code"><div class="codehilite"><pre><span></span><span id="line-1"><a name="line-1"></a><span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Test thing</span>\n</span><span id="line-2"><a name="line-2"></a>    <span class="l l-Scalar l-Scalar-Plain">hosts</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">localhost</span>\n</span><span id="line-3"><a name="line-3"></a>    <span class="l l-Scalar l-Scalar-Plain">tasks</span><span class="p p-Indicator">:</span>\n</span><span id="line-4"><a name="line-4"></a>      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">debug</span><span class="p p-Indicator">:</span>\n</span><span id="line-5"><a name="line-5"></a>          <span class="l l-Scalar l-Scalar-Plain">msg</span><span class="p p-Indicator">:</span> <span class="s">&quot;foo</span>\n</span></pre></div>\n</td></tr></table>'''  # noqa
         self.assertEqual(res, expected)
 
     def test_jinja_fast_count(self):
