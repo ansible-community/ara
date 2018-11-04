@@ -18,19 +18,23 @@
 # This is an "offline" API client that does not require standing up
 # an API server and does not execute actual HTTP calls.
 
-import json
 import logging
 import os
+import threading
+
+from django.core.handlers.wsgi import WSGIHandler
+from django.core.servers.basehttp import ServerHandler as BaseServerHandler, ThreadedWSGIServer, WSGIRequestHandler
+
+from .http import AraHttpClient
 
 
-class AraOfflineClient(object):
+class AraOfflineClient(AraHttpClient):
     def __init__(self):
         self.log = logging.getLogger(__name__)
 
         try:
             from django import setup as django_setup
             from django.core.management import execute_from_command_line
-            from django.test import Client
 
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 
@@ -39,52 +43,76 @@ class AraOfflineClient(object):
 
             # Set up the things Django needs
             django_setup()
-        except ImportError as e:
+
+            self._start_server()
+            super().__init__(endpoint="http://localhost:%d" % self.server_thread.port)
+        except ImportError:
             self.log.error("The offline client requires ara-server to be installed")
-            raise e
+            raise
 
-        self.client = Client()
+    def _start_server(self):
+        self.server_thread = ServerThread("localhost")
+        self.server_thread.start()
 
-    def _request(self, method, endpoint, **kwargs):
-        func = getattr(self.client, method)
-        # TODO: Is there a better way than doing this if/else ?
-        if kwargs:
-            response = func(endpoint, json.dumps(kwargs), content_type="application/json")
-        else:
-            response = func(endpoint, content_type="application/json")
+        # Wait for the live server to be ready
+        self.server_thread.is_ready.wait()
+        if self.server_thread.error:
+            raise self.server_thread.error
 
-        if response.status_code >= 500:
-            self.log.error(
-                "Failed to {method} on {endpoint}: {content}".format(method=method, endpoint=endpoint, content=kwargs)
-            )
 
-        self.log.debug(
-            "HTTP {status}: {method} on {endpoint}".format(
-                status=response.status_code, method=method, endpoint=endpoint
-            )
-        )
+class ServerHandler(BaseServerHandler):
+    def cleanup_headers(self):
+        super().cleanup_headers()
+        self.headers["Connection"] = "close"
 
-        if response.status_code not in [200, 201, 204]:
-            self.log.error(
-                "Failed to {method} on {endpoint}: {content}".format(method=method, endpoint=endpoint, content=kwargs)
-            )
 
-        if response.status_code == 204:
-            return response
+class QuietWSGIRequestHandler(WSGIRequestHandler):
+    def log_message(*args):
+        pass
 
-        return response.json()
+    def handle(self):
+        """Copy of WSGIRequestHandler.handle() but with different ServerHandler"""
+        self.raw_requestline = self.rfile.readline(65537)
+        if len(self.raw_requestline) > 65536:
+            self.requestline = ""
+            self.request_version = ""
+            self.command = ""
+            self.send_error(414)
+            return
 
-    def get(self, endpoint, **kwargs):
-        return self._request("get", endpoint, **kwargs)
+        if not self.parse_request():  # An error code has been sent, just exit
+            return
 
-    def patch(self, endpoint, **kwargs):
-        return self._request("patch", endpoint, **kwargs)
+        handler = ServerHandler(self.rfile, self.wfile, self.get_stderr(), self.get_environ())
+        handler.request_handler = self  # backpointer for logging
+        handler.run(self.server.get_app())
 
-    def post(self, endpoint, **kwargs):
-        return self._request("post", endpoint, **kwargs)
 
-    def put(self, endpoint, **kwargs):
-        return self._request("put", endpoint, **kwargs)
+class ServerThread(threading.Thread):
+    def __init__(self, host, port=0):
+        self.host = host
+        self.port = port
+        self.is_ready = threading.Event()
+        self.error = None
+        super().__init__(daemon=True)
 
-    def delete(self, endpoint, **kwargs):
-        return self._request("delete", endpoint, **kwargs)
+    def run(self):
+        """
+        Set up the live server and databases, and then loop over handling
+        HTTP requests.
+        """
+        try:
+            # Create the handler for serving static and media files
+            self.httpd = self._create_server()
+            # If binding to port zero, assign the port allocated by the OS.
+            if self.port == 0:
+                self.port = self.httpd.server_address[1]
+            self.httpd.set_app(WSGIHandler())
+            self.is_ready.set()
+            self.httpd.serve_forever()
+        except Exception as e:
+            self.error = e
+            self.is_ready.set()
+
+    def _create_server(self):
+        return ThreadedWSGIServer((self.host, self.port), QuietWSGIRequestHandler, allow_reuse_address=False)
