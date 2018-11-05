@@ -20,6 +20,7 @@
 tests=$(dirname $0)
 export PROJECT_ROOT=$(cd `dirname $tests` && pwd -P)
 export PROJECT_LIB="${PROJECT_ROOT}/ara"
+ret=0
 
 function banner() {
     echo
@@ -40,14 +41,25 @@ fi
 
 banner black
 time black --diff --check "${PROJECT_LIB}"
+ret+=$?
 
 banner isort
 time isort --recursive --check-only --diff "${PROJECT_LIB}"
+ret+=$?
 
 banner flake8
 time flake8 "${PROJECT_LIB}"
+ret+=$?
 
 # B303 - Use of insecure MD2, MD4, or MD5 hash function.
 # We're using sha1 to generate a hash of file contents.
 banner bandit
 time bandit -r "${PROJECT_LIB}" --skip B303
+ret+=$?
+
+if [ $ret -gt 0 ]
+then
+  echo
+  echo "At least one linter detected errors!"
+  exit 1
+fi
