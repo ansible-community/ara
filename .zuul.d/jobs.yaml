@@ -1,14 +1,23 @@
 - job:
     name: ara-server-ansible-integration
     parent: tox
+    nodeset: ubuntu-bionic
     vars:
       tox_envlist: ansible-integration
 
 - job:
-    name: tox-py3
+    name: ara-tox-py3
     parent: tox
+    nodeset: ubuntu-bionic
     vars:
       tox_envlist: py3
+
+- job:
+    name: ara-tox-linters
+    parent: tox
+    nodeset: ubuntu-bionic
+    vars:
+      tox_envlist: linters
 
 # TODO: Delete this, all linters have been merged into tox-linters
 - job:

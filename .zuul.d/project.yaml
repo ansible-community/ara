@@ -7,9 +7,9 @@
       jobs:
         - ara-server-ansible-integration:
             voting: false
-        - tox-linters
-        - tox-py3
+        - ara-tox-linters
+        - ara-tox-py3
     gate:
       jobs:
-        - tox-linters
-        - tox-py3
+        - ara-tox-linters
+        - ara-tox-py3
