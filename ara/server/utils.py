@@ -2,6 +2,7 @@ import os
 
 import environ
 from configobj import ConfigObj
+from django.core.exceptions import ImproperlyConfigured
 from everett import ConfigurationError
 from everett.manager import ConfigEnvFileEnv, ConfigIniEnv, ConfigManager, ConfigOSEnv, listify
 
@@ -73,3 +74,16 @@ class EverettEnviron(environ.Env):
                 ]
             ).with_namespace("ara")
         )
+
+    def get_value(self, var, cast=None, default=environ.Env.NOTSET, parse_default=False):
+        try:
+            return super().get_value(var, cast, default, parse_default)
+        except ImproperlyConfigured as e:
+            # Rewrite the django-environ exception to match our configs better
+            if default is self.NOTSET and str(e) == "Set the {0} environment variable".format(var):
+                error_msg = (
+                    "Set the ARA_{0} environment variable or set {1} in the [ara] section "
+                    "of your configuration file."
+                ).format(var, var.lower())
+                raise ImproperlyConfigured(error_msg)
+            raise
