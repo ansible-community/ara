@@ -171,7 +171,9 @@ class CallbackModule(CallbackBase):
         self._load_files(play._loader._FILE_CACHE.keys())
 
         # Create the play
-        self.play = self.client.post("/api/v1/plays", name=play.name, uuid=play._uuid, playbook=self.playbook["id"])
+        self.play = self.client.post(
+            "/api/v1/plays", name=play.name, status="running", uuid=play._uuid, playbook=self.playbook["id"]
+        )
 
         # Record all the hosts involved in the play
         self._load_hosts(play._variable_manager._inventory._restriction)
@@ -246,7 +248,7 @@ class CallbackModule(CallbackBase):
     def _end_play(self):
         if self.play is not None:
             self.client.patch(
-                "/api/v1/plays/%s" % self.play["id"], completed=True, ended=datetime.datetime.now().isoformat()
+                "/api/v1/plays/%s" % self.play["id"], status="completed", ended=datetime.datetime.now().isoformat()
             )
             self.play = None
 
