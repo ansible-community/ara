@@ -42,8 +42,6 @@ class HttpClient(object):
         self.http.headers.update(self.headers)
 
     def _request(self, method, url, **payload):
-        self.log.debug("%s on %s" % (method, url))
-
         # Use requests.Session to do the query
         # The actual endpoint is:
         # <endpoint>              <url>
