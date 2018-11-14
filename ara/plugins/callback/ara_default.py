@@ -207,6 +207,7 @@ class CallbackModule(CallbackBase):
         self.task = self.client.post(
             "/api/v1/tasks",
             name=task.get_name(),
+            status="running",
             action=task.action,
             play=self.play["id"],
             playbook=self.playbook["id"],
@@ -240,7 +241,7 @@ class CallbackModule(CallbackBase):
     def _end_task(self):
         if self.task is not None:
             self.client.patch(
-                "/api/v1/tasks/%s" % self.task["id"], completed=True, ended=datetime.datetime.now().isoformat()
+                "/api/v1/tasks/%s" % self.task["id"], status="completed", ended=datetime.datetime.now().isoformat()
             )
             self.task = None
             self.loop_items = []
