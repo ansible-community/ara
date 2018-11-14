@@ -75,9 +75,11 @@ Otherwise, screenshots highlighting some of ARA's features are available in
 Community and getting help
 ==========================
 
-The ARA community hangs out on IRC and Slack.
-The two chats are bridged with slack-irc_ which allows everyone to talk to each
-other.
+You can chat with the ARA community on Slack and IRC.
+The two are transparently bridged with teamchat_ which broadcasts messages from
+one platform to the other.
+
+In addition, you can also find ARA on Twitter: `@ARecordsAnsible <https://twitter.com/ARecordsAnsible>`_
 
 **IRC**
 
@@ -86,10 +88,10 @@ other.
 
 **Slack**
 
-- https://ara-community.slack.com
-- Join with the `Slack invitation <https://join.slack.com/t/ara-community/shared_invite/MjMxNzI4ODAxMDQxLTE1MDM4MDEzMTEtNzU1NTUwMTcyOQ>`_
+- https://arecordsansible.slack.com
+- Join with the `Slack invitation <https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLWU4MmZhZTI4ZjRjOTUwZTM2MzM3MzcwNDU1YzFmNzRlMzI0NTUzNDY1MWJlNThhM2I4ZTViZjUwZTRkNTBiM2I>`_
 
-.. _slack-irc: https://github.com/ekmartin/slack-irc
+.. _teamchat: https://github.com/dmsimard/teamchat
 .. _irc.freenode.net: https://webchat.freenode.net/
 
 Contributing, testing, issues and bugs
