@@ -79,7 +79,7 @@ class TaskFactory(factory.DjangoModelFactory):
         model = models.Task
 
     name = "test task"
-    completed = True
+    status = "running"
     action = "setup"
     lineno = 2
     handler = False

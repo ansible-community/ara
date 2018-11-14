@@ -177,12 +177,19 @@ class Task(Duration):
     class Meta:
         db_table = "tasks"
 
+    # A task in ARA can be running (in progress) or completed (regardless of success or failure)
+    # Actual task statuses (such as failed, skipped, etc.) are actually in the Results table.
+    UNKNOWN = "unknown"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"))
+
     name = models.TextField(blank=True, null=True)
     action = models.TextField()
     lineno = models.IntegerField()
     tags = models.BinaryField(max_length=(2 ** 32) - 1)
     handler = models.BooleanField()
-    completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
 
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="tasks")
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="tasks")
