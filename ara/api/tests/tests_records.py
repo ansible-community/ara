@@ -81,3 +81,24 @@ class RecordTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(record.key, request.data["results"][0]["key"])
         self.assertEqual(record.playbook.id, request.data["results"][0]["playbook"])
+
+    def test_get_records_by_key(self):
+        playbook = factories.PlaybookFactory()
+        record = factories.RecordFactory(playbook=playbook, key="by_key")
+        factories.RecordFactory(key="another_record")
+        request = self.client.get("/api/v1/records?key=%s" % record.key)
+        self.assertEqual(2, models.Record.objects.all().count())
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(record.key, request.data["results"][0]["key"])
+        self.assertEqual(record.playbook.id, request.data["results"][0]["playbook"])
+
+    def test_get_records_by_playbook_and_key(self):
+        playbook = factories.PlaybookFactory()
+        record = factories.RecordFactory(playbook=playbook, key="by_playbook_and_key")
+        factories.RecordFactory(playbook=playbook, key="another_record_in_playbook")
+        factories.RecordFactory(key="another_record_in_another_playbook")
+        request = self.client.get("/api/v1/records?playbook=%s&key=%s" % (playbook.id, record.key))
+        self.assertEqual(3, models.Record.objects.all().count())
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(record.key, request.data["results"][0]["key"])
+        self.assertEqual(record.playbook.id, request.data["results"][0]["playbook"])
