@@ -71,3 +71,13 @@ class RecordTestCase(APITestCase):
         self.assertEqual(200, request.status_code)
         record_updated = models.Record.objects.get(id=record.id)
         self.assertEqual("update", record_updated.key)
+
+    def test_get_records_by_playbook(self):
+        playbook = factories.PlaybookFactory()
+        record = factories.RecordFactory(playbook=playbook, key="by_playbook")
+        factories.RecordFactory(key="another_record")
+        request = self.client.get("/api/v1/records?playbook=%s" % playbook.id)
+        self.assertEqual(2, models.Record.objects.all().count())
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(record.key, request.data["results"][0]["key"])
+        self.assertEqual(record.playbook.id, request.data["results"][0]["playbook"])

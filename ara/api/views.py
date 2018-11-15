@@ -75,6 +75,7 @@ class FileViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = models.Record.objects.all()
     serializer_class = serializers.RecordSerializer
+    filter_fields = ("playbook",)
 
 
 class StatsViewSet(viewsets.ModelViewSet):
