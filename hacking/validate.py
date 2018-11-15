@@ -30,11 +30,11 @@ def validate_playbook(playbook):
 
 
 def validate_play(play):
-    assert play['completed']
+    assert play['status'] == "completed"
 
 
 def validate_task(task):
-    assert task['completed']
+    assert task['status'] == "completed"
 
 
 def validate_host(host):
