@@ -156,9 +156,15 @@ class Play(Duration):
     class Meta:
         db_table = "plays"
 
+    # A play in ARA can be running (in progress) or completed (regardless of success or failure)
+    UNKNOWN = "unknown"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"))
+
     name = models.CharField(max_length=255, blank=True, null=True)
     uuid = models.UUIDField()
-    completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
 
     def __str__(self):

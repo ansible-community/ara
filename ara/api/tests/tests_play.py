@@ -34,7 +34,7 @@ class PlayTestCase(APITestCase):
         serializer = serializers.PlaySerializer(
             data={
                 "name": "serializer",
-                "completed": True,
+                "status": "completed",
                 "uuid": "5c5f67b9-e63c-6297-80da-000000000005",
                 "playbook": playbook.id,
             }
@@ -43,6 +43,7 @@ class PlayTestCase(APITestCase):
         play = serializer.save()
         play.refresh_from_db()
         self.assertEqual(play.name, "serializer")
+        self.assertEqual(play.status, "completed")
 
     def test_get_no_plays(self):
         request = self.client.get("/api/v1/plays")
@@ -68,7 +69,7 @@ class PlayTestCase(APITestCase):
             "/api/v1/plays",
             {
                 "name": "create",
-                "completed": False,
+                "status": "running",
                 "uuid": "5c5f67b9-e63c-6297-80da-000000000005",
                 "playbook": playbook.id,
             },
@@ -109,3 +110,11 @@ class PlayTestCase(APITestCase):
         play = factories.PlayFactory(started=started, ended=ended)
         request = self.client.get("/api/v1/plays/%s" % play.id)
         self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
+
+    def test_update_wrong_play_status(self):
+        play = factories.PlayFactory()
+        self.assertNotEqual("wrong", play.status)
+        request = self.client.patch("/api/v1/plays/%s" % play.id, {"status": "wrong"})
+        self.assertEqual(400, request.status_code)
+        play_updated = models.Play.objects.get(id=play.id)
+        self.assertNotEqual("wrong", play_updated.status)
