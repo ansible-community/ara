@@ -37,7 +37,7 @@ class TaskTestCase(APITestCase):
                 "name": "serializer",
                 "action": "test",
                 "lineno": 2,
-                "completed": True,
+                "status": "completed",
                 "handler": False,
                 "play": play.id,
                 "file": file.id,
@@ -48,6 +48,7 @@ class TaskTestCase(APITestCase):
         task = serializer.save()
         task.refresh_from_db()
         self.assertEqual(task.name, "serializer")
+        self.assertEqual(task.status, "completed")
 
     def test_task_serializer_compress_tags(self):
         play = factories.PlayFactory()
@@ -57,7 +58,7 @@ class TaskTestCase(APITestCase):
                 "name": "compress",
                 "action": "test",
                 "lineno": 2,
-                "completed": True,
+                "status": "running",
                 "handler": False,
                 "play": play.id,
                 "file": file.id,
@@ -103,7 +104,7 @@ class TaskTestCase(APITestCase):
                 "action": "test",
                 "lineno": 2,
                 "handler": False,
-                "completed": True,
+                "status": "running",
                 "play": play.id,
                 "file": file.id,
                 "playbook": play.playbook.id,
@@ -140,3 +141,11 @@ class TaskTestCase(APITestCase):
         task = factories.TaskFactory(started=started, ended=ended)
         request = self.client.get("/api/v1/tasks/%s" % task.id)
         self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
+
+    def test_update_wrong_task_status(self):
+        task = factories.TaskFactory()
+        self.assertNotEqual("wrong", task.status)
+        request = self.client.patch("/api/v1/tasks/%s" % task.id, {"status": "wrong"})
+        self.assertEqual(400, request.status_code)
+        task_updated = models.Task.objects.get(id=task.id)
+        self.assertNotEqual("wrong", task_updated.status)
