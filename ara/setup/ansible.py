@@ -16,14 +16,13 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-from . import callback_plugins, action_plugins, library
+from . import callback_plugins, action_plugins
 
 config = """
 [defaults]
 callback_plugins={}
 action_plugins={}
-library={}
-""".format(callback_plugins, action_plugins, library)
+""".format(callback_plugins, action_plugins)
 
 if __name__ == "__main__":
     print(config.strip())

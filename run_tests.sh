@@ -112,14 +112,12 @@ fi
 echo "python -m ara.setup.path: $(python -m ara.setup.path)"
 echo "python -m ara.setup.callback_plugins: $(python -m ara.setup.callback_plugins)"
 echo "python -m ara.setup.action_plugins: $(python -m ara.setup.action_plugins)"
-echo "python -m ara.setup.library: $(python -m ara.setup.library)"
 echo "python -m ara.setup.env: $(python -m ara.setup.env)"
 echo "python -m ara.setup.ansible: $(python -m ara.setup.ansible)"
 
 # Setup ARA
 export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
 export ANSIBLE_ACTION_PLUGINS="$(python -m ara.setup.action_plugins)"
-export ANSIBLE_LIBRARY="$(python -m ara.setup.library)"
 export ARA_DATABASE="${DATABASE}"
 
 # Run linters

@@ -22,4 +22,3 @@ path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 action_plugins = os.path.abspath(os.path.join(path, 'plugins/actions'))
 callback_plugins = os.path.abspath(os.path.join(path, 'plugins/callbacks'))
-library = os.path.abspath(os.path.join(path, 'plugins/modules'))

@@ -32,9 +32,6 @@ They can be used like so::
     $ python -m ara.setup.callback_plugins
     /usr/lib/python2.7/site-packages/ara/plugins/callbacks
 
-    $ python -m ara.setup.library
-    /usr/lib/python2.7/site-packages/ara/plugins/modules
-
 Using ansible.cfg
 ~~~~~~~~~~~~~~~~~
 
@@ -45,14 +42,12 @@ the appropriate locations::
     [defaults]
     callback_plugins=/usr/lib/python2.7/site-packages/ara/plugins/callbacks
     action_plugins=/usr/lib/python2.7/site-packages/ara/plugins/actions
-    library=/usr/lib/python2.7/site-packages/ara/plugins/modules
 
 Or alternatively, if you have a customized `ansible.cfg`_ file, you can retrieve
 only what you need using the other helpers such as the following:
 
 - ``python -m ara.setup.callback_plugins``
 - ``python -m ara.setup.action_plugins``
-- ``python -m ara.setup.library``
 
 .. _ansible.cfg: https://docs.ansible.com/ansible/intro_configuration.html#configuration-file
 
@@ -67,7 +62,6 @@ ARA provides a helper module that prints out the necessary export commands::
     $ python -m ara.setup.env
     export ANSIBLE_CALLBACK_PLUGINS=/usr/lib/python2.7/site-packages/ara/plugins/callbacks
     export ANSIBLE_ACTION_PLUGINS=/usr/lib/python2.7/site-packages/ara/plugins/actions
-    export ANSIBLE_LIBRARY=/usr/lib/python2.7/site-packages/ara/plugins/modules
 
 Note that the module doesn't actually run those exports, you'll want to run them
 yourself, add them in a bash script or a bashrc, etc.

@@ -16,15 +16,14 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-from . import callback_plugins, action_plugins, library
+from . import callback_plugins, action_plugins
 import os
 from distutils.sysconfig import get_python_lib
 
 exports = """
 export ANSIBLE_CALLBACK_PLUGINS={}
 export ANSIBLE_ACTION_PLUGINS={}
-export ANSIBLE_LIBRARY={}
-""".format(callback_plugins, action_plugins, library)
+""".format(callback_plugins, action_plugins)
 
 if 'VIRTUAL_ENV' in os.environ:
     """ PYTHONPATH may be exported when 'ara' module is installed in a
