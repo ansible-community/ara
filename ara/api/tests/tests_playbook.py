@@ -121,6 +121,13 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
 
+    def test_get_playbook_by_status(self):
+        playbook = factories.PlaybookFactory(status="failed")
+        factories.PlaybookFactory(status="completed")
+        request = self.client.get("/api/v1/playbooks?status=failed")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.status, request.data["results"][0]["status"])
+
     def test_get_playbook_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
