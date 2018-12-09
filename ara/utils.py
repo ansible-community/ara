@@ -154,7 +154,7 @@ def playbook_treeview(playbook):
 
     paths = {}
     for file in files:
-        fs.CreateFile(file.path)
+        fs.create_file(file.path)
         paths[file.path] = file.id
 
     return jsonutils.dumps(generate_tree('/', paths, mock_os),
