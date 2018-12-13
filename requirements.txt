@@ -6,4 +6,4 @@ django-cors-headers
 drf-extensions
 django-filter
 django-environ
-everett
+dynaconf
