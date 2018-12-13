@@ -2,7 +2,8 @@
 import os
 import sys
 
-if __name__ == "__main__":
+
+def main():
     from ara import server
 
     os.environ.setdefault("ARA_CFG", os.path.dirname(server.__file__) + "/configs/dev.cfg")
@@ -11,3 +12,7 @@ if __name__ == "__main__":
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)
+
+
+if __name__ == "__main__":
+    main()
