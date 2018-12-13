@@ -29,7 +29,7 @@ class LabelViewSet(viewsets.ModelViewSet):
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
     serializer_class = serializers.PlaybookSerializer
-    filter_fields = ("name",)
+    filter_fields = ("name", "status")
 
 
 class PlaybookFilesDetail(NestedViewSetMixin, viewsets.ModelViewSet):
