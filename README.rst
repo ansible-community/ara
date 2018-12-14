@@ -38,15 +38,40 @@ To install ara-plugins::
 
     pip install git+https://github.com/openstack/ara-plugins
 
-The callback can be configured through an ``ansible.cfg`` file::
+Ansible must be configured to know about the location of the plugins in order
+for them to work.
+
+The location of the plugins will depend on many factors including your version
+of python, your Linux distribution or whether it's been installed from source,
+from packages or inside a virtual environment.
+
+ara-plugins provides a command to help you locate its plugins: ``python -m ara.plugins``.
+This command returns the path of the plugins directory so you don't need to search for it.
+
+The plugin directory location can also be retrieved in python::
+
+    import os
+    from ara.plugins import LOCATION as plugins
+    # Do something with the location
+    callback_plugins = os.path.join(plugins, "callback")
+    action_plugins = os.path.join(plugins, "action")
+
+Here's what your Ansible and ARA configuration might look like in an ``ansible.cfg`` file:
+
+    [defaults]
+    # Note: This is an example, use "python -m ara.plugins" to determine the real path
+    callback_plugins = /usr/lib/python3.6/site-packages/ara/plugins/callback
+    action_plugins = /usr/lib/python3.6/site-packages/ara/plugins/action
 
     [ara]
     api_client = http
     api_timeout = 30
     api_server = http://127.0.0.1:8000
 
-Or through environment variables::
+And what the same thing might look like when setting up configuration with environment variables::
 
+    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.plugins)/callback"
+    export ANSIBLE_ACTION_PLUGINS="$(python -m ara.plugins)/action"
     export ARA_API_CLIENT=http
     export ARA_API_TIMEOUT=30
     export ARA_SERVER=http://127.0.0.1:8000
