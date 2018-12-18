@@ -150,15 +150,11 @@ class CallbackModule(CallbackBase):
 
         # Create the playbook
         self.playbook = self.client.post(
-            "/api/v1/playbooks",
-            ansible_version=ansible_version,
-            arguments=arguments,
-            status="running",
-            file=dict(path=path, content=self._read_file(path)),
+            "/api/v1/playbooks", ansible_version=ansible_version, arguments=arguments, status="running", path=path
         )
 
-        # Record all the files involved in the playbook
-        self._load_files(playbook._loader._FILE_CACHE.keys())
+        # Record the playbook file
+        self._get_or_create_file(path)
 
         return self.playbook
 
@@ -193,16 +189,8 @@ class CallbackModule(CallbackBase):
             path = self.playbook["path"]
             lineno = 1
 
-        # Ensure this task's file was added to the playbook -- files that are
-        # dynamically included do not show up in the playbook or play context
-        self._load_files([path])
-
-        # Find the task file (is there a better way?)
-        task_file = self.playbook["file"]["id"]
-        for file in self.playbook["files"]:
-            if file["path"] == path:
-                task_file = file["id"]
-                break
+        # Get task file
+        task_file = self._get_or_create_file(path)
 
         self.task = self.client.post(
             "/api/v1/tasks",
@@ -211,7 +199,7 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play["id"],
             playbook=self.playbook["id"],
-            file=task_file,
+            file=task_file["id"],
             tags=task._attributes["tags"],
             lineno=lineno,
             handler=handler,
@@ -264,27 +252,45 @@ class CallbackModule(CallbackBase):
             "/api/v1/playbooks/%s" % self.playbook["id"], status=status, ended=datetime.datetime.now().isoformat()
         )
 
+    def _get_one_item(self, endpoint, **query):
+        """
+        Searching with the API returns a list of results. This method is used
+        when our expectation is that we would only ever get back one result back
+        due to unique database model constraints.
+        """
+        match = self.client.get(endpoint, **query)
+        if match["count"] > 1:
+            error = "Received more than one result for %s with %s" % (endpoint, str(query))
+            self.log.error(error)
+            raise Exception(error)
+        elif match["count"] == 0:
+            return False
+        else:
+            return match["results"][0]
+
+    def _get_or_create_file(self, file_):
+        self.log.debug("Getting or creating file: %s" % file_)
+        query = dict(playbook=self.playbook["id"], path=file_)
+        playbook_file = self._get_one_item("/api/v1/files", **query)
+        if not playbook_file:
+            playbook_file = self.client.post(
+                "/api/v1/files", playbook=self.playbook["id"], path=file_, content=self._read_file(file_)
+            )
+
+        return playbook_file
+
     def _load_files(self, files):
         self.log.debug("Loading %s file(s)..." % len(files))
-        playbook_files = [file["path"] for file in self.playbook["files"]]
-        for file in files:
-            if file not in playbook_files:
-                self.client.post(
-                    "/api/v1/playbooks/%s/files" % self.playbook["id"], path=file, content=self._read_file(file)
-                )
+        for file_ in files:
+            self._get_or_create_file(file_)
 
     def _get_or_create_host(self, host):
         self.log.debug("Getting or creating host: %s" % host)
-        # Don't query the API if we already have this host
-        for playbook_host in self.playbook["hosts"]:
-            if host == playbook_host["name"]:
-                return playbook_host
-
-        # TODO: Implement logic for computing the host alias
-        playbook_host = self.client.post("/api/v1/hosts", name=host, alias=host, playbook=self.playbook["id"])
-
-        # Refresh cached playbook
-        self.playbook = self.client.get("/api/v1/playbooks/%s" % self.playbook["id"])
+        query = dict(playbook=self.playbook["id"], name=host)
+        playbook_host = self._get_one_item("/api/v1/hosts", **query)
+        if not playbook_host:
+            # TODO: Implement logic for computing the host alias
+            playbook_host = self.client.post("/api/v1/hosts", name=host, alias=host, playbook=self.playbook["id"])
 
         return playbook_host
 
