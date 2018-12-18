@@ -50,7 +50,7 @@ class HttpClient(object):
 
     def get(self, url, **payload):
         if payload:
-            return self._request("get", url, params=json.dumps(payload))
+            return self._request("get", url, **payload)
         else:
             return self._request("get", url)
 
@@ -93,7 +93,7 @@ class AraHttpClient(object):
         return response.json()
 
     def get(self, endpoint, **kwargs):
-        return self._request("get", endpoint, **kwargs)
+        return self._request("get", endpoint, params=kwargs)
 
     def patch(self, endpoint, **kwargs):
         return self._request("patch", endpoint, **kwargs)
