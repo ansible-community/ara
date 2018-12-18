@@ -29,6 +29,16 @@ LABEL_DESCRIPTION = "label description"
 TASK_TAGS = ["always", "never"]
 
 
+class PlaybookFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = models.Playbook
+
+    ansible_version = "2.4.0"
+    status = "running"
+    arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
+    path = "/path/playbook.yml"
+
+
 class FileContentFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.FileContent
@@ -44,6 +54,7 @@ class FileFactory(factory.DjangoModelFactory):
 
     path = "/path/playbook.yml"
     content = factory.SubFactory(FileContentFactory)
+    playbook = factory.SubFactory(PlaybookFactory)
 
 
 class LabelFactory(factory.DjangoModelFactory):
@@ -52,16 +63,6 @@ class LabelFactory(factory.DjangoModelFactory):
 
     name = "test label"
     description = utils.compressed_str(LABEL_DESCRIPTION)
-
-
-class PlaybookFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = models.Playbook
-
-    ansible_version = "2.4.0"
-    status = "running"
-    arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
-    file = factory.SubFactory(FileFactory)
 
 
 class PlayFactory(factory.DjangoModelFactory):

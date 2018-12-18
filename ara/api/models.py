@@ -44,39 +44,6 @@ class Duration(Base):
     ended = models.DateTimeField(blank=True, null=True)
 
 
-class FileContent(Base):
-    """
-    Contents of a uniquely stored and compressed file.
-    Running the same playbook twice will yield two playbook files but just
-    one file contents.
-    """
-
-    class Meta:
-        db_table = "file_contents"
-
-    sha1 = models.CharField(max_length=40, unique=True)
-    contents = models.BinaryField(max_length=(2 ** 32) - 1)
-
-    def __str__(self):
-        return "<FileContent %s:%s>" % (self.id, self.sha1)
-
-
-class File(Base):
-    """
-    Data about Ansible files (playbooks, tasks, role files, var files, etc).
-    Multiple files can reference the same FileContent record.
-    """
-
-    class Meta:
-        db_table = "files"
-
-    path = models.CharField(max_length=255)
-    content = models.ForeignKey(FileContent, on_delete=models.CASCADE, related_name="files")
-
-    def __str__(self):
-        return "<File %s:%s>" % (self.id, self.path)
-
-
 class Label(Base):
     """
     A label is a generic container meant to group or correlate different
@@ -120,12 +87,46 @@ class Playbook(Duration):
     ansible_version = models.CharField(max_length=255)
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     arguments = models.BinaryField(max_length=(2 ** 32) - 1)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="playbooks")
-    files = models.ManyToManyField(File)
+    path = models.CharField(max_length=255)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):
         return "<Playbook %s>" % self.id
+
+
+class FileContent(Base):
+    """
+    Contents of a uniquely stored and compressed file.
+    Running the same playbook twice will yield two playbook files but just
+    one file contents.
+    """
+
+    class Meta:
+        db_table = "file_contents"
+
+    sha1 = models.CharField(max_length=40, unique=True)
+    contents = models.BinaryField(max_length=(2 ** 32) - 1)
+
+    def __str__(self):
+        return "<FileContent %s:%s>" % (self.id, self.sha1)
+
+
+class File(Base):
+    """
+    Data about Ansible files (playbooks, tasks, role files, var files, etc).
+    Multiple files can reference the same FileContent record.
+    """
+
+    class Meta:
+        db_table = "files"
+        unique_together = ("path", "playbook")
+
+    path = models.CharField(max_length=255)
+    content = models.ForeignKey(FileContent, on_delete=models.CASCADE, related_name="files")
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="files")
+
+    def __str__(self):
+        return "<File %s:%s>" % (self.id, self.path)
 
 
 class Record(Base):

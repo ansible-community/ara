@@ -29,22 +29,26 @@ class FileTestCase(APITestCase):
         self.assertEqual(file.content.sha1, file_content.sha1)
 
     def test_file_serializer(self):
-        serializer = serializers.FileSerializer(data={"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS})
+        playbook = factories.PlaybookFactory()
+        serializer = serializers.FileSerializer(
+            data={"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
+        )
         serializer.is_valid()
         file = serializer.save()
         file.refresh_from_db()
         self.assertEqual(file.content.sha1, utils.sha1(factories.FILE_CONTENTS))
 
     def test_create_file_with_same_content_create_only_one_file_content(self):
+        playbook = factories.PlaybookFactory()
         serializer = serializers.FileSerializer(
-            data={"path": "/path/1/playbook.yml", "content": factories.FILE_CONTENTS}
+            data={"path": "/path/1/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
         )
         serializer.is_valid()
         file_content = serializer.save()
         file_content.refresh_from_db()
 
         serializer2 = serializers.FileSerializer(
-            data={"path": "/path/2/playbook.yml", "content": factories.FILE_CONTENTS}
+            data={"path": "/path/2/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
         )
         serializer2.is_valid()
         file_content = serializer2.save()
@@ -55,7 +59,10 @@ class FileTestCase(APITestCase):
 
     def test_create_file(self):
         self.assertEqual(0, models.File.objects.count())
-        request = self.client.post("/api/v1/files", {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS})
+        playbook = factories.PlaybookFactory()
+        request = self.client.post(
+            "/api/v1/files", {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
+        )
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.File.objects.count())
 
@@ -76,11 +83,13 @@ class FileTestCase(APITestCase):
         self.assertEqual(file.content.sha1, request.data["sha1"])
 
     def test_update_file(self):
-        file = factories.FileFactory()
+        playbook = factories.PlaybookFactory()
+        file = factories.FileFactory(playbook=playbook)
         old_sha1 = file.content.sha1
         self.assertNotEqual("/path/new_playbook.yml", file.path)
         request = self.client.put(
-            "/api/v1/files/%s" % file.id, {"path": "/path/new_playbook.yml", "content": "# playbook"}
+            "/api/v1/files/%s" % file.id,
+            {"path": "/path/new_playbook.yml", "content": "# playbook", "playbook": playbook.id},
         )
         self.assertEqual(200, request.status_code)
         file_updated = models.File.objects.get(id=file.id)

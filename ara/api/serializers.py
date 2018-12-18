@@ -157,16 +157,11 @@ class PlaybookSerializer(DurationSerializer):
         fields = "__all__"
 
     arguments = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
-    file = FileSerializer()
     files = FileSerializer(many=True, default=[])
     hosts = HostSerializer(many=True, default=[])
     labels = LabelSerializer(many=True, default=[])
 
     def create(self, validated_data):
-        # Create the file for the playbook
-        file_dict = validated_data.pop("file")
-        validated_data["file"] = models.File.objects.create(**file_dict)
-
         # Create the playbook without the file and label references for now
         files = validated_data.pop("files")
         hosts = validated_data.pop("hosts")
@@ -174,8 +169,8 @@ class PlaybookSerializer(DurationSerializer):
         playbook = models.Playbook.objects.create(**validated_data)
 
         # Add the files, hosts and the labels in
-        for file in files:
-            playbook.files.add(models.File.objects.create(**file))
+        for file_ in files:
+            playbook.hosts.add(models.File.objects.create(**file_))
         for host in hosts:
             playbook.hosts.add(models.Host.objects.create(**host))
         for label in labels:

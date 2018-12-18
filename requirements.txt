@@ -3,7 +3,6 @@ pbr!=2.1.0,>=2.0.0 # Apache-2.0
 Django>=2
 djangorestframework
 django-cors-headers
-drf-extensions
 django-filter
 django-environ
 dynaconf

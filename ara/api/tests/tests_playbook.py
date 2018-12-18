@@ -31,11 +31,7 @@ class PlaybookTestCase(APITestCase):
 
     def test_playbook_serializer(self):
         serializer = serializers.PlaybookSerializer(
-            data={
-                "name": "serializer-playbook",
-                "ansible_version": "2.4.0",
-                "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS},
-            }
+            data={"name": "serializer-playbook", "ansible_version": "2.4.0", "path": "/path/playbook.yml"}
         )
         serializer.is_valid()
         playbook = serializer.save()
@@ -46,11 +42,7 @@ class PlaybookTestCase(APITestCase):
 
     def test_playbook_serializer_compress_arguments(self):
         serializer = serializers.PlaybookSerializer(
-            data={
-                "ansible_version": "2.4.0",
-                "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS},
-                "arguments": factories.PLAYBOOK_ARGUMENTS,
-            }
+            data={"ansible_version": "2.4.0", "path": "/path/playbook.yml", "arguments": factories.PLAYBOOK_ARGUMENTS}
         )
         serializer.is_valid()
         playbook = serializer.save()
@@ -82,12 +74,7 @@ class PlaybookTestCase(APITestCase):
     def test_create_playbook(self):
         self.assertEqual(0, models.Playbook.objects.count())
         request = self.client.post(
-            "/api/v1/playbooks",
-            {
-                "ansible_version": "2.4.0",
-                "status": "running",
-                "file": {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS},
-            },
+            "/api/v1/playbooks", {"ansible_version": "2.4.0", "status": "running", "path": "/path/playbook.yml"}
         )
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Playbook.objects.count())
