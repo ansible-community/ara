@@ -2,34 +2,33 @@ import os
 import textwrap
 
 import yaml
+from dynaconf import LazySettings
+
+settings = LazySettings(GLOBAL_ENV_FOR_DYNACONF="ARA", ENVVAR_FOR_DYNACONF="ARA_SETTINGS")
 
 # Ensure default base configuration/data directory exists
-BASE_DIR = os.environ.get("ARA_BASE_DIR", os.path.expanduser("~/.ara"))
-SERVER_DIR = os.path.join(BASE_DIR, "server")
+BASE_DIR = settings.get("BASE_DIR", os.path.expanduser("~/.ara"))
+SERVER_DIR = settings.get("SERVER_DIR", os.path.join(BASE_DIR, "server"))
 if not os.path.isdir(SERVER_DIR):
     os.makedirs(SERVER_DIR, mode=0o700)
 
 # Django built-in server and npm development server
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-CORS_ORIGIN_WHITELIST = ["127.0.0.1:8000", "localhost:3000"]
-CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
+CORS_ORIGIN_WHITELIST = settings.get("CORS_ORIGIN_WHITELIST", ["127.0.0.1:8000", "localhost:3000"])
+CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
 
-ADMINS = ()
+ADMINS = settings.get("ADMINS", ())
 
-# Dynaconf Configuration
-SECRET_KEY = True
-GLOBAL_ENV_FOR_DYNACONF = "ARA"
-ENVVAR_FOR_DYNACONF = "ARA_SETTINGS"
-SETTINGS_MODULE_FOR_DYNACONF = "ara.server.settings"
+SECRET_KEY = settings.get("SECRET_KEY")
 
 # We're not expecting ARA to use multiple concurrent databases.
 # Make it easier for users to specify the configuration for a single database.
-DATABASE_ENGINE = os.environ.get("ARA_DATABASE_ENGINE", "django.db.backends.sqlite3")
-DATABASE_NAME = os.environ.get("ARA_DATABASE_NAME", os.path.join(SERVER_DIR, "ansible.sqlite"))
-DATABASE_USER = os.environ.get("ARA_DATABASE_USER", None)
-DATABASE_PASSWORD = os.environ.get("ARA_DATABASE_PASSWORD", None)
-DATABASE_HOST = os.environ.get("ARA_DATABASE_HOST", None)
-DATABASE_PORT = os.environ.get("ARA_DATABASE_PORT", None)
+DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
+DATABASE_NAME = settings.get("DATABASE_NAME", os.path.join(SERVER_DIR, "ansible.sqlite"))
+DATABASE_USER = settings.get("DATABASE_USER", None)
+DATABASE_PASSWORD = settings.get("DATABASE_PASSWORD", None)
+DATABASE_HOST = settings.get("DATABASE_HOST", None)
+DATABASE_PORT = settings.get("DATABASE_PORT", None)
 
 DATABASES = {
     "default": {
@@ -96,11 +95,11 @@ USE_I18N = True
 USE_L10N = True
 LANGUAGE_CODE = "en-us"
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(SERVER_DIR, "www", "static")
+STATIC_URL = settings.get("STATIC_URL", "/static/")
+STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(SERVER_DIR, "www", "static"))
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(SERVER_DIR, "www", "media")
+MEDIA_URL = settings.get("MEDIA_URL", "/media/")
+MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(SERVER_DIR, "www", "media"))
 
 WSGI_APPLICATION = "ara.server.wsgi.application"
 ROOT_URLCONF = "ara.server.urls"
@@ -121,8 +120,8 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
-DEBUG = False
-LOG_LEVEL = "INFO"
+DEBUG = settings.get("DEBUG", False, "@bool")
+LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
 # fmt: off
 LOGGING = {
     "version": 1,

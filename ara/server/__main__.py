@@ -5,8 +5,6 @@ import sys
 
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
-    # https://github.com/rochacbruno/dynaconf/issues/89
-    from dynaconf.contrib import django_dynaconf  # noqa
 
     from django.core.management import execute_from_command_line
 
