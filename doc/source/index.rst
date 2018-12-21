@@ -9,4 +9,5 @@ Table of Contents
     :maxdepth: 2
 
     Installing ara-server <installing>
+    Configuration settings and preferences <configuring>
     Architecture and workflows <arch>
