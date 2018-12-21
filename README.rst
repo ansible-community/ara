@@ -6,33 +6,77 @@ ara-server
 ARA Records Ansible playbook runs and makes the recorded data available and
 intuitive for users and systems.
 
-``ara-server`` is a component of ARA which provides an API to store and query
-Ansible execution results:
+ara-server is a modern python 3 application built with the latest releases of
+`Django <https://www.djangoproject.com/>`_ and `django-rest-framework <https://www.django-rest-framework.org/>`_.
+
+``ara-server`` is the component from ARA that manages the REST API and the database.
 
 .. image:: doc/source/_static/screenshot.png
 
-Disclaimer
+- For the ARA Ansible callback plugin or the ``ara_record`` action module, look at `ara-plugins <https://github.com/openstack/ara-plugins>`_
+- For the ARA REST API clients, look at `ara-clients <https://github.com/openstack/ara-clients>`_
+- For the ARA web interface, look at `ara-web <https://github.com/openstack/ara-web>`_
+
+Quickstart
 ==========
 
-``ara-server`` is not yet stable and will be shipped as part of a coordinated
-ARA 1.0 release. It is not currently recommended for production use.
+Here's how you can get started from scratch with default settings::
 
-While most of the major work has landed, please keep in mind that we can still
-introduce backwards incompatible changes until we ship the first release.
+    # Create a virtual environment
+    python3 -m venv ~/.ara/venv
 
-You are free to use this project and in fact, you are more than welcome to
-contribute feedback, bug fixes or improvements !
+    # Install Ansible and the required ARA projects
+    ~/.ara/venv/bin/pip install ansible ara-server ara-clients ara-plugins
 
-If you are looking for a stable version of ARA, you can find the latest 0.x
-version on PyPi_ and the source is available here_.
+    # Tell Ansible to use the ARA callback plugin from ara-plugins
+    export ANSIBLE_CALLBACK_PLUGINS="$(~/.ara/venv/bin/python -m ara.plugins)/callback"
 
-.. _PyPi: https://pypi.org/project/ara/
-.. _here: https://github.com/openstack/ara
+    # Run your playbook as your normally would
+    ~/.ara/venv/bin/ansible-playbook playbook.yml
+
+The data is saved in real time during the Ansible playbook execution.
+
+What happened behind the scenes is that the ARA Ansible callback plugin
+(provided by ``ara-plugins``) used the offline API client
+(provided by ``ara-clients``) to send your data to the ``ara-server`` API which
+then saved it to a database located by default at
+``~/.ara/server/ansible.sqlite``.
+
+You're now ready to start poking at the API with the built-in API clients !
+
+If you'd like to have the ARA web reporting interface, take a look at
+`ara-web <https://github.com/openstack/ara-web>`_.
 
 Documentation
 =============
 
-*Work in progress*
+Documentation for installing, configuring, running and using ara-server is
+available on `readthedocs.io <https://ara-server.readthedocs.io>`_.
+
+Community and getting help
+==========================
+
+You can chat with the ARA community on Slack and IRC.
+The two are transparently bridged with teamchat_ which broadcasts messages from
+one platform to the other.
+
+In addition, you can also find ARA on Twitter: `@ARecordsAnsible <https://twitter.com/ARecordsAnsible>`_
+
+**IRC**
+
+- Server: `irc.freenode.net`_
+- Channel: #ara
+
+**Slack**
+
+- https://arecordsansible.slack.com
+- Join with the `Slack invitation <https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLWU4MmZhZTI4ZjRjOTUwZTM2MzM3MzcwNDU1YzFmNzRlMzI0NTUzNDY1MWJlNThhM2I4ZTViZjUwZTRkNTBiM2I>`_
+
+.. _teamchat: https://github.com/dmsimard/teamchat
+.. _irc.freenode.net: https://webchat.freenode.net/
+
+Development
+===========
 
 **TL;DR**: Using tox is convenient for the time being::
 
@@ -43,7 +87,7 @@ Documentation
   # Install tox from pip or from your distro packages
   pip install tox
 
-  # Run an Ansible playbook integrated ara-server, ara-clients and ara-plugins
+  # Run an Ansible playbook integrated with ara-server, ara-clients and ara-plugins
   # This will exercise all three components and record real data from Ansible
   tox -e ansible-integration
 
