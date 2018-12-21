@@ -10,4 +10,5 @@ Table of Contents
 
     Installing ara-server <installing>
     Configuration settings and preferences <configuring>
+    Using API clients with ara-server <using_api_clients>
     Architecture and workflows <arch>
