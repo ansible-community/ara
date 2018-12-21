@@ -56,7 +56,7 @@ The plugin directory location can also be retrieved in python::
     callback_plugins = os.path.join(plugins, "callback")
     action_plugins = os.path.join(plugins, "action")
 
-Here's what your Ansible and ARA configuration might look like in an ``ansible.cfg`` file:
+Here's what your Ansible and ARA configuration might look like in an ``ansible.cfg`` file::
 
     [defaults]
     # Note: This is an example, use "python -m ara.plugins" to determine the real path
