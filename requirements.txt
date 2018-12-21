@@ -4,5 +4,4 @@ Django>=2
 djangorestframework
 django-cors-headers
 django-filter
-django-environ
 dynaconf
