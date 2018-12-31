@@ -32,4 +32,3 @@
     - name: Include role with static
       include_role:
         name: included-role
-      static: no

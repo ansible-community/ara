@@ -20,6 +20,9 @@ set -ex
 
 export ANSIBLE_ACTION_PLUGINS="ara/plugins/actions"
 export ANSIBLE_LIBRARY="ara/plugins/modules"
+# workaround for occasional UnicodeEncodeError on CI
+export PYTHONIOENCODING=${PYTHONIOENCODING:-utf-8}
+
 
 # Some tests only work on certain versions of Ansible.
 # Use Ansible's pseudo semver to determine if we can run something.

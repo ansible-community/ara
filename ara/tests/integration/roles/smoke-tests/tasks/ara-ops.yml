@@ -42,14 +42,14 @@
 
 - name: Update notype key with specified playbook
   ara_record:
-    playbook: "{{ notype.playbook_id }}"
+    playbook: "{{ notype.playbook_id }}"
     key: "notype"
     value: "updated text"
     type: "text"
 
 - name: Read notype key with specified playbook
   ara_read:
-    playbook: "{{ notype.playbook_id }}"
+    playbook: "{{ notype.playbook_id }}"
     key: "notype"
   register: notype_update
 

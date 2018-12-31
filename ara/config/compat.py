@@ -17,10 +17,15 @@
 
 # Compatibility layer between ARA and the different version of Ansible
 
-from ansible.constants import get_config
-from ansible.config.manager import find_ini_config_file
-import ansible.constants
+import warnings
 from six.moves import configparser
+
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore')
+    import ansible.constants
+    from ansible.constants import get_config
+    from ansible.config.manager import find_ini_config_file
+
 
 # Please don't scream deprecated warnings at us
 ansible.constants._deprecated = lambda *args: None

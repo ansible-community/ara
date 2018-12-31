@@ -59,7 +59,7 @@ def application(environ, start_response):
         os.environ['ANSIBLE_CONFIG'] = environ['ANSIBLE_CONFIG']
     else:
         if 'ANSIBLE_CONFIG' not in os.environ:
-            log.warn('ANSIBLE_CONFIG environment variable not found.')
+            log.warning('ANSIBLE_CONFIG environment variable not found.')
 
     from ara.webapp import create_app  # flake8: noqa
     from flask import current_app  # flake8: noqa

@@ -26,11 +26,14 @@ from datetime import timedelta
 from oslo_utils import encodeutils
 from oslo_serialization import jsonutils
 
+import warnings
 # This makes all the exceptions available as "models.<exception_name>".
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm.exc import *  # NOQA
-from sqlalchemy.orm import backref
-import sqlalchemy.types as types
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore')
+    from flask_sqlalchemy import SQLAlchemy
+    from sqlalchemy.orm.exc import *  # NOQA
+    from sqlalchemy.orm import backref
+    import sqlalchemy.types as types
 
 db = SQLAlchemy()
 log = logging.getLogger('ara.models')
@@ -128,7 +131,7 @@ class CompressedData(types.TypeDecorator):
 
     http://docs.sqlalchemy.org/en/latest/core/custom_types.html
     """
-    impl = types.Binary
+    impl = types.LargeBinary
 
     def process_bind_param(self, value, dialect):
         return zlib.compress(encodeutils.to_utf8(jsonutils.dumps(value)))
@@ -151,7 +154,7 @@ class CompressedText(types.TypeDecorator):
 
     http://docs.sqlalchemy.org/en/latest/core/custom_types.html
     """
-    impl = types.Binary
+    impl = types.LargeBinary
 
     def process_bind_param(self, value, dialect):
         return zlib.compress(encodeutils.to_utf8(value))
@@ -205,7 +208,7 @@ class Playbook(db.Model, TimedEntity):
                     .filter(File.playbook_id == self.id)
                     .filter(File.is_playbook)).one()
         except NoResultFound:  # noqa
-            log.warn(
+            log.warning(
                 'Recovering from NoResultFound file on playbook %s' % self.id
             )
 
@@ -216,7 +219,8 @@ class Playbook(db.Model, TimedEntity):
                                  .filter(File.playbook_id == self.id)
                                  .filter(File.path == self.path)).one()
                 playbook_file.is_playbook = True
-                log.warn('Recovered file reference for playbook %s' % self.id)
+                log.warning('Recovered file reference for playbook %s' %
+                            self.id)
                 return playbook_file
             except NoResultFound:  # noqa
                 # Option #2: The playbook was created but was interrupted
@@ -235,7 +239,8 @@ class Playbook(db.Model, TimedEntity):
                 playbook_file.content = content
                 db.session.add(playbook_file)
                 db.session.commit()
-                log.warn('Recovered file reference for playbook %s' % self.id)
+                log.warning('Recovered file reference for playbook %s' %
+                            self.id)
                 return playbook_file
 
     def __repr__(self):

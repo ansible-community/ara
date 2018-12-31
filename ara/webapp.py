@@ -22,7 +22,7 @@
 # configuration automatically on import which might not be desirable.
 
 import datetime
-import flask_migrate
+import warnings
 import logging
 import logging.config
 import os
@@ -54,6 +54,10 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import YamlLexer
 from pygments.lexers import JsonLexer
 from pygments.lexers.special import TextLexer
+
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore')
+    import flask_migrate
 
 
 def create_app():

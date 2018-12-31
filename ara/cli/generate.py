@@ -63,7 +63,7 @@ class GenerateHtml(Command):
         if args.playbook is not None:
             self.app.ara.config['ARA_PLAYBOOK_OVERRIDE'] = args.playbook
 
-        self.log.warn('Generating static files at %s...', args.path)
+        self.log.warning('Generating static files at %s...', args.path)
         filterwarnings('ignore', '.*', NotFoundWarning)
         if self.app.ara.config['ARA_IGNORE_EMPTY_GENERATION']:
             filterwarnings('ignore', '.*', MissingURLGeneratorWarning)

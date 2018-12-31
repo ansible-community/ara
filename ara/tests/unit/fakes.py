@@ -17,10 +17,15 @@
 
 import ara.models as m
 import random
+import sys
 
 from ansible import __version__ as ansible_version
-from mock import MagicMock
 from oslo_serialization import jsonutils
+if sys.version_info >= (3, 3):
+    from unittest.mock import MagicMock
+else:
+    from mock import MagicMock
+
 
 FAKE_PLAYBOOK_CONTENT = """---
 - name: ARA unit tests

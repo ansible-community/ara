@@ -46,17 +46,17 @@
     nodeset: ubuntu-xenial
 
 - job:
-    name: ara-integration-fedora-py35-2.7.0
+    name: ara-integration-fedora-py36-2.7.0
     parent: ara-integration-base
     vars:
-      python_test_version: py35
+      python_test_version: py36
       ansible_test_version: 2.7.0
     nodeset: fedora-latest
 
 - job:
-    name: ara-integration-fedora-py35-devel
+    name: ara-integration-fedora-py36-devel
     parent: ara-integration-base
     vars:
-      python_test_version: py35
+      python_test_version: py36
       ansible_test_version: devel
     nodeset: fedora-latest

@@ -20,9 +20,10 @@ from __future__ import (absolute_import, division, print_function)
 import itertools
 import logging
 import os
+import warnings
 
 from ansible import __version__ as ansible_version
-from ansible.plugins.callback import CallbackBase
+
 from ara import models
 from ara.models import db
 from ara.webapp import create_app
@@ -30,6 +31,10 @@ from datetime import datetime
 from distutils.version import LooseVersion
 from flask import current_app
 from oslo_serialization import jsonutils
+
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore')
+    from ansible.plugins.callback import CallbackBase
 
 # To retrieve Ansible CLI options
 try:
@@ -122,7 +127,7 @@ class CallbackModule(CallbackBase):
 
             file_.content = content
         except IOError:
-            log.warn('failed to open %s for reading', path)
+            log.warning('failed to open %s for reading', path)
 
         return file_
 

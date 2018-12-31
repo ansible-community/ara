@@ -19,9 +19,9 @@ import os
 import shutil
 import six
 import tempfile
+import warnings
 
 from glob import glob
-from lxml import etree
 from oslo_serialization import jsonutils
 from subunit._to_disk import to_disk
 
@@ -38,6 +38,10 @@ import ara.models as m
 
 from ara.tests.unit.common import ansible_run
 from ara.tests.unit.common import TestAra
+
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore')
+    from lxml import etree
 
 
 class TestCLIData(TestAra):
