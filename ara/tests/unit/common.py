@@ -62,7 +62,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
           gather_facts: yes
           tasks:
             - name: Fake task
-              include: some/path/main.yml
+              include_tasks: some/path/main.yml
 
             - name: Record something
               ara_record:
