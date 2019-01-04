@@ -1,6 +1,6 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
 
-Django>=2
+Django>=2.1.5
 djangorestframework
 django-cors-headers
 django-filter
