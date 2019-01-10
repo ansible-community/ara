@@ -163,6 +163,12 @@ class CallbackModule(CallbackBase):
         self._end_task()
         self._end_play()
 
+        # Load variables to verify if there is anything relevant for ara
+        play_vars = play._variable_manager.get_vars(play=play)["vars"]
+        for key in play_vars.keys():
+            if key == "ara_playbook_name":
+                self._set_playbook_name(name=play_vars[key])
+
         # Record all the files involved in the play
         self._load_files(play._loader._FILE_CACHE.keys())
 
@@ -251,6 +257,10 @@ class CallbackModule(CallbackBase):
         self.playbook = self.client.patch(
             "/api/v1/playbooks/%s" % self.playbook["id"], status=status, ended=datetime.datetime.now().isoformat()
         )
+
+    def _set_playbook_name(self, name):
+        if self.playbook["name"] != name:
+            self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
 
     def _get_one_item(self, endpoint, **query):
         """
