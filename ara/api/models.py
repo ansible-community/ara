@@ -140,7 +140,7 @@ class Record(Base):
         unique_together = ("key", "playbook")
 
     key = models.CharField(max_length=255)
-    value = models.TextField(null=True, blank=True)
+    value = models.BinaryField(max_length=(2 ** 32) - 1)
     type = models.CharField(max_length=255)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="records")
 

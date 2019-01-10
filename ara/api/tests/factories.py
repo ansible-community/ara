@@ -27,6 +27,7 @@ PLAYBOOK_ARGUMENTS = {"ansible_version": "2.5.5", "inventory": "/etc/ansible/hos
 RESULT_CONTENTS = {"results": [{"msg": "something happened"}]}
 LABEL_DESCRIPTION = "label description"
 TASK_TAGS = ["always", "never"]
+RECORD_LIST = ["one", "two", "three"]
 
 
 class PlaybookFactory(factory.DjangoModelFactory):
@@ -116,8 +117,8 @@ class RecordFactory(factory.DjangoModelFactory):
         model = models.Record
 
     key = "record-key"
-    value = "some-value"
-    type = "text"
+    value = utils.compressed_obj(RECORD_LIST)
+    type = "list"
     playbook = factory.SubFactory(PlaybookFactory)
 
 

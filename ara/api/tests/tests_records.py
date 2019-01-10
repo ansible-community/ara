@@ -18,7 +18,7 @@
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
-from ara.api.tests import factories
+from ara.api.tests import factories, utils
 
 
 class RecordTestCase(APITestCase):
@@ -29,14 +29,14 @@ class RecordTestCase(APITestCase):
     def test_record_serializer(self):
         playbook = factories.PlaybookFactory()
         serializer = serializers.RecordSerializer(
-            data={"key": "test", "value": "value", "type": "text", "playbook": playbook.id}
+            data={"key": "test", "value": factories.RECORD_LIST, "type": "list", "playbook": playbook.id}
         )
         serializer.is_valid()
         record = serializer.save()
         record.refresh_from_db()
         self.assertEqual(record.key, "test")
-        self.assertEqual(record.value, "value")
-        self.assertEqual(record.type, "text")
+        self.assertEqual(record.value, utils.compressed_obj(factories.RECORD_LIST))
+        self.assertEqual(record.type, "list")
 
     def test_get_no_records(self):
         request = self.client.get("/api/v1/records")
@@ -55,7 +55,7 @@ class RecordTestCase(APITestCase):
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.Record.objects.all().count())
 
-    def test_create_record(self):
+    def test_create_text_record(self):
         playbook = factories.PlaybookFactory()
         self.assertEqual(0, models.Record.objects.count())
         request = self.client.post(
@@ -63,6 +63,50 @@ class RecordTestCase(APITestCase):
         )
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Record.objects.count())
+
+    def test_create_list_record(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.Record.objects.count())
+        test_list = factories.RECORD_LIST
+        request = self.client.post(
+            "/api/v1/records", {"key": "listrecord", "value": test_list, "type": "list", "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Record.objects.count())
+        self.assertEqual(test_list, request.data["value"])
+
+    def test_create_dict_record(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.Record.objects.count())
+        test_dict = {"a": "dictionary"}
+        request = self.client.post(
+            "/api/v1/records", {"key": "dictrecord", "value": test_dict, "type": "dict", "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Record.objects.count())
+        self.assertEqual(test_dict, request.data["value"])
+
+    def test_create_json_record(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.Record.objects.count())
+        test_json = '{"a": "dictionary"}'
+        request = self.client.post(
+            "/api/v1/records", {"key": "dictrecord", "value": test_json, "type": "json", "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Record.objects.count())
+        self.assertEqual(test_json, request.data["value"])
+
+    def test_create_url_record(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.Record.objects.count())
+        test_url = "https://ara.recordsansible.org"
+        request = self.client.post(
+            "/api/v1/records", {"key": "dictrecord", "value": test_url, "type": "url", "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Record.objects.count())
+        self.assertEqual(test_url, request.data["value"])
 
     def test_partial_update_record(self):
         record = factories.RecordFactory()

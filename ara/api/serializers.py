@@ -203,6 +203,11 @@ class RecordSerializer(serializers.ModelSerializer):
         model = models.Record
         fields = "__all__"
 
+    value = CompressedObjectField(
+        default=zlib.compress(json.dumps("").encode("utf8")),
+        help_text="A string, list, dict, json or other formatted data",
+    )
+
 
 class StatsSerializer(serializers.ModelSerializer):
     class Meta:
