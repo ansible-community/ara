@@ -178,7 +178,10 @@ class CallbackModule(CallbackBase):
         )
 
         # Record all the hosts involved in the play
-        self._load_hosts(play._variable_manager._inventory._restriction)
+        for host in play.hosts:
+            hostvars = play_vars["hostvars"][host] if host in play_vars["hostvars"] else {}
+            host_alias = hostvars["ara_host_alias"] if "ara_host_alias" in hostvars else host
+            self._get_or_create_host(host=host, host_alias=host_alias)
 
         return self.play
 
@@ -294,20 +297,14 @@ class CallbackModule(CallbackBase):
         for file_ in files:
             self._get_or_create_file(file_)
 
-    def _get_or_create_host(self, host):
+    def _get_or_create_host(self, host, host_alias=None):
         self.log.debug("Getting or creating host: %s" % host)
         query = dict(playbook=self.playbook["id"], name=host)
         playbook_host = self._get_one_item("/api/v1/hosts", **query)
         if not playbook_host:
-            # TODO: Implement logic for computing the host alias
-            playbook_host = self.client.post("/api/v1/hosts", name=host, alias=host, playbook=self.playbook["id"])
+            playbook_host = self.client.post("/api/v1/hosts", name=host, alias=host_alias, playbook=self.playbook["id"])
 
         return playbook_host
-
-    def _load_hosts(self, hosts):
-        self.log.debug("Loading %s hosts(s)..." % len(hosts))
-        for host in hosts:
-            self._get_or_create_host(host)
 
     def _load_result(self, result, status, **kwargs):
         """
