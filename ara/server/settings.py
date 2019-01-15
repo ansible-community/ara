@@ -1,3 +1,5 @@
+import logging
+import logging.config
 import os
 import textwrap
 
@@ -7,10 +9,45 @@ from dynaconf import LazySettings
 
 settings = LazySettings(GLOBAL_ENV_FOR_DYNACONF="ARA", ENVVAR_FOR_DYNACONF="ARA_SETTINGS")
 
+# Django doesn't set up logging until it's too late to use it in settings.py.
+# Set it up from the configuration so we can use it.
+DEBUG = settings.get("DEBUG", False, "@bool")
+LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
+# fmt: off
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "normal",
+            "level": LOG_LEVEL,
+            "stream": "ext://sys.stdout",
+        }
+    },
+    "loggers": {
+        "ara": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+            "propagate": 0
+        }
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL
+    },
+}
+# fmt: on
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger(__name__)
+logger.debug("Loaded logging configuration")
+
 # Ensure default base configuration/data directory exists
 BASE_DIR = settings.get("BASE_DIR", os.path.expanduser("~/.ara"))
 SERVER_DIR = settings.get("SERVER_DIR", os.path.join(BASE_DIR, "server"))
 if not os.path.isdir(SERVER_DIR):
+    logger.info(f"Creating SERVER_DIR data directory: {SERVER_DIR}")
     os.makedirs(SERVER_DIR, mode=0o700)
 
 # Django built-in server and npm development server
@@ -23,7 +60,8 @@ ADMINS = settings.get("ADMINS", ())
 
 def get_secret_key():
     if not settings.get("SECRET_KEY"):
-        return get_random_string(length=25)
+        logger.warn(f"No configuration found for SECRET_KEY. Generating a random key...")
+        return get_random_string(length=50)
     return settings.get("SECRET_KEY")
 
 
@@ -128,35 +166,6 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
-DEBUG = settings.get("DEBUG", False, "@bool")
-LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
-# fmt: off
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {"normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "normal",
-            "level": LOG_LEVEL,
-            "stream": "ext://sys.stdout",
-        }
-    },
-    "loggers": {
-        "ara": {
-            "handlers": ["console"],
-            "level": LOG_LEVEL,
-            "propagate": 0
-        }
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL
-    },
-}
-# fmt: on
-
 # TODO: Split this out to a CLI command (django-admin command ?)
 DEFAULT_CONFIG = os.path.join(SERVER_DIR, "default_config.yaml")
 if not os.path.exists(DEFAULT_CONFIG):
@@ -188,3 +197,4 @@ if not os.path.exists(DEFAULT_CONFIG):
         yaml.dump({"default": CONFIG}, config_file, default_flow_style=False)
 
 ARA_SETTINGS = os.getenv("ARA_SETTINGS", DEFAULT_CONFIG)
+logger.info(f"Using configuration file: {ARA_SETTINGS}")
