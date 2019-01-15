@@ -59,10 +59,17 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(0, len(request.data["results"]))
 
     def test_get_playbooks(self):
-        playbook = factories.PlaybookFactory()
+        expected_playbook = factories.PlaybookFactory()
         request = self.client.get("/api/v1/playbooks")
         self.assertEqual(1, len(request.data["results"]))
-        self.assertEqual(playbook.ansible_version, request.data["results"][0]["ansible_version"])
+        self.assertEqual(1, request.data["count"])
+        playbook = request.data["results"][0]
+        self.assertEqual(playbook["ansible_version"], expected_playbook.ansible_version)
+        self.assertEqual(len(playbook["files"]), 0)
+        self.assertEqual(len(playbook["hosts"]), 0)
+        self.assertEqual(len(playbook["tasks"]), 0)
+        self.assertEqual(len(playbook["records"]), 0)
+        self.assertEqual(len(playbook["plays"]), 0)
 
     def test_delete_playbook(self):
         playbook = factories.PlaybookFactory()
