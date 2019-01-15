@@ -151,6 +151,54 @@ class LabelSerializer(serializers.ModelSerializer):
     )
 
 
+class TaskSerializer(DurationSerializer):
+    class Meta:
+        model = models.Task
+        fields = "__all__"
+
+    tags = CompressedObjectField(
+        default=zlib.compress(json.dumps([]).encode("utf8")), help_text="A JSON list containing Ansible tags"
+    )
+
+
+class SimpleTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Task
+        fields = ("id", "name")
+
+
+class RecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Record
+        fields = "__all__"
+
+    value = CompressedObjectField(
+        default=zlib.compress(json.dumps("").encode("utf8")),
+        help_text="A string, list, dict, json or other formatted data",
+    )
+
+
+class PlaySerializer(DurationSerializer):
+    class Meta:
+        model = models.Play
+        fields = "__all__"
+
+    hosts = HostSerializer(read_only=True, many=True)
+    results = ResultSerializer(read_only=True, many=True)
+
+
+class SimplePlaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Play
+        fields = "__all__"
+
+
+class StatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Stats
+        fields = "__all__"
+
+
 class PlaybookSerializer(DurationSerializer):
     class Meta:
         model = models.Playbook
@@ -160,6 +208,9 @@ class PlaybookSerializer(DurationSerializer):
     files = FileSerializer(many=True, default=[])
     hosts = HostSerializer(many=True, default=[])
     labels = LabelSerializer(many=True, default=[])
+    tasks = SimpleTaskSerializer(many=True, read_only=True, default=[])
+    plays = SimplePlaySerializer(many=True, read_only=True, default=[])
+    records = RecordSerializer(many=True, read_only=True, default=[])
 
     def create(self, validated_data):
         # Create the playbook without the file and label references for now
@@ -177,39 +228,3 @@ class PlaybookSerializer(DurationSerializer):
             playbook.labels.add(models.Label.objects.create(**label))
 
         return playbook
-
-
-class PlaySerializer(DurationSerializer):
-    class Meta:
-        model = models.Play
-        fields = "__all__"
-
-    hosts = HostSerializer(read_only=True, many=True)
-    results = ResultSerializer(read_only=True, many=True)
-
-
-class TaskSerializer(DurationSerializer):
-    class Meta:
-        model = models.Task
-        fields = "__all__"
-
-    tags = CompressedObjectField(
-        default=zlib.compress(json.dumps([]).encode("utf8")), help_text="A JSON list containing Ansible tags"
-    )
-
-
-class RecordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Record
-        fields = "__all__"
-
-    value = CompressedObjectField(
-        default=zlib.compress(json.dumps("").encode("utf8")),
-        help_text="A string, list, dict, json or other formatted data",
-    )
-
-
-class StatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Stats
-        fields = "__all__"
