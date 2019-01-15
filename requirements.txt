@@ -4,4 +4,4 @@ Django>=2.1.5
 djangorestframework
 django-cors-headers
 django-filter
-dynaconf
+dynaconf[yaml]
