@@ -59,6 +59,10 @@ CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
 
 ADMINS = settings.get("ADMINS", ())
 
+READ_LOGIN_REQUIRED = settings.get("READ_LOGIN_REQUIRED", False, "@bool")
+WRITE_LOGIN_REQUIRED = settings.get("WRITE_LOGIN_REQUIRED", False, "@bool")
+EXTERNAL_AUTH = settings.get("EXTERNAL_AUTH", False, "@bool")
+
 
 def get_secret_key():
     if not settings.get("SECRET_KEY"):
@@ -102,6 +106,12 @@ INSTALLED_APPS = [
     "ara.server.apps.AraAdminConfig",
 ]
 
+EXTERNAL_AUTH_MIDDLEWARE = []
+if EXTERNAL_AUTH:
+    EXTERNAL_AUTH_MIDDLEWARE = ["django.contrib.auth.middleware.RemoteUserMiddleware"]
+    AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.RemoteUserBackend"]
+
+# fmt: off
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -109,9 +119,11 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+] + EXTERNAL_AUTH_MIDDLEWARE + [
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware"
 ]
+# fmt: on
 
 TEMPLATES = [
     {
@@ -152,9 +164,6 @@ MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
 WSGI_APPLICATION = "ara.server.wsgi.application"
 ROOT_URLCONF = "ara.server.urls"
 APPEND_SLASH = False
-
-READ_LOGIN_REQUIRED = settings.get("READ_LOGIN_REQUIRED", False, "@bool")
-WRITE_LOGIN_REQUIRED = settings.get("WRITE_LOGIN_REQUIRED", False, "@bool")
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
