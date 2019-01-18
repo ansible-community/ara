@@ -19,10 +19,16 @@ from ara.clients.http import AraHttpClient
 from ara.clients.offline import AraOfflineClient
 
 
-def get_client(client=None, **kwargs):
-    if client is None or client == "offline":
-        return AraOfflineClient(**kwargs)
-    elif client == "http":
-        return AraHttpClient(**kwargs)
-    else:
-        raise ValueError("Unsupported client: %s" % client)
+def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30):
+    """
+    Returns a specified client configuration or one with sane defaults.
+    """
+    try:
+        # fmt: off
+        return {
+            "offline": AraOfflineClient(),
+            "http": AraHttpClient(endpoint=endpoint, timeout=timeout)
+        }[client]
+        # fmt: on
+    except KeyError:
+        raise ValueError(f"Unsupported API client: {client} (use 'http' or 'offline')")
