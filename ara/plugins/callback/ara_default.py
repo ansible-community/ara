@@ -29,11 +29,21 @@ from ansible.plugins.callback import CallbackBase
 from ara.clients.http import AraHttpClient
 from ara.clients.offline import AraOfflineClient
 
-# To retrieve Ansible CLI options
+# Ansible CLI options are now in ansible.context in >= 2.8
+# https://github.com/ansible/ansible/commit/afdbb0d9d5bebb91f632f0d4a1364de5393ba17a
 try:
-    from __main__ import cli
+    from ansible import context
+
+    cli_options = {key: value for key, value in context.CLIARGS.items()}
 except ImportError:
-    cli = None
+    # < 2.8 doesn't have ansible.context
+    try:
+        from __main__ import cli
+
+        cli_options = cli.options.__dict__
+    except ImportError:
+        # using API without CLI
+        cli_options = {}
 
 
 DOCUMENTATION = """
@@ -112,11 +122,6 @@ class CallbackModule(CallbackBase):
         self.stats = None
         self.loop_items = []
 
-        if cli:
-            self._options = cli.options
-        else:
-            self._options = None
-
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
@@ -135,22 +140,17 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
-
         path = os.path.abspath(playbook._file_name)
-        if self._options is not None:
-            arguments = self._options.__dict__.copy()
-        else:
-            arguments = {}
 
         # Potentially sanitize some user-specified keys
         for argument in self.ignored_arguments:
-            if argument in arguments:
+            if argument in cli_options:
                 self.log.debug("Ignoring argument: %s" % argument)
-                arguments[argument] = "Not saved by ARA as configured by 'ignored_arguments'"
+                cli_options[argument] = "Not saved by ARA as configured by 'ignored_arguments'"
 
         # Create the playbook
         self.playbook = self.client.post(
-            "/api/v1/playbooks", ansible_version=ansible_version, arguments=arguments, status="running", path=path
+            "/api/v1/playbooks", ansible_version=ansible_version, arguments=cli_options, status="running", path=path
         )
 
         # Record the playbook file
