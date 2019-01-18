@@ -20,35 +20,36 @@
 
 import logging
 import os
+import sys
 import threading
 
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers.basehttp import ServerHandler as BaseServerHandler, ThreadedWSGIServer, WSGIRequestHandler
 
-from .http import AraHttpClient
+from ara.clients.http import AraHttpClient
 
 
 class AraOfflineClient(AraHttpClient):
     def __init__(self):
         self.log = logging.getLogger(__name__)
 
-        try:
-            from django import setup as django_setup
-            from django.core.management import execute_from_command_line
+        # Validate that ara-server is installed
+        if "ara.server" not in sys.modules:
+            raise ImportError("AraOfflineClient requires ara-server to be installed.")
 
-            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
+        from django import setup as django_setup
+        from django.core.management import execute_from_command_line
 
-            # Automatically create the database and run migrations (is there a better way?)
-            execute_from_command_line(["django", "migrate"])
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 
-            # Set up the things Django needs
-            django_setup()
+        # Automatically create the database and run migrations (is there a better way?)
+        execute_from_command_line(["django", "migrate"])
 
-            self._start_server()
-            super().__init__(endpoint="http://localhost:%d" % self.server_thread.port)
-        except ImportError:
-            self.log.error("The offline client requires ara-server to be installed")
-            raise
+        # Set up the things Django needs
+        django_setup()
+
+        self._start_server()
+        super().__init__(endpoint="http://localhost:%d" % self.server_thread.port)
 
     def _start_server(self):
         self.server_thread = ServerThread("localhost")
