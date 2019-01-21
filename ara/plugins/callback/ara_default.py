@@ -26,8 +26,7 @@ import six
 from ansible import __version__ as ansible_version
 from ansible.plugins.callback import CallbackBase
 
-from ara.clients.http import AraHttpClient
-from ara.clients.offline import AraOfflineClient
+from ara.clients import utils as client_utils
 
 # Ansible CLI options are now in ansible.context in >= 2.8
 # https://github.com/ansible/ansible/commit/afdbb0d9d5bebb91f632f0d4a1364de5393ba17a
@@ -114,6 +113,9 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         super(CallbackModule, self).__init__()
         self.log = logging.getLogger("ara.plugins.callback.default")
+        self.client = None
+        self.ignored_facts = []
+        self.ignored_arguments = []
 
         self.result = None
         self.task = None
@@ -128,15 +130,10 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
 
-        api_client = self.get_option("api_client")
-        if api_client == "offline":
-            self.client = AraOfflineClient()
-        elif api_client == "http":
-            server = self.get_option("api_server")
-            timeout = self.get_option("api_timeout")
-            self.client = AraHttpClient(endpoint=server, timeout=timeout)
-        else:
-            raise Exception("Unsupported API client: %s. Please use 'offline' or 'http'" % api_client)
+        client = self.get_option("api_client")
+        endpoint = self.get_option("api_server")
+        timeout = self.get_option("api_timeout")
+        self.client = client_utils.get_client(client=client, endpoint=endpoint, timeout=timeout)
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")

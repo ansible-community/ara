@@ -19,8 +19,7 @@ from ansible import constants as ansible_constants
 from ansible.playbook.play import Play
 from ansible.plugins.action import ActionBase
 
-from ara.clients.http import AraHttpClient
-from ara.clients.offline import AraOfflineClient
+from ara.clients import utils as client_utils
 
 DOCUMENTATION = """
 ---
@@ -145,12 +144,10 @@ class ActionModule(ActionBase):
         # Retrieves the runtime plugin options for the ara_default callback plugin
         options = ansible_constants.config.get_plugin_options("callback", "ara_default")
 
-        if options["api_client"] == "offline":
-            self.client = AraOfflineClient()
-        elif options["api_client"] == "http":
-            self.client = AraHttpClient(endpoint=options["api_server"], timeout=options["timeout"])
-        else:
-            raise Exception("Unsupported API client: %s. Please use 'offline' or 'http'" % options["api_client"])
+        client = options("api_client")
+        endpoint = options("api_server")
+        timeout = options("api_timeout")
+        self.client = client_utils.get_client(client=client, endpoint=endpoint, timeout=timeout)
 
     def create_or_update_key(self, playbook, key, value, type):
         changed = False
