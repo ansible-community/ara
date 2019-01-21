@@ -40,7 +40,7 @@ For more details, click on the configuration parameters.
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_DEBUG_                     | Django's DEBUG_ setting                              | ``false``                                |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
-| ARA_SECRET_KEY_ (**Required**) | Django's SECRET_KEY_ setting                         | ``None``                                 |
+| ARA_SECRET_KEY_                | Django's SECRET_KEY_ setting                         | Randomized token, see ARA_SECRET_KEY_    |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_DATABASE_ENGINE_           | Django's ENGINE_ database setting                    | ``django.db.backends.sqlite3``           |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
@@ -249,10 +249,13 @@ ARA_SECRET_KEY
 - **Configuration file variable**: ``SECRET_KEY``
 - **Provided by**: Django's SECRET_KEY_
 - **Type**: ``string``
-- **Default**: ``None`` (**Must be set**)
+- **Default**: Randomized with ``django.utils.crypto.get_random_string()``
 
 A secret key for a particular Django installation. This is used to provide
 cryptographic signing, and should be set to a unique, unpredictable value.
+
+If it is not set, a random token will be generated and persisted in the
+default configuration file.
 
 ARA_STATIC_ROOT
 ~~~~~~~~~~~~~~~
