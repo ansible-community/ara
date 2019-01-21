@@ -28,6 +28,12 @@ For more details, click on the configuration parameters.
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_ENV_                       | Environment to load configuration for                | ``default``                              |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
+| ARA_READ_LOGIN_REQUIRED_       | Whether authentication is required for reading data  | ``False``                                |
++--------------------------------+------------------------------------------------------+------------------------------------------+
+| ARA_WRITE_LOGIN_REQUIRED_      | Whether authentication is required for writing data  | ``False``                                |
++--------------------------------+------------------------------------------------------+------------------------------------------+
+| ARA_ENV_                       | Environment to load configuration for                | ``default``                              |
++--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_LOG_LEVEL_                 | Log level of the different components                | ``INFO``                                 |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_LOGGING_                   | Logging configuration                                | See ARA_LOGGING_                         |
@@ -138,6 +144,40 @@ In order to use the settings from the "dev" environment, you would set
 
 Another approach to environment-specific configuration is to use
 ``ARA_SETTINGS`` and keep your settings in different files instead.
+
+ARA_READ_LOGIN_REQUIRED
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_READ_LOGIN_REQUIRED``
+- **Configuration file variable**: ``READ_LOGIN_REQUIRED``
+- **Type**: ``bool``
+- **Default**: ``False``
+- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
+
+Determines if authentication is required before being authorized to query all
+API endpoints exposed by the server.
+
+There is no concept of granularity: users either have access to query
+everything or they don't.
+
+Enabling this feature first requires setting up :ref:`users <user management>`.
+
+ARA_WRITE_LOGIN_REQUIRED
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_WRITE_LOGIN_REQUIRED``
+- **Configuration file variable**: ``WRITE_LOGIN_REQUIRED``
+- **Type**: ``bool``
+- **Default**: ``False``
+- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
+
+Determines if authentication is required before being authorized to post data to
+all API endpoints exposed by the server.
+
+There is no concept of granularity: users either have access to query
+everything or they don't.
+
+Enabling this feature first requires setting up :ref:`users <user management>`.
 
 ARA_LOG_LEVEL
 ~~~~~~~~~~~~~
