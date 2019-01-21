@@ -36,11 +36,19 @@ with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
     from ansible.plugins.callback import CallbackBase
 
-# To retrieve Ansible CLI options
+# Ansible CLI options are now in ansible.context in >= 2.8
+# https://github.com/ansible/ansible/commit/afdbb0d9d5bebb91f632f0d4a1364de5393ba17a
 try:
-    from __main__ import cli
+    from ansible import context
+    cli_options = {key: value for key, value in context.CLIARGS.items()}
 except ImportError:
-    cli = None
+    # < 2.8 doesn't have ansible.context
+    try:
+        from __main__ import cli
+        cli_options = cli.options.__dict__
+    except ImportError:
+        # using API without CLI
+        cli_options = {}
 
 log = logging.getLogger('ara.callback')
 app = create_app()
@@ -82,11 +90,7 @@ class CallbackModule(CallbackBase):
         self.play_counter = itertools.count()
         self.task_counter = itertools.count()
 
-        if cli:
-            self._options = cli.options
-        else:
-            self._options = None
-    log.debug('Callback initialized')
+        log.debug('Callback initialized')
 
     def get_or_create_host(self, hostname):
         try:
@@ -322,22 +326,18 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         path = os.path.abspath(playbook._file_name)
-        if self._options is not None:
-            options = self._options.__dict__.copy()
-        else:
-            options = {}
 
         # Potentially sanitize some user-specified keys
         for parameter in app.config['ARA_IGNORE_PARAMETERS']:
-            if parameter in options:
+            if parameter in cli_options:
                 msg = "Not saved by ARA as configured by ARA_IGNORE_PARAMETERS"
-                options[parameter] = msg
+                cli_options[parameter] = msg
 
         log.debug('Starting playbook %s', path)
         self.playbook = models.Playbook(
             ansible_version=ansible_version,
             path=path,
-            options=options
+            options=cli_options
         )
 
         self.playbook.start()
