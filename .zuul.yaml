@@ -2,8 +2,6 @@
     check:
       jobs:
         - tox-format
-        - tox-pep8
     gate:
       jobs:
         - tox-format
-        - tox-pep8
