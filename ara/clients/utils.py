@@ -23,12 +23,9 @@ def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30):
     """
     Returns a specified client configuration or one with sane defaults.
     """
-    try:
-        # fmt: off
-        return {
-            "offline": AraOfflineClient(),
-            "http": AraHttpClient(endpoint=endpoint, timeout=timeout)
-        }[client]
-        # fmt: on
-    except KeyError:
+    if client == "offline":
+        return AraOfflineClient()
+    elif client == "http":
+        return AraHttpClient(endpoint=endpoint, timeout=timeout)
+    else:
         raise ValueError(f"Unsupported API client: {client} (use 'http' or 'offline')")
