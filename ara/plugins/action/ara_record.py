@@ -144,9 +144,9 @@ class ActionModule(ActionBase):
         # Retrieves the runtime plugin options for the ara_default callback plugin
         options = ansible_constants.config.get_plugin_options("callback", "ara_default")
 
-        client = options("api_client")
-        endpoint = options("api_server")
-        timeout = options("api_timeout")
+        client = options["api_client"]
+        endpoint = options["api_server"]
+        timeout = options["api_timeout"]
         self.client = client_utils.get_client(client=client, endpoint=endpoint, timeout=timeout)
 
     def create_or_update_key(self, playbook, key, value, type):
