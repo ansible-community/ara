@@ -87,10 +87,6 @@ Development
   # Install tox from pip or from your distro packages
   pip install tox
 
-  # Run an Ansible playbook integrated with ara-server, ara-clients and ara-plugins
-  # This will exercise all three components and record real data from Ansible
-  tox -e ansible-integration
-
   # Run test server -> http://127.0.0.1:8000/api/v1/
   tox -e runserver
 

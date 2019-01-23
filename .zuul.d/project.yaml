@@ -5,11 +5,15 @@
       - docs-on-readthedocs
     check:
       jobs:
-        - ara-server-ansible-integration:
+        - ara-integration-fedora-2.7
+        - ara-integration-fedora-devel:
             voting: false
+        - ara-integration-ubuntu-2.6
         - ara-tox-linters
         - ara-tox-py3
     gate:
       jobs:
+        - ara-integration-fedora-2.7
+        - ara-integration-ubuntu-2.6
         - ara-tox-linters
         - ara-tox-py3
