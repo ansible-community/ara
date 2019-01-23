@@ -2,6 +2,12 @@
     check:
       jobs:
         - tox-format
+        - ara-integration-fedora-2.7
+        - ara-integration-fedora-devel:
+            voting: false
+        - ara-integration-ubuntu-2.6
     gate:
       jobs:
         - tox-format
+        - ara-integration-fedora-2.7
+        - ara-integration-ubuntu-2.6
