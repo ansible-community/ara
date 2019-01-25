@@ -3,8 +3,8 @@
 Authentication and security
 ===========================
 
-ara-server ships with a default configuration that privileges simplicity and
-lets users get started quickly.
+ara-server ships with a default configuration that emphasizes simplicity to
+let users get started quickly.
 
 By default:
 
