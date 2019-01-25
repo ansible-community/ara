@@ -20,7 +20,6 @@
 
 import logging
 import os
-import sys
 import threading
 
 from django.core.handlers.wsgi import WSGIHandler
@@ -36,7 +35,7 @@ class AraOfflineClient(AraHttpClient):
         # Validate that ara-server is available before letting Django attempt to
         # import it
         try:
-            import ara.server
+            import ara.server  # noqa
         except ImportError:
             raise ImportError("AraOfflineClient requires ara-server to be installed.")
 
