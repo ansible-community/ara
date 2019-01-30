@@ -63,9 +63,14 @@ class HostViewSet(viewsets.ModelViewSet):
 
 
 class ResultViewSet(viewsets.ModelViewSet):
-    queryset = models.Result.objects.all()
     serializer_class = serializers.ResultSerializer
-    filter_fields = ("playbook", "status")
+    filter_fields = ("playbook",)
+
+    def get_queryset(self):
+        statuses = self.request.GET.getlist("status")
+        if statuses:
+            return models.Result.objects.filter(status__in=statuses)
+        return models.Result.objects.all()
 
 
 class FileViewSet(viewsets.ModelViewSet):

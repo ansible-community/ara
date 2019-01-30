@@ -113,12 +113,22 @@ class ResultTestCase(APITestCase):
         self.assertEqual(result.status, request.data["results"][0]["status"])
         self.assertEqual("skipped", request.data["results"][1]["status"])
 
-    def test_get_result_by_status(self):
-        playbook = factories.PlaybookFactory()
-        host_one = factories.HostFactory(name="one")
-        host_two = factories.HostFactory(name="two")
-        result = factories.ResultFactory(playbook=playbook, host=host_one, status="failed")
-        factories.ResultFactory(playbook=playbook, host=host_two, status="skipped")
-        request = self.client.get("/api/v1/results?status=failed")
-        self.assertEqual(1, len(request.data["results"]))
-        self.assertEqual(result.status, request.data["results"][0]["status"])
+    def test_get_result_by_statuses(self):
+        failed_result = factories.ResultFactory(status="failed")
+        skipped_result = factories.ResultFactory(status="skipped")
+        factories.ResultFactory(status="ok")
+        results = self.client.get("/api/v1/results").data["results"]
+        self.assertEqual(3, len(results))
+
+        results = self.client.get("/api/v1/results?status=failed").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(failed_result.status, results[0]["status"])
+
+        results = self.client.get("/api/v1/results?status=skipped").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(skipped_result.status, results[0]["status"])
+
+        results = self.client.get("/api/v1/results?status=failed&status=skipped").data["results"]
+        self.assertEqual(2, len(results))
+        self.assertEqual(failed_result.status, results[0]["status"])
+        self.assertEqual(skipped_result.status, results[1]["status"])
