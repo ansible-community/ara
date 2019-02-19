@@ -66,6 +66,21 @@ class FileTestCase(APITestCase):
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.File.objects.count())
 
+    def test_post_same_file_for_a_playbook(self):
+        playbook = factories.PlaybookFactory()
+        self.assertEqual(0, models.File.objects.count())
+        request = self.client.post(
+            "/api/v1/files", {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.File.objects.count())
+
+        request = self.client.post(
+            "/api/v1/files", {"path": "/path/playbook.yml", "content": factories.FILE_CONTENTS, "playbook": playbook.id}
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.File.objects.count())
+
     def test_get_no_files(self):
         request = self.client.get("/api/v1/files")
         self.assertEqual(0, len(request.data["results"]))

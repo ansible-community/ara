@@ -109,6 +109,24 @@ class FileSerializer(serializers.ModelSerializer):
     def get_sha1(obj):
         return obj.content.sha1
 
+    def get_unique_together_validators(self):
+        """
+        Files have a "unique together" constraint for file.path and playbook.id.
+        We want to have a "get_or_create" facility and in order to do that, we
+        must manage the validation during the creation, not before.
+        Overriding this method effectively disables this validator.
+        """
+        return []
+
+    def create(self, validated_data):
+        file_, created = models.File.objects.get_or_create(
+            path=validated_data["path"],
+            content=validated_data["content"],
+            playbook=validated_data["playbook"],
+            defaults=validated_data,
+        )
+        return file_
+
 
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
