@@ -133,7 +133,7 @@ class HostSerializer(serializers.ModelSerializer):
         return host
 
 
-class ResultSerializer(serializers.ModelSerializer):
+class ResultSerializer(DurationSerializer):
     class Meta:
         model = models.Result
         fields = "__all__"
