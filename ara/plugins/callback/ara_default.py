@@ -166,7 +166,8 @@ class CallbackModule(CallbackBase):
                 self._set_playbook_name(name=play_vars[key])
 
         # Record all the files involved in the play
-        self._load_files(play._loader._FILE_CACHE.keys())
+        for path in play._loader._FILE_CACHE.keys():
+            self._get_or_create_file(path)
 
         # Create the play
         self.play = self.client.post(
@@ -261,46 +262,23 @@ class CallbackModule(CallbackBase):
         if self.playbook["name"] != name:
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
 
-    def _get_one_item(self, endpoint, **query):
-        """
-        Searching with the API returns a list of results. This method is used
-        when our expectation is that we would only ever get back one result back
-        due to unique database model constraints.
-        """
-        match = self.client.get(endpoint, **query)
-        if match["count"] > 1:
-            error = "Received more than one result for %s with %s" % (endpoint, str(query))
-            self.log.error(error)
-            raise Exception(error)
-        elif match["count"] == 0:
-            return False
-        else:
-            return match["results"][0]
+    def _get_or_create_file(self, path):
+        self.log.debug("Getting or creating file: %s" % path)
+        # Note: The get_or_create is handled through the serializer of the API server.
+        try:
+            with open(path, "r") as fd:
+                content = fd.read()
+        except IOError as e:
+            self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
+            content = """ARA was not able to read this file successfully.
+                      Refer to the logs for more information"""
 
-    def _get_or_create_file(self, file_):
-        self.log.debug("Getting or creating file: %s" % file_)
-        query = dict(playbook=self.playbook["id"], path=file_)
-        playbook_file = self._get_one_item("/api/v1/files", **query)
-        if not playbook_file:
-            playbook_file = self.client.post(
-                "/api/v1/files", playbook=self.playbook["id"], path=file_, content=self._read_file(file_)
-            )
-
-        return playbook_file
-
-    def _load_files(self, files):
-        self.log.debug("Loading %s file(s)..." % len(files))
-        for file_ in files:
-            self._get_or_create_file(file_)
+        return self.client.post("/api/v1/files", playbook=self.playbook["id"], path=path, content=content)
 
     def _get_or_create_host(self, host, host_alias=None):
         self.log.debug("Getting or creating host: %s" % host)
-        query = dict(playbook=self.playbook["id"], name=host)
-        playbook_host = self._get_one_item("/api/v1/hosts", **query)
-        if not playbook_host:
-            playbook_host = self.client.post("/api/v1/hosts", name=host, alias=host_alias, playbook=self.playbook["id"])
-
-        return playbook_host
+        # Note: The get_or_create is handled through the serializer of the API server.
+        return self.client.post("/api/v1/hosts", name=host, alias=host_alias, playbook=self.playbook["id"])
 
     def _load_result(self, result, status, **kwargs):
         """
@@ -350,16 +328,6 @@ class CallbackModule(CallbackBase):
                     results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
 
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
-
-    def _read_file(self, path):
-        try:
-            with open(path, "r") as fd:
-                content = fd.read()
-        except IOError as e:
-            self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
-            content = """ARA was not able to read this file successfully.
-                      Refer to the logs for more information"""
-        return content
 
     def _load_stats(self, stats):
         hosts = sorted(stats.processed.keys())
