@@ -65,11 +65,6 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(1, request.data["count"])
         playbook = request.data["results"][0]
         self.assertEqual(playbook["ansible_version"], expected_playbook.ansible_version)
-        self.assertEqual(len(playbook["files"]), 0)
-        self.assertEqual(len(playbook["hosts"]), 0)
-        self.assertEqual(len(playbook["tasks"]), 0)
-        self.assertEqual(len(playbook["records"]), 0)
-        self.assertEqual(len(playbook["plays"]), 0)
 
     def test_delete_playbook(self):
         playbook = factories.PlaybookFactory()

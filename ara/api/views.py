@@ -35,35 +35,74 @@ class InfoView(viewsets.ViewSet):
 
 class LabelViewSet(viewsets.ModelViewSet):
     queryset = models.Label.objects.all()
-    serializer_class = serializers.LabelSerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListLabelSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedLabelSerializer
+        else:
+            # create/update/destroy
+            return serializers.LabelSerializer
 
 
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
-    serializer_class = serializers.PlaybookSerializer
     filter_fields = ("name", "status")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListPlaybookSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedPlaybookSerializer
+        else:
+            # create/update/destroy
+            return serializers.PlaybookSerializer
 
 
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
-    serializer_class = serializers.PlaySerializer
     filter_fields = ("playbook", "uuid")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListPlaySerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedPlaySerializer
+        else:
+            # create/update/destroy
+            return serializers.PlaySerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
-    serializer_class = serializers.TaskSerializer
     filter_fields = ("playbook",)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListTaskSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedTaskSerializer
+        else:
+            # create/update/destroy
+            return serializers.TaskSerializer
 
 
 class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
-    serializer_class = serializers.HostSerializer
     filter_fields = ("playbook",)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListHostSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedHostSerializer
+        else:
+            # create/update/destroy
+            return serializers.HostSerializer
 
 
 class ResultViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.ResultSerializer
     filter_fields = ("playbook",)
 
     def get_queryset(self):
@@ -72,14 +111,39 @@ class ResultViewSet(viewsets.ModelViewSet):
             return models.Result.objects.filter(status__in=statuses)
         return models.Result.objects.all()
 
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListResultSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedResultSerializer
+        else:
+            # create/update/destroy
+            return serializers.ResultSerializer
+
 
 class FileViewSet(viewsets.ModelViewSet):
     queryset = models.File.objects.all()
-    serializer_class = serializers.FileSerializer
     filter_fields = ("playbook", "path")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListFileSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedFileSerializer
+        else:
+            # create/update/destroy
+            return serializers.FileSerializer
 
 
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = models.Record.objects.all()
-    serializer_class = serializers.RecordSerializer
     filter_fields = ("playbook", "key")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.ListRecordSerializer
+        elif self.action == "retrieve":
+            return serializers.DetailedRecordSerializer
+        else:
+            # create/update/destroy
+            return serializers.RecordSerializer

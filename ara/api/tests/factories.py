@@ -15,10 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 import factory
 
 from ara.api import models
 from ara.api.tests import utils
+
+logging.getLogger("factory").setLevel(logging.INFO)
 
 # constants for things like compressed byte strings or objects
 FILE_CONTENTS = "---\n# Example file"

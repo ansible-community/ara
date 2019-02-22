@@ -158,7 +158,7 @@ class ActionModule(ActionBase):
             changed = True
         else:
             # Otherwise update it if the data is different (idempotency)
-            old = record["results"][0]
+            old = self.client.get("/api/v1/records/%s" % record["results"][0]["id"])
             if old["value"] != value or old["type"] != type:
                 record = self.client.patch("/api/v1/records/%s" % old["id"], key=key, value=value, type=type)
                 changed = True
