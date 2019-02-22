@@ -30,7 +30,13 @@ class ResultTestCase(APITestCase):
         host = factories.HostFactory()
         task = factories.TaskFactory()
         serializer = serializers.ResultSerializer(
-            data={"status": "skipped", "host": host.id, "task": task.id, "playbook": task.playbook.id}
+            data={
+                "status": "skipped",
+                "host": host.id,
+                "task": task.id,
+                "play": task.play.id,
+                "playbook": task.playbook.id,
+            }
         )
         serializer.is_valid()
         result = serializer.save()
@@ -43,7 +49,14 @@ class ResultTestCase(APITestCase):
         host = factories.HostFactory()
         task = factories.TaskFactory()
         serializer = serializers.ResultSerializer(
-            data={"host": host.id, "task": task.id, "content": factories.RESULT_CONTENTS, "playbook": task.playbook.id}
+            data={
+                "content": factories.RESULT_CONTENTS,
+                "status": "changed",
+                "host": host.id,
+                "task": task.id,
+                "play": task.play.id,
+                "playbook": task.playbook.id,
+            }
         )
         serializer.is_valid()
         result = serializer.save()
@@ -79,10 +92,11 @@ class ResultTestCase(APITestCase):
         request = self.client.post(
             "/api/v1/results",
             {
+                "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
                 "task": task.id,
-                "content": factories.RESULT_CONTENTS,
+                "play": task.play.id,
                 "playbook": task.playbook.id,
             },
         )

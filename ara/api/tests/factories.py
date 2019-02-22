@@ -109,6 +109,7 @@ class ResultFactory(factory.DjangoModelFactory):
     status = "ok"
     host = factory.SubFactory(HostFactory)
     task = factory.SubFactory(TaskFactory)
+    play = factory.SubFactory(PlayFactory)
     playbook = factory.SubFactory(PlaybookFactory)
 
 
