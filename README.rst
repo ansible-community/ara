@@ -1,21 +1,17 @@
-ara-server
-==========
+ara
+===
 
 .. image:: doc/source/_static/ara-with-icon.png
 
 ARA Records Ansible playbook runs and makes the recorded data available and
 intuitive for users and systems.
 
-ara-server is a modern python 3 application built with the latest releases of
-`Django <https://www.djangoproject.com/>`_ and `django-rest-framework <https://www.django-rest-framework.org/>`_.
+The project provides several distinct components in order to make this happen:
 
-``ara-server`` is the component from ARA that manages the REST API and the database.
-
-.. image:: doc/source/_static/screenshot.png
-
-- For the ARA Ansible callback plugin or the ``ara_record`` action module, look at `ara-plugins <https://github.com/openstack/ara-plugins>`_
-- For the ARA REST API clients, look at `ara-clients <https://github.com/openstack/ara-clients>`_
-- For the ARA web interface, look at `ara-web <https://github.com/openstack/ara-web>`_
+- An API server for sending and querying data relative to playbook execution results
+- An API client library for communicating with the API
+- An Ansible callback plugin to record events as they happen throughout the execution
+- An Ansible action module to associate arbitrary key/values to your playbook reports
 
 Quickstart
 ==========
@@ -26,9 +22,11 @@ Here's how you can get started from scratch with default settings::
     python3 -m venv ~/.ara/venv
 
     # Install Ansible and the required ARA projects
-    ~/.ara/venv/bin/pip install ansible ara-server ara-clients ara-plugins
+    ~/.ara/venv/bin/pip install ansible
+    ~/.ara/venv/bin/pip install git+https://github.com/openstack/ara@feature/1.0
 
-    # Tell Ansible to use the ARA callback plugin from ara-plugins
+    # Tell Ansible to use the ARA callback plugin
+    # "python -m ara.plugins" provides the path to the ARA plugins directory
     export ANSIBLE_CALLBACK_PLUGINS="$(~/.ara/venv/bin/python -m ara.plugins)/callback"
 
     # Run your playbook as your normally would
@@ -36,11 +34,9 @@ Here's how you can get started from scratch with default settings::
 
 The data is saved in real time during the Ansible playbook execution.
 
-What happened behind the scenes is that the ARA Ansible callback plugin
-(provided by ``ara-plugins``) used the offline API client
-(provided by ``ara-clients``) to send your data to the ``ara-server`` API which
-then saved it to a database located by default at
-``~/.ara/server/ansible.sqlite``.
+What happened behind the scenes is that the ARA Ansible callback plugin used
+the offline API client to send the data to the API which then saved it to a
+database located by default at ``~/.ara/server/ansible.sqlite``.
 
 You're now ready to start poking at the API with the built-in API clients !
 
@@ -50,8 +46,8 @@ If you'd like to have the ARA web reporting interface, take a look at
 Documentation
 =============
 
-Documentation for installing, configuring, running and using ara-server is
-available on `readthedocs.io <https://ara-server.readthedocs.io>`_.
+Documentation for installing, configuring, running and using ara is
+available on `readthedocs.io <https://ara.readthedocs.io>`_.
 
 Community and getting help
 ==========================
@@ -81,8 +77,9 @@ Development
 **TL;DR**: Using tox is convenient for the time being::
 
   # Retrieve the source
-  git clone https://github.com/openstack/ara-server
-  cd ara-server
+  git clone https://github.com/openstack/ara
+  cd ara
+  git checkout feature/1.0
 
   # Install tox from pip or from your distro packages
   pip install tox
@@ -98,30 +95,29 @@ Development
   # Build docs
   tox -e docs
 
-Authors and contributors
-========================
+Contributors
+============
 
-ARA was created by David Moreau Simard (@dmsimard) and contributors can be
-found on GitHub_.
+See contributors on GitHub_.
 
-.. _GitHub: https://github.com/openstack/ara-server/graphs/contributors
+.. _GitHub: https://github.com/openstack/ara/graphs/contributors
 
 Copyright
 =========
 
 ::
 
-    Copyright (c) 2018 Red Hat, Inc.
+    Copyright (c) 2019 Red Hat, Inc.
 
-    ARA is free software: you can redistribute it and/or modify
+    ARA Records Ansible is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    ARA is distributed in the hope that it will be useful,
+    ARA Records Ansible is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+    along with ARA Records Ansible.  If not, see <http://www.gnu.org/licenses/>.

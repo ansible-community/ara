@@ -49,8 +49,7 @@ DOCUMENTATION = """
 callback: ara
 callback_type: notification
 requirements:
-  - ara-plugins
-  - ara-server (when using the offline API client)
+  - ara
 short_description: Sends playbook execution data to the ARA API internally or over HTTP
 description:
   - Sends playbook execution data to the ARA API internally or over HTTP

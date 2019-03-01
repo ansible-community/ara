@@ -1,4 +1,5 @@
 [gerrit]
 host=review.openstack.org
 port=29418
-project=openstack/ara-server.git
+project=openstack/ara
+defaultbranch=feature/1.0

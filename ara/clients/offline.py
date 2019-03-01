@@ -32,13 +32,6 @@ class AraOfflineClient(AraHttpClient):
     def __init__(self):
         self.log = logging.getLogger(__name__)
 
-        # Validate that ara-server is available before letting Django attempt to
-        # import it
-        try:
-            import ara.server  # noqa
-        except ImportError:
-            raise ImportError("AraOfflineClient requires ara-server to be installed.")
-
         from django import setup as django_setup
         from django.core.management import execute_from_command_line
 

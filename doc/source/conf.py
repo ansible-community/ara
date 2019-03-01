@@ -20,7 +20,7 @@ import os
 import sys
 import sphinx_rtd_theme
 import pbr.version
-version_info = pbr.version.VersionInfo('ara-server')
+version_info = pbr.version.VersionInfo('ara')
 
 sys.path.insert(0, os.path.abspath('../..'))
 # -- General configuration ----------------------------------------------------
@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'ara-server'
+project = u'ara'
 copyright = u'2018, Red Hat'
 author = 'OpenStack community'
 
