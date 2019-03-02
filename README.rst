@@ -1,5 +1,5 @@
-ara
-===
+ARA Records Ansible
+===================
 
 .. image:: doc/source/_static/ara-with-icon.png
 
@@ -32,10 +32,10 @@ Here's how you can get started from scratch with default settings::
     # Run your playbook as your normally would
     ~/.ara/venv/bin/ansible-playbook playbook.yml
 
-The data is saved in real time during the Ansible playbook execution.
+The data will be saved in real time throughout the execution of the Ansible playbook.
 
-What happened behind the scenes is that the ARA Ansible callback plugin used
-the offline API client to send the data to the API which then saved it to a
+What happens behind the scenes is that the ARA Ansible callback plugin used
+the built-in API client to send the data to the API which then saved it to a
 database located by default at ``~/.ara/server/ansible.sqlite``.
 
 You're now ready to start poking at the API with the built-in API clients !

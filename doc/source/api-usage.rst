@@ -1,27 +1,19 @@
-Using API clients with ara-server
-=================================
+Using ARA API clients
+=====================
 
-Once you've :ref:`installed <installing>` ara-server, you need to know how
-you're going to use it.
+When installing ARA, you are provided with an API server and two API clients
+out of the box:
 
-Typically, `ara-server <https://github.com/openstack/ara-server>`_ is consumed
-by `ara-clients <https://github.com/openstack/ara-clients>`_ which currently
-provides two python clients for the API.
+- ``AraOfflineClient`` can query the API without needing an API server to be running
+- ``AraHttpClient`` is meant to query a specified API server over http
 
 ARA Offline REST API client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The default client, ``AraOfflineClient``, is meant to be used to query the API
-without requiring users to start or host an instance of ``ara-server``.
+If your use case doesn't require a remote or persistent API server, the offline
+client lets you query the API without needing to start an API server.
 
-To use the offline client, first install ``ara-server`` and ``ara-clients``,
-for example::
-
-    # Install ara-server and ara-clients
-    python3 -m venv ~/.ara/venv
-    ~/.ara/venv/bin/pip install ara-server ara-clients
-
-Then you can use it like this::
+In order to use this client, you would instanciate it like this::
 
     #!/usr/bin/env python3
     # Import the client
@@ -35,8 +27,6 @@ ARA HTTP REST API client
 
 ``AraHttpClient`` works with the same interface, methods and behavior as
 ``AraOfflineClient``.
-The HTTP client does not require ``ara-server`` to be installed in order to be
-used but expects a functional API endpoint at a specified location.
 
 You can set your client to communicate with a remote ``ara-server`` API by
 specifying an endpoint parameter::
@@ -45,7 +35,7 @@ specifying an endpoint parameter::
     # Import the client
     from ara.clients.http import AraHttpClient
 
-    # Instanciate the HTTP client with an endpoint where ara-server is listening
+    # Instanciate the HTTP client with an endpoint where an API server is listening
     client = AraHttpClient(endpoint="https://api.demo.recordsansible.org")
 
 Example API usage
@@ -57,6 +47,13 @@ Example API usage
 Once you've instanciated your client, you're ready to query the API.
 
 Here's a code example to help you get started::
+
+    #!/usr/bin/env python3
+    # Import the client
+    from ara.clients.http import AraHttpClient
+
+    # Instanciate the HTTP client with an endpoint where an API server is listening
+    client = AraHttpClient(endpoint="https://api.demo.recordsansible.org")
 
     # Get a list of failed playbooks
     # /api/v1/playbooks?status=failed

@@ -1,5 +1,5 @@
-Welcome to the ARA server documentation!
-========================================
+Welcome to the ARA documentation!
+=================================
 .. image:: _static/ara.png
 
 Table of Contents
@@ -8,8 +8,8 @@ Table of Contents
 .. toctree::
     :maxdepth: 2
 
-    Installing ara-server <installing>
-    Configuration settings and preferences <configuring>
-    Authentication and security <security>
-    Using API clients with ara-server <using_api_clients>
-    Architecture and workflows <arch>
+    Installing ARA <installation>
+    API configuration settings and preferences <api-configuration>
+    API authentication and security <api-security>
+    API usage with built-in clients <api-usage>
+    Architecture and workflows <architecture>

@@ -1,9 +1,9 @@
 .. security:
 
-Authentication and security
-===========================
+ARA API Server authentication and security
+==========================================
 
-ara-server ships with a default configuration that emphasizes simplicity to
+The API server ships with a default configuration that emphasizes simplicity to
 let users get started quickly.
 
 By default:
@@ -19,7 +19,7 @@ deployments.
 Setting a custom secret key
 ---------------------------
 
-By default, ara-server randomly generates a token for the :ref:`ARA_SECRET_KEY`
+By default, the API server randomly generates a token for the :ref:`ARA_SECRET_KEY`
 setting if none have been supplied by the user.
 This value is persisted in the server configuration file in order to prevent
 the key from changing on every instanciation of the server.
@@ -34,7 +34,7 @@ configuration file.
 User management
 ---------------
 
-ara-server leverages Django's `user management <https://docs.djangoproject.com/en/2.1/topics/auth/default/>`_
+The API server leverages Django's `user management <https://docs.djangoproject.com/en/2.1/topics/auth/default/>`_
 but doesn't create any user by default.
 
 .. note::
@@ -97,7 +97,7 @@ Managing hosts allowed to serve the API
 By default, :ref:`ARA_ALLOWED_HOSTS` authorizes ``localhost``, ``::1`` and
 ``127.0.0.1`` to serve requests for the API server.
 
-In order to host an instance of ara-server on another domain, the domain must
+In order to host an instance of the API server on another domain, the domain must
 be part of this list or the application server will deny any requests sent to
 it.
 
@@ -106,7 +106,7 @@ Managing CORS (cross-origin resource sharing)
 
 The :ref:`ARA_CORS_ORIGIN_WHITELIST` default is designed to allow a local development
 instance of an `ara-web <https://github.com/openstack/ara-web>`_ dashboard to
-communicate with a local development instance of ara-server.
+communicate with a local development instance of the API server.
 
 The whitelist must contain the domain names where you plan on hosting instances
 of ara-web.
