@@ -1,0 +1,7 @@
+- name: Run ARA integration tests
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Include the integration-tests role
+      include_role:
+        name: integration-tests

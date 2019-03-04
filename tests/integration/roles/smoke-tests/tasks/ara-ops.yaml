@@ -1,0 +1,199 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+# Ensure no_log is respected
+- name: Print normal data
+  debug:
+    msg: "normal data"
+
+- name: Print confidential data
+  debug:
+    msg: "confidential data"
+  no_log: "yes"
+
+# ARA record and read modules specific tests
+- name: Record data with no type
+  ara_record:
+    key: "notype"
+    value: "text"
+  register: notype
+
+- name: Validate notype key
+  assert:
+    that:
+      - notype.key == "notype"
+      - notype.value == "text"
+      - notype.type == "text"
+
+- name: Update notype key with specified playbook
+  ara_record:
+    playbook_id: "{{ notype.playbook_id }}"
+    key: "notype"
+    value: "updated text"
+    type: "text"
+  register: notype_update
+
+- name: Validate notype key
+  assert:
+    that:
+      - notype_update.key == "notype"
+      - notype_update.value == "updated text"
+      - notype_update.type == "text"
+
+- name: Record data with text type
+  ara_record:
+    key: "foo"
+    value: "bar"
+    type: "text"
+
+- name: Update existing key's value and type
+  ara_record:
+    key: "foo"
+    value: "http://barfoo"
+    type: "url"
+  register: foo
+
+- name: Validate foo key
+  assert:
+    that:
+      - foo.key == "foo"
+      - foo.value == "http://barfoo"
+      - foo.type == "url"
+
+- name: Add another k/v pair with ara_record
+  ara_record:
+    key: "bar"
+    value: '{ "foo": "bar" }'
+    type: "json"
+  register: bar
+
+- name: Validate bar key
+  assert:
+    that:
+      - bar.key == "bar"
+      - "bar.value == '{ \"foo\": \"bar\" }'"
+      - bar.type == "json"
+
+- name: Record a list value
+  vars:
+    someitems:
+      - one
+      - two
+      - three
+      - go
+  ara_record:
+    key: "somelist"
+    value: "{{ someitems }}"
+    type: "list"
+  register: somelist
+
+- name: Validate somelist key
+  vars:
+    someitems:
+      - one
+      - two
+      - three
+      - go
+  assert:
+    that:
+      - somelist.key == "somelist"
+      - somelist.value == someitems
+      - somelist.type == "list"
+
+- name: Record a dict value
+  vars:
+    dictdata:
+      foo: "bar"
+      bar: "foo"
+  ara_record:
+    key: "somedict"
+    value: "{{ dictdata }}"
+    type: "dict"
+  register: somedict
+
+- name: Validate somedict key
+  vars:
+    dictdata:
+      foo: "bar"
+      bar: "foo"
+  assert:
+    that:
+      - somedict.key == "somedict"
+      - somedict.value == dictdata
+      - somedict.type == "dict"
+
+- name: Record a list as a text type
+  vars:
+    list:
+      - foo
+      - bar
+  ara_record:
+    key: "list_as_text"
+    value: "{{ list }}"
+    type: "text"
+  register: list_as_text
+
+# The key is still recorded as an actual list, however, it will be rendered
+# as text in the UI.
+- name: Validate list_as_text key
+  vars:
+    list:
+      - foo
+      - bar
+  assert:
+    that:
+      - list_as_text.key == "list_as_text"
+      - list_as_text.value == list
+      - list_as_text.value != "[u'foo', u'bar']"
+      - list_as_text.type == "text"
+
+# Things that should fail
+- name: Record with no key
+  ara_record:
+    value: "value"
+  ignore_errors: "yes"
+  register: nokey
+
+- name: Validate nokey failure
+  assert:
+    that:
+      - nokey.failed
+
+- name: Record with no value
+  ara_record:
+    key: "key"
+  ignore_errors: "yes"
+  register: novalue
+
+- name: Validate novalue failure
+  assert:
+    that:
+      - novalue.failed
+
+- name: Record with invalid type
+  ara_record:
+    key: "key"
+    value: "value"
+    type: "hadoop"
+  ignore_errors: "yes"
+  register: invalid
+
+- name: Validate invalid failure
+  assert:
+    that:
+      - invalid.failed

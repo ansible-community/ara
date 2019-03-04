@@ -1,0 +1,55 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+- name: ARA Tasks test play
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ara_playbook_name: Smoke tests
+  tasks:
+    - name: ARA Integration test
+      debug:
+        msg: "ARA Integration test"
+      tags:
+        - tagged
+  roles:
+    - { role: "smoke-tests" }
+
+- name: Add a host with non-ascii characters
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Add a host with non-ascii character
+      add_host:
+        name: "höstñämë"
+        ansible_host: "127.0.0.1"
+        ansible_connection: "local"
+      tags:
+        - untag
+        - verytag
+
+- name: Play with non-ascii characters - ä, ö, ü
+  hosts: höstñämë
+  gather_facts: yes
+  tasks:
+    - name: Task with non-ascii characters - ä, ö, ü
+      debug:
+        msg: "This is a task result with non-ascii characters: ä, ö, ü"
+      tags:
+        - untag
+        - verytag

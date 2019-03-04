@@ -24,7 +24,7 @@ import logging
 import pbr.version
 import requests
 
-CLIENT_VERSION = pbr.version.VersionInfo("ara-clients").release_string()
+CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
 
 class HttpClient(object):

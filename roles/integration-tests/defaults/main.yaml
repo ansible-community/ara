@@ -1,0 +1,37 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+# Root directory where integration tests will prepare and store data
+integration_root: "/tmp/ara-integration-tests"
+
+# Directory where the virtualenv will be created
+integration_virtualenv: "{{ integration_root }}/venv"
+
+# Directory where ARA_BASE_DIR will be set
+integration_data: "{{ integration_root }}/data"
+
+# Whether the root directory should be cleaned up between runs
+integration_cleanup: true
+
+# Name of the Ansible package
+# This can be "ansible" which will use pip or it could be something like
+# /home/user/git/ansible as well as git+https://github.com/ansible/ansible
+integration_ansible_name: ansible
+
+# Version of Ansible from pypi to install
+integration_ansible_version: latest

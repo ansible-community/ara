@@ -1,0 +1,66 @@
+- job:
+    name: ara-tox-py3
+    parent: tox
+    nodeset: ubuntu-bionic
+    vars:
+      tox_envlist: py3
+
+- job:
+    name: ara-tox-linters
+    parent: tox
+    nodeset: ubuntu-bionic
+    vars:
+      tox_envlist: linters
+
+- job:
+    name: ara-1.0-integration-base
+    parent: base
+    vars:
+      integration_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
+      integration_ansible_version: null
+    run: playbooks/integration-tests.yaml
+    post-run: tests/integration-post.yaml
+
+- job:
+    name: ara-1.0-integration-fedora-devel
+    parent: ara-integration-base
+    nodeset: fedora-latest
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: devel
+
+- job:
+    name: ara-1.0-integration-fedora-2.7
+    parent: ara-1.0-integration-base
+    nodeset: fedora-latest
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.7
+
+- job:
+    name: ara-1.0-integration-ubuntu-2.6
+    parent: ara-1.0-integration-base
+    nodeset: ubuntu-bionic
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.6
+
+- project:
+    vars:
+      rtd_webhook_id: '49230'
+    templates:
+      - docs-on-readthedocs
+    check:
+      jobs:
+        - ara-1.0-integration-fedora-2.7
+        - ara-1.0-integration-fedora-devel:
+            voting: false
+        - ara-1.0-integration-ubuntu-2.6
+        - ara-tox-linters
+        - ara-tox-py3
+    gate:
+      jobs:
+        - ara-1.0-integration-fedora-2.7
+        - ara-1.0-integration-ubuntu-2.6
+        - ara-tox-linters
+        - ara-tox-py3

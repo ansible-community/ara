@@ -1,0 +1,122 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+- name: Clean up integration test root
+  file:
+    path: "{{ integration_root }}"
+    state: absent
+  when: integration_cleanup | bool
+
+- name: Create integration test root
+  file:
+    path: "{{ integration_root }}"
+    state: directory
+
+# Zuul already prepares the src repository on the remote node
+- name: Symlink Zuul repositories to integration test root
+  file:
+    src: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
+    dest: "{{ integration_root }}/ara"
+    state: link
+  when: zuul is defined
+
+- when: zuul is not defined
+  block:
+    # The expectation is that the integration tests are run from a checked out
+    # git repository. Use this repository for the tests so we are able to test
+    # local modifications. Synchronize is used in place of symlink so we are
+    # able to run integration tests on a remote machine if necessary.
+    # git rev-parse --show-toplevel returns the root git directory
+    - name: Synchronize ara-infra to integration root
+      synchronize:
+        src: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
+        dest: "{{ integration_root }}/"
+        delete: yes
+
+# If a version is not explicitly set we want to make sure to
+# completely omit the version argument to pip, as it will be coming
+# from the long-form integration_ansible_name variable.  Additionally, if
+# the version is the special value "latest", then we also want to omit
+# any version number, but also set the package state to "latest".
+- name: Set Ansible version for installation
+  set_fact:
+    _install_ansible_version: "{{ integration_ansible_version }}"
+  when: integration_ansible_version not in ("", "latest")
+
+- name: Set Ansible package state for installation
+  set_fact:
+    _install_ansible_state: latest
+  when: integration_ansible_version == "latest"
+
+- name: Initialize virtual environment with Ansible
+  pip:
+    name: "{{ integration_ansible_name }}"
+    version: "{{ _install_ansible_version | default(omit, True) }}"
+    state: "{{ _install_ansible_state | default(omit, True) }}"
+    virtualenv: "{{ integration_virtualenv }}"
+    virtualenv_python: python3
+
+- name: Install ARA from source in virtual environment
+  pip:
+    name: "{{ integration_root }}/ara"
+    state: present
+    virtualenv: "{{ integration_virtualenv }}"
+    virtualenv_python: python3
+
+- name: Get ARA plugins directory
+  command: "{{ integration_root }}/venv/bin/python -m ara.plugins"
+  register: ara_plugins
+
+# These aren't in the same task (i.e, with loop) so we can tell individual test
+# runs apart easily rather than keeping all the output bundled in a single task.
+# TODO: Add validation for the tests
+- environment:
+    ANSIBLE_CALLBACK_PLUGINS: "{{ ara_plugins.stdout }}/callback"
+    ANSIBLE_ACTION_PLUGINS: "{{ ara_plugins.stdout }}/action"
+    ARA_DEBUG: true
+    ARA_LOG_LEVEL: DEBUG
+    ARA_BASE_DIR: "{{ integration_data }}"
+    ARA_SECRET_KEY: testing
+  vars:
+    ansible_playbook: "{{ integration_virtualenv }}/bin/ansible-playbook -vvv"
+    test_root: "{{ integration_root }}/ara/tests/integration"
+  block:
+    # smoke.yaml tests setting ara_playbook_name in one of three plays
+    - name: Run smoke.yaml integration test
+      command: "{{ ansible_playbook }} {{ test_root }}/smoke.yaml"
+
+    - name: Run hosts.yaml integration test
+      command: "{{ ansible_playbook }} {{ test_root }}/hosts.yaml"
+
+    - name: Run import.yaml integration test
+      command: "{{ ansible_playbook }} {{ test_root }}/import.yaml"
+
+    # Tests setting ara_playbook_name as an extra var
+    - name: Run failed.yaml integration test
+      command: >
+        {{ ansible_playbook }} {{ test_root }}/failed.yaml -e ara_playbook_name="Failed playbook"
+      ignore_errors: yes
+
+    - name: Run incomplete.yaml integration test
+      shell: |
+        {{ ansible_playbook }} {{ test_root }}/incomplete.yaml &
+        sleep 5
+        kill $!
+      args:
+        executable: /bin/bash
+      ignore_errors: yes

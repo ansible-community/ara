@@ -1,0 +1,56 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+# Tests some things around blocks, failures and rescues
+
+- block:
+    - name: Debug message
+      debug:
+        msg: "Successful debug task"
+    - name: Return false
+      command: /bin/false
+    - name: Command that should not run
+      debug:
+        msg: "This should never run"
+  rescue:
+    - name: Rescue task
+      debug:
+        msg: "Rescue was called successfully"
+  always:
+    - name: Task that should always run
+      debug:
+        msg: "This should always be printed"
+
+- name: Test a skipped task
+  debug:
+    msg: "This is skipped"
+  when: false
+
+- name: Test with_items
+  debug:
+    msg: "{{ item }}"
+  with_items: "{{ list_items }}"
+
+- name: Test with_dict
+  debug:
+    msg: "{{ item.value.name }}: {{ item.value.value }}"
+  with_dict: "{{ dict_items }}"
+
+- name: Test for XSS
+  command: echo "<script>alert(document.cookie)</script>"
+  changed_when: False
