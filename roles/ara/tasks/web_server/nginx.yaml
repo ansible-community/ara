@@ -1,0 +1,54 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- become: yes
+  block:
+    - name: Install nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: Set selinux boolean to allow nginx to reverse proxy
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Set up the ARA API nginx vhost
+      template:
+        src: "{{ ara_nginx_api_vhost | default('nginx-ara-api.conf.j2') }}"
+        dest: "{{ ara_nginx_config_path }}/ara-api.conf"
+      notify:
+        - restart nginx
+
+    - name: Enable the nginx configuration on Debian-like systems
+      file:
+        src: "{{ ara_nginx_config_path }}/ara-api.conf"
+        dest: /etc/nginx/sites-enabled/ara-api.conf
+        state: link
+      when: ansible_os_family == 'Debian'
+      notify:
+        - restart nginx
+
+    - name: Enable and start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      register: ara_nginx_enabled

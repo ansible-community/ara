@@ -1,0 +1,100 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- name: Verify if a configuration file exists
+  stat:
+    path: "{{ ara_settings }}"
+  register: settings_stat
+
+# If no secret key has been provided and this isn't the first time we are
+# running, recover the secret key from the existing configuration file.
+- when:
+    - ara_secret_key is none
+    - settings_stat.stat.exists
+  block:
+    - name: Read the configuration file
+      command: cat "{{ ara_settings }}"
+      changed_when: false
+      no_log: yes
+      register: settings_contents
+
+    - name: Recover existing secret key
+      vars:
+        config: "{{ settings_contents.stdout | from_yaml }}"
+      set_fact:
+        ara_secret_key: "{{ config[ara_env]['SECRET_KEY'] }}"
+      no_log: yes
+
+# If no secret key has been provided and this is the first time we are
+# running, generate a new random secret key that will be persisted in the
+# configuration file.
+- when:
+    - ara_secret_key is none
+    - not settings_stat.stat.exists
+  block:
+    - name: Generate a random secret key
+      environment:
+        PATH: "{{ path_with_virtualenv | default(omit) }}"
+      command: python3 -c "from django.utils.crypto import get_random_string; print(get_random_string(length=50))"
+      no_log: yes
+      register: generated_key
+
+    - name: Set ara_secret_key
+      set_fact:
+        ara_secret_key: "{{ generated_key.stdout }}"
+      no_log: yes
+
+# Put configuration in a format we can write to a file
+- name: Reconcile configuration
+  vars:
+    reconciled_configuration:
+      ALLOWED_HOSTS: "{{ ara_allowed_hosts }}"
+      BASE_DIR: "{{ ara_base_dir }}"
+      CORS_ORIGIN_ALLOW_ALL: "{{ ara_cors_origin_allow_all }}"
+      CORS_ORIGIN_WHITELIST: "{{ ara_cors_origin_whitelist }}"
+      DATABASES:
+        default:
+          ENGINE: "{{ ara_database_engine }}"
+          NAME: "{{ ara_database_name }}"
+          USER: "{{ ara_database_user }}"
+          PASSWORD: "{{ ara_database_password }}"
+          HOST: "{{ ara_database_host }}"
+          PORT: "{{ ara_database_port }}"
+      DEBUG: "{{ ara_debug }}"
+      LOGGING: "{{ ara_logging }}"
+      LOG_LEVEL: "{{ ara_log_level }}"
+      MEDIA_ROOT: "{{ ara_media_root }}"
+      MEDIA_URL: "{{ ara_media_url }}"
+      STATIC_ROOT: "{{ ara_static_root }}"
+      STATIC_URL: "{{ ara_static_url }}"
+      SECRET_KEY: "{{ ara_secret_key }}"
+  set_fact:
+    ara_api_configuration: "{'{{ ara_env }}': {{ reconciled_configuration }} }"
+  no_log: yes
+
+- name: Set up the ARA API configuration file
+  copy:
+    content: |
+      ---
+      # Managed by the ara Ansible role
+      {{ ara_api_configuration | to_nice_yaml(indent=2) }}
+    dest: "{{ ara_settings }}"
+    mode: 0750
+  notify:
+    - restart ara-api
+  no_log: yes

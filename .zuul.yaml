@@ -45,6 +45,37 @@
       - name: github.com/ansible/ansible
         override-checkout: stable-2.6
 
+- job:
+    name: ara-1.0-role-integration-base
+    parent: base
+    files:
+      - ara/*
+      - playbooks/*
+      - roles/*
+      - tests/*
+      - .zuul.d/*
+      - setup.py
+      - setup.cfg
+      - requirements.txt
+      - test-requirements.txt
+    pre-run: tests/role-integration-pre.yaml
+    run: playbooks/ara.yaml
+    vars:
+      ara_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
+      ara_web_server: nginx
+      ara_wsgi_server: gunicorn
+      ara_www_dir: /var/www/ara
+
+- job:
+    name: ara-1.0-role-integration-ubuntu
+    parent: ara-1.0-role-integration-base
+    nodeset: ubuntu-bionic
+
+- job:
+    name: ara-1.0-role-integration-fedora
+    parent: ara-1.0-role-integration-base
+    nodeset: fedora-latest
+
 - project:
     vars:
       rtd_webhook_id: '49230'
@@ -56,11 +87,15 @@
         - ara-1.0-integration-fedora-devel:
             voting: false
         - ara-1.0-integration-ubuntu-2.6
+        - ara-1.0-role-integration-ubuntu
+        - ara-1.0-role-integration-fedora
         - ara-tox-linters
         - ara-tox-py3
     gate:
       jobs:
         - ara-1.0-integration-fedora-2.7
         - ara-1.0-integration-ubuntu-2.6
+        - ara-1.0-role-integration-ubuntu
+        - ara-1.0-role-integration-fedora
         - ara-tox-linters
         - ara-tox-py3
