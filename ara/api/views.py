@@ -28,7 +28,7 @@ class InfoView(viewsets.ViewSet):
         return Response(
             {
                 "python_version": ".".join(map(str, sys.version_info[:3])),
-                "ara_version": pbr.version.VersionInfo("ara-server").release_string(),
+                "ara_version": pbr.version.VersionInfo("ara").release_string(),
             }
         )
 
