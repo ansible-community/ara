@@ -16,22 +16,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-- name: Integration tests post-run
-  hosts: all
-  gather_facts: yes
-  tasks:
-    - name: Create server log directory
-      file:
-        path: "{{ ansible_user_dir }}/workspace/logs"
-        state: directory
-        recurse: yes
+- name: Ensure the database directory exists
+  become: "{{ (ansible_user_dir in ara_database_name) | ternary(false, true) }}"
+  file:
+    path: "{{ ara_database_name | dirname }}"
+    state: directory
 
-    - name: Recover integration test data
-      command: cp -rp /tmp/ara-integration-tests/data {{ ansible_user_dir }}/workspace/logs/data
-
-    - name: Upload log artifacts
-      synchronize:
-        src: "{{ ansible_user_dir }}/workspace/logs"
-        dest: "{{ zuul.executor.log_root }}"
-        mode: pull
-        verify_host: true
+- name: Run SQL migrations
+  become: "{{ (ansible_user_dir in ara_database_name) | ternary(false, true) }}"
+  environment:
+    ARA_SETTINGS: "{{ ara_settings }}"
+    PATH: "{{ path_with_virtualenv | default(omit) }}"
+  command: ara-manage migrate

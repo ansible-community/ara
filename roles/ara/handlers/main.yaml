@@ -16,22 +16,22 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-- name: Integration tests post-run
-  hosts: all
-  gather_facts: yes
-  tasks:
-    - name: Create server log directory
-      file:
-        path: "{{ ansible_user_dir }}/workspace/logs"
-        state: directory
-        recurse: yes
+- name: restart nginx
+  become: yes
+  service:
+    name: nginx
+    state: restarted
+  when: ara_nginx_enabled is not changed
 
-    - name: Recover integration test data
-      command: cp -rp /tmp/ara-integration-tests/data {{ ansible_user_dir }}/workspace/logs/data
+- name: restart ara-api
+  become: yes
+  service:
+    name: ara-api
+    state: restarted
+  when: ara_api_service_enabled is not changed
 
-    - name: Upload log artifacts
-      synchronize:
-        src: "{{ ansible_user_dir }}/workspace/logs"
-        dest: "{{ zuul.executor.log_root }}"
-        mode: pull
-        verify_host: true
+# Is there a better way ? Static files are not created with the httpd context
+- name: restore selinux context for static files
+  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
+  command: "restorecon -Rv {{ ara_www_dir }}"
+  when: ansible_os_family == "RedHat"

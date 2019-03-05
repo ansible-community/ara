@@ -1,0 +1,176 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+# Root directories in which data, configuration and logs will be stored
+ara_root_dir: "{{ ansible_user_dir }}/.ara"  # git repos, virtualenvs, sqlite db
+ara_log_dir: "{{ ara_root_dir }}/logs"  # logs
+ara_www_dir: "{{ ara_root_dir }}/www"  # django collectstatic assets (html/css/js)
+
+# Whether or not ara should be installed in a virtual environment.
+# Running ara in a virtualenv is recommended to avoid conflicting with
+# system-wide python packages.
+ara_venv: true
+
+# When using a virtualenv, location where it will be installed
+ara_venv_path: "{{ ara_root_dir }}/virtualenv"
+
+# How ara will be installed
+# source (default): installs from a local or remote git repository specified by ara_source
+# pypi (planned): installs from pypi
+ara_install_method: source
+
+# The source where the git repository can be cloned from.
+# Can be an URL to a git repository or the path to a local repository on disk.
+ara_source: "https://git.openstack.org/openstack/ara"
+
+# Location where ara will be checked out when installing from source
+ara_source_checkout: "{{ ara_root_dir }}/git/ara"
+
+# Version of ara to install
+# This can be a git ref (tag, branch, commit) when installing from source or
+# it can be a version number released to PyPi.
+# When using "latest" as the source version, HEAD will be used
+# When using "latest" as the pypi version, the latest release will be used
+ara_install_version: feature/1.0
+
+# The web server for serving the ARA API
+# It is recommended to specify a web server when deploying a production environment.
+# When setting a web server, you'll need to set "ara_www_dir" to a location the
+# web server has access to.
+# If no web server are specified, the Ansible role will set "ara_debug" to true
+# in order to let Django serve the static files for the admin interface and the
+# API browser.
+# - none (null - default)
+# - nginx (recommended)
+# - apache (planned)
+ara_web_server: null
+
+# The WSGI server for running ARA's API server
+# - none (null - default)
+# - gunicorn (recommended)
+# - uwsgi (planned)
+# - mod_wsgi (planned)
+ara_wsgi_server: null
+
+# Address and port on which the wsgi server will bind
+# Changing this value means you might need to adjust "ara_allowed_hosts" and
+# "ara_cors_origin_whitelist".
+ara_wsgi_bind: "127.0.0.1:8000"
+
+# When using a web server, the domain it will be listening on
+ara_api_fqdn: "{{ ansible_default_ipv4['address'] }}"
+
+####################################
+# ara API configuration settings
+# For more information, see documentation: https://ara.readthedocs.io
+####################################
+
+# ARA_BASE_DIR - Default directory for storing data and configuration
+ara_base_dir: "{{ ara_root_dir }}/server"
+
+# ARA_SETTINGS - Path to an ARA API configuration file
+ara_settings: "{{ ara_base_dir }}/settings.yaml"
+
+# ARA_ENV - Environment to load configuration for
+ara_env: default
+
+# ARA_LOG_LEVEL - Log level of the different components
+ara_log_level: INFO
+
+# ARA_LOGGING - Python logging configuration
+ara_logging:
+  disable_existing_loggers: false
+  formatters:
+    normal:
+      format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
+  handlers:
+    console:
+      class: logging.handlers.TimedRotatingFileHandler
+      formatter: normal
+      level: "{{ ara_log_level }}"
+      filename: "{{ ara_log_dir }}/server.log"
+      when: 'midnight'
+      interval: 1
+      backupCount: 30
+  loggers:
+    ara:
+      handlers:
+      - console
+      level: "{{ ara_log_level }}"
+      propagate: 0
+  root:
+    handlers:
+    - console
+    level: "{{ ara_log_level }}"
+  version: 1
+
+# ARA_CORS_ORIGIN_ALLOW_ALL - django-cors-headers’s CORS_ORIGIN_WHITELIST_ALLOW_ALL setting
+ara_cors_origin_allow_all: false
+
+# ARA_CORS_ORIGIN_WHITELIST - django-cors-headers’s CORS_ORIGIN_WHITELIST setting
+ara_cors_origin_whitelist:
+  - "127.0.0.1:8000"
+  - "localhost:3000"
+
+# ARA_SERVER_ALLOWED_HOSTS - Django’s ALLOWED_HOSTS setting
+ara_allowed_hosts:
+  - "127.0.0.1"
+  - "localhost"
+  - "::1"
+  - "{{ ansible_default_ipv4['address'] }}"
+
+# ARA_DEBUG - Django's DEBUG setting
+# If a web server is specified, this will default to false.
+# If no web server is specified, this will default to true in order to let
+# Django serve a minimum amount of static files.
+# It is not recommended to run with debug enabled in production.
+ara_debug: "{{ (ara_web_server is none) | ternary(true, false) }}"
+
+# ARA_SECRET_KEY - Django's SECRET_KEY setting
+# Note: If no key is provided, a random one will be generated once and persisted
+ara_secret_key: null
+
+# ARA_STATIC_ROOT - Django’s STATIC_ROOT setting
+ara_static_root: "{{ ara_www_dir }}/static"
+
+# ARA_STATIC_URL - Django's STATIC_URL setting
+ara_static_url: /static/
+
+# ARA_MEDIA_ROOT - Django's MEDIA_ROOT setting
+ara_media_root: "{{ ara_www_dir }}/media"
+
+# ARA_MEDIA_URL - Django's MEDIA_URL setting
+ara_media_url: /media/
+
+# ARA_DATABASE_ENGINE - Django’s ENGINE database setting
+ara_database_engine: django.db.backends.sqlite3
+
+# ARA_DATABASE_NAME - Django’s NAME database setting
+ara_database_name: "{{ ara_base_dir }}/ansible.sqlite"
+
+# ARA_DATABASE_USER - Django’s USER database setting
+ara_database_user: null
+
+# ARA_DATABASE_PASSWORD - Django’s PASSWORD database setting
+ara_database_password: null
+
+# ARA_DATABASE_HOST - Django’s HOST database setting
+ara_database_host: null
+
+# ARA_DATABASE_PORT - Django’s PORT database setting
+ara_database_port: null

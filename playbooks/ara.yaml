@@ -1,0 +1,7 @@
+- name: Install ARA with default settings
+  hosts: all
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - ara

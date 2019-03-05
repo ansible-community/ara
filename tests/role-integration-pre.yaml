@@ -1,0 +1,35 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+- name: Role integration pre-run
+  hosts: all
+  gather_facts: yes
+  tasks:
+    # The images built with diskimage-builder by the OpenStack infrastructure
+    # currently installs the virtualenv packages on Fedora and adds them to the
+    # exclude list in /etc/dnf/dnf.conf.
+    # Work around this since it prevents the role from working properly.
+    # When it attempts to install python3-virtualenv, it won't be found because of the exclude.
+    # Reference: https://github.com/openstack/diskimage-builder/blob/5b1844acf99d3797b1bbe02601e5ce94308cab55/diskimage_builder/elements/pip-and-virtualenv/install.d/pip-and-virtualenv-source-install/04-install-pip#L134
+    - name: Remove DNF excludes for Fedora
+      become: yes
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: "^exclude="
+        state: absent
+      when: ansible_distribution == "Fedora"

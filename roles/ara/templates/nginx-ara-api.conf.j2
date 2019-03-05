@@ -1,0 +1,40 @@
+upstream ara_api {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+    server {{ ara_wsgi_bind }} fail_timeout=0;
+}
+
+server {
+    listen 80;
+    keepalive_timeout 5;
+    server_name {{ ara_api_fqdn }};
+
+    access_log /var/log/nginx/{{ ara_api_fqdn }}_access.log;
+    error_log  /var/log/nginx/{{ ara_api_fqdn }}_error.log;
+
+    # /static contains files from "ara-manage collectstatic"
+    location /static {
+        alias {{ ara_www_dir }}/static;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    # There's nothing at /, redirect it to the actual API for convenience
+    location / {
+      return 301 http://{{ ara_api_fqdn }}/api/v1/;
+    }
+
+    location /api/v1/ {
+      # checks if the file exists, if not found proxy to app
+      try_files $uri @proxy_to_app;
+    }
+
+    location @proxy_to_app {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $http_host;
+
+        proxy_redirect off;
+        proxy_pass http://ara_api;
+    }
+}

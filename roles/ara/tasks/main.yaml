@@ -1,0 +1,51 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- name: Include OS family/distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yaml"
+    - "{{ ansible_os_family }}.yaml"
+
+- name: Ensure pre-requirements for running are met
+  include_tasks: pre-requirements.yaml
+
+- name: Include installation of ARA
+  include_tasks: "install/{{ ara_install_method }}.yaml"
+
+- name: Include configuration of the ARA API
+  include_tasks: config.yaml
+
+- name: Include configuration of the database engine
+  include_tasks: "database_engine/{{ ara_database_engine }}.yaml"
+
+- name: Collect static files
+  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
+  environment:
+    ARA_SETTINGS: "{{ ara_settings }}"
+    PATH: "{{ path_with_virtualenv | default(omit) }}"
+  command: ara-manage collectstatic --clear --no-input
+  notify:
+    - restore selinux context for static files
+
+- name: Include installation of the WSGI backend server
+  include_tasks: "wsgi_server/{{ ara_wsgi_server }}.yaml"
+
+- name: Include installation of the web server
+  include_tasks: "web_server/{{ ara_web_server }}.yaml"
+  when: ara_web_server is not none

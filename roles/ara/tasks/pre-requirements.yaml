@@ -1,0 +1,82 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+# The ansible_python_version fact might end up retrieving the version of
+# python2 so we need to explicitely get the version of python 3 available.
+- name: Validate availability of Python 3.6
+  command: /usr/bin/python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'
+  changed_when: false
+  failed_when: false
+  register: python_version
+
+- name: Fail pre-emptively if running Python <3.6
+  fail:
+    msg: "Python >=3.6 is required to run ARA"
+  when: python_version.stdout is version('3.6', '<') or python_version.rc != 0
+
+- name: Get list of installed packages
+  package_facts:
+    manager: "auto"
+  no_log: yes
+
+- name: Retrieve list of missing required packages
+  set_fact:
+    ara_missing_packages: "{{ ara_required_packages | difference(ansible_facts.packages.keys()) }}"
+
+# Only attempt to elevate privileges if there are any missing packages
+- when: ara_missing_packages | length > 0
+  block:
+    - name: Install required packages
+      become: yes
+      package:
+        name: "{{ ara_required_packages }}"
+        state: present
+  rescue:
+    - name: Fail due to missing packages
+      fail:
+        msg: "Failed to elevate privileges and install missing required packages. Install the following packages before running this role again: {{ ara_missing_packages | join(' ') }}"
+
+# The following tasks dynamically enable escalated privileges only when the
+# directory to create is not located in the user's home directory.
+- name: Ensure ara_root_dir exists
+  become: "{{ (ansible_user_dir in ara_root_dir) | ternary(false, true) }}"
+  file:
+    path: "{{ ara_root_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Ensure ara_base_dir exists
+  become: "{{ (ansible_user_dir in ara_base_dir) | ternary(false, true) }}"
+  file:
+    path: "{{ ara_base_dir }}"
+    state: directory
+    mode: 0750
+
+- name: Ensure ara_log_dir exists
+  become: "{{ (ansible_user_dir in ara_log_dir) | ternary(false, true) }}"
+  file:
+    path: "{{ ara_log_dir }}"
+    state: directory
+    mode: 0750
+
+- name: Ensure ara_www_dir exists
+  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
+  file:
+    path: "{{ ara_www_dir }}"
+    state: directory
+    mode: 0755
