@@ -12,19 +12,18 @@ server {
     access_log /var/log/nginx/{{ ara_api_fqdn }}_access.log;
     error_log  /var/log/nginx/{{ ara_api_fqdn }}_error.log;
 
-    # /static contains files from "ara-manage collectstatic"
-    location /static {
-        alias {{ ara_www_dir }}/static;
-        expires 7d;
-        add_header Cache-Control "public";
-    }
-
     # There's nothing at /, redirect it to the actual API for convenience
     location / {
       return 301 http://{{ ara_api_fqdn }}/api/v1/;
     }
 
-    location /api/v1/ {
+    location /static {
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    # Everything, including static files, is served by the backend
+    location ~ {
       # checks if the file exists, if not found proxy to app
       try_files $uri @proxy_to_app;
     }

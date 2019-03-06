@@ -36,7 +36,6 @@ What the role ends up doing by default:
 - Generates a random secret key if none are already configured or provided
 - Sets up API configuration in ``~/.ara/server/settings.yaml``
 - Runs the API SQL migrations (``ara-manage migrate``)
-- Collects static files (``ara-manage collectstatic``) into ``~/.ara/www``
 
 About deployment topologies
 ---------------------------
@@ -88,7 +87,6 @@ Install ARA and set up the API to be served by nginx in front of gunicorn::
         ansible_python_interpreter: /usr/bin/python3
         ara_web_server: nginx
         ara_wsgi_server: gunicorn
-        ara_www_dir: /var/www/ara
         ara_api_fqdn: api.ara.example.org
         ara_allowed_hosts:
           - api.ara.example.org

@@ -114,6 +114,7 @@ if EXTERNAL_AUTH:
 # fmt: off
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -155,8 +156,15 @@ USE_I18N = True
 USE_L10N = True
 LANGUAGE_CODE = "en-us"
 
+# whitenoise serves static files without needing to use "collectstatic"
+WHITENOISE_USE_FINDERS = True
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"))
+
+# Create STATIC_ROOT if it doesn't exist to avoid a warning from whitenoise
+# https://github.com/evansd/whitenoise/issues/215
+if not os.path.isdir(STATIC_ROOT):
+    os.makedirs(STATIC_ROOT, mode=0o755)
 
 MEDIA_URL = settings.get("MEDIA_URL", "/media/")
 MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
@@ -201,10 +209,6 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         CORS_ORIGIN_ALLOW_ALL=CORS_ORIGIN_ALLOW_ALL,
         SECRET_KEY=SECRET_KEY,
         DATABASES=DATABASES,
-        STATIC_URL=STATIC_URL,
-        STATIC_ROOT=STATIC_ROOT,
-        MEDIA_URL=MEDIA_URL,
-        MEDIA_ROOT=MEDIA_ROOT,
         DEBUG=DEBUG,
         LOG_LEVEL=LOG_LEVEL,
         LOGGING=LOGGING,

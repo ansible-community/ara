@@ -34,15 +34,6 @@
 - name: Include configuration of the database engine
   include_tasks: "database_engine/{{ ara_database_engine }}.yaml"
 
-- name: Collect static files
-  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
-  environment:
-    ARA_SETTINGS: "{{ ara_settings }}"
-    PATH: "{{ path_with_virtualenv | default(omit) }}"
-  command: ara-manage collectstatic --clear --no-input
-  notify:
-    - restore selinux context for static files
-
 - name: Include installation of the WSGI backend server
   include_tasks: "wsgi_server/{{ ara_wsgi_server }}.yaml"
 

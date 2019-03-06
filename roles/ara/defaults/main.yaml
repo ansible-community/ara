@@ -19,7 +19,6 @@
 # Root directories in which data, configuration and logs will be stored
 ara_root_dir: "{{ ansible_user_dir }}/.ara"  # git repos, virtualenvs, sqlite db
 ara_log_dir: "{{ ara_root_dir }}/logs"  # logs
-ara_www_dir: "{{ ara_root_dir }}/www"  # django collectstatic assets (html/css/js)
 
 # Whether or not ara should be installed in a virtual environment.
 # Running ara in a virtualenv is recommended to avoid conflicting with
@@ -50,10 +49,6 @@ ara_install_version: feature/1.0
 
 # The web server for serving the ARA API
 # It is recommended to specify a web server when deploying a production environment.
-# When setting a web server, you'll need to set "ara_www_dir" to a location the
-# web server has access to.
-# If no web server are specified, the Ansible role will set "ara_debug" to true
-# in order to let Django serve the static files for the admin interface and the
 # API browser.
 # - none (null - default)
 # - nginx (recommended)
@@ -135,27 +130,12 @@ ara_allowed_hosts:
   - "{{ ansible_default_ipv4['address'] }}"
 
 # ARA_DEBUG - Django's DEBUG setting
-# If a web server is specified, this will default to false.
-# If no web server is specified, this will default to true in order to let
-# Django serve a minimum amount of static files.
 # It is not recommended to run with debug enabled in production.
-ara_debug: "{{ (ara_web_server is none) | ternary(true, false) }}"
+ara_debug: false
 
 # ARA_SECRET_KEY - Django's SECRET_KEY setting
 # Note: If no key is provided, a random one will be generated once and persisted
 ara_secret_key: null
-
-# ARA_STATIC_ROOT - Django’s STATIC_ROOT setting
-ara_static_root: "{{ ara_www_dir }}/static"
-
-# ARA_STATIC_URL - Django's STATIC_URL setting
-ara_static_url: /static/
-
-# ARA_MEDIA_ROOT - Django's MEDIA_ROOT setting
-ara_media_root: "{{ ara_www_dir }}/media"
-
-# ARA_MEDIA_URL - Django's MEDIA_URL setting
-ara_media_url: /media/
 
 # ARA_DATABASE_ENGINE - Django’s ENGINE database setting
 ara_database_engine: django.db.backends.sqlite3

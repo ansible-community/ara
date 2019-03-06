@@ -6,3 +6,4 @@ django-cors-headers
 django-filter
 dynaconf[yaml]
 requests>=2.14.2
+whitenoise

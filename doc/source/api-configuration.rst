@@ -42,8 +42,6 @@ For more details, click on the configuration parameters.
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_ALLOWED_HOSTS_             | Django's ALLOWED_HOSTS_ setting                      | ``["127.0.0.1", "localhost", "::1"]``    |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
-| ARA_STATIC_ROOT_               | Django's STATIC_ROOT_ setting                        | ``~/.ara/server/www/static``             |
-+--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_DEBUG_                     | Django's DEBUG_ setting                              | ``false``                                |
 +--------------------------------+------------------------------------------------------+------------------------------------------+
 | ARA_SECRET_KEY_                | Django's SECRET_KEY_ setting                         | Randomized token, see ARA_SECRET_KEY_    |
@@ -314,21 +312,6 @@ cryptographic signing, and should be set to a unique, unpredictable value.
 
 If it is not set, a random token will be generated and persisted in the
 default configuration file.
-
-ARA_STATIC_ROOT
-~~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_STATIC_ROOT``
-- **Configuration file variable**: ``STATIC_ROOT``
-- **Provided by**: Django's STATIC_ROOT_
-- **Type**: ``string``
-- **Default**: ``~/.ara/server/www/static``
-
-The absolute path to the directory where Django's collectstatic command will
-collect static files for deployment.
-
-The static files are required for the built-in API browser by
-django-rest-framework.
 
 ARA_DATABASE_ENGINE
 ~~~~~~~~~~~~~~~~~~~

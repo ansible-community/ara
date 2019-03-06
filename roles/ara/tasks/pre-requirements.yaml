@@ -73,10 +73,3 @@
     path: "{{ ara_log_dir }}"
     state: directory
     mode: 0750
-
-- name: Ensure ara_www_dir exists
-  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
-  file:
-    path: "{{ ara_www_dir }}"
-    state: directory
-    mode: 0755

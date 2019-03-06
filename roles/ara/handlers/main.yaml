@@ -29,9 +29,3 @@
     name: ara-api
     state: restarted
   when: ara_api_service_enabled is not changed
-
-# Is there a better way ? Static files are not created with the httpd context
-- name: restore selinux context for static files
-  become: "{{ (ansible_user_dir in ara_www_dir) | ternary(false, true) }}"
-  command: "restorecon -Rv {{ ara_www_dir }}"
-  when: ansible_os_family == "RedHat"

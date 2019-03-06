@@ -78,10 +78,6 @@
       DEBUG: "{{ ara_debug }}"
       LOGGING: "{{ ara_logging }}"
       LOG_LEVEL: "{{ ara_log_level }}"
-      MEDIA_ROOT: "{{ ara_media_root }}"
-      MEDIA_URL: "{{ ara_media_url }}"
-      STATIC_ROOT: "{{ ara_static_root }}"
-      STATIC_URL: "{{ ara_static_url }}"
       SECRET_KEY: "{{ ara_secret_key }}"
   set_fact:
     ara_api_configuration: "{'{{ ara_env }}': {{ reconciled_configuration }} }"
