@@ -74,7 +74,6 @@ Install ARA and set up the API to be served by a persistent gunicorn service::
       vars:
         ansible_python_interpreter: /usr/bin/python3
         ara_wsgi_server: gunicorn
-        ara_wsgi_configure_service: true
       roles:
         - ara
 
@@ -89,7 +88,6 @@ Install ARA and set up the API to be served by nginx in front of gunicorn::
         ansible_python_interpreter: /usr/bin/python3
         ara_web_server: nginx
         ara_wsgi_server: gunicorn
-        ara_wsgi_configure_service: true
         ara_www_dir: /var/www/ara
         ara_api_fqdn: api.ara.example.org
         ara_allowed_hosts:
