@@ -13,3 +13,8 @@ Table of Contents
     API authentication and security <api-security>
     API usage with built-in clients <api-usage>
     Architecture and workflows <architecture>
+
+.. toctree::
+   :maxdepth: 1
+
+    ansible-role-ara <ansible-role-ara>

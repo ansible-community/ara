@@ -8,12 +8,12 @@ deployment topologies.
 It is currently tested and supported against Ubuntu 18.04 and Fedora 29.
 
 Role Variables
-==============
+--------------
 
-See ``defaults/main.yaml``.
+See `defaults/main.yaml <https://github.com/openstack/ara/blob/feature/1.0/roles/ara/defaults/main.yaml>`_.
 
 TL;DR
-=====
+-----
 
 Playbook that runs the role with defaults::
 
@@ -39,7 +39,7 @@ What the role ends up doing by default:
 - Collects static files (``ara-manage collectstatic``) into ``~/.ara/www``
 
 About deployment topologies
-===========================
+---------------------------
 
 This Ansible role is designed to support different opinionated topologies that
 can be selected with role variables.
@@ -62,7 +62,7 @@ with apache, mod_wsgi and postgresql.
 Or any combination of any of those.
 
 Example playbooks
-=================
+-----------------
 
 Install ARA and set up the API to be served by a persistent gunicorn service::
 
@@ -96,7 +96,7 @@ Install ARA and set up the API to be served by nginx in front of gunicorn::
         - ara
 
 Copyright
-=========
+---------
 
 ::
 
