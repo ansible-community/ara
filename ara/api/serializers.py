@@ -15,15 +15,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
 from rest_framework import serializers
 
 from ara.api import fields as ara_fields, models
-
-DATE_FORMAT = "(iso-8601: 2016-05-06T17:20:25.749489-04:00)"
-DURATION_FORMAT = "([DD] [HH:[MM:]]ss[.uuuuuu])"
-logger = logging.getLogger("ara.api.serializers")
 
 
 class DurationSerializer(serializers.ModelSerializer):
@@ -41,12 +35,6 @@ class DurationSerializer(serializers.ModelSerializer):
         if obj.ended is None:
             return obj.updated - obj.started
         return obj.ended - obj.started
-
-
-class FileContentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.FileContent
-        fields = "__all__"
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -172,26 +160,9 @@ class PlaybookSerializer(DurationSerializer):
         fields = "__all__"
 
     arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
-    files = FileSerializer(many=True, default=[])
-    hosts = HostSerializer(many=True, default=[])
-    labels = LabelSerializer(many=True, default=[])
+    files = FileSerializer(many=True, read_only=True, default=[])
+    hosts = HostSerializer(many=True, read_only=True, default=[])
+    labels = LabelSerializer(many=True, read_only=True, default=[])
     tasks = SimpleTaskSerializer(many=True, read_only=True, default=[])
     plays = SimplePlaySerializer(many=True, read_only=True, default=[])
     records = RecordSerializer(many=True, read_only=True, default=[])
-
-    def create(self, validated_data):
-        # Create the playbook without the file and label references for now
-        files = validated_data.pop("files")
-        hosts = validated_data.pop("hosts")
-        labels = validated_data.pop("labels")
-        playbook = models.Playbook.objects.create(**validated_data)
-
-        # Add the files, hosts and the labels in
-        for file_ in files:
-            playbook.hosts.add(models.File.objects.create(**file_))
-        for host in hosts:
-            playbook.hosts.add(models.Host.objects.create(**host))
-        for label in labels:
-            playbook.labels.add(models.Label.objects.create(**label))
-
-        return playbook
