@@ -15,45 +15,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib
-import json
 import logging
-import zlib
 
 from rest_framework import serializers
 
-from ara.api import models
+from ara.api import fields as ara_fields, models
 
 DATE_FORMAT = "(iso-8601: 2016-05-06T17:20:25.749489-04:00)"
 DURATION_FORMAT = "([DD] [HH:[MM:]]ss[.uuuuuu])"
 logger = logging.getLogger("ara.api.serializers")
-
-
-class CompressedTextField(serializers.CharField):
-    """
-    Compresses text before storing it in the database.
-    Decompresses text from the database before serving it.
-    """
-
-    def to_representation(self, obj):
-        return zlib.decompress(obj).decode("utf8")
-
-    def to_internal_value(self, data):
-        return zlib.compress(data.encode("utf8"))
-
-
-class CompressedObjectField(serializers.JSONField):
-    """
-    Serializes/compresses an object (i.e, list, dict) before storing it in the
-    database.
-    Decompresses/deserializes an object before serving it.
-    """
-
-    def to_representation(self, obj):
-        return json.loads(zlib.decompress(obj).decode("utf8"))
-
-    def to_internal_value(self, data):
-        return zlib.compress(json.dumps(data).encode("utf8"))
 
 
 class DurationSerializer(serializers.ModelSerializer):
@@ -79,31 +49,13 @@ class FileContentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class FileContentField(serializers.CharField):
-    """
-    Compresses text before storing it in the database.
-    Decompresses text from the database before serving it.
-    """
-
-    def to_representation(self, obj):
-        return zlib.decompress(obj.contents).decode("utf8")
-
-    def to_internal_value(self, data):
-        contents = data.encode("utf8")
-        sha1 = hashlib.sha1(contents).hexdigest()
-        content_file, created = models.FileContent.objects.get_or_create(
-            sha1=sha1, defaults={"sha1": sha1, "contents": zlib.compress(contents)}
-        )
-        return content_file
-
-
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.File
         fields = "__all__"
 
     sha1 = serializers.SerializerMethodField()
-    content = FileContentField()
+    content = ara_fields.FileContentField()
 
     @staticmethod
     def get_sha1(obj):
@@ -133,7 +85,7 @@ class HostSerializer(serializers.ModelSerializer):
         model = models.Host
         fields = "__all__"
 
-    facts = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
+    facts = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
 
     def get_unique_together_validators(self):
         """
@@ -156,7 +108,7 @@ class ResultSerializer(DurationSerializer):
         model = models.Result
         fields = "__all__"
 
-    content = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
+    content = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -164,8 +116,8 @@ class LabelSerializer(serializers.ModelSerializer):
         model = models.Label
         fields = "__all__"
 
-    description = CompressedTextField(
-        default=zlib.compress(json.dumps("").encode("utf8")), help_text="A textual description of the label"
+    description = ara_fields.CompressedTextField(
+        default=ara_fields.EMPTY_STRING, help_text="A text description of the label"
     )
 
 
@@ -174,9 +126,7 @@ class TaskSerializer(DurationSerializer):
         model = models.Task
         fields = "__all__"
 
-    tags = CompressedObjectField(
-        default=zlib.compress(json.dumps([]).encode("utf8")), help_text="A JSON list containing Ansible tags"
-    )
+    tags = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_LIST, help_text="A list containing Ansible tags")
 
 
 class SimpleTaskSerializer(serializers.ModelSerializer):
@@ -190,9 +140,8 @@ class RecordSerializer(serializers.ModelSerializer):
         model = models.Record
         fields = "__all__"
 
-    value = CompressedObjectField(
-        default=zlib.compress(json.dumps("").encode("utf8")),
-        help_text="A string, list, dict, json or other formatted data",
+    value = ara_fields.CompressedObjectField(
+        default=ara_fields.EMPTY_STRING, help_text="A string, list, dict, json or other formatted data"
     )
 
 
@@ -222,7 +171,7 @@ class PlaybookSerializer(DurationSerializer):
         model = models.Playbook
         fields = "__all__"
 
-    arguments = CompressedObjectField(default=zlib.compress(json.dumps({}).encode("utf8")))
+    arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
     files = FileSerializer(many=True, default=[])
     hosts = HostSerializer(many=True, default=[])
     labels = LabelSerializer(many=True, default=[])
