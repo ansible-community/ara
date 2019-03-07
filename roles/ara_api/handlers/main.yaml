@@ -16,15 +16,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-- name: Ensure the database directory exists
-  become: "{{ (ansible_user_dir in ara_database_name) | ternary(false, true) }}"
-  file:
-    path: "{{ ara_database_name | dirname }}"
-    state: directory
-
-- name: Run SQL migrations
-  become: "{{ (ansible_user_dir in ara_database_name) | ternary(false, true) }}"
-  environment:
-    ARA_SETTINGS: "{{ ara_settings }}"
-    PATH: "{{ path_with_virtualenv | default(omit) }}"
-  command: ara-manage migrate
+- name: restart ara-api
+  become: yes
+  service:
+    name: ara-api
+    state: restarted
+  when: ara_api_service_enabled is not changed

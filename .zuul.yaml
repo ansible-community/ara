@@ -59,12 +59,12 @@
       - requirements.txt
       - test-requirements.txt
     pre-run: tests/role-integration-pre.yaml
-    run: playbooks/ara.yaml
+    run: playbooks/ara_api.yaml
     vars:
-      ara_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
-      ara_web_server: nginx
-      ara_wsgi_server: gunicorn
-      ara_www_dir: /var/www/ara
+      ara_api_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
+      ara_api_web_server: nginx
+      ara_api_wsgi_server: gunicorn
+      ansible_python_interpreter: /usr/bin/python3
 
 - job:
     name: ara-1.0-role-integration-ubuntu

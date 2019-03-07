@@ -17,9 +17,9 @@ in order to avoid conflicts with your Linux distribution python packages::
     # Install ARA 1.0 from source
     ~/.ara/venv/bin/pip install git+https://git.openstack.org/openstack/ara@feature/1.0
 
-Using ansible-role-ara
-----------------------
+Using ansible-role-ara-api
+---------------------------
 
 An Ansible role is available to install and configure ARA.
 
-For more details, refer to the role documentation: :ref:`ansible-role-ara`.
+For more details, refer to the role documentation: :ref:`ansible-role-ara-api`.

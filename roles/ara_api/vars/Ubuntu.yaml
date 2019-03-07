@@ -16,29 +16,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-- name: Install gunicorn
-  pip:
-    name: gunicorn
-    state: present
-    virtualenv: "{{ ara_venv | bool | ternary(ara_venv_path, omit) }}"
-    virtualenv_python: python3
-
-- become: yes
-  block:
-    - name: Set up systemd unit file for gunicorn to run the ARA API
-      template:
-        src: ara-api.service.j2
-        dest: /etc/systemd/system/ara-api.service
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - restart ara-api
-
-    - name: Enable and start ara-api with gunicorn
-      service:
-        name: ara-api
-        state: started
-        enabled: yes
-        daemon_reload: yes
-      register: ara_api_service_enabled
+ara_api_required_packages:
+  - git
+  - python3-venv

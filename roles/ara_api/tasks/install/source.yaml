@@ -1,0 +1,35 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- name: Prepare git repository for ara
+  git:
+    repo: "{{ ara_api_source }}"
+    dest: "{{ ara_api_source_checkout }}"
+    version: "{{ (ara_api_version == 'latest') | ternary('HEAD', ara_api_version) }}"
+
+- name: Install ara
+  pip:
+    name: "{{ ara_api_source_checkout }}"
+    state: present
+    virtualenv: "{{ ara_api_venv | bool | ternary(ara_api_venv_path, omit) }}"
+    virtualenv_python: python3
+
+- name: Prefix the virtualenv bin directory to PATH
+  set_fact:
+    path_with_virtualenv: "{{ ara_api_venv_path }}/bin:{{ ansible_env.PATH }}"
+  when: ara_api_venv | bool

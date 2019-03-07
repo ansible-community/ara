@@ -18,17 +18,17 @@
 
 - name: Verify if a configuration file exists
   stat:
-    path: "{{ ara_settings }}"
+    path: "{{ ara_api_settings }}"
   register: settings_stat
 
 # If no secret key has been provided and this isn't the first time we are
 # running, recover the secret key from the existing configuration file.
 - when:
-    - ara_secret_key is none
+    - ara_api_secret_key is none
     - settings_stat.stat.exists
   block:
-    - name: Read the configuration file
-      command: cat "{{ ara_settings }}"
+    - name: Read the existing configuration file
+      command: cat "{{ ara_api_settings }}"
       changed_when: false
       no_log: yes
       register: settings_contents
@@ -37,14 +37,14 @@
       vars:
         config: "{{ settings_contents.stdout | from_yaml }}"
       set_fact:
-        ara_secret_key: "{{ config[ara_env]['SECRET_KEY'] }}"
+        ara_api_secret_key: "{{ config[ara_api_env]['SECRET_KEY'] }}"
       no_log: yes
 
 # If no secret key has been provided and this is the first time we are
 # running, generate a new random secret key that will be persisted in the
 # configuration file.
 - when:
-    - ara_secret_key is none
+    - ara_api_secret_key is none
     - not settings_stat.stat.exists
   block:
     - name: Generate a random secret key
@@ -54,33 +54,33 @@
       no_log: yes
       register: generated_key
 
-    - name: Set ara_secret_key
+    - name: Set ara_api_secret_key
       set_fact:
-        ara_secret_key: "{{ generated_key.stdout }}"
+        ara_api_secret_key: "{{ generated_key.stdout }}"
       no_log: yes
 
 # Put configuration in a format we can write to a file
 - name: Reconcile configuration
   vars:
     reconciled_configuration:
-      ALLOWED_HOSTS: "{{ ara_allowed_hosts }}"
-      BASE_DIR: "{{ ara_base_dir }}"
-      CORS_ORIGIN_ALLOW_ALL: "{{ ara_cors_origin_allow_all }}"
-      CORS_ORIGIN_WHITELIST: "{{ ara_cors_origin_whitelist }}"
+      ALLOWED_HOSTS: "{{ ara_api_allowed_hosts }}"
+      BASE_DIR: "{{ ara_api_base_dir }}"
+      CORS_ORIGIN_ALLOW_ALL: "{{ ara_api_cors_origin_allow_all }}"
+      CORS_ORIGIN_WHITELIST: "{{ ara_api_cors_origin_whitelist }}"
       DATABASES:
         default:
-          ENGINE: "{{ ara_database_engine }}"
-          NAME: "{{ ara_database_name }}"
-          USER: "{{ ara_database_user }}"
-          PASSWORD: "{{ ara_database_password }}"
-          HOST: "{{ ara_database_host }}"
-          PORT: "{{ ara_database_port }}"
-      DEBUG: "{{ ara_debug }}"
-      LOGGING: "{{ ara_logging }}"
-      LOG_LEVEL: "{{ ara_log_level }}"
-      SECRET_KEY: "{{ ara_secret_key }}"
+          ENGINE: "{{ ara_api_database_engine }}"
+          NAME: "{{ ara_api_database_name }}"
+          USER: "{{ ara_api_database_user }}"
+          PASSWORD: "{{ ara_api_database_password }}"
+          HOST: "{{ ara_api_database_host }}"
+          PORT: "{{ ara_api_database_port }}"
+      DEBUG: "{{ ara_api_debug }}"
+      LOGGING: "{{ ara_api_logging }}"
+      LOG_LEVEL: "{{ ara_api_log_level }}"
+      SECRET_KEY: "{{ ara_api_secret_key }}"
   set_fact:
-    ara_api_configuration: "{'{{ ara_env }}': {{ reconciled_configuration }} }"
+    ara_api_configuration: "{'{{ ara_api_env }}': {{ reconciled_configuration }} }"
   no_log: yes
 
 - name: Set up the ARA API configuration file
@@ -89,7 +89,7 @@
       ---
       # Managed by the ara Ansible role
       {{ ara_api_configuration | to_nice_yaml(indent=2) }}
-    dest: "{{ ara_settings }}"
+    dest: "{{ ara_api_settings }}"
     mode: 0750
   notify:
     - restart ara-api

@@ -16,20 +16,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-- name: Prepare git repository for ara
-  git:
-    repo: "{{ ara_source }}"
-    dest: "{{ ara_source_checkout }}"
-    version: "{{ (ara_install_version == 'latest') | ternary('HEAD', ara_install_version) }}"
-
-- name: Install ara
-  pip:
-    name: "{{ ara_source_checkout }}"
-    state: present
-    virtualenv: "{{ ara_venv | bool | ternary(ara_venv_path, omit) }}"
-    virtualenv_python: python3
-
-- name: Prefix the virtualenv bin directory to PATH
-  set_fact:
-    path_with_virtualenv: "{{ ara_venv_path }}/bin:{{ ansible_env.PATH }}"
-  when: ara_venv | bool
+ara_nginx_user: www-data
+ara_nginx_group: www-data
+ara_nginx_config_path: /etc/nginx/sites-available

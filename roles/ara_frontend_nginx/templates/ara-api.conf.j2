@@ -1,7 +1,7 @@
 upstream ara_api {
     # fail_timeout=0 means we always retry an upstream even if it failed
     # to return a good HTTP response
-    server {{ ara_wsgi_bind }} fail_timeout=0;
+    server {{ ara_api_wsgi_bind }} fail_timeout=0;
 }
 
 server {

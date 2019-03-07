@@ -16,10 +16,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-ara_required_packages:
-  - git
-  - python3-venv
-
-ara_nginx_user: www-data
-ara_nginx_group: www-data
-ara_nginx_config_path: /etc/nginx/sites-available
+- name: restart nginx
+  become: yes
+  service:
+    name: nginx
+    state: restarted
+  when: ara_nginx_enabled is not changed

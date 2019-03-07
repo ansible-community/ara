@@ -17,4 +17,4 @@ Table of Contents
 .. toctree::
    :maxdepth: 1
 
-    ansible-role-ara <ansible-role-ara>
+    ansible-role-ara-api <ansible-role-ara-api>

@@ -16,6 +16,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
+- name: Include OS family/distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yaml"
+    - "{{ ansible_os_family }}.yaml"
+
 - become: yes
   block:
     - name: Install nginx
@@ -32,10 +38,13 @@
 
     - name: Set up the ARA API nginx vhost
       template:
-        src: "{{ ara_nginx_api_vhost | default('nginx-ara-api.conf.j2') }}"
+        src: "{{ ara_api_frontend_vhost | default('ara-api.conf.j2') }}"
         dest: "{{ ara_nginx_config_path }}/ara-api.conf"
       notify:
         - restart nginx
+      when:
+        - ara_api_fqdn is defined
+        - ara_api_wsgi_bind is defined
 
     - name: Enable the nginx configuration on Debian-like systems
       file:

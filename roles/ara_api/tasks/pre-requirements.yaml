@@ -36,15 +36,15 @@
 
 - name: Retrieve list of missing required packages
   set_fact:
-    ara_missing_packages: "{{ ara_required_packages | difference(ansible_facts.packages.keys()) }}"
+    ara_api_missing_packages: "{{ ara_api_required_packages | difference(ansible_facts.packages.keys()) }}"
 
 # Only attempt to elevate privileges if there are any missing packages
-- when: ara_missing_packages | length > 0
+- when: ara_api_missing_packages | length > 0
   block:
     - name: Install required packages
       become: yes
       package:
-        name: "{{ ara_required_packages }}"
+        name: "{{ ara_api_required_packages }}"
         state: present
   rescue:
     - name: Fail due to missing packages
@@ -53,23 +53,23 @@
 
 # The following tasks dynamically enable escalated privileges only when the
 # directory to create is not located in the user's home directory.
-- name: Ensure ara_root_dir exists
-  become: "{{ (ansible_user_dir in ara_root_dir) | ternary(false, true) }}"
+- name: Ensure ara_api_root_dir exists
+  become: "{{ (ansible_user_dir in ara_api_root_dir) | ternary(false, true) }}"
   file:
-    path: "{{ ara_root_dir }}"
+    path: "{{ ara_api_root_dir }}"
     state: directory
     mode: 0755
 
-- name: Ensure ara_base_dir exists
-  become: "{{ (ansible_user_dir in ara_base_dir) | ternary(false, true) }}"
+- name: Ensure ara_api_base_dir exists
+  become: "{{ (ansible_user_dir in ara_api_base_dir) | ternary(false, true) }}"
   file:
-    path: "{{ ara_base_dir }}"
+    path: "{{ ara_api_base_dir }}"
     state: directory
     mode: 0750
 
-- name: Ensure ara_log_dir exists
-  become: "{{ (ansible_user_dir in ara_log_dir) | ternary(false, true) }}"
+- name: Ensure ara_api_log_dir exists
+  become: "{{ (ansible_user_dir in ara_api_log_dir) | ternary(false, true) }}"
   file:
-    path: "{{ ara_log_dir }}"
+    path: "{{ ara_api_log_dir }}"
     state: directory
     mode: 0750

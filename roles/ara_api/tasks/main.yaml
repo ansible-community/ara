@@ -26,17 +26,18 @@
   include_tasks: pre-requirements.yaml
 
 - name: Include installation of ARA
-  include_tasks: "install/{{ ara_install_method }}.yaml"
+  include_tasks: "install/{{ ara_api_install_method }}.yaml"
 
 - name: Include configuration of the ARA API
   include_tasks: config.yaml
 
 - name: Include configuration of the database engine
-  include_tasks: "database_engine/{{ ara_database_engine }}.yaml"
+  include_tasks: "database_engine/{{ ara_api_database_engine }}.yaml"
 
 - name: Include installation of the WSGI backend server
-  include_tasks: "wsgi_server/{{ ara_wsgi_server }}.yaml"
+  include_tasks: "wsgi_server/{{ ara_api_wsgi_server }}.yaml"
 
-- name: Include installation of the web server
-  include_tasks: "web_server/{{ ara_web_server }}.yaml"
-  when: ara_web_server is not none
+- name: Include installation of the frontend server
+  include_role:
+    name: "ara_frontend_{{ ara_api_frontend_server }}"
+  when: ara_api_frontend_server is not none

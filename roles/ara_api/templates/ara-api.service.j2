@@ -1,0 +1,21 @@
+[Unit]
+Description=ARA Records Ansible API with gunicorn
+After=network.target
+
+[Service]
+PIDFile=/run/ara-api/pid
+User={{ ansible_user }}
+RuntimeDirectory=ara-api
+WorkingDirectory={{ ara_api_root_dir }}
+Environment=ARA_SETTINGS={{ ara_api_settings }}
+{% if ara_api_venv %}
+ExecStart={{ ara_api_venv_path }}/bin/gunicorn --pid /run/ara-api/pid --workers=4 --bind {{ ara_api_wsgi_bind }} ara.server.wsgi
+{% else %}
+ExecStart=gunicorn --pid /run/ara-api/pid --workers=4 --bind {{ ara_api_wsgi_bind }} ara.server.wsgi
+{% endif %}
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
