@@ -1,0 +1,16 @@
+[Unit]
+Description=ARA Records Ansible web client
+After=network.target
+
+[Service]
+PIDFile=/run/ara-web/pid
+User={{ ansible_user_id }}
+RuntimeDirectory=ara-web
+WorkingDirectory={{ ara_web_source_checkout }}
+ExecStart=/usr/bin/npm start --host {{ ara_web_dev_server_bind_address }} --port {{ ara_web_dev_server_bind_port }}
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

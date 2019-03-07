@@ -1,0 +1,107 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- name: Ensure libselinux-python is installed for Red Hat derivatives
+  become: yes
+  package:
+    name: libselinux-python
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure git is installed
+  become: yes
+  package:
+    name: git
+    state: present
+
+# TODO: node_modules and public/config.json are local to the git repository so this is not idempotent
+- name: Prepare git repository for ara-web
+  git:
+    repo: "{{ ara_web_source }}"
+    dest: "{{ ara_web_source_checkout }}"
+    version: "{{ (ara_web_version == 'latest') | ternary('HEAD', ara_web_version) }}"
+    force: yes
+
+- name: Install ara-web npm dependencies
+  npm:
+    path: "{{ ara_web_source_checkout }}"
+    global: no
+    production: yes
+    state: present
+  notify:
+    - restart ara-web
+
+- name: Configure ara-server API endpoint for ara-web
+  vars:
+    web_config:
+      apiURL: "{{ ara_web_api_endpoint }}"
+  copy:
+    content: "{{ web_config | to_nice_json(indent=2) }}"
+    dest: "{{ ara_web_source_checkout }}/public/config.json"
+    mode: 0644
+  notify:
+    - restart ara-web
+
+- when: ara_web_dev_server | bool
+  become: yes
+  block:
+    - name: Set up systemd unit file for ara-web
+      template:
+        src: ara-web.service.j2
+        dest: /etc/systemd/system/ara-web.service
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart ara-web
+
+    - name: Enable and start ara-web
+      service:
+        name: ara-web
+        state: started
+        enabled: yes
+        daemon_reload: yes
+      register: ara_web_service_enabled
+
+- when: not ara_web_dev_server | bool
+  block:
+    - name: Stop and disable ara-web
+      become: yes
+      service:
+        name: ara-web
+        state: stopped
+        enabled: no
+
+    - name: Ensure systemd unit file is not configured
+      become: yes
+      file:
+        path: /etc/systemd/system/ara-web.service
+        state: absent
+
+    - name: Run a production build of ara-web
+      command: npm run build
+      args:
+        chdir: "{{ ara_web_source_checkout }}"
+        creates: "{{ ara_web_source_checkout }}/build"
+
+    - name: Synchronize build to web directory
+      become: "{{ (ansible_user_dir in ara_web_static_dir) | ternary(false, true) }}"
+      command: |
+        rsync -rlog --delete-delay {{ ara_web_source_checkout }}/build/ {{ ara_web_static_dir }}
+      notify:
+        - restore selinux context for static files

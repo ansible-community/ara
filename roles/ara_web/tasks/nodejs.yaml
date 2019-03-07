@@ -1,0 +1,53 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- when: ansible_os_family == "Debian"
+  become: yes
+  block:
+    - name: Install apt-transport-https
+      package:
+        name: apt-transport-https
+        state: present
+
+    - name: Install nodesource repository key
+      apt_key:
+        url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+
+    - name: Install nodesource apt source repository
+      apt_repository:
+        repo: "deb-src https://deb.nodesource.com/node_{{ ara_web_nodejs_version }}.x {{ ansible_distribution_release }} main"
+        state: present
+
+    - name: Install nodesource apt repository
+      apt_repository:
+        repo: "deb https://deb.nodesource.com/node_{{ ara_web_nodejs_version }}.x {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: yes
+
+- name: Install Nodesource yum repository
+  become: yes
+  package:
+    name: "https://rpm.nodesource.com/pub_{{ ara_web_nodejs_version }}.x/fc/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/nodesource-release-fc{{ ansible_distribution_major_version }}-1.noarch.rpm"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install nodejs
+  become: yes
+  package:
+    name: nodejs
+    state: present

@@ -1,0 +1,33 @@
+{% if ara_web_dev_server %}
+upstream ara_web {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+    server {{ ara_web_dev_server_bind_address }}:{{ ara_web_dev_server_bind_port }} fail_timeout=0;
+}
+{% endif %}
+
+server {
+    listen 80;
+    keepalive_timeout 5;
+    server_name {{ ara_web_fqdn }};
+    root {{ ara_web_static_dir }};
+
+    access_log /var/log/nginx/{{ ara_web_fqdn }}_access.log;
+    error_log  /var/log/nginx/{{ ara_web_fqdn }}_error.log;
+
+    {% if ara_web_dev_server %}
+    location / {
+      # checks if the file exists, if not found proxy to app
+      try_files $uri @proxy_to_app;
+    }
+
+    location @proxy_to_app {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host $http_host;
+
+        proxy_redirect off;
+        proxy_pass http://ara_web;
+    }
+    {% endif %}
+}

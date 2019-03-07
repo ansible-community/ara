@@ -1,0 +1,5 @@
+- name: Install ara-web with default settings
+  hosts: all
+  gather_facts: yes
+  roles:
+    - ara_web

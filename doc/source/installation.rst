@@ -17,9 +17,10 @@ in order to avoid conflicts with your Linux distribution python packages::
     # Install ARA 1.0 from source
     ~/.ara/venv/bin/pip install git+https://git.openstack.org/openstack/ara@feature/1.0
 
-Using ansible-role-ara-api
----------------------------
+Using Ansible roles
+-------------------
 
-An Ansible role is available to install and configure ARA.
+Two roles are built-in to help users configure their API and web deployments:
 
-For more details, refer to the role documentation: :ref:`ansible-role-ara-api`.
+- :ref:`ansible-role-ara-api` to install the python parts (Ansible plugins, API server)
+- :ref:`ansible-role-ara-web` to install the web client (nodejs, react+patternfly)

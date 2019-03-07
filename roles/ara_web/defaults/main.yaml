@@ -1,0 +1,71 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+# Root of where files will be stored for ara-web
+ara_web_root_dir: "{{ ansible_user_dir }}/.ara"
+
+# When using static builds without the dev server, path to ara-web static assets
+ara_web_static_dir: "{{ ara_web_root_dir }}/www/ara-web"
+
+# How ara-web will be installed
+# - source (default): installs from a local or remote git repository specified by ara_web_source
+# - npm (planned): installs from npm
+ara_web_install_method: source
+
+# When installing from source, the location of the remote or local git repository
+ara_web_source: "https://git.openstack.org/openstack/ara-web"
+
+# Location where ara-web will be checked out
+ara_web_source_checkout: "{{ ara_web_root_dir }}/git/ara-web"
+
+# Location where node_modules will be installed
+ara_web_node_modules_dir: "{{ ara_web_source_checkout }}"
+
+# Version of ara-web to install
+# This can be a git ref (tag, branch, commit) when installed from source
+# When using "latest" as the source version, HEAD will be used
+ara_web_version: latest
+
+# Whether to use the embedded react web server or not
+# Setting this to false means ara-web will be statically built instead
+ara_web_dev_server: true
+
+# When the development server is enabled, the address it will be listening on
+ara_web_dev_server_bind_address: 127.0.0.1
+
+# When the development server is enabled, the port it will be listening on
+ara_web_dev_server_bind_port: 3000
+
+# Version of nodesource nodejs repositories to install
+ara_web_nodejs_version: 10
+
+# ara-server API endpoint to use
+ara_web_api_endpoint: "http://127.0.0.1:8000"
+
+# The frontend server for serving ara-web
+# - null (default): none, users are expected to use the development server directly or deploy their own web server
+# - nginx: when performance of the development server is an issue
+# - apache (planned)
+ara_web_frontend_server: null
+
+# When using a frontend server, you can override the default vhost configuration
+# template by specifying the path to your own template file.
+ara_web_frontend_vhost: null
+
+# When using a frontend server, the hostname to listen on
+ara_web_fqdn: "{{ ansible_default_ipv4['address'] }}"

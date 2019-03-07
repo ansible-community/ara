@@ -36,24 +36,41 @@
         persistent: yes
       when: ansible_os_family == "RedHat"
 
-    - name: Set up the ARA API nginx vhost
-      template:
-        src: "{{ ara_api_frontend_vhost | default('ara-api.conf.j2') }}"
-        dest: "{{ ara_nginx_config_path }}/ara-api.conf"
-      notify:
-        - restart nginx
-      when:
-        - ara_api_fqdn is defined
-        - ara_api_wsgi_bind is defined
+    - when: ara_api_fqdn is defined
+      block:
+        - name: Set up the ARA API nginx vhost
+          template:
+            src: "{{ ara_api_frontend_vhost | default('ara-api.conf.j2') }}"
+            dest: "{{ ara_nginx_config_path }}/ara-api.conf"
+          notify:
+            - restart nginx
 
-    - name: Enable the nginx configuration on Debian-like systems
-      file:
-        src: "{{ ara_nginx_config_path }}/ara-api.conf"
-        dest: /etc/nginx/sites-enabled/ara-api.conf
-        state: link
-      when: ansible_os_family == 'Debian'
-      notify:
-        - restart nginx
+        - name: Enable the API nginx configuration on Debian-like systems
+          file:
+            src: "{{ ara_nginx_config_path }}/ara-api.conf"
+            dest: /etc/nginx/sites-enabled/ara-api.conf
+            state: link
+          when: ansible_os_family == 'Debian'
+          notify:
+            - restart nginx
+
+    - when: ara_web_fqdn is defined
+      block:
+        - name: Set up the ARA API nginx vhost
+          template:
+            src: "{{ ara_web_frontend_vhost | default('ara-web.conf.j2') }}"
+            dest: "{{ ara_nginx_config_path }}/ara-web.conf"
+          notify:
+            - restart nginx
+
+        - name: Enable the web nginx configuration on Debian-like systems
+          file:
+            src: "{{ ara_nginx_config_path }}/ara-web.conf"
+            dest: /etc/nginx/sites-enabled/ara-web.conf
+            state: link
+          when: ansible_os_family == 'Debian'
+          notify:
+            - restart nginx
 
     - name: Enable and start nginx
       service:

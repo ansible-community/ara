@@ -1,0 +1,46 @@
+- name: Deploy ara-web
+  hosts: all
+  gather_facts: yes
+  vars:
+    ara_web_source_checkout: "{{ ansible_user_dir }}/.ara/git/ara-web"
+    config:
+      apiURL: "https://api.demo.recordsansible.org"
+  tasks:
+    # Before building the application, we need to set the homepage argument
+    # from package.json to use the URL where logs will be uploaded.
+    - name: Resolve Zuul log path
+      include_role:
+        name: set-zuul-log-path-fact
+
+    - name: Read package.json
+      command: "cat {{ ara_web_source_checkout }}/package.json"
+      register: package_json
+
+    - name: Set homepage parameter
+      vars:
+        build_url: "http://logs.openstack.org/{{ zuul_log_path }}/build"
+      set_fact:
+        package_json: "{{ package_json.stdout | from_json | combine({'homepage': build_url}) }}"
+
+    - name: Write package.json
+      copy:
+        content: "{{ package_json | to_nice_json }}"
+        dest: "{{ ara_web_source_checkout }}/package.json"
+
+    - name: Set config.json to use api.demo.recordsansible.org
+      copy:
+        content: "{{ config | to_nice_json }}"
+        dest: "{{ ara_web_source_checkout }}/public/config.json"
+
+    - name: Run a production build of ara-web
+      command: npm run build
+      args:
+        chdir: "{{ ara_web_source_checkout }}"
+        creates: "{{ ara_web_source_checkout }}/build"
+
+    - name: Upload build to log server
+      synchronize:
+        src: "{{ ara_web_source_checkout }}/build"
+        dest: "{{ zuul.executor.log_root }}"
+        mode: pull
+        verify_host: true

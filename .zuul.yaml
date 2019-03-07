@@ -76,6 +76,37 @@
     parent: ara-1.0-role-integration-base
     nodeset: fedora-latest
 
+- job:
+    name: ara-web-role-integration-base
+    parent: base
+    vars:
+      ara_web_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara-web"
+      ara_web_api_server: "https://api.demo.recordsansible.org"
+    files:
+      - playbooks/*
+      - roles/ara_frontend_nginx/*
+      - roles/ara_web/*
+      - src/.*
+      - public/.*
+      - package.json
+      - package-lock.json
+      - .zuul.d/*
+    required-projects:
+      - openstack/ara-web
+      - openstack/ara-infra
+    run: playbooks/ara_web.yaml
+    post-run: tests/role-ara-web-post.yaml
+
+- job:
+    name: ara-web-role-integration-ubuntu
+    parent: ara-web-role-integration-base
+    nodeset: ubuntu-bionic
+
+- job:
+    name: ara-web-role-integration-fedora
+    parent: ara-web-role-integration-base
+    nodeset: fedora-latest
+
 - project:
     vars:
       rtd_webhook_id: '49230'
@@ -89,6 +120,8 @@
         - ara-1.0-integration-ubuntu-2.6
         - ara-1.0-role-integration-ubuntu
         - ara-1.0-role-integration-fedora
+        - ara-web-role-integration-ubuntu
+        - ara-web-role-integration-fedora
         - ara-tox-linters
         - ara-tox-py3
     gate:
@@ -97,5 +130,7 @@
         - ara-1.0-integration-ubuntu-2.6
         - ara-1.0-role-integration-ubuntu
         - ara-1.0-role-integration-fedora
+        - ara-web-role-integration-ubuntu
+        - ara-web-role-integration-fedora
         - ara-tox-linters
         - ara-tox-py3
