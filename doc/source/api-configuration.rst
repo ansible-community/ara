@@ -178,7 +178,7 @@ API endpoints exposed by the server.
 There is no concept of granularity: users either have access to query
 everything or they don't.
 
-Enabling this feature first requires setting up :ref:`users <user management>`.
+Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
 
 ARA_WRITE_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -195,7 +195,7 @@ all API endpoints exposed by the server.
 There is no concept of granularity: users either have access to query
 everything or they don't.
 
-Enabling this feature first requires setting up :ref:`users <user management>`.
+Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
 
 ARA_LOG_LEVEL
 ~~~~~~~~~~~~~

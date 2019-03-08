@@ -1,4 +1,4 @@
-.. security:
+.. _security:
 
 ARA API Server authentication and security
 ==========================================
@@ -19,8 +19,10 @@ deployments.
 Setting a custom secret key
 ---------------------------
 
-By default, the API server randomly generates a token for the :ref:`ARA_SECRET_KEY`
-setting if none have been supplied by the user.
+By default, the API server randomly generates a token for the
+:ref:`api-configuration:ARA_SECRET_KEY` setting if none have
+been supplied by the user.
+
 This value is persisted in the server configuration file in order to prevent
 the key from changing on every instanciation of the server.
 
@@ -86,16 +88,16 @@ for read (ex: GET) and write (ex: DELETE, POST, PATCH) requests.
 
 This is done with the two following configuration options:
 
-- :ref:`ARA_READ_LOGIN_REQUIRED` for read access
-- :ref:`ARA_WRITE_LOGIN_REQUIRED` for write access
+- :ref:`api-configuration:ARA_READ_LOGIN_REQUIRED` for read access
+- :ref:`api-configuration:ARA_WRITE_LOGIN_REQUIRED` for write access
 
 These settings are global and are effective for all API endpoints.
 
 Managing hosts allowed to serve the API
 ---------------------------------------
 
-By default, :ref:`ARA_ALLOWED_HOSTS` authorizes ``localhost``, ``::1`` and
-``127.0.0.1`` to serve requests for the API server.
+By default, :ref:`api-configuration:ARA_ALLOWED_HOSTS` authorizes
+``localhost``, ``::1`` and ``127.0.0.1`` to serve requests for the API server.
 
 In order to host an instance of the API server on another domain, the domain must
 be part of this list or the application server will deny any requests sent to
@@ -104,9 +106,9 @@ it.
 Managing CORS (cross-origin resource sharing)
 ---------------------------------------------
 
-The :ref:`ARA_CORS_ORIGIN_WHITELIST` default is designed to allow a local development
-instance of an `ara-web <https://github.com/openstack/ara-web>`_ dashboard to
-communicate with a local development instance of the API server.
+The :ref:`api-configuration:ARA_CORS_ORIGIN_WHITELIST` default is designed to
+allow a local development instance of an `ara-web <https://github.com/openstack/ara-web>`_
+dashboard to communicate with a local development instance of the API server.
 
 The whitelist must contain the domain names where you plan on hosting instances
 of ara-web.

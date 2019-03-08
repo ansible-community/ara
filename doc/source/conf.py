@@ -33,6 +33,7 @@ extensions = [
     'sphinx.ext.autosectionlabel',
     'pygments_lexer'
 ]
+autosectionlabel_prefix_document = True
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
