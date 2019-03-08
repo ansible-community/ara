@@ -23,13 +23,15 @@ import pbr.version
 version_info = pbr.version.VersionInfo('ara')
 
 sys.path.insert(0, os.path.abspath('../..'))
+sys.path.append(os.path.abspath('_extensions'))
 # -- General configuration ----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'pygments_lexer'
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -60,7 +62,7 @@ add_function_parentheses = True
 add_module_names = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'default'
 
 # -- Options for HTML output --------------------------------------------------
 

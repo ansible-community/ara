@@ -16,54 +16,56 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-# Root directories in which data, configuration and logs will be stored
-ara_api_root_dir: "{{ ansible_user_dir }}/.ara"  # git repos, virtualenvs, sqlite db
-ara_api_log_dir: "{{ ara_api_root_dir }}/logs"  # logs
+# Root directory where every file for the ARA installation are located
+ara_api_root_dir: "{{ ansible_user_dir }}/.ara"
+
+# Directory where logs are written to
+ara_api_log_dir: "{{ ara_api_root_dir }}/logs"
 
 # Whether or not ara should be installed in a virtual environment.
-# Running ara in a virtualenv is recommended to avoid conflicting with
-# system-wide python packages.
+# This defaults to true to prevent conflicting with system or distribution
+# python packages.
 ara_api_venv: true
 
-# When using a virtualenv, location where it will be installed
+# When using a virtualenv, path to where it will be installed
 ara_api_venv_path: "{{ ara_api_root_dir }}/virtualenv"
 
-# How ara will be installed
-# source (default): installs from a local or remote git repository specified by ara_api_source
-# pypi (planned): installs from pypi
+# How ARA will be installed
+# - source [default]: installs from a local or remote git repository
+# - pypi [planned]: installs from pypi
 ara_api_install_method: source
 
-# The source where the git repository can be cloned from.
-# Can be an URL to a git repository or the path to a local repository on disk.
+# When installing from source, the URL or filesystem path where the git source
+# repository can be cloned from.
 ara_api_source: "https://git.openstack.org/openstack/ara"
 
-# Location where ara will be checked out when installing from source
+# When installing from source, location where the source repository will be checked out to.
 ara_api_source_checkout: "{{ ara_api_root_dir }}/git/ara"
 
-# Version of ara to install
-# This can be a git ref (tag, branch, commit) when installing from source or
-# it can be a version number released to PyPi.
+# Version of ARA to install
+# When installing from source, this can be a git ref (tag, branch, commit, etc)
+# When installing from PyPi, it would be a version number that has been released.
 # When using "latest" as the source version, HEAD will be used
 # When using "latest" as the pypi version, the latest release will be used
 ara_api_version: feature/1.0
 
 # The frontend/web server for serving the ARA API
 # It is recommended to specify a web server when deploying a production environment.
-# API browser.
-# - none (null - default)
-# - nginx (recommended)
-# - apache (planned)
+# - null [default]: No frontend server will be set up.
+# - nginx: Nginx will be configured in front of the WSGI application server.
+# - apache [planned]
 ara_api_frontend_server: null
 
-# When using a frontend server, you can override the default vhost configuration
-# template by specifying the path to your own template file.
+# Path to a custom vhost configuration jinja template
+# The vhost configuration templates provided by the role are simple by design
+# and are not sufficient to cover every use cases.
+# Use this variable if you need to have your own custom nginx or apache configuration.
 ara_api_frontend_vhost: null
 
 # The WSGI server for running ARA's API server
-# - none (null - default)
-# - gunicorn (recommended)
-# - uwsgi (planned)
-# - mod_wsgi (planned)
+# - null [default]: No persistent WSGI application server will be set up. Only the offline API client will work.
+# - gunicorn: gunicorn will be installed and set up to run the API as a systemd service.
+# - mod_wsgi [planned]
 ara_api_wsgi_server: null
 
 # Address and port on which the wsgi server will bind
@@ -71,7 +73,7 @@ ara_api_wsgi_server: null
 # "ara_api_cors_origin_whitelist".
 ara_api_wsgi_bind: "127.0.0.1:8000"
 
-# When using a web server, the domain it will be listening on
+# When using a frontend server, the domain it will be listening on
 ara_api_fqdn: "{{ ansible_default_ipv4['address'] }}"
 
 ####################################
