@@ -79,6 +79,8 @@
       LOGGING: "{{ ara_api_logging }}"
       LOG_LEVEL: "{{ ara_api_log_level }}"
       SECRET_KEY: "{{ ara_api_secret_key }}"
+      READ_LOGIN_REQUIRED: "{{ ara_api_read_login_required }}"
+      WRITE_LOGIN_REQUIRED: "{{ ara_api_write_login_required }}"
   set_fact:
     ara_api_configuration: "{'{{ ara_api_env }}': {{ reconciled_configuration }} }"
   no_log: yes

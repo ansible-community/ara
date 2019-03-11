@@ -90,6 +90,12 @@ ara_api_settings: "{{ ara_api_base_dir }}/settings.yaml"
 # ARA_ENV - Environment to load configuration for
 ara_api_env: default
 
+# ARA_READ_LOGIN_REQUIRED - Whether authentication is required for reading data
+ara_api_read_login_required: false
+
+# ARA_WRITE_LOGIN_REQUIRED - Whether authentication is required for writing data
+ara_api_write_login_required: false
+
 # ARA_LOG_LEVEL - Log level of the different components
 ara_api_log_level: INFO
 
