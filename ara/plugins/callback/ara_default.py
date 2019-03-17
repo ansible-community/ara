@@ -308,6 +308,7 @@ class CallbackModule(CallbackBase):
             playbook=self.playbook["id"],
             task=self.task["id"],
             host=host["id"],
+            play=self.task["play"],
             content=results,
             status=status,
             started=self.task["started"],
