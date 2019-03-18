@@ -40,7 +40,7 @@
       block:
         - name: Set up the ARA API nginx vhost
           template:
-            src: "{{ ara_api_frontend_vhost | default('ara-api.conf.j2') }}"
+            src: "{{ ara_api_frontend_vhost | default('ara-api.conf.j2', True) }}"
             dest: "{{ ara_nginx_config_path }}/ara-api.conf"
           notify:
             - restart nginx
@@ -58,7 +58,7 @@
       block:
         - name: Set up the ARA API nginx vhost
           template:
-            src: "{{ ara_web_frontend_vhost | default('ara-web.conf.j2') }}"
+            src: "{{ ara_web_frontend_vhost | default('ara-web.conf.j2', True) }}"
             dest: "{{ ara_nginx_config_path }}/ara-web.conf"
           notify:
             - restart nginx
