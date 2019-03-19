@@ -156,9 +156,10 @@ AUTH_PASSWORD_VALIDATORS = [
 USE_TZ = False
 TIME_ZONE = None
 
-USE_I18N = True
-USE_L10N = True
-LANGUAGE_CODE = "en-us"
+# We do not currently support internationalization and localization, turn these
+# off.
+USE_I18N = False
+USE_L10N = False
 
 # whitenoise serves static files without needing to use "collectstatic"
 WHITENOISE_USE_FINDERS = True
