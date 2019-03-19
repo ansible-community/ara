@@ -83,9 +83,3 @@ class RecordViewSet(viewsets.ModelViewSet):
     queryset = models.Record.objects.all()
     serializer_class = serializers.RecordSerializer
     filter_fields = ("playbook", "key")
-
-
-class StatsViewSet(viewsets.ModelViewSet):
-    queryset = models.Stats.objects.all()
-    serializer_class = serializers.StatsSerializer
-    filter_fields = ("playbook", "host")

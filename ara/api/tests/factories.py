@@ -121,16 +121,3 @@ class RecordFactory(factory.DjangoModelFactory):
     value = utils.compressed_obj(RECORD_LIST)
     type = "list"
     playbook = factory.SubFactory(PlaybookFactory)
-
-
-class StatsFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = models.Stats
-
-    changed = 1
-    failed = 0
-    ok = 2
-    skipped = 1
-    unreachable = 0
-    playbook = factory.SubFactory(PlaybookFactory)
-    host = factory.SubFactory(HostFactory)

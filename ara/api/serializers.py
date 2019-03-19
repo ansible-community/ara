@@ -148,12 +148,6 @@ class SimplePlaySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class StatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Stats
-        fields = "__all__"
-
-
 class PlaybookSerializer(DurationSerializer):
     class Meta:
         model = models.Playbook

@@ -28,7 +28,6 @@ router.register("hosts", views.HostViewSet, base_name="host")
 router.register("results", views.ResultViewSet, base_name="result")
 router.register("files", views.FileViewSet, base_name="file")
 router.register("records", views.RecordViewSet, base_name="record")
-router.register("stats", views.StatsViewSet, base_name="stats")
 router.register("info", views.InfoView, base_name="info")
 
 urlpatterns = router.urls

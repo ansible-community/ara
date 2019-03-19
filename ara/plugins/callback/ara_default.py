@@ -335,10 +335,8 @@ class CallbackModule(CallbackBase):
         for hostname in hosts:
             host = self._get_or_create_host(hostname)
             host_stats = stats.summarize(hostname)
-            self.client.post(
-                "/api/v1/stats",
-                playbook=self.playbook["id"],
-                host=host["id"],
+            self.client.patch(
+                "/api/v1/hosts/%s" % host["id"],
                 changed=host_stats["changed"],
                 unreachable=host_stats["unreachable"],
                 failed=host_stats["failures"],
