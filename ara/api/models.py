@@ -220,34 +220,17 @@ class Host(Base):
     # The logic for supplying aliases does not live here, it's provided by the
     # clients and consumers.
     alias = models.CharField(max_length=255, null=True)
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="hosts")
 
-    def __str__(self):
-        return "<Host %s:%s>" % (self.id, self.name)
-
-
-class Stats(Base):
-    """
-    Stats for a host for a playbook.
-    """
-
-    class Meta:
-        db_table = "stats"
-        unique_together = ("host", "playbook")
-
-    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="stats")
-    host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="stats")
     changed = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)
     ok = models.IntegerField(default=0)
     skipped = models.IntegerField(default=0)
     unreachable = models.IntegerField(default=0)
 
+    playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="hosts")
+
     def __str__(self):
-        # Verbose because it's otherwise kind of useless
-        return "<Stats for {host} ({id}) in playbook {playbook}>".format(
-            host=self.host.name, id=self.host.id, playbook=self.playbook.id
-        )
+        return "<Host %s:%s>" % (self.id, self.name)
 
 
 class Result(Duration):
