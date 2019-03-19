@@ -149,8 +149,12 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-USE_TZ = True
-TIME_ZONE = "UTC"
+# Note (dmsimard): attempting to use timezones causes drifts in log timestamps
+# because there is a minimal logging configuration that is loaded first and then
+# it is reloaded with timezone data. It's likely safer and more reliable to use
+# the local system timezone instead.
+USE_TZ = False
+TIME_ZONE = None
 
 USE_I18N = True
 USE_L10N = True
