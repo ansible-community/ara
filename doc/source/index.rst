@@ -11,6 +11,7 @@ Table of Contents
     Installing ARA <installation>
     API configuration settings and preferences <api-configuration>
     API authentication and security <api-security>
+    API endpoint documentation <api-documentation>
     API usage with built-in clients <api-usage>
     Architecture and workflows <architecture>
 

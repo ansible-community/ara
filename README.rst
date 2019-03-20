@@ -38,7 +38,8 @@ What happens behind the scenes is that the ARA Ansible callback plugin used
 the built-in API client to send the data to the API which then saved it to a
 database located by default at ``~/.ara/server/ansible.sqlite``.
 
-You're now ready to start poking at the API with the built-in API clients !
+You're now ready to start poking at the API with the built-in
+`API clients <https://ara.readthedocs.io/en/feature-1.0/api-usage.html>`_ !
 
 If you'd like to have the ARA web reporting interface, take a look at
 `ara-web <https://github.com/openstack/ara-web>`_.
@@ -47,7 +48,7 @@ Documentation
 =============
 
 Documentation for installing, configuring, running and using ara is
-available on `readthedocs.io <https://ara.readthedocs.io>`_.
+available on `readthedocs.io <https://ara.readthedocs.io/en/feature-1.0/>`_.
 
 Community and getting help
 ==========================
