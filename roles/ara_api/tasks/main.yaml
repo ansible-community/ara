@@ -36,6 +36,7 @@
 
 - name: Include installation of the WSGI backend server
   include_tasks: "wsgi_server/{{ ara_api_wsgi_server }}.yaml"
+  when: ara_api_wsgi_server is not none
 
 - name: Include installation of the frontend server
   include_role:

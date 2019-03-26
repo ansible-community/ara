@@ -21,4 +21,6 @@
   service:
     name: ara-api
     state: restarted
-  when: ara_api_service_enabled is not changed
+  when:
+    - ara_api_wsgi_server is not none
+    - ara_api_service_enabled is not changed
