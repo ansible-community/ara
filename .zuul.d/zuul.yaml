@@ -13,7 +13,7 @@
       tox_envlist: linters
 
 - job:
-    name: ara-integration-base
+    name: ansible-role-ara-tests-base
     parent: base
     vars:
       integration_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
@@ -22,31 +22,31 @@
     post-run: tests/ara_tests_post.yaml
 
 - job:
-    name: ara-integration-fedora-devel
-    parent: ara-integration-base
+    name: ansible-role-ara-tests-fedora-devel
+    parent: ansible-role-ara-tests-base
     nodeset: fedora-latest
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: devel
 
 - job:
-    name: ara-integration-fedora-2.7
-    parent: ara-integration-base
+    name: ansible-role-ara-tests-fedora-2.7
+    parent: ansible-role-ara-tests-base
     nodeset: fedora-latest
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
 
 - job:
-    name: ara-integration-ubuntu-2.6
-    parent: ara-integration-base
+    name: ansible-role-ara-tests-ubuntu-2.6
+    parent: ansible-role-ara-tests-base
     nodeset: ubuntu-bionic
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.6
 
 - job:
-    name: ara-1.0-role-integration-base
+    name: ansible-role-ara-api-base
     parent: base
     files:
       - ara/*
@@ -62,49 +62,54 @@
     run: playbooks/ara_api.yaml
     vars:
       ara_api_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
-      ara_api_web_server: nginx
-      ara_api_wsgi_server: gunicorn
       ansible_python_interpreter: /usr/bin/python3
 
 - job:
-    name: ara-1.0-role-integration-ubuntu
-    parent: ara-1.0-role-integration-base
+    name: ansible-role-ara-api-ubuntu
+    parent: ansible-role-ara-api-base
     nodeset: ubuntu-bionic
 
 - job:
-    name: ara-1.0-role-integration-fedora
-    parent: ara-1.0-role-integration-base
+    name: ansible-role-ara-api-fedora
+    parent: ansible-role-ara-api-base
     nodeset: fedora-latest
 
 - job:
-    name: ara-web-role-integration-base
+    name: ansible-role-ara-web-base
     parent: base
-    vars:
-      ara_web_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara-web"
-      ara_web_api_server: "https://api.demo.recordsansible.org"
     files:
+      # ara
+      - ara/*
       - playbooks/*
-      - roles/ara_frontend_nginx/*
-      - roles/ara_web/*
+      - roles/*
+      - tests/*
+      - .zuul.d/*
+      - setup.py
+      - setup.cfg
+      - requirements.txt
+      - test-requirements.txt
+      # ara-web
       - src/.*
       - public/.*
       - package.json
       - package-lock.json
-      - .zuul.d/*
     required-projects:
       - openstack/ara-web
-      - openstack/ara-infra
     run: playbooks/ara_web.yaml
     post-run: tests/role-ara-web-post.yaml
+    vars:
+      ara_web_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara-web"
+      ara_web_api_server: "https://api.demo.recordsansible.org"
+      ansible_python_interpreter: /usr/bin/python3
 
 - job:
-    name: ara-web-role-integration-ubuntu
-    parent: ara-web-role-integration-base
+    name: ansible-role-ara-web-ubuntu
+    parent: ansible-role-ara-web-base
     nodeset: ubuntu-bionic
 
 - job:
-    name: ara-web-role-integration-fedora
-    parent: ara-web-role-integration-base
+    name: ansible-role-ara-web-fedora
+    parent: ansible-role-ara-web-base
     nodeset: fedora-latest
 
 - project:
@@ -114,23 +119,23 @@
       - docs-on-readthedocs
     check:
       jobs:
-        - ara-integration-fedora-2.7
-        - ara-integration-fedora-devel:
+        - ansible-role-ara-tests-fedora-2.7
+        - ansible-role-ara-tests-fedora-devel:
             voting: false
-        - ara-integration-ubuntu-2.6
-        - ara-1.0-role-integration-ubuntu
-        - ara-1.0-role-integration-fedora
-        - ara-web-role-integration-ubuntu
-        - ara-web-role-integration-fedora
+        - ansible-role-ara-tests-ubuntu-2.6
+        - ansible-role-ara-api-ubuntu
+        - ansible-role-ara-api-fedora
+        - ansible-role-ara-web-ubuntu
+        - ansible-role-ara-web-fedora
         - ara-tox-linters
         - ara-tox-py3
     gate:
       jobs:
-        - ara-integration-fedora-2.7
-        - ara-integration-ubuntu-2.6
-        - ara-1.0-role-integration-ubuntu
-        - ara-1.0-role-integration-fedora
-        - ara-web-role-integration-ubuntu
-        - ara-web-role-integration-fedora
+        - ansible-role-ara-tests-fedora-2.7
+        - ansible-role-ara-tests-ubuntu-2.6
+        - ansible-role-ara-api-ubuntu
+        - ansible-role-ara-api-fedora
+        - ansible-role-ara-web-ubuntu
+        - ansible-role-ara-web-fedora
         - ara-tox-linters
         - ara-tox-py3
