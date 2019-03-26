@@ -13,16 +13,16 @@
       tox_envlist: linters
 
 - job:
-    name: ara-1.0-integration-base
+    name: ara-integration-base
     parent: base
     vars:
       integration_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
       integration_ansible_version: null
-    run: playbooks/integration-tests.yaml
-    post-run: tests/integration-post.yaml
+    run: playbooks/ara_tests.yaml
+    post-run: tests/ara_tests_post.yaml
 
 - job:
-    name: ara-1.0-integration-fedora-devel
+    name: ara-integration-fedora-devel
     parent: ara-integration-base
     nodeset: fedora-latest
     required-projects:
@@ -30,16 +30,16 @@
         override-checkout: devel
 
 - job:
-    name: ara-1.0-integration-fedora-2.7
-    parent: ara-1.0-integration-base
+    name: ara-integration-fedora-2.7
+    parent: ara-integration-base
     nodeset: fedora-latest
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
 
 - job:
-    name: ara-1.0-integration-ubuntu-2.6
-    parent: ara-1.0-integration-base
+    name: ara-integration-ubuntu-2.6
+    parent: ara-integration-base
     nodeset: ubuntu-bionic
     required-projects:
       - name: github.com/ansible/ansible
@@ -114,10 +114,10 @@
       - docs-on-readthedocs
     check:
       jobs:
-        - ara-1.0-integration-fedora-2.7
-        - ara-1.0-integration-fedora-devel:
+        - ara-integration-fedora-2.7
+        - ara-integration-fedora-devel:
             voting: false
-        - ara-1.0-integration-ubuntu-2.6
+        - ara-integration-ubuntu-2.6
         - ara-1.0-role-integration-ubuntu
         - ara-1.0-role-integration-fedora
         - ara-web-role-integration-ubuntu
@@ -126,8 +126,8 @@
         - ara-tox-py3
     gate:
       jobs:
-        - ara-1.0-integration-fedora-2.7
-        - ara-1.0-integration-ubuntu-2.6
+        - ara-integration-fedora-2.7
+        - ara-integration-ubuntu-2.6
         - ara-1.0-role-integration-ubuntu
         - ara-1.0-role-integration-fedora
         - ara-web-role-integration-ubuntu

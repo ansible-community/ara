@@ -16,21 +16,24 @@ The project provides several distinct components in order to make this happen:
 Quickstart
 ==========
 
-Here's how you can get started from scratch with default settings::
+Here's how you can get started from scratch with default settings:
 
-    # Create a virtual environment
-    python3 -m venv ~/.ara/venv
+.. code-block:: bash
+
+    # Create a virtual environment and activate it so we don't conflict
+    # with system or distribution packages
+    python3 -m venv ~/.ara/virtualenv
+    source ~/.ara/virtualenv/bin/activate
 
     # Install Ansible and the required ARA projects
-    ~/.ara/venv/bin/pip install ansible
-    ~/.ara/venv/bin/pip install git+https://github.com/openstack/ara@feature/1.0
+    pip install ansible git+https://github.com/openstack/ara@feature/1.0
 
     # Tell Ansible to use the ARA callback plugin
     # "python -m ara.plugins" provides the path to the ARA plugins directory
-    export ANSIBLE_CALLBACK_PLUGINS="$(~/.ara/venv/bin/python -m ara.plugins)/callback"
+    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.plugins)/callback"
 
     # Run your playbook as your normally would
-    ~/.ara/venv/bin/ansible-playbook playbook.yml
+    ansible-playbook playbook.yml
 
 The data will be saved in real time throughout the execution of the Ansible playbook.
 
@@ -72,12 +75,12 @@ In addition, you can also find ARA on Twitter: `@ARecordsAnsible <https://twitte
 .. _teamchat: https://github.com/dmsimard/teamchat
 .. _irc.freenode.net: https://webchat.freenode.net/
 
-Development
-===========
+Development and testing
+=======================
 
-**TL;DR**: Using tox is convenient for the time being::
+.. code-block:: bash
 
-  # Retrieve the source
+  # Retrieve the source and check out the 1.0 branch
   git clone https://github.com/openstack/ara
   cd ara
   git checkout feature/1.0
@@ -85,13 +88,26 @@ Development
   # Install tox from pip or from your distro packages
   pip install tox
 
+  # Run Ansible integration tests with the latest version of Ansible
+  tox -e ansible-integration
+
+  # Run integration tests with a specific version of Ansible
+  # Note: tox will always use the latest version of Ansible to run the playbook which runs the tests.
+  # For example, if the latest version of Ansible is 2.7.9, it will use Ansible 2.7.9
+  # to install Ansible==2.6.15 in a virtual environment and 2.6.15 is what will be tested.
+  tox -e ansible-integration -- -e ara_tests_ansible_version=2.6.15
+
+  # Run integration tests with Ansible from source
+  tox -e ansible-integration -- -e "ara_tests_ansible_name=git+https://github.com/ansible/ansible"
+
+  # Run unit tests
+  tox -e py3
+
+  # Run linters (pep8, black, isort)
+  tox -e linters
+
   # Run test server -> http://127.0.0.1:8000/api/v1/
   tox -e runserver
-
-  # Run actual tests or get coverage
-  tox -e linters
-  tox -e py3
-  tox -e cover
 
   # Build docs
   tox -e docs

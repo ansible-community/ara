@@ -1,0 +1,5 @@
+- name: Run ARA smoke tests
+  hosts: all
+  gather_facts: yes
+  roles:
+    - ara_tests
