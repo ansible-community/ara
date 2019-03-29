@@ -167,8 +167,9 @@
     vars:
       git_mirror_repository: recordsansible/ara
     secrets:
-      name: git_mirror_credentials
-      secret: ara_git_mirror_credentials
+      - name: git_mirror_credentials
+        secret: ara_git_mirror_credentials
+        pass-to-parent: true
 
 - project:
     vars:
