@@ -117,7 +117,8 @@
     data:
       user: git
       host: github.com
-      key: !encrypted/pkcs1-oaep
+      host_key: github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+      ssh_key: !encrypted/pkcs1-oaep
         - FhYdGQG7cKUDlV6bLODBL3TkptqHi/TiZTon5diBgGng0FeqbBpbKnDJdzCC0xa+oFCvN
           hJeZejxfJJ+fJ0FbSdV+PSC+uG7WwOLgdB3Cn1hl5MwP+LV4xKbYMT8mgL3LGW2OS/PMN
           mJ0lZVO0KKr156nszp8XKR1fppjKkQcVX8N+w+ioCAqJ3sZECgLpILJ/37L9C4tGIkF+W
