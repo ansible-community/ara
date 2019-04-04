@@ -68,15 +68,15 @@
     virtualenv_python: python3
 
 - name: Get ARA plugins directory
-  command: "{{ ara_tests_virtualenv }}/bin/python -m ara.plugins"
-  register: ara_plugins
+  command: "{{ ara_tests_virtualenv }}/bin/python -m ara.setup.plugins"
+  register: ara_setup_plugins
 
 # These aren't in the same task (i.e, with loop) so we can tell individual test
 # runs apart easily rather than keeping all the output bundled in a single task.
 # TODO: Add validation for the tests
 - environment:
-    ANSIBLE_CALLBACK_PLUGINS: "{{ ara_plugins.stdout }}/callback"
-    ANSIBLE_ACTION_PLUGINS: "{{ ara_plugins.stdout }}/action"
+    ANSIBLE_CALLBACK_PLUGINS: "{{ ara_setup_plugins.stdout }}/callback"
+    ANSIBLE_ACTION_PLUGINS: "{{ ara_setup_plugins.stdout }}/action"
     ARA_DEBUG: true
     ARA_LOG_LEVEL: DEBUG
     ARA_BASE_DIR: "{{ ara_tests_data }}"

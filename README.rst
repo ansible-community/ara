@@ -29,8 +29,7 @@ Here's how you can get started from scratch with default settings:
     pip install ansible git+https://github.com/openstack/ara@feature/1.0
 
     # Tell Ansible to use the ARA callback plugin
-    # "python -m ara.plugins" provides the path to the ARA plugins directory
-    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.plugins)/callback"
+    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
 
     # Run your playbook as your normally would
     ansible-playbook playbook.yml
