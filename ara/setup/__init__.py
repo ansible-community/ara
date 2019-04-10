@@ -21,5 +21,5 @@ import os
 path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 plugins = os.path.abspath(os.path.join(path, "plugins"))
-action_plugins = os.path.abspath(os.path.join(plugins, "actions"))
-callback_plugins = os.path.abspath(os.path.join(plugins, "callbacks"))
+action_plugins = os.path.abspath(os.path.join(plugins, "action"))
+callback_plugins = os.path.abspath(os.path.join(plugins, "callback"))
