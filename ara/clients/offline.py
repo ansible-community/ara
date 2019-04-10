@@ -29,7 +29,7 @@ from ara.clients.http import AraHttpClient
 
 
 class AraOfflineClient(AraHttpClient):
-    def __init__(self):
+    def __init__(self, auth=None):
         self.log = logging.getLogger(__name__)
 
         from django import setup as django_setup
@@ -44,7 +44,7 @@ class AraOfflineClient(AraHttpClient):
         django_setup()
 
         self._start_server()
-        super().__init__(endpoint="http://localhost:%d" % self.server_thread.port)
+        super().__init__(endpoint="http://localhost:%d" % self.server_thread.port, auth=auth)
 
     def _start_server(self):
         self.server_thread = ServerThread("localhost")

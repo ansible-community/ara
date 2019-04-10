@@ -147,7 +147,11 @@ class ActionModule(ActionBase):
         client = options["api_client"]
         endpoint = options["api_server"]
         timeout = options["api_timeout"]
-        self.client = client_utils.get_client(client=client, endpoint=endpoint, timeout=timeout)
+        username = options["api_username"]
+        password = options["api_password"]
+        self.client = client_utils.get_client(
+            client=client, endpoint=endpoint, timeout=timeout, username=username, password=password
+        )
 
     def create_or_update_key(self, playbook, key, value, type):
         changed = False

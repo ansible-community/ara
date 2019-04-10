@@ -28,7 +28,7 @@ CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
 
 class HttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30):
+    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
         self.log = logging.getLogger(__name__)
 
         self.endpoint = endpoint
@@ -40,6 +40,8 @@ class HttpClient(object):
         }
         self.http = requests.Session()
         self.http.headers.update(self.headers)
+        if auth is not None:
+            self.http.auth = auth
 
     def _request(self, method, url, **payload):
         # Use requests.Session to do the query
@@ -68,9 +70,9 @@ class HttpClient(object):
 
 
 class AraHttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30):
+    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
         self.log = logging.getLogger(__name__)
-        self.client = HttpClient(endpoint, timeout)
+        self.client = HttpClient(endpoint, timeout, auth=auth)
 
     def _request(self, method, url, **kwargs):
         func = getattr(self.client, method)

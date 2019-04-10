@@ -15,17 +15,23 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+from requests.auth import HTTPBasicAuth
+
 from ara.clients.http import AraHttpClient
 from ara.clients.offline import AraOfflineClient
 
 
-def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30):
+def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30, username=None, password=None):
     """
     Returns a specified client configuration or one with sane defaults.
     """
+    auth = None
+    if username is not None and password is not None:
+        auth = HTTPBasicAuth(username, password)
+
     if client == "offline":
-        return AraOfflineClient()
+        return AraOfflineClient(auth=auth)
     elif client == "http":
-        return AraHttpClient(endpoint=endpoint, timeout=timeout)
+        return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth)
     else:
         raise ValueError(f"Unsupported API client: {client} (use 'http' or 'offline')")

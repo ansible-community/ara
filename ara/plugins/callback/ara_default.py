@@ -71,6 +71,22 @@ options:
     ini:
       - section: ara
         key: api_server
+  api_username:
+    description: If authentication is required, the username to authenticate with
+    default: null
+    env:
+      - name: ARA_API_USERNAME
+    ini:
+      - section: ara
+        key: api_username
+  api_password:
+    description: If authentication is required, the password to authenticate with
+    default: null
+    env:
+      - name: ARA_API_PASSWORD
+    ini:
+      - section: ara
+        key: api_password
   api_timeout:
     description: Timeout, in seconds, before giving up on HTTP requests
     default: 30
@@ -132,7 +148,11 @@ class CallbackModule(CallbackBase):
         client = self.get_option("api_client")
         endpoint = self.get_option("api_server")
         timeout = self.get_option("api_timeout")
-        self.client = client_utils.get_client(client=client, endpoint=endpoint, timeout=timeout)
+        username = self.get_option("api_username")
+        password = self.get_option("api_password")
+        self.client = client_utils.get_client(
+            client=client, endpoint=endpoint, timeout=timeout, username=username, password=password
+        )
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
