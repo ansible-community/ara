@@ -2,6 +2,9 @@ pbr!=2.1.0,>=2.0.0 # Apache-2.0
 
 jinja2>=2.9
 ansible>=2.5.0
+# Pin SQLAlchemy until new release of flask-sqlalchemy
+# https://github.com/pallets/flask-sqlalchemy/issues/707
+SQLAlchemy<1.3.0
 Flask>=0.11,!=0.12.3
 Flask-SQLAlchemy
 Flask-Migrate

@@ -6,35 +6,35 @@
     timeout: 900
 
 - job:
-    name: ara-integration-debian-py27-2.6.12
+    name: ara-integration-debian-py27-2.6.16
     parent: ara-integration-base
     vars:
       python_test_version: py27
-      ansible_test_version: 2.6.12
+      ansible_test_version: 2.6.16
     nodeset: debian-stable
 
 - job:
-    name: ara-integration-centos-py27-2.5.14
+    name: ara-integration-centos-py27-2.5.15
     parent: ara-integration-base
     vars:
       python_test_version: py27
-      ansible_test_version: 2.5.14
+      ansible_test_version: 2.5.15
     nodeset: centos-7
 
 - job:
-    name: ara-integration-opensuse-py27-2.7.6
+    name: ara-integration-opensuse-py27-2.7.8
     parent: ara-integration-base
     vars:
       python_test_version: py27
-      ansible_test_version: 2.7.6
+      ansible_test_version: 2.7.8
     nodeset: opensuse-423
 
 - job:
-    name: ara-integration-ubuntu-py36-2.7.6
+    name: ara-integration-ubuntu-py36-2.7.8
     parent: ara-integration-base
     vars:
       python_test_version: py36
-      ansible_test_version: 2.7.6
+      ansible_test_version: 2.7.8
     nodeset: ubuntu-bionic
 
 - job:
@@ -46,11 +46,11 @@
     nodeset: ubuntu-bionic
 
 - job:
-    name: ara-integration-fedora-py37-2.7.6
+    name: ara-integration-fedora-py37-2.7.8
     parent: ara-integration-base
     vars:
       python_test_version: py37
-      ansible_test_version: 2.7.6
+      ansible_test_version: 2.7.8
     nodeset: fedora-latest
 
 - job:
