@@ -163,10 +163,10 @@
 - job:
     name: ara-upload-git-mirror
     parent: upload-git-mirror
-    description: Mirrors openstack/ara to recordsansible/ara
+    description: Mirrors openstack/ara to ansible-community/ara
     allowed-projects: openstack/ara
     vars:
-      git_mirror_repository: recordsansible/ara
+      git_mirror_repository: ansible-community/ara
     secrets:
       - name: git_mirror_credentials
         secret: ara_git_mirror_credentials
