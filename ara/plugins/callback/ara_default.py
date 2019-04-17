@@ -161,9 +161,8 @@ class CallbackModule(CallbackBase):
 
         # Load variables to verify if there is anything relevant for ara
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
-        for key in play_vars.keys():
-            if key == "ara_playbook_name":
-                self._set_playbook_name(name=play_vars[key])
+        if "ara_playbook_name" in play_vars:
+            self._set_playbook_name(name=play_vars["ara_playbook_name"])
 
         # Record all the files involved in the play
         for path in play._loader._FILE_CACHE.keys():
