@@ -29,7 +29,7 @@
 
 - name: Set location of the git repository with Zuul
   set_fact:
-    _ara_tests_repository: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
+    _ara_tests_repository: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
   when: zuul is defined
 
 - name: Set location of the git repository without Zuul

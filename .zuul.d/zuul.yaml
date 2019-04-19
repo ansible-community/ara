@@ -61,7 +61,7 @@
     pre-run: tests/role-integration-pre.yaml
     run: playbooks/ara_api.yaml
     vars:
-      ara_api_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara"
+      ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
       ansible_python_interpreter: /usr/bin/python3
 
 - job:
@@ -94,11 +94,11 @@
       - package.json
       - package-lock.json
     required-projects:
-      - openstack/ara-web
+      - recordsansible/ara-web
     run: playbooks/ara_web.yaml
     post-run: tests/role-ara-web-post.yaml
     vars:
-      ara_web_source: "{{ ansible_user_dir }}/src/git.openstack.org/openstack/ara-web"
+      ara_web_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara-web"
       ara_web_api_server: "https://api.demo.recordsansible.org"
       ansible_python_interpreter: /usr/bin/python3
 
@@ -163,8 +163,8 @@
 - job:
     name: ara-upload-git-mirror
     parent: upload-git-mirror
-    description: Mirrors openstack/ara to ansible-community/ara
-    allowed-projects: openstack/ara
+    description: Mirrors recordsansible/ara to ansible-community/ara
+    allowed-projects: recordsansible/ara
     vars:
       git_mirror_repository: ansible-community/ara
     secrets:

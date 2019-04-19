@@ -37,7 +37,7 @@ ara_api_install_method: source
 
 # When installing from source, the URL or filesystem path where the git source
 # repository can be cloned from.
-ara_api_source: "https://git.openstack.org/openstack/ara"
+ara_api_source: "https://opendev.org/recordsansible/ara"
 
 # When installing from source, location where the source repository will be checked out to.
 ara_api_source_checkout: "{{ ara_api_root_dir }}/git/ara"

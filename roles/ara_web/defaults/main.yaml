@@ -28,7 +28,7 @@ ara_web_static_dir: "{{ ara_web_root_dir }}/www/ara-web"
 ara_web_install_method: source
 
 # When installing from source, the location of the remote or local git repository
-ara_web_source: "https://git.openstack.org/openstack/ara-web"
+ara_web_source: "https://opendev.org/recordsansible/ara-web"
 
 # Location where ara-web will be checked out
 ara_web_source_checkout: "{{ ara_web_root_dir }}/git/ara-web"
