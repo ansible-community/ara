@@ -16,13 +16,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-ara_api_required_packages:
-  - git
-  - python3-virtualenv
-  - python3-libselinux
-  - policycoreutils-python-utils
+# Runs the install-docker role exposed by Zuul:
+#  - https://opendev.org/zuul/zuul-jobs/src/branch/master/roles/install-docker
+#  - https://zuul-ci.org/docs/zuul-jobs/container-roles.html#role-install-docker
 
-ara_api_postgresql_packages:
-  - postgresql
-  - postgresql-devel
-  - gcc
+# Some tests (such as with postgresql) requires Docker to set up a test database
+# server. You do not need to run this role if you have Docker installed already.
+
+- name: Install docker
+  hosts: all
+  roles:
+    - install-docker

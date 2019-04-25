@@ -64,6 +64,7 @@
     vars:
       ara_tests_cleanup: false
       ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
+      ara_api_version: HEAD
       ansible_python_interpreter: /usr/bin/python3
 
 - job:
@@ -75,6 +76,17 @@
     name: ansible-role-ara-api-fedora
     parent: ansible-role-ara-api-base
     nodeset: fedora-latest
+
+# TODO: the install-docker role assumes running on Ubuntu
+- job:
+    name: ansible-role-ara-api-ubuntu-postgresql
+    parent: ansible-role-ara-api-base
+    nodeset: ubuntu-bionic
+    roles:
+      - zuul: zuul/zuul-jobs
+    pre-run: tests/install_docker.yaml
+    run: tests/with_postgresql.yaml
+    post-run: tests/ara_tests_post.yaml
 
 - job:
     name: ansible-role-ara-web-base
@@ -187,6 +199,7 @@
         - ansible-role-ara-tests-ubuntu-2.6
         - ansible-role-ara-api-ubuntu
         - ansible-role-ara-api-fedora
+        - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
         - ara-tox-linters
@@ -197,6 +210,7 @@
         - ansible-role-ara-tests-ubuntu-2.6
         - ansible-role-ara-api-ubuntu
         - ansible-role-ara-api-fedora
+        - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
         - ara-tox-linters

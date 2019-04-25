@@ -19,3 +19,8 @@
 ara_api_required_packages:
   - git
   - python3-venv
+
+ara_api_postgresql_packages:
+  - postgresql
+  - postgresql-server-dev-10
+  - gcc
