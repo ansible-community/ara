@@ -40,7 +40,7 @@ if [ -z "${VIRTUAL_ENV}" ]; then
 fi
 
 banner black
-time black --diff --check "${PROJECT_LIB}"
+time black --config ${PROJECT_ROOT}/.black.toml --diff --check "${PROJECT_LIB}"
 ret+=$?
 
 banner isort
