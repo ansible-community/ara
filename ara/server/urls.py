@@ -15,7 +15,32 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import urllib.parse
+
+import pbr
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-urlpatterns = [path("api/v1/", include("ara.api.urls")), path("admin/", admin.site.urls)]
+
+# fmt: off
+class APIRoot(APIView):
+    def get(self, request):
+        return Response({
+            "kind": "ara",
+            "version": pbr.version.VersionInfo("ara").release_string(),
+            "api": list(map(lambda x: urllib.parse.urljoin(
+                request.build_absolute_uri(), x),
+                [
+                    "api/v1/",
+                ]))
+        })
+
+
+urlpatterns = [
+    path("", APIRoot.as_view()),
+    path("api/v1/", include("ara.api.urls")),
+    path("admin/", admin.site.urls),
+]
+# fmt: on
