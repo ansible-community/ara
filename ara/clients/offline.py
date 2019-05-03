@@ -22,10 +22,14 @@ import logging
 import os
 import threading
 
-from django.core.handlers.wsgi import WSGIHandler
-from django.core.servers.basehttp import ThreadedWSGIServer, WSGIRequestHandler
-
 from ara.clients.http import AraHttpClient
+from ara.setup.exceptions import MissingDjangoException
+
+try:
+    from django.core.handlers.wsgi import WSGIHandler
+    from django.core.servers.basehttp import ThreadedWSGIServer, WSGIRequestHandler
+except ImportError as e:
+    raise MissingDjangoException from e
 
 
 class AraOfflineClient(AraHttpClient):

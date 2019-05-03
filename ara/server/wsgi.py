@@ -17,7 +17,12 @@
 
 import os
 
-from django.core.wsgi import get_wsgi_application
+from ara.setup.exceptions import MissingDjangoException
+
+try:
+    from django.core.wsgi import get_wsgi_application
+except ImportError as e:
+    raise MissingDjangoException from e
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 

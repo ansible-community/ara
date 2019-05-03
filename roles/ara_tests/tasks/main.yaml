@@ -62,7 +62,7 @@
 
 - name: Install ARA from source in virtual environment
   pip:
-    name: "{{ _ara_tests_repository }}"
+    name: "{{ _ara_tests_repository }}[server]"
     state: present
     virtualenv: "{{ ara_tests_virtualenv }}"
     virtualenv_python: python3

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #  Copyright (c) 2019 Red Hat, Inc.
 #
 #  This file is part of ARA Records Ansible.
@@ -16,22 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
 
-from ara.setup.exceptions import MissingDjangoException
-
-
-def main():
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
-
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as e:
-        raise MissingDjangoException from e
-
-    execute_from_command_line(sys.argv)
-
-
-if __name__ == "__main__":
-    main()
+class MissingDjangoException(Exception):
+    def __init__(self):
+        exc = "Unable to import Django: the server dependencies can be installed with 'pip install ara[server]'"
+        super().__init__(exc)

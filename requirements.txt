@@ -1,9 +1,3 @@
 pbr!=2.1.0,>=2.0.0 # Apache-2.0
 
-Django>=2.1.5
-djangorestframework>=3.9.1
-django-cors-headers
-django-filter
-dynaconf[yaml]
 requests>=2.14.2
-whitenoise

@@ -25,8 +25,8 @@ Here's how you can get started from scratch with default settings:
     python3 -m venv ~/.ara/virtualenv
     source ~/.ara/virtualenv/bin/activate
 
-    # Install Ansible and the required ARA projects
-    pip install ansible git+https://github.com/openstack/ara@feature/1.0
+    # Install Ansible, ARA and it's API server dependencies
+    pip install ansible git+https://github.com/openstack/ara@feature/1.0[server]
 
     # Tell Ansible to use the ARA callback plugin
     export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
