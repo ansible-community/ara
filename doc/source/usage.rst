@@ -309,7 +309,7 @@ artifacts of the jobs, allowing you to browse the results in-place.
 This is done with the ``ara generate html`` command.
 
 .. note::
-Hosting statically generated reports is not very efficient at a large scale. Please refer to: :ref:`Advanced use cases <advanced>`.
+    Hosting statically generated reports is not very efficient at a large scale. Please refer to: :ref:`Advanced use cases <advanced_configuration>`.
 
 By default, ARA will generate a static version for all the recorded playbook
 runs in it's database.
