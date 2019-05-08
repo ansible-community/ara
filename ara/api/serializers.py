@@ -281,8 +281,9 @@ class ListLabelSerializer(serializers.ModelSerializer):
 class ListPlaybookSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
         model = models.Playbook
-        exclude = ("arguments", "created", "updated")
+        exclude = ("created", "updated")
 
+    arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT, read_only=True)
     labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
 
 
