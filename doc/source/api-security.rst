@@ -93,6 +93,59 @@ This is done with the two following configuration options:
 
 These settings are global and are effective for all API endpoints.
 
+Setting up authentication for the Ansible plugins
+-------------------------------------------------
+
+The callback plugin used to record playbooks as well as the ``ara_record``
+action plugin will need to authenticate against the API if authentication is
+enabled and required.
+
+You can specify the necessary credentials through the ``ARA_API_USERNAME`` and
+``ARA_API_PASSWORD`` environment variables or through your ``ansible.cfg`` file:
+
+.. code-block:: ini
+
+    [defaults]
+    # ...
+
+    [ara]
+    api_client = http
+    api_server = http://api.example.org
+    api_username = ara
+    api_password = password
+
+Using authentication with the API clients
+-----------------------------------------
+
+To instanciate an authenticated client with the built-in basic HTTP
+authentication provided by Django:
+
+.. code-block:: python
+
+    from ara.clients.utils import get_client
+    client = get_client(
+        client="http",
+        endpoint="http://api.example.org",
+        username="ara",
+        password="password"
+    )
+
+If you have a custom authentication that is supported by the
+`python requests <https://2.python-requests.org/en/master/user/authentication/>`_
+library, you can also pass the relevant ``auth`` object directly to the client:
+
+.. code-block:: python
+
+    from ara.clients.http import AraHttpClient
+    from requests_oauthlib import OAuth1
+    auth = OAuth1(
+        "YOUR_APP_KEY",
+        "YOUR_APP_SECRET",
+        "USER_OAUTH_TOKEN",
+        "USER_OAUTH_TOKEN_SECRET"
+    )
+    client = AraHttpClient(endpoint="http://api.example.org", auth=auth)
+
 Managing hosts allowed to serve the API
 ---------------------------------------
 
