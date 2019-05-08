@@ -14,23 +14,10 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
-import sys
 
-import pbr.version
 from rest_framework import viewsets
-from rest_framework.response import Response
 
 from ara.api import models, serializers
-
-
-class InfoView(viewsets.ViewSet):
-    def list(self, request):
-        return Response(
-            {
-                "python_version": ".".join(map(str, sys.version_info[:3])),
-                "ara_version": pbr.version.VersionInfo("ara").release_string(),
-            }
-        )
 
 
 class LabelViewSet(viewsets.ModelViewSet):
