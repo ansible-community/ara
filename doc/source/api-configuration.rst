@@ -317,11 +317,12 @@ ARA_DATABASE_ENGINE
 ~~~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_ENGINE``
-- **Configuration file variable**: ``DATABASES["default"]["ENGINE"]``
+- **Configuration file variable**: ``DATABASE_ENGINE``
 - **Provided by**: Django's ENGINE_ database setting
 - **Type**: ``string``
 - **Default**: ``django.db.backends.sqlite3``
 - **Examples**:
+
   - ``django.db.backends.postgresql``
   - ``django.db.backends.mysql``
 
@@ -334,7 +335,7 @@ ARA_DATABASE_NAME
 ~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_NAME``
-- **Configuration file variable**: ``DATABASES["default"]["NAME"]``
+- **Configuration file variable**: ``DATABASE_NAME``
 - **Provided by**: Django's NAME_ database setting
 - **Type**: ``string``
 - **Default**: ``~/.ara/server/ansible.sqlite``
@@ -348,7 +349,7 @@ ARA_DATABASE_USER
 ~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_USER``
-- **Configuration file variable**: ``DATABASES["default"]["USER"]``
+- **Configuration file variable**: ``DATABASE_USER``
 - **Provided by**: Django's USER_ database setting
 - **Type**: ``string``
 - **Default**: ``None``
@@ -361,7 +362,7 @@ ARA_DATABASE_PASSWORD
 ~~~~~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_PASSWORD``
-- **Configuration file variable**: ``DATABASES["default"]["PASSWORD"]``
+- **Configuration file variable**: ``DATABASE_PASSWORD``
 - **Provided by**: Django's PASSWORD_ database setting
 - **Type**: ``string``
 - **Default**: ``None``
@@ -374,7 +375,7 @@ ARA_DATABASE_HOST
 ~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_HOST``
-- **Configuration file variable**: ``DATABASES["default"]["HOST"]``
+- **Configuration file variable**: ``DATABASE_HOST``
 - **Provided by**: Django's HOST_ database setting
 - **Type**: ``string``
 - **Default**: ``None``
@@ -387,7 +388,7 @@ ARA_DATABASE_PORT
 ~~~~~~~~~~~~~~~~~
 
 - **Environment variable**: ``ARA_DATABASE_PORT``
-- **Configuration file variable**: ``DATABASES["default"]["PORT"]``
+- **Configuration file variable**: ``DATABASE_PORT``
 - **Provided by**: Django's PORT_ database setting
 - **Type**: ``string``
 - **Default**: ``None``
