@@ -4,5 +4,5 @@ coverage
 flake8
 sphinx>=1.4
 sphinx-rtd-theme
-black==18.9b0 ; python_version >= '3.6' # Exact version for prerelease
+black==19.3b0 # Exact version for prerelease
 isort
