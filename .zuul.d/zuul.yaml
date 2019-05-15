@@ -16,6 +16,7 @@
     name: ansible-role-ara-tests-base
     parent: base
     vars:
+      ara_tests_cleanup: false
       integration_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
       integration_ansible_version: null
     run: playbooks/ara_tests.yaml
@@ -61,6 +62,7 @@
     pre-run: tests/role-integration-pre.yaml
     run: playbooks/ara_api.yaml
     vars:
+      ara_tests_cleanup: false
       ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
       ansible_python_interpreter: /usr/bin/python3
 

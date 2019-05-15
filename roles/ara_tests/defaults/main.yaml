@@ -20,13 +20,10 @@
 ara_tests_root: "/tmp/ara-integration-tests"
 
 # Directory where the virtualenv will be created
-ara_tests_virtualenv: "{{ ara_tests_root }}/virtualenv"
+ara_tests_virtualenv: "{{ ara_tests_root }}/ara-tests-virtualenv"
 
 # Directory where ARA_BASE_DIR will be set
-ara_tests_data: "{{ ara_tests_root }}/.ara"
-
-# Whether the root directory should be cleaned up between runs
-ara_tests_cleanup: true
+ara_tests_data: "{{ ara_tests_root }}/.ara/server"
 
 # Name of the Ansible package
 # This can be "ansible" which will use pip or it could be something like

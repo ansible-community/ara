@@ -16,13 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-- name: Clean up integration test root
-  file:
-    path: "{{ ara_tests_root }}"
-    state: absent
-  when: ara_tests_cleanup | bool
-
-- name: Create integration test root
+- name: Ensure integration test root exists
   file:
     path: "{{ ara_tests_root }}"
     state: directory

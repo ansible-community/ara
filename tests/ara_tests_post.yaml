@@ -27,7 +27,7 @@
         recurse: yes
 
     - name: Recover integration test data
-      command: cp -rp /tmp/ara-integration-tests/.ara {{ ansible_user_dir }}/workspace/logs/data
+      command: cp -rp /tmp/ara-integration-tests/.ara/server {{ ansible_user_dir }}/workspace/logs/server
 
     - name: Upload log artifacts
       synchronize:
