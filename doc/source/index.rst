@@ -9,10 +9,12 @@ Table of Contents
     :maxdepth: 2
 
     Installing ARA <installation>
-    API configuration settings and preferences <api-configuration>
-    API authentication and security <api-security>
-    API endpoint documentation <api-documentation>
-    API usage with built-in clients <api-usage>
+    Configuring Ansible to use ARA <ansible-configuration>
+    Configuring the ARA Ansible plugins <ara-plugin-configuration>
+    Configuring the ARA API server <api-configuration>
+    API: Authentication and security <api-security>
+    API: Endpoint documentation <api-documentation>
+    API: Usage with built-in clients <api-usage>
     Architecture and workflows <architecture>
 
 .. toctree::
