@@ -60,7 +60,6 @@ class Label(Base):
         db_table = "labels"
 
     name = models.CharField(max_length=255)
-    description = models.BinaryField(max_length=(2 ** 32) - 1)
 
     def __str__(self):
         return "<Label %s: %s>" % (self.id, self.name)

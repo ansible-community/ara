@@ -69,7 +69,7 @@ class FileSha1Serializer(serializers.ModelSerializer):
 class SimpleLabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Label
-        exclude = ("description", "created", "updated")
+        exclude = ("created", "updated")
 
 
 class SimplePlaybookSerializer(DurationSerializer):
@@ -186,8 +186,6 @@ class DetailedLabelSerializer(serializers.ModelSerializer):
         model = models.Label
         fields = "__all__"
 
-    description = ara_fields.CompressedTextField(read_only=True)
-
 
 class DetailedPlaybookSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
@@ -273,10 +271,6 @@ class ListLabelSerializer(serializers.ModelSerializer):
         model = models.Label
         fields = "__all__"
 
-    description = ara_fields.CompressedTextField(
-        default=ara_fields.EMPTY_STRING, help_text="A text description of the label"
-    )
-
 
 class ListPlaybookSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
@@ -349,10 +343,6 @@ class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Label
         fields = "__all__"
-
-    description = ara_fields.CompressedTextField(
-        default=ara_fields.EMPTY_STRING, help_text="A text description of the label"
-    )
 
 
 class PlaybookSerializer(DurationSerializer):
