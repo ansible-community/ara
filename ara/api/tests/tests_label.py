@@ -18,7 +18,7 @@
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
-from ara.api.tests import factories, utils
+from ara.api.tests import factories
 
 
 class LabelTestCase(APITestCase):
@@ -33,21 +33,9 @@ class LabelTestCase(APITestCase):
         label.refresh_from_db()
         self.assertEqual(label.name, "serializer")
 
-    def test_label_serializer_compress_description(self):
-        serializer = serializers.LabelSerializer(data={"name": "compress", "description": factories.LABEL_DESCRIPTION})
-        serializer.is_valid()
-        label = serializer.save()
-        label.refresh_from_db()
-        self.assertEqual(label.description, utils.compressed_str(factories.LABEL_DESCRIPTION))
-
-    def test_label_serializer_decompress_description(self):
-        label = factories.LabelFactory(description=utils.compressed_str(factories.LABEL_DESCRIPTION))
-        serializer = serializers.LabelSerializer(instance=label)
-        self.assertEqual(serializer.data["description"], factories.LABEL_DESCRIPTION)
-
     def test_create_label(self):
         self.assertEqual(0, models.Label.objects.count())
-        request = self.client.post("/api/v1/labels", {"name": "compress", "description": factories.LABEL_DESCRIPTION})
+        request = self.client.post("/api/v1/labels", {"name": "compress"})
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Label.objects.count())
 

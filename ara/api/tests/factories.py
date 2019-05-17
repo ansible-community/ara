@@ -29,7 +29,6 @@ FILE_CONTENTS = "---\n# Example file"
 HOST_FACTS = {"ansible_fqdn": "hostname", "ansible_distribution": "CentOS"}
 PLAYBOOK_ARGUMENTS = {"ansible_version": "2.5.5", "inventory": "/etc/ansible/hosts"}
 RESULT_CONTENTS = {"results": [{"msg": "something happened"}]}
-LABEL_DESCRIPTION = "label description"
 TASK_TAGS = ["always", "never"]
 RECORD_LIST = ["one", "two", "three"]
 
@@ -68,7 +67,6 @@ class LabelFactory(factory.DjangoModelFactory):
         model = models.Label
 
     name = "test label"
-    description = utils.compressed_str(LABEL_DESCRIPTION)
 
 
 class PlayFactory(factory.DjangoModelFactory):
