@@ -110,6 +110,15 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
 
+    def test_patch_playbook_name(self):
+        playbook = factories.PlaybookFactory()
+        new_name = "foo"
+        self.assertNotEqual(playbook.name, new_name)
+        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"name": new_name})
+        self.assertEqual(200, request.status_code)
+        playbook_updated = models.Playbook.objects.get(id=playbook.id)
+        self.assertEqual(playbook_updated.name, new_name)
+
     def test_get_playbook_by_status(self):
         playbook = factories.PlaybookFactory(status="failed")
         factories.PlaybookFactory(status="completed")

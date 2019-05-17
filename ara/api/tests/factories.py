@@ -38,6 +38,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.Playbook
 
+    name = "test-playbook"
     ansible_version = "2.4.0"
     status = "running"
     arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
