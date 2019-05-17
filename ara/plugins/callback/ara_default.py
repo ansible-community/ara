@@ -183,6 +183,8 @@ class CallbackModule(CallbackBase):
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
         if "ara_playbook_name" in play_vars:
             self._set_playbook_name(name=play_vars["ara_playbook_name"])
+        if "ara_playbook_labels" in play_vars:
+            self._set_playbook_labels(labels=play_vars["ara_playbook_labels"])
 
         # Record all the files involved in the play
         for path in play._loader._FILE_CACHE.keys():
@@ -280,6 +282,10 @@ class CallbackModule(CallbackBase):
     def _set_playbook_name(self, name):
         if self.playbook["name"] != name:
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
+
+    def _set_playbook_labels(self, labels):
+        if self.playbook["labels"] != labels:
+            self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
 
     def _get_or_create_file(self, path):
         self.log.debug("Getting or creating file: %s" % path)

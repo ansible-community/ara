@@ -73,3 +73,16 @@ class FileContentField(serializers.CharField):
             sha1=sha1, defaults={"sha1": sha1, "contents": zlib.compress(contents)}
         )
         return content_file
+
+
+class CreatableSlugRelatedField(serializers.SlugRelatedField):
+    """
+    A SlugRelatedField that supports get_or_create.
+    Used for creating or retrieving labels by name.
+    """
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get_or_create(**{self.slug_field: data})[0]
+        except (TypeError, ValueError):
+            self.fail("invalid")

@@ -21,6 +21,9 @@
   gather_facts: no
   vars:
     ara_playbook_name: Smoke tests
+    ara_playbook_labels:
+      - integration tests
+      - smoke
   tasks:
     - name: ARA Integration test
       debug:
@@ -33,6 +36,10 @@
 - name: Add a host with non-ascii characters
   hosts: localhost
   gather_facts: no
+  vars:
+    ara_playbook_labels:
+      - integration tests
+      - smoke
   tasks:
     - name: Add a host with non-ascii character
       add_host:
@@ -46,6 +53,10 @@
 - name: Play with non-ascii characters - ä, ö, ü
   hosts: höstñämë
   gather_facts: yes
+  vars:
+    ara_playbook_labels:
+      - integration tests
+      - smoke
   tasks:
     - name: Task with non-ascii characters - ä, ö, ü
       debug:

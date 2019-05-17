@@ -351,18 +351,9 @@ class PlaybookSerializer(DurationSerializer):
         fields = "__all__"
 
     arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
-    labels = LabelSerializer(many=True, default=[])
-
-    def create(self, validated_data):
-        # First create the playbook without the labels
-        labels = validated_data.pop("labels")
-        playbook = models.Playbook.objects.create(**validated_data)
-
-        # Now associate the labels to the playbook
-        for label in labels:
-            playbook.labels.add(models.Label.objects.create(**label))
-
-        return playbook
+    labels = ara_fields.CreatableSlugRelatedField(
+        many=True, slug_field="name", queryset=models.Label.objects.all(), required=False
+    )
 
 
 class PlaySerializer(DurationSerializer):

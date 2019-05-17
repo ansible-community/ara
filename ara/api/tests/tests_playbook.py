@@ -82,6 +82,18 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(1, models.Playbook.objects.count())
         self.assertEqual(request.data["status"], "running")
 
+    def test_create_playbook_with_labels(self):
+        self.assertEqual(0, models.Playbook.objects.count())
+        labels = ["test-label", "another-test-label"]
+        request = self.client.post(
+            "/api/v1/playbooks",
+            {"ansible_version": "2.4.0", "status": "running", "path": "/path/playbook.yml", "labels": labels},
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Playbook.objects.count())
+        self.assertEqual(request.data["status"], "running")
+        self.assertEqual(request.data["labels"], labels)
+
     def test_partial_update_playbook(self):
         playbook = factories.PlaybookFactory()
         self.assertNotEqual("completed", playbook.status)
@@ -132,5 +144,14 @@ class PlaybookTestCase(APITestCase):
         playbook = factories.PlaybookFactory(started=started, ended=ended)
         request = self.client.get("/api/v1/playbooks/%s" % playbook.id)
         self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
+
+    def test_patch_playbook_labels(self):
+        playbook = factories.PlaybookFactory()
+        labels = ["test-label", "another-test-label"]
+        self.assertNotEqual(playbook.labels, labels)
+        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"labels": labels})
+        self.assertEqual(200, request.status_code)
+        playbook_updated = models.Playbook.objects.get(id=playbook.id)
+        self.assertEqual([label.name for label in playbook_updated.labels.all()], labels)
 
     # TODO: Add tests for incrementally updating files
