@@ -33,3 +33,11 @@
         regexp: "^exclude="
         state: absent
       when: ansible_distribution == "Fedora"
+
+    # See https://github.com/ansible-community/ara/issues/43
+    - name: Disable extra wheels mirror
+      become: yes
+      lineinfile:
+        dest: /etc/pip.conf
+        regexp: ^extra-index-url
+        state: absent
