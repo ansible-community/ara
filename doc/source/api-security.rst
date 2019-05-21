@@ -160,7 +160,7 @@ Managing CORS (cross-origin resource sharing)
 ---------------------------------------------
 
 The :ref:`api-configuration:ARA_CORS_ORIGIN_WHITELIST` default is designed to
-allow a local development instance of an `ara-web <https://github.com/openstack/ara-web>`_
+allow a local development instance of an `ara-web <https://github.com/ansible-community/ara-web>`_
 dashboard to communicate with a local development instance of the API server.
 
 The whitelist must contain the domain names where you plan on hosting instances
