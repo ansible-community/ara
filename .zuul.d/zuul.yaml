@@ -19,6 +19,7 @@
       ara_tests_cleanup: false
       integration_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
       integration_ansible_version: null
+    pre-run: tests/role-integration-pre.yaml
     run: playbooks/ara_tests.yaml
     post-run: tests/ara_tests_post.yaml
 

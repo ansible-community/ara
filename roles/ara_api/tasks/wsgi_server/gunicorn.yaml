@@ -21,7 +21,7 @@
     name: gunicorn
     state: present
     virtualenv: "{{ ara_api_venv | bool | ternary(ara_api_venv_path, omit) }}"
-    virtualenv_python: python3
+    virtualenv_command: /usr/bin/python3 -m venv
 
 - become: yes
   block:
