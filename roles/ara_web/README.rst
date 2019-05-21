@@ -4,7 +4,7 @@ ansible-role-ara-web
 .. image:: ../../doc/source/_static/ansible-role-ara-web.png
 
 This Ansible role provides a framework for installing one or many instances of
-`ara-web <https://github.com/openstack/ara-web>`_ in a variety of
+`ara-web <https://github.com/ansible-community/ara-web>`_ in a variety of
 opinionated deployment topologies.
 
 It is currently tested and supported against Ubuntu 18.04 and Fedora 29.
@@ -12,7 +12,7 @@ It is currently tested and supported against Ubuntu 18.04 and Fedora 29.
 Role Variables
 --------------
 
-See `defaults/main.yaml <https://github.com/openstack/ara/blob/feature/1.0/roles/ara_web/defaults/main.yaml>`_.
+See `defaults/main.yaml <https://github.com/ansible-community/ara/blob/feature/1.0/roles/ara_web/defaults/main.yaml>`_.
 
 .. literalinclude:: ../../roles/ara_web/defaults/main.yaml
    :language: yaml+jinja

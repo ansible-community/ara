@@ -26,7 +26,7 @@ Here's how you can get started from scratch with default settings:
     source ~/.ara/virtualenv/bin/activate
 
     # Install Ansible, ARA and it's API server dependencies
-    pip install ansible git+https://github.com/openstack/ara@feature/1.0[server]
+    pip install ansible git+https://github.com/ansible-community/ara@feature/1.0[server]
 
     # Tell Ansible to use the ARA callback plugin
     export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
@@ -44,7 +44,7 @@ You're now ready to start poking at the API with the built-in
 `API clients <https://ara.readthedocs.io/en/feature-1.0/api-usage.html>`_ !
 
 If you'd like to have the ARA web reporting interface, take a look at
-`ara-web <https://github.com/openstack/ara-web>`_.
+`ara-web <https://github.com/ansible-community/ara-web>`_.
 
 Documentation
 =============
@@ -80,7 +80,7 @@ Development and testing
 .. code-block:: bash
 
   # Retrieve the source and check out the 1.0 branch
-  git clone https://github.com/openstack/ara
+  git clone https://github.com/ansible-community/ara
   cd ara
   git checkout feature/1.0
 
@@ -116,7 +116,7 @@ Contributors
 
 See contributors on GitHub_.
 
-.. _GitHub: https://github.com/openstack/ara/graphs/contributors
+.. _GitHub: https://github.com/ansible-community/ara/graphs/contributors
 
 Copyright
 =========
