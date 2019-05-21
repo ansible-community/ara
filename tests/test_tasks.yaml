@@ -45,7 +45,7 @@
     version: "{{ _install_ansible_version | default(omit, True) }}"
     state: "{{ _install_ansible_state | default(omit, True) }}"
     virtualenv: "{{ ara_api_venv | bool | ternary(ara_api_venv_path, omit) }}"
-    virtualenv_python: python3
+    virtualenv_command: /usr/bin/python3 -m venv
 
 - name: Get ARA plugins directory
   environment:

@@ -31,6 +31,13 @@
     _ara_tests_repository: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
   when: zuul is not defined
 
+- name: Ensure python3-venv is installed for Ubuntu
+  become: yes
+  package:
+    name: python3-venv
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
 # If a version is not explicitly set we want to make sure to
 # completely omit the version argument to pip, as it will be coming
 # from the long-form integration_ansible_name variable.  Additionally, if
@@ -52,14 +59,14 @@
     version: "{{ _install_ansible_version | default(omit, True) }}"
     state: "{{ _install_ansible_state | default(omit, True) }}"
     virtualenv: "{{ ara_tests_virtualenv }}"
-    virtualenv_python: python3
+    virtualenv_command: /usr/bin/python3 -m venv
 
 - name: Install ARA from source in virtual environment
   pip:
     name: "{{ _ara_tests_repository }}[server]"
     state: present
     virtualenv: "{{ ara_tests_virtualenv }}"
-    virtualenv_python: python3
+    virtualenv_command: /usr/bin/python3 -m venv
 
 - name: Get ARA plugins directory
   command: "{{ ara_tests_virtualenv }}/bin/python -m ara.setup.plugins"
