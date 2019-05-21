@@ -19,6 +19,7 @@ import logging
 import logging.config
 import os
 import textwrap
+import warnings
 
 import yaml
 from django.utils.crypto import get_random_string
@@ -180,13 +181,12 @@ USE_L10N = False
 
 # whitenoise serves static files without needing to use "collectstatic"
 WHITENOISE_USE_FINDERS = True
+# https://github.com/evansd/whitenoise/issues/215
+# Whitenoise raises a warning if STATIC_ROOT doesn't exist
+warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
+
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"))
-
-# Create STATIC_ROOT if it doesn't exist to avoid a warning from whitenoise
-# https://github.com/evansd/whitenoise/issues/215
-if not os.path.isdir(STATIC_ROOT):
-    os.makedirs(STATIC_ROOT, mode=0o755)
 
 MEDIA_URL = settings.get("MEDIA_URL", "/media/")
 MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
