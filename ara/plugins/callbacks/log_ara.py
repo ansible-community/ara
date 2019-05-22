@@ -312,7 +312,7 @@ class CallbackModule(CallbackBase):
             action=task.action,
             play=self.play,
             playbook=self.playbook,
-            tags=jsonutils.dumps(task._attributes['tags']),
+            tags=jsonutils.dumps(task.tags),
             file=file_,
             lineno=lineno,
             is_handler=is_handler)

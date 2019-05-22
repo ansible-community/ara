@@ -102,6 +102,7 @@ def ansible_run(complete=True, failed=False, gather_facts=True,
     task = fakes.Task(play=play,
                       playbook=playbook,
                       action='fake_action',
+                      tags=['always'],
                       file=task_file,
                       file_id=task_file.id).model
     tasks.append(task)

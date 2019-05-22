@@ -46,7 +46,7 @@ class Task(object):
         self.name = name
         self.action = action
         self.path = '%s:%d' % (path, lineno)
-        self._attributes = {'tags': []}
+        self.tags = ['always']
 
     def get_path(self):
         """ Ansible Module/Callback specific method """
