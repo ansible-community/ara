@@ -227,7 +227,7 @@ class CallbackModule(CallbackBase):
             play=self.play["id"],
             playbook=self.playbook["id"],
             file=task_file["id"],
-            tags=task._attributes["tags"],
+            tags=task.tags,
             lineno=lineno,
             handler=handler,
         )
