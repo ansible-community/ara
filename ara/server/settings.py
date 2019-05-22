@@ -15,8 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-import logging.config
 import os
 import textwrap
 
@@ -65,9 +63,7 @@ LOGGING = {
     },
 }
 # fmt: on
-logging.config.dictConfig(LOGGING)
-logger = logging.getLogger(__name__)
-logger.debug("Loaded logging configuration")
+
 
 # Django built-in server and npm development server
 ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
@@ -83,7 +79,7 @@ EXTERNAL_AUTH = settings.get("EXTERNAL_AUTH", False, "@bool")
 
 def get_secret_key():
     if not settings.get("SECRET_KEY"):
-        logger.warn(f"No setting found for SECRET_KEY. Generating a random key...")
+        print("[ara] No setting found for SECRET_KEY. Generating a random key...")
         return get_random_string(length=50)
     return settings.get("SECRET_KEY")
 
@@ -166,12 +162,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Note (dmsimard): attempting to use timezones causes drifts in log timestamps
-# because there is a minimal logging configuration that is loaded first and then
-# it is reloaded with timezone data. It's likely safer and more reliable to use
-# the local system timezone instead.
-USE_TZ = False
-TIME_ZONE = None
+USE_TZ = True
+TIME_ZONE = "UTC"
 
 # We do not currently support internationalization and localization, turn these
 # off.
@@ -214,13 +206,12 @@ REST_FRAMEWORK = {
 }
 
 ARA_SETTINGS = os.getenv("ARA_SETTINGS", DEFAULT_SETTINGS)
-logger.info(f"Using settings file: {ARA_SETTINGS}")
 
 # TODO: Split this out to a CLI command (django-admin command ?)
 
 # Ensure default base configuration/data directory exists
 if not os.path.isdir(BASE_DIR):
-    logger.info(f"Creating data & configuration directory: {BASE_DIR}")
+    print(f"[ara] Creating data & configuration directory: {BASE_DIR}")
     os.makedirs(BASE_DIR, mode=0o700)
 
 if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
@@ -251,6 +242,6 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         #   $ export ARA_SETTINGS="{DEFAULT_SETTINGS}"
 
         """
-        logger.info(f"Writing default settings to {DEFAULT_SETTINGS}")
+        print(f"[ara] Writing default settings to {DEFAULT_SETTINGS}")
         settings_file.write(textwrap.dedent(comment))
         yaml.dump({"default": SETTINGS}, settings_file, default_flow_style=False)

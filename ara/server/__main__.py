@@ -19,6 +19,8 @@
 import os
 import sys
 
+from django.conf import settings
+
 from ara.setup.exceptions import MissingDjangoException
 
 
@@ -31,6 +33,7 @@ def main():
         raise MissingDjangoException from e
 
     execute_from_command_line(sys.argv)
+    print(f"[ara] Using settings file: {settings.ARA_SETTINGS}")
 
 
 if __name__ == "__main__":
