@@ -197,9 +197,7 @@ class CallbackModule(CallbackBase):
 
         # Record all the hosts involved in the play
         for host in play.hosts:
-            hostvars = play_vars["hostvars"][host] if host in play_vars["hostvars"] else {}
-            host_alias = hostvars["ara_host_alias"] if "ara_host_alias" in hostvars else host
-            self._get_or_create_host(host=host, host_alias=host_alias)
+            self._get_or_create_host(host=host)
 
         return self.play
 
@@ -300,10 +298,10 @@ class CallbackModule(CallbackBase):
 
         return self.client.post("/api/v1/files", playbook=self.playbook["id"], path=path, content=content)
 
-    def _get_or_create_host(self, host, host_alias=None):
+    def _get_or_create_host(self, host):
         self.log.debug("Getting or creating host: %s" % host)
         # Note: The get_or_create is handled through the serializer of the API server.
-        return self.client.post("/api/v1/hosts", name=host, alias=host_alias, playbook=self.playbook["id"])
+        return self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
 
     def _load_result(self, result, status, **kwargs):
         """

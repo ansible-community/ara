@@ -210,15 +210,6 @@ class Host(Base):
 
     name = models.CharField(max_length=255)
     facts = models.BinaryField(max_length=(2 ** 32) - 1)
-    # Ansible doesn't supply a mechanism to uniquely identify a host out of
-    # the box.
-    # ARA can attempt to reconcile what it believes are the results same hosts
-    # based on user-supplied configuration or through a hashing algorithm.
-    # The goal is to "regroup" all unique hosts under a single alias if they
-    # are the same host.
-    # The logic for supplying aliases does not live here, it's provided by the
-    # clients and consumers.
-    alias = models.CharField(max_length=255, null=True)
 
     changed = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)

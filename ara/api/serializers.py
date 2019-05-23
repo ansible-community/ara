@@ -130,7 +130,7 @@ class NestedPlaybookFileSerializer(serializers.ModelSerializer):
 class NestedPlaybookHostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Host
-        fields = ("id", "name", "alias")
+        fields = ("id", "name")
 
 
 class NestedPlaybookResultSerializer(DurationSerializer):

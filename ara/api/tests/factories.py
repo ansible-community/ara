@@ -100,7 +100,6 @@ class HostFactory(factory.DjangoModelFactory):
 
     facts = utils.compressed_obj(HOST_FACTS)
     name = "hostname"
-    alias = "9f5d3ba7-e43d-4f3b-ab17-f90c39e43d07"
     playbook = factory.SubFactory(PlaybookFactory)
 
 
