@@ -16,6 +16,7 @@ Table of Contents
     API: Endpoint documentation <api-documentation>
     API: Usage with built-in clients <api-usage>
     Setting playbook names and labels <playbook-names-and-labels>
+    Recording arbitrary data in playbooks <ara-record>
     Architecture and workflows <architecture>
 
 .. toctree::
