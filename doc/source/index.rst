@@ -15,6 +15,7 @@ Table of Contents
     API: Authentication and security <api-security>
     API: Endpoint documentation <api-documentation>
     API: Usage with built-in clients <api-usage>
+    Setting playbook names and labels <playbook-names-and-labels>
     Architecture and workflows <architecture>
 
 .. toctree::
