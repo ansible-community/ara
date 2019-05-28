@@ -23,8 +23,27 @@
     virtualenv: "{{ ara_api_venv | bool | ternary(ara_api_venv_path, omit) }}"
     virtualenv_command: /usr/bin/python3 -m venv
 
+- when: ansible_os_family == "RedHat"
+  block:
+    - name: Transfer gunicorn selinux type enforcement file
+      copy:
+        src: ara-gunicorn.te
+        dest: "{{ ara_api_root_dir }}/ara-gunicorn.te"
+
+    # TODO: Only compile a new module and policy package when necessary
+    - name: Compile ara-gunicorn selinux module
+      command: "checkmodule -M -m -o {{ ara_api_root_dir }}/ara-gunicorn.mod {{ ara_api_root_dir }}/ara-gunicorn.te"
+
+    - name: Compile ara-gunicorn selinux policy package
+      command: "semodule_package -o {{ ara_api_root_dir }}/ara-gunicorn.pp -m {{ ara_api_root_dir }}/ara-gunicorn.mod"
+
 - become: yes
   block:
+    # TODO: Only install the selinux module if it has changed
+    - name: Install selinux policy package
+      command: "semodule -i {{ ara_api_root_dir }}/ara-gunicorn.pp"
+      when: ansible_os_family == "RedHat"
+
     - name: Set up systemd unit file for gunicorn to run the ARA API
       template:
         src: ara-api.service.j2
