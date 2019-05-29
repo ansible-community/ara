@@ -20,6 +20,8 @@ under the ara namespace, like so:
     [ara]
     variable = value
 
+.. _configuration_callback:
+
 ARA callback plugin
 -------------------
 

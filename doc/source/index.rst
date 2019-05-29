@@ -8,6 +8,7 @@ Table of Contents
 .. toctree::
     :maxdepth: 2
 
+    Frequently asked questions <faq>
     Installing ARA <installation>
     Configuring Ansible to use ARA <ansible-configuration>
     Configuring the ARA Ansible plugins <ara-plugin-configuration>
@@ -17,7 +18,6 @@ Table of Contents
     API: Usage with built-in clients <api-usage>
     Setting playbook names and labels <playbook-names-and-labels>
     Recording arbitrary data in playbooks <ara-record>
-    Architecture and workflows <architecture>
     Contributing to ARA <contributing>
 
 .. toctree::

@@ -1,3 +1,5 @@
+.. _ara_record:
+
 Recording arbitrary data in playbooks
 =====================================
 
