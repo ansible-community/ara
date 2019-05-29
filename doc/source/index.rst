@@ -18,6 +18,7 @@ Table of Contents
     Setting playbook names and labels <playbook-names-and-labels>
     Recording arbitrary data in playbooks <ara-record>
     Architecture and workflows <architecture>
+    Contributing to ARA <contributing>
 
 .. toctree::
    :maxdepth: 1
