@@ -253,6 +253,9 @@ class Result(Duration):
     )
 
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
+    changed = models.BooleanField(default=False)
+    ignore_errors = models.BooleanField(default=False)
+
     # todo use a single Content table
     content = models.BinaryField(max_length=(2 ** 32) - 1)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="results")

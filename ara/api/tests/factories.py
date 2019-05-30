@@ -113,6 +113,8 @@ class ResultFactory(factory.DjangoModelFactory):
     task = factory.SubFactory(TaskFactory)
     play = factory.SubFactory(PlayFactory)
     playbook = factory.SubFactory(PlaybookFactory)
+    changed = False
+    ignore_errors = False
 
 
 class RecordFactory(factory.DjangoModelFactory):

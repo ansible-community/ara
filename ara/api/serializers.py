@@ -20,6 +20,22 @@ from rest_framework import serializers
 from ara.api import fields as ara_fields, models
 
 
+class ResultStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        abstract = True
+
+    status = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_status(obj):
+        if obj.status == "ok" and obj.changed:
+            return "changed"
+        elif obj.status == "failed" and obj.ignore_errors:
+            return "ignored"
+        else:
+            return obj.status
+
+
 class DurationSerializer(serializers.ModelSerializer):
     class Meta:
         abstract = True
@@ -90,7 +106,7 @@ class SimpleTaskSerializer(DurationSerializer):
         exclude = ("tags", "created", "updated")
 
 
-class SimpleResultSerializer(DurationSerializer):
+class SimpleResultSerializer(DurationSerializer, ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated")
@@ -133,7 +149,7 @@ class NestedPlaybookHostSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-class NestedPlaybookResultSerializer(DurationSerializer):
+class NestedPlaybookResultSerializer(DurationSerializer, ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated", "playbook", "play", "task")
@@ -230,7 +246,7 @@ class DetailedHostSerializer(serializers.ModelSerializer):
     facts = ara_fields.CompressedObjectField(read_only=True)
 
 
-class DetailedResultSerializer(serializers.ModelSerializer):
+class DetailedResultSerializer(DurationSerializer, ResultStatusSerializer):
     class Meta:
         model = models.Result
         fields = "__all__"
@@ -306,7 +322,7 @@ class ListHostSerializer(serializers.ModelSerializer):
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-class ListResultSerializer(DurationSerializer):
+class ListResultSerializer(DurationSerializer, ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated")

@@ -36,12 +36,16 @@ class ResultTestCase(APITestCase):
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
+                "changed": False,
+                "ignore_errors": False,
             }
         )
         serializer.is_valid()
         result = serializer.save()
         result.refresh_from_db()
         self.assertEqual(result.status, "skipped")
+        self.assertEqual(result.changed, False)
+        self.assertEqual(result.ignore_errors, False)
         self.assertEqual(result.host.id, host.id)
         self.assertEqual(result.task.id, task.id)
 
@@ -98,9 +102,13 @@ class ResultTestCase(APITestCase):
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
+                "changed": True,
+                "ignore_errors": False,
             },
         )
         self.assertEqual(201, request.status_code)
+        self.assertEqual(request.data["changed"], True)
+        self.assertEqual(request.data["ignore_errors"], False)
         self.assertEqual(1, models.Result.objects.count())
 
     def test_partial_update_result(self):
@@ -146,3 +154,28 @@ class ResultTestCase(APITestCase):
         self.assertEqual(2, len(results))
         self.assertEqual(failed_result.status, results[0]["status"])
         self.assertEqual(skipped_result.status, results[1]["status"])
+
+    def test_result_status_serializer(self):
+        ok = factories.ResultFactory(status="ok")
+        result = self.client.get("/api/v1/results/%s" % ok.id)
+        self.assertEqual(result.data["status"], "ok")
+
+        changed = factories.ResultFactory(status="ok", changed=True)
+        result = self.client.get("/api/v1/results/%s" % changed.id)
+        self.assertEqual(result.data["status"], "changed")
+
+        failed = factories.ResultFactory(status="failed")
+        result = self.client.get("/api/v1/results/%s" % failed.id)
+        self.assertEqual(result.data["status"], "failed")
+
+        ignored = factories.ResultFactory(status="failed", ignore_errors=True)
+        result = self.client.get("/api/v1/results/%s" % ignored.id)
+        self.assertEqual(result.data["status"], "ignored")
+
+        skipped = factories.ResultFactory(status="skipped")
+        result = self.client.get("/api/v1/results/%s" % skipped.id)
+        self.assertEqual(result.data["status"], "skipped")
+
+        unreachable = factories.ResultFactory(status="unreachable")
+        result = self.client.get("/api/v1/results/%s" % unreachable.id)
+        self.assertEqual(result.data["status"], "unreachable")

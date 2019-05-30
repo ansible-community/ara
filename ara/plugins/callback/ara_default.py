@@ -337,10 +337,8 @@ class CallbackModule(CallbackBase):
             started=self.task["started"],
             ended=datetime.datetime.now().isoformat(),
             changed=result._result.get("changed", False),
-            failed=result._result.get("failed", False),
-            skipped=result._result.get("skipped", False),
-            unreachable=result._result.get("unreachable", False),
-            ignore_errors=kwargs.get("ignore_errors", False),
+            # Note: ignore_errors might be None instead of a boolean
+            ignore_errors=kwargs.get("ignore_errors", False) or False,
         )
 
         if self.task["action"] == "setup" and "ansible_facts" in results:
