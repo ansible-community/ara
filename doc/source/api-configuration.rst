@@ -19,48 +19,45 @@ Overview
 This is a brief overview of the different configuration options for the API server.
 For more details, click on the configuration parameters.
 
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| Environment Variable           | Usage                                                | default                                                |
-+================================+======================================================+========================================================+
-| ARA_BASE_DIR_                  | Default directory for storing data and configuration | ``~/.ara/server``                                      |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_SETTINGS_                  | Path to an API server configuration file             | ``None``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_ENV_                       | Environment to load configuration for                | ``default``                                            |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_READ_LOGIN_REQUIRED_       | Whether authentication is required for reading data  | ``False``                                              |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_WRITE_LOGIN_REQUIRED_      | Whether authentication is required for writing data  | ``False``                                              |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_ENV_                       | Environment to load configuration for                | ``development``                                        |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_LOG_LEVEL_                 | Log level of the different components                | ``INFO``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_LOGGING_                   | Logging configuration                                | See ARA_LOGGING_                                       |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_CORS_ORIGIN_WHITELIST_     | django-cors-headers's CORS_ORIGIN_WHITELIST_ setting | ``["http://127.0.0.1:8000", "http://localhost:3000"]`` |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_ALLOWED_HOSTS_             | Django's ALLOWED_HOSTS_ setting                      | ``["127.0.0.1", "localhost", "::1"]``                  |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DEBUG_                     | Django's DEBUG_ setting                              | ``false``                                              |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_SECRET_KEY_                | Django's SECRET_KEY_ setting                         | Randomized token, see ARA_SECRET_KEY_                  |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_ENGINE_           | Django's ENGINE_ database setting                    | ``django.db.backends.sqlite3``                         |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_NAME_             | Django's NAME_ database setting                      | ``~/.ara/server/ansible.sqlite``                       |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_USER_             | Django's USER_ database setting                      | ``None``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_PASSWORD_         | Django's PASSWORD_ database setting                  | ``None``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_HOST_             | Django's HOST_ database setting                      | ``None``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
-| ARA_DATABASE_PORT_             | Django's PORT_ database setting                      | ``None``                                               |
-+--------------------------------+------------------------------------------------------+--------------------------------------------------------+
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| Environment Variable           | default                                                | Usage                                                |
++================================+========================================================+======================================================+
+| ARA_ALLOWED_HOSTS_             | ``["127.0.0.1", "localhost", "::1"]``                  | Django's ALLOWED_HOSTS_ setting                      |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_BASE_DIR_                  | ``~/.ara/server``                                      | Default directory for storing data and configuration |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_CORS_ORIGIN_WHITELIST_     | ``["http://127.0.0.1:8000", "http://localhost:3000"]`` | django-cors-headers's CORS_ORIGIN_WHITELIST_ setting |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_ENGINE_           | ``django.db.backends.sqlite3``                         | Django's ENGINE_ database setting                    |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_HOST_             | ``None``                                               | Django's HOST_ database setting                      |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_NAME_             | ``~/.ara/server/ansible.sqlite``                       | Django's NAME_ database setting                      |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_PASSWORD_         | ``None``                                               | Django's PASSWORD_ database setting                  |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_PORT_             | ``None``                                               | Django's PORT_ database setting                      |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_USER_             | ``None``                                               | Django's USER_ database setting                      |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DEBUG_                     | ``False``                                              | Django's DEBUG_ setting                              |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_ENV_                       | ``default``                                            | Environment to load configuration for                |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_LOGGING_                   | See ARA_LOGGING_                                       | Logging configuration                                |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_LOG_LEVEL_                 | ``INFO``                                               | Log level of the different components                |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_READ_LOGIN_REQUIRED_       | ``False``                                              | Whether authentication is required for reading data  |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_SECRET_KEY_                | Randomized token, see ARA_SECRET_KEY_                  | Django's SECRET_KEY_ setting                         |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_SETTINGS_                  | ``~/.ara/server/settings.yaml``                        | Path to an API server configuration file             |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_WRITE_LOGIN_REQUIRED_      | ``False``                                              | Whether authentication is required for writing data  |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 
 .. _CORS_ORIGIN_WHITELIST: https://github.com/ottoyiu/django-cors-headers
-.. _STATIC_ROOT: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-STATIC_ROOT
 .. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.1/ref/settings/#allowed-hosts
 .. _DEBUG: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-DEBUG
 .. _SECRET_KEY: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-SECRET_KEY
@@ -74,6 +71,21 @@ For more details, click on the configuration parameters.
 Configuration variables
 -----------------------
 
+ARA_ALLOWED_HOSTS
+~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_ALLOWED_HOSTS``
+- **Configuration file variable**: ``ALLOWED_HOSTS``
+- **Type**: ``list``
+- **Provided by**: Django's ALLOWED_HOSTS_
+- **Default**: ``["127.0.0.1", "localhost", "::1"]``
+
+A list of strings representing the host/domain names that this Django site can
+serve.
+
+If you are planning on hosting an instance of the API server somewhere, you'll
+need to add your domain name to this list.
+
 ARA_BASE_DIR
 ~~~~~~~~~~~~
 
@@ -85,163 +97,10 @@ ARA_BASE_DIR
 The directory where data will be stored by default.
 
 Changing this location influences the default root directory for the
-``ARA_STATIC_ROOT`` and ``ARA_DATABASE_NAME`` parameters.
+``ARA_DATABASE_NAME`` and ``ARA_SETTINGS`` parameters.
 
 This is also used to determine the location where the default configuration
 file, ``settings.yaml``, will be generated by the API server.
-
-ARA_SETTINGS
-~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_SETTINGS``
-- **Configuration file variable**: None, this variable defines the configuration file itself.
-- **Type**: ``string``
-- **Default**: ``None``
-- **Provided by**: dynaconf_
-
-Location of an API server configuration file to load settings from.
-The API server will generate a default configuration file at
-``~/.ara/server/settings.yaml`` that you can use to get started.
-
-Note that while the configuration file is in YAML by default, it is possible
-to have configuration files written in ``ini``, ``json`` and ``toml`` as well.
-
-Settings and configuration parsing by the API server is provided by the dynaconf_
-python library.
-
-.. _dynaconf: https://github.com/rochacbruno/dynaconf
-
-ARA_ENV
-~~~~~~~
-
-- **Environment variable**: ``ARA_ENV``
-- **Configuration file variable**: None, this variable defines which section of a configuration file is loaded.
-- **Type**: ``string``
-- **Default**: ``development``
-- **Provided by**: dynaconf_
-
-If you are using the API server in different environments and would like keep
-your configuration in a single file, you can use this variable to select a
-specific environment's settings.
-
-For example::
-
-    # Default settings are used only when not provided in the environments
-    default:
-        READ_LOGIN_REQUIRED: false
-        WRITE_LOGIN_REQUIRED: false
-        LOG_LEVEL: INFO
-        DEBUG: false
-    # Increase verbosity and debugging for the default development environment
-    development:
-        LOG_LEVEL: DEBUG
-        DEBUG: true
-        SECRET_KEY: dev
-    # Enable write authentication when using the production environment
-    production:
-        WRITE_LOGIN_REQUIRED: true
-        SECRET_KEY: prod
-
-With the example above, loading the development environment would yield the
-following settings:
-
-- READ_LOGIN_REQUIRED: ``false``
-- WRITE_LOGIN_REQUIRED: ``false``
-- LOG_LEVEL: ``DEBUG``
-- DEBUG: ``true``
-- SECRET_KEY: ``dev``
-
-Another approach to environment-specific configuration is to use
-``ARA_SETTINGS`` and keep your settings in different files such as ``dev.yaml``
-or ``prod.yaml`` instead.
-
-.. tip::
-   If it does not exist, the API server will generate a default configuration
-   file at ``~/.ara/server/settings.yaml``.
-   This generated file sets up all the configuration keys in the **default**
-   environment.
-   This lets users override only the parameters they are interested in for
-   specific environments.
-
-ARA_READ_LOGIN_REQUIRED
-~~~~~~~~~~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_READ_LOGIN_REQUIRED``
-- **Configuration file variable**: ``READ_LOGIN_REQUIRED``
-- **Type**: ``bool``
-- **Default**: ``False``
-- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
-
-Determines if authentication is required before being authorized to query all
-API endpoints exposed by the server.
-
-There is no concept of granularity: users either have access to query
-everything or they don't.
-
-Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
-
-ARA_WRITE_LOGIN_REQUIRED
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_WRITE_LOGIN_REQUIRED``
-- **Configuration file variable**: ``WRITE_LOGIN_REQUIRED``
-- **Type**: ``bool``
-- **Default**: ``False``
-- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
-
-Determines if authentication is required before being authorized to post data to
-all API endpoints exposed by the server.
-
-There is no concept of granularity: users either have access to query
-everything or they don't.
-
-Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
-
-ARA_LOG_LEVEL
-~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_LOG_LEVEL``
-- **Configuration file variable**: ``LOG_LEVEL``
-- **Type**: ``string``
-- **Default**: ``INFO``
-
-Log level of the different components from the API server.
-
-``ARA_LOG_LEVEL`` changes the log level of the default logging configuration
-provided by ARA_LOGGING_.
-
-ARA_LOGGING
-~~~~~~~~~~~
-
-- **Environment variable**: *Not recommended, use configuration file*
-- **Configuration file variable**: ``LOGGING``
-- **Type**: ``dictionary``
-- **Default**::
-
-    LOGGING:
-        disable_existing_loggers: false
-        formatters:
-        normal:
-            format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
-        handlers:
-        console:
-            class: logging.StreamHandler
-            formatter: normal
-            level: INFO
-            stream: ext://sys.stdout
-        loggers:
-        ara:
-            handlers:
-            - console
-            level: INFO
-            propagate: 0
-        root:
-        handlers:
-        - console
-        level: INFO
-        version: 1
-
-The python logging configuration for the API server.
 
 ARA_CORS_ORIGIN_WHITELIST
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -269,49 +128,6 @@ Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.
 
 This setting is typically used in order to allow the API and a web client
 (such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to each other.
-
-ARA_ALLOWED_HOSTS
-~~~~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_ALLOWED_HOSTS``
-- **Configuration file variable**: ``ALLOWED_HOSTS``
-- **Type**: ``list``
-- **Provided by**: Django's ALLOWED_HOSTS_
-- **Default**: ``["127.0.0.1", "localhost", "::1"]``
-
-A list of strings representing the host/domain names that this Django site can
-serve.
-
-If you are planning on hosting an instance of the API server somewhere, you'll
-need to add your domain name to this list.
-
-ARA_DEBUG
-~~~~~~~~~
-
-- **Environment variable**: ``ARA_DEBUG``
-- **Configuration file variable**: ``DEBUG``
-- **Provided by**: Django's DEBUG_
-- **Type**: ``string``
-- **Default**: ``false``
-
-Whether or not Django's debug mode should be enabled.
-
-The Django project recommends turning this off for production use.
-
-ARA_SECRET_KEY
-~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_SECRET_KEY``
-- **Configuration file variable**: ``SECRET_KEY``
-- **Provided by**: Django's SECRET_KEY_
-- **Type**: ``string``
-- **Default**: Randomized with ``django.utils.crypto.get_random_string()``
-
-A secret key for a particular Django installation. This is used to provide
-cryptographic signing, and should be set to a unique, unpredictable value.
-
-If it is not set, a random token will be generated and persisted in the
-default configuration file.
 
 ARA_DATABASE_ENGINE
 ~~~~~~~~~~~~~~~~~~~
@@ -397,3 +213,184 @@ The port to use when connecting to the database server.
 
 It is not required to set the port if you're using default ports for MySQL or
 PostgreSQL.
+
+ARA_DEBUG
+~~~~~~~~~
+
+- **Environment variable**: ``ARA_DEBUG``
+- **Configuration file variable**: ``DEBUG``
+- **Provided by**: Django's DEBUG_
+- **Type**: ``string``
+- **Default**: ``false``
+
+Whether or not Django's debug mode should be enabled.
+
+The Django project recommends turning this off for production use.
+
+ARA_ENV
+~~~~~~~
+
+- **Environment variable**: ``ARA_ENV``
+- **Configuration file variable**: None, this variable defines which section of a configuration file is loaded.
+- **Type**: ``string``
+- **Default**: ``development``
+- **Provided by**: dynaconf_
+
+If you are using the API server in different environments and would like keep
+your configuration in a single file, you can use this variable to select a
+specific environment's settings.
+
+For example::
+
+    # Default settings are used only when not provided in the environments
+    default:
+        READ_LOGIN_REQUIRED: false
+        WRITE_LOGIN_REQUIRED: false
+        LOG_LEVEL: INFO
+        DEBUG: false
+    # Increase verbosity and debugging for the default development environment
+    development:
+        LOG_LEVEL: DEBUG
+        DEBUG: true
+        SECRET_KEY: dev
+    # Enable write authentication when using the production environment
+    production:
+        WRITE_LOGIN_REQUIRED: true
+        SECRET_KEY: prod
+
+With the example above, loading the development environment would yield the
+following settings:
+
+- READ_LOGIN_REQUIRED: ``false``
+- WRITE_LOGIN_REQUIRED: ``false``
+- LOG_LEVEL: ``DEBUG``
+- DEBUG: ``true``
+- SECRET_KEY: ``dev``
+
+Another approach to environment-specific configuration is to use
+``ARA_SETTINGS`` and keep your settings in different files such as ``dev.yaml``
+or ``prod.yaml`` instead.
+
+.. tip::
+   If it does not exist, the API server will generate a default configuration
+   file at ``~/.ara/server/settings.yaml``.
+   This generated file sets up all the configuration keys in the **default**
+   environment.
+   This lets users override only the parameters they are interested in for
+   specific environments.
+
+ARA_LOGGING
+~~~~~~~~~~~
+
+- **Environment variable**: *Not recommended, use configuration file*
+- **Configuration file variable**: ``LOGGING``
+- **Type**: ``dictionary``
+- **Default**::
+
+    LOGGING:
+        disable_existing_loggers: false
+        formatters:
+        normal:
+            format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
+        handlers:
+        console:
+            class: logging.StreamHandler
+            formatter: normal
+            level: INFO
+            stream: ext://sys.stdout
+        loggers:
+        ara:
+            handlers:
+            - console
+            level: INFO
+            propagate: 0
+        root:
+        handlers:
+        - console
+        level: INFO
+        version: 1
+
+The python logging configuration for the API server.
+
+ARA_LOG_LEVEL
+~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_LOG_LEVEL``
+- **Configuration file variable**: ``LOG_LEVEL``
+- **Type**: ``string``
+- **Default**: ``INFO``
+
+Log level of the different components from the API server.
+
+``ARA_LOG_LEVEL`` changes the log level of the default logging configuration
+provided by ARA_LOGGING_.
+
+ARA_SETTINGS
+~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_SETTINGS``
+- **Configuration file variable**: None, this variable defines the configuration file itself.
+- **Type**: ``string``
+- **Default**: ``None``
+- **Provided by**: dynaconf_
+
+Location of an API server configuration file to load settings from.
+The API server will generate a default configuration file at
+``~/.ara/server/settings.yaml`` that you can use to get started.
+
+Note that while the configuration file is in YAML by default, it is possible
+to have configuration files written in ``ini``, ``json`` and ``toml`` as well.
+
+Settings and configuration parsing by the API server is provided by the dynaconf_
+python library.
+
+.. _dynaconf: https://github.com/rochacbruno/dynaconf
+
+ARA_READ_LOGIN_REQUIRED
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_READ_LOGIN_REQUIRED``
+- **Configuration file variable**: ``READ_LOGIN_REQUIRED``
+- **Type**: ``bool``
+- **Default**: ``False``
+- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
+
+Determines if authentication is required before being authorized to query all
+API endpoints exposed by the server.
+
+There is no concept of granularity: users either have access to query
+everything or they don't.
+
+Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
+
+ARA_SECRET_KEY
+~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_SECRET_KEY``
+- **Configuration file variable**: ``SECRET_KEY``
+- **Provided by**: Django's SECRET_KEY_
+- **Type**: ``string``
+- **Default**: Randomized with ``django.utils.crypto.get_random_string()``
+
+A secret key for a particular Django installation. This is used to provide
+cryptographic signing, and should be set to a unique, unpredictable value.
+
+If it is not set, a random token will be generated and persisted in the
+default configuration file.
+
+ARA_WRITE_LOGIN_REQUIRED
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_WRITE_LOGIN_REQUIRED``
+- **Configuration file variable**: ``WRITE_LOGIN_REQUIRED``
+- **Type**: ``bool``
+- **Default**: ``False``
+- **Provided by**: `django-rest-framework permissions <https://www.django-rest-framework.org/api-guide/permissions>`_
+
+Determines if authentication is required before being authorized to post data to
+all API endpoints exposed by the server.
+
+There is no concept of granularity: users either have access to query
+everything or they don't.
+
+Enabling this feature first requires setting up :ref:`users <api-security:user management>`.
