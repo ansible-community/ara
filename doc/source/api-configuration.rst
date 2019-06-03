@@ -48,6 +48,8 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_LOG_LEVEL_                 | ``INFO``                                               | Log level of the different components                |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_PAGE_SIZE_                 | ``100``                                                | Amount of results returned per page by the API       |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_READ_LOGIN_REQUIRED_       | ``False``                                              | Whether authentication is required for reading data  |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_SECRET_KEY_                | Randomized token, see ARA_SECRET_KEY_                  | Django's SECRET_KEY_ setting                         |
@@ -345,6 +347,17 @@ Settings and configuration parsing by the API server is provided by the dynaconf
 python library.
 
 .. _dynaconf: https://github.com/rochacbruno/dynaconf
+
+ARA_PAGE_SIZE
+~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_PAGE_SIZE``
+- **Configuration file variable**: ``PAGE_SIZE``
+- **Type**: ``integer``
+- **Default**: ``50``
+- **Provided by**: django-rest-framework `pagination <https://www.django-rest-framework.org/api-guide/pagination/>`_
+
+When querying the API server, the amount of items per page returned.
 
 ARA_READ_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~
