@@ -12,7 +12,7 @@ It is currently tested and supported against Ubuntu 18.04 and Fedora 29.
 Role Variables
 --------------
 
-See `defaults/main.yaml <https://github.com/ansible-community/ara/blob/feature/1.0/roles/ara_web/defaults/main.yaml>`_.
+See `defaults/main.yaml <https://github.com/ansible-community/ara/blob/master/roles/ara_web/defaults/main.yaml>`_.
 
 .. literalinclude:: ../../roles/ara_web/defaults/main.yaml
    :language: yaml+jinja

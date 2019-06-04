@@ -47,7 +47,7 @@ ara_api_source_checkout: "{{ ara_api_root_dir }}/git/ara"
 # When installing from PyPi, it would be a version number that has been released.
 # When using "latest" as the source version, HEAD will be used
 # When using "latest" as the pypi version, the latest release will be used
-ara_api_version: feature/1.0
+ara_api_version: master
 
 # The frontend/web server for serving the ARA API
 # It is recommended to specify a web server when deploying a production environment.

@@ -7,7 +7,7 @@ tests that do not require superuser privileges.
 Role Variables
 --------------
 
-See `defaults/main.yaml <https://github.com/ansible-community/ara/blob/feature/1.0/roles/ara_tests/defaults/main.yaml>`_.
+See `defaults/main.yaml <https://github.com/ansible-community/ara/blob/master/roles/ara_tests/defaults/main.yaml>`_.
 
 .. literalinclude:: ../../roles/ara_tests/defaults/main.yaml
    :language: yaml+jinja

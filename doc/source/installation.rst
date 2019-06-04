@@ -30,26 +30,27 @@ in order to avoid conflicts with your Linux distribution python packages.
 
     python3 -m venv ~/.ara/virtualenv
 
-To install the latest pre-release for ARA 1.0 from PyPi_:
+To install the latest release of ARA from PyPi_:
 
 .. code-block:: bash
 
     # With the API server dependencies
-    ~/.ara/virtualenv/bin/pip install --pre ara[server]
+    ~/.ara/virtualenv/bin/pip install ara[server]
 
     # Without the API server dependencies
-    ~/.ara/virtualenv/bin/pip install --pre ara
+    ~/.ara/virtualenv/bin/pip install ara
 
-Installing from source is possible by using the
-`feature/1.0 <https://github.com/ansible-community/ara@feature/1.0>`_ branch:
+Installing from source is possible by using the git repository:
 
 .. code-block:: bash
 
     # With the API server dependencies
-    ~/.ara/virtualenv/bin/pip install git+https://github.com/ansible-community/ara@feature/1.0[server]
+    # (Suffixes don't work when supplying the direct git URL)
+    git clone https://github.com/ansible-community/ara ara-src
+    pip install ./ara-src[server]
 
     # Without the API server dependencies
-    ~/.ara/virtualenv/bin/pip install git+https://github.com/ansible-community/ara@feature/1.0
+    ~/.ara/virtualenv/bin/pip install git+https://github.com/ansible-community/ara
 
 .. _PyPi: https://pypi.org/project/ara/
 

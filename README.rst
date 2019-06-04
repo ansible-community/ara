@@ -47,14 +47,14 @@ Live demos
 You can find live demos deployed by the built-in ara_api_ and ara_web_ Ansible
 roles at https://api.demo.recordsansible.org and https://web.demo.recordsansible.org.
 
-.. _ara_api: https://ara.readthedocs.io/en/feature-1.0/ansible-role-ara-api.html
-.. _ara_web: https://ara.readthedocs.io/en/feature-1.0/ansible-role-ara-web.html
+.. _ara_api: https://ara.readthedocs.io/en/latest/ansible-role-ara-api.html
+.. _ara_web: https://ara.readthedocs.io/en/latest/ansible-role-ara-web.html
 
 Documentation
 =============
 
 Documentation for installing, configuring, running and using ARA is
-available on `readthedocs.io <https://ara.readthedocs.io/en/feature-1.0/>`_.
+available on `readthedocs.io <https://ara.readthedocs.io>`_.
 
 Community and getting help
 ==========================

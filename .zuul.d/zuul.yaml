@@ -219,3 +219,5 @@
     post:
       jobs:
         - ara-upload-git-mirror
+
+# This line left intentionally blank for reloading Zuul jobs after branch change
