@@ -96,6 +96,9 @@ ara_api_read_login_required: false
 # ARA_WRITE_LOGIN_REQUIRED - Whether authentication is required for writing data
 ara_api_write_login_required: false
 
+# ARA_PAGE_SIZE - Amount of results returned per page by the API
+ara_api_page_size: 100
+
 # ARA_LOG_LEVEL - Log level of the different components
 ara_api_log_level: INFO
 

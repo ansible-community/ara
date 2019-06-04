@@ -187,9 +187,10 @@ WSGI_APPLICATION = "ara.server.wsgi.application"
 ROOT_URLCONF = "ara.server.urls"
 APPEND_SLASH = False
 
+PAGE_SIZE = settings.get("PAGE_SIZE", 100)
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 100,
+    "PAGE_SIZE": PAGE_SIZE,
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
@@ -232,6 +233,7 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         LOGGING=LOGGING,
         READ_LOGIN_REQUIRED=READ_LOGIN_REQUIRED,
         WRITE_LOGIN_REQUIRED=WRITE_LOGIN_REQUIRED,
+        PAGE_SIZE=PAGE_SIZE,
     )
     with open(DEFAULT_SETTINGS, "w+") as settings_file:
         comment = f"""
