@@ -8,16 +8,16 @@
             <br>
             <img src="{{ url_for('static', filename='images/logo-main.svg') }}" width="287" height="226" alt="ARA Records Ansible" />
             <h1><strong>ARA Records Ansible</strong></h1>
-            <h2><a href="https://github.com/openstack/ara" target="_blank">ARA</a> records <a href="https://www.ansible.com/" target="_blank">Ansible</a> playbook runs seamlessly to make them easier to visualize, understand and troubleshoot.</h2>
+            <h2><a href="https://github.com/ansible-community/ara" target="_blank">ARA</a> records <a href="https://www.ansible.com/" target="_blank">Ansible</a> playbook runs seamlessly to make them easier to visualize, understand and troubleshoot.</h2>
             <h3>
                 ARA doesn't run your playbooks for you: it integrates with Ansible as a callback plugin wherever it is.<br>
                 Whether you are running Ansible from your personal laptop or a server,
-                all you need to do is to <a href="https://ara.readthedocs.io/en/latest/installation.html" target="_blank">install ARA</a>,
-                <a href="https://ara.readthedocs.io/en/latest/configuration.html" target="_blank">configure Ansible to use ARA</a> and you're good to go.
+                all you need to do is to <a href="https://ara.readthedocs.io/en/stable-0.x/installation.html" target="_blank">install ARA</a>,
+                <a href="https://ara.readthedocs.io/en/stable-0.x/configuration.html" target="_blank">configure Ansible to use ARA</a> and you're good to go.
             </h3>
             <h3>
                 The ARA project puts a lot of emphasis on being simple to install and use without requiring you change your existing Ansible workflows.<br>
-                You can read about the project's core values and principles in the <a href="https://ara.readthedocs.io/en/latest/manifesto.html" target="_blank">project manifesto</a>.
+                You can read about the project's core values and principles in the <a href="https://ara.readthedocs.io/en/stable-0.x/manifesto.html" target="_blank">project manifesto</a>.
             </h3>
             <br>
             {% if not empty_database -%}
@@ -58,11 +58,11 @@
             <h2>Get started by looking at your <a href="{{ url_for('reports.report_list') }}">playbook reports</a>.</h2>
             {% else -%}
             <h2><strong>The ARA database is empty or the web application is not configured properly to find your playbook data.</strong></h2>
-            <h2>Get started by <a href="https://ara.readthedocs.io/en/latest/configuration.html" target="_blank">configuring Ansible to use ARA</a>.</h2>
+            <h2>Get started by <a href="https://ara.readthedocs.io/en/stable-0.x/configuration.html" target="_blank">configuring Ansible to use ARA</a>.</h2>
             <h2>Your data will be available in the interface after an <code>ansible-playbook</code> is run after configuring Ansible to use ARA.</h2>
             <br>
             <br>
-                <h3>Need help ? Look at the <a href="https://ara.readthedocs.io/en/latest/" target="_blank">documentation</a> or come chat with the <a href="https://github.com/openstack/ara#community-and-getting-help" target="_blank">community</a> !</h3>
+                <h3>Need help ? Look at the <a href="https://ara.readthedocs.io/en/stable-0.x/" target="_blank">documentation</a> or come chat with the <a href="https://ara.recordsansible.org/community/" target="_blank">community</a> !</h3>
             {% endif -%}
         </div>
     </div>

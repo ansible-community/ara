@@ -14,8 +14,8 @@ you're good to go.
 
 .. image:: doc/source/_static/reports.png
 
-.. _install ARA: https://ara.readthedocs.io/en/latest/installation.html
-.. _configure Ansible to use ARA: https://ara.readthedocs.io/en/latest/configuration.html
+.. _install ARA: https://ara.readthedocs.io/en/stable-0.x/installation.html
+.. _configure Ansible to use ARA: https://ara.readthedocs.io/en/stable-0.x/configuration.html
 
 Quickstart
 ==========
@@ -38,7 +38,7 @@ Quickstart
 
 Refer to the documentation_ for more information.
 
-.. _documentation: https://ara.readthedocs.io/en/latest/
+.. _documentation: https://ara.readthedocs.io/en/stable-0.x/
 
 ARA components
 ==============
@@ -50,14 +50,14 @@ ARA has four main components:
 3. A `CLI client`_ to query the database
 4. A `dynamic, database-driven web interface`_ that can also be `generated and served from static files`_
 
-.. _ARA: https://github.com/openstack/ara
+.. _ARA: https://github.com/ansible-community/ara
 .. _Ansible: https://www.ansible.com/
-.. _Ansible callback plugin: https://ara.readthedocs.io/en/latest/configuration.html#ansible
-.. _ara_record: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-record-module
-.. _ara_read: https://ara.readthedocs.io/en/latest/usage.html#using-the-ara-read-module
-.. _CLI client: https://ara.readthedocs.io/en/latest/usage.html#querying-the-database-with-the-cli
-.. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/latest/faq.html#what-does-the-web-interface-look-like
-.. _generated and served from static files: https://ara.readthedocs.io/en/latest/usage.html#generating-a-static-html-version-of-the-web-application
+.. _Ansible callback plugin: https://ara.readthedocs.io/en/stable-0.x/configuration.html#ansible
+.. _ara_record: https://ara.readthedocs.io/en/stable-0.x/usage.html#using-the-ara-record-module
+.. _ara_read: https://ara.readthedocs.io/en/stable-0.x/usage.html#using-the-ara-read-module
+.. _CLI client: https://ara.readthedocs.io/en/stable-0.x/usage.html#querying-the-database-with-the-cli
+.. _dynamic, database-driven web interface: https://ara.readthedocs.io/en/stable-0.x/faq.html#what-does-the-web-interface-look-like
+.. _generated and served from static files: https://ara.readthedocs.io/en/stable-0.x/usage.html#generating-a-static-html-version-of-the-web-application
 
 What does the web interface look like ?
 ---------------------------------------
@@ -70,7 +70,7 @@ Otherwise, screenshots highlighting some of ARA's features are available in
 
 .. _YouTube: https://www.youtube.com/watch?v=k3i8VPCanGo
 .. _OpenStack-Ansible: https://github.com/openstack/openstack-ansible
-.. _the frequently asked questions: https://ara.readthedocs.io/en/latest/faq.html#interface-preview
+.. _the frequently asked questions: https://ara.readthedocs.io/en/stable-0.x/faq.html#interface-preview
 
 Community and getting help
 ==========================
@@ -108,9 +108,9 @@ The `contributor documentation`_ will get you started quickly if you need help
 contributing !
 
 * Submitted code reviews are available on **Gerrit**:
-  https://review.openstack.org/#/q/project:openstack/ara
-* Bugs, issues and feature tracking are available on **StoryBoard**:
-  https://storyboard.openstack.org/#!/project/843
+  https://review.opendev.org/#/q/project:%255Erecordsansible/.*
+* Bugs, issues and feature tracking are available on **GitHub**:
+  https://github.com/ansible-community/ara/issues
 
 Each commit to ARA is reviewed and also rigorously tested to prevent
 regressions. Here's our current testing coverage:
@@ -130,8 +130,8 @@ regressions. Here's our current testing coverage:
 You might also be interested in reading the project manifesto_ in order to have
 a good understanding of the project's core values and philosophy.
 
-.. _contributor documentation: https://ara.readthedocs.io/en/latest/contributing.html
-.. _manifesto: https://ara.readthedocs.io/en/latest/manifesto.html
+.. _contributor documentation: https://ara.readthedocs.io/en/stable-0.x/contributing.html
+.. _manifesto: hhttps://ara.readthedocs.io/en/stable-0.x/manifesto.html
 
 Documentation
 =============
@@ -139,19 +139,19 @@ Documentation
 `Frequently asked questions`_ and documentation on how to install_, configure_,
 use_ to ARA is available on `readthedocs.io`_.
 
-.. _Frequently asked questions: https://ara.readthedocs.io/en/latest/faq.html
-.. _install: https://ara.readthedocs.io/en/latest/installation.html
-.. _configure: https://ara.readthedocs.io/en/latest/configuration.html
-.. _use: https://ara.readthedocs.io/en/latest/usage.html
+.. _Frequently asked questions: https://ara.readthedocs.io/en/stable-0.x/faq.html
+.. _install: https://ara.readthedocs.io/en/stable-0.x/installation.html
+.. _configure: https://ara.readthedocs.io/en/stable-0.x/configuration.html
+.. _use: https://ara.readthedocs.io/en/stable-0.x/usage.html
 
-.. _readthedocs.io: https://ara.readthedocs.io/en/latest/
+.. _readthedocs.io: https://ara.readthedocs.io/en/stable-0.x/
 
 Contributors
 ============
 
 See contributors on GitHub_.
 
-.. _GitHub: https://github.com/openstack/ara/graphs/contributors
+.. _GitHub: https://github.com/ansible-community/ara/graphs/contributors
 
 Copyright
 =========
