@@ -18,7 +18,6 @@
 from requests.auth import HTTPBasicAuth
 
 from ara.clients.http import AraHttpClient
-from ara.clients.offline import AraOfflineClient
 
 
 def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30, username=None, password=None):
@@ -30,6 +29,8 @@ def get_client(client="offline", endpoint="http://127.0.0.1:8000", timeout=30, u
         auth = HTTPBasicAuth(username, password)
 
     if client == "offline":
+        from ara.clients.offline import AraOfflineClient
+
         return AraOfflineClient(auth=auth)
     elif client == "http":
         return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth)
