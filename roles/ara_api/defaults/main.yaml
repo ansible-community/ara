@@ -152,8 +152,17 @@ ara_api_debug: false
 # Note: If no key is provided, a random one will be generated once and persisted
 ara_api_secret_key: null
 
+# ARA_DISTRIBUTED_SQLITE - Whether to enable distributed sqlite backend
+ara_api_distributed_sqlite: false
+
+# ARA_DISTRIBUTED_SQLITE_PREFIX - Prefix to delegate to the distributed sqlite backend
+ara_api_distributed_sqlite_prefix: ara-api
+
+# ARA_DISTRIBUTED_SQLITE_ROOT - Root under which sqlite databases are expected
+ara_api_distributed_sqlite_root: /var/www/logs
+
 # ARA_DATABASE_ENGINE - Django’s ENGINE database setting
-ara_api_database_engine: django.db.backends.sqlite3
+ara_api_database_engine: "{{ ara_api_distributed_sqlite | ternary('ara.server.db.backends.distributed_sqlite', 'django.db.backends.sqlite3') }}"
 
 # ARA_DATABASE_NAME - Django’s NAME database setting
 ara_api_database_name: "{{ ara_api_base_dir }}/ansible.sqlite"

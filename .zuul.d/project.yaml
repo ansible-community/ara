@@ -11,6 +11,7 @@
         - ansible-role-ara-api-ubuntu-2.6
         - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-api-ubuntu-mysql
+        - ansible-role-ara-api-fedora-distributed-sqlite
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
         - ara-tox-linters
@@ -23,6 +24,7 @@
         - ansible-role-ara-api-ubuntu-2.6
         - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-api-ubuntu-mysql
+        - ansible-role-ara-api-fedora-distributed-sqlite
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
         - ara-tox-linters

@@ -59,6 +59,15 @@
         ara_api_secret_key: "{{ generated_key.stdout }}"
       no_log: yes
 
+- name: Validate distributed sqlite configuration
+  assert:
+    that:
+      - "ara_api_database_engine == 'ara.server.db.backends.distributed_sqlite'"
+    msg: |
+      The database engine should be 'ara.server.db.backends.distributed_sqlite'
+      when 'ara_api_distributed_sqlite' is true.
+  when: ara_api_distributed_sqlite
+
 # Put configuration in a format we can write to a file
 - name: Reconcile configuration
   vars:
@@ -75,6 +84,9 @@
       DATABASE_PORT: "{{ ara_api_database_port }}"
       DATABASE_CONN_MAX_AGE: "{{ ara_api_database_conn_max_age }}"
       DEBUG: "{{ ara_api_debug }}"
+      DISTRIBUTED_SQLITE: "{{ ara_api_distributed_sqlite }}"
+      DISTRIBUTED_SQLITE_PREFIX: "{{ ara_api_distributed_sqlite_prefix }}"
+      DISTRIBUTED_SQLITE_ROOT: "{{ ara_api_distributed_sqlite_root }}"
       LOGGING: "{{ ara_api_logging }}"
       LOG_LEVEL: "{{ ara_api_log_level }}"
       SECRET_KEY: "{{ ara_api_secret_key }}"

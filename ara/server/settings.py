@@ -87,6 +87,25 @@ def get_secret_key():
 
 SECRET_KEY = get_secret_key()
 
+# Whether or not to enable the distributed sqlite database backend and WSGI application.
+DISTRIBUTED_SQLITE = settings.get("DISTRIBUTED_SQLITE", False)
+
+# Under which URL should requests be delegated to the distributed sqlite wsgi application
+DISTRIBUTED_SQLITE_PREFIX = settings.get("DISTRIBUTED_SQLITE_PREFIX", "ara-api")
+
+# Root directory under which databases will be found relative to the requested URLs.
+# This will restrict where the WSGI application will go to seek out databases.
+# For example, the URL "example.org/some/path/ara-api" would translate to
+# "/var/www/logs/some/path/ara-api" instead of "/some/path/ara-api".
+DISTRIBUTED_SQLITE_ROOT = settings.get("DISTRIBUTED_SQLITE_ROOT", "/var/www/logs")
+
+if DISTRIBUTED_SQLITE:
+    WSGI_APPLICATION = "ara.server.wsgi.distributed_sqlite"
+    DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "ara.server.db.backends.distributed_sqlite")
+else:
+    WSGI_APPLICATION = "ara.server.wsgi.application"
+    DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
+
 # We're not expecting ARA to use multiple concurrent databases.
 # Make it easier for users to specify the configuration for a single database.
 DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
@@ -185,7 +204,6 @@ STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"
 MEDIA_URL = settings.get("MEDIA_URL", "/media/")
 MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
 
-WSGI_APPLICATION = "ara.server.wsgi.application"
 ROOT_URLCONF = "ara.server.urls"
 APPEND_SLASH = False
 
@@ -237,6 +255,9 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         READ_LOGIN_REQUIRED=READ_LOGIN_REQUIRED,
         WRITE_LOGIN_REQUIRED=WRITE_LOGIN_REQUIRED,
         PAGE_SIZE=PAGE_SIZE,
+        DISTRIBUTED_SQLITE=DISTRIBUTED_SQLITE,
+        DISTRIBUTED_SQLITE_PREFIX=DISTRIBUTED_SQLITE_PREFIX,
+        DISTRIBUTED_SQLITE_ROOT=DISTRIBUTED_SQLITE_ROOT,
     )
     with open(DEFAULT_SETTINGS, "w+") as settings_file:
         comment = f"""

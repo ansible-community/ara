@@ -44,6 +44,12 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_DEBUG_                     | ``False``                                              | Django's DEBUG_ setting                              |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_        | ``False``                                              | Whether to enable distributed sqlite backend         |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_PREFIX_ | ``ara-api``                                            | Prefix to delegate to the distributed sqlite backend |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_ROOT_   | ``/var/www/logs``                                      | Root under which sqlite databases are expected       |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_ENV_                       | ``default``                                            | Environment to load configuration for                |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_LOGGING_                   | See ARA_LOGGING_                                       | Logging configuration                                |
@@ -157,8 +163,10 @@ ARA_DATABASE_ENGINE
 - **Default**: ``django.db.backends.sqlite3``
 - **Examples**:
 
+  - ``django.db.backends.sqlite3``
   - ``django.db.backends.postgresql``
   - ``django.db.backends.mysql``
+  - ``ara.server.db.backends.distributed_sqlite``
 
 The Django database driver to use.
 
@@ -244,6 +252,57 @@ ARA_DEBUG
 Whether or not Django's debug mode should be enabled.
 
 The Django project recommends turning this off for production use.
+
+ARA_DISTRIBUTED_SQLITE
+~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_DISTRIBUTED_SQLITE``
+- **Configuration file variable**: ``DISTRIBUTED_SQLITE``
+- **Provided by**: ``ara.server.db.backends.distributed_sqlite`` and ``ara.server.wsgi.distributed_sqlite``
+- **Type**: ``bool``
+- **Default**: ``False``
+
+Whether or not to enable the distributed sqlite database backend and WSGI application.
+
+This feature is useful for loading different ARA sqlite databases dynamically
+based on request URLs.
+
+For more information, see: :ref:`distributed sqlite backend <distributed-sqlite-backend>`.
+
+ARA_DISTRIBUTED_SQLITE_PREFIX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_DISTRIBUTED_SQLITE_PREFIX``
+- **Configuration file variable**: ``DISTRIBUTED_SQLITE_PREFIX``
+- **Provided by**: ``ara.server.db.backends.distributed_sqlite`` and ``ara.server.wsgi.distributed_sqlite``
+- **Type**: ``string``
+- **Default**: ``ara-api``
+
+Under which URL should requests be delegated to the distributed sqlite wsgi application.
+``ara-api`` would delegate everything under ``.*/ara-api/.*``
+
+The path leading to this prefix must contain the ``ansible.sqlite`` database file, for example:
+``/var/www/logs/some/path/ara-api/ansible.sqlite``.
+
+For more information, see: :ref:`distributed sqlite backend <distributed-sqlite-backend>`.
+
+ARA_DISTRIBUTED_SQLITE_ROOT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_DISTRIBUTED_SQLITE_ROOT``
+- **Configuration file variable**: ``DISTRIBUTED_SQLITE_ROOT``
+- **Provided by**: ``ara.server.db.backends.distributed_sqlite`` and ``ara.server.wsgi.distributed_sqlite``
+- **Type**: ``string``
+- **Default**: ``/var/www/logs``
+
+Root directory under which databases will be found relative to the requested URLs.
+
+This will restrict where the WSGI application will go to seek out databases.
+
+For example, the URL ``example.org/some/path/ara-api`` would translate to
+``/var/www/logs/some/path/ara-api``.
+
+For more information, see: :ref:`distributed sqlite backend <distributed-sqlite-backend>`.
 
 ARA_ENV
 ~~~~~~~
