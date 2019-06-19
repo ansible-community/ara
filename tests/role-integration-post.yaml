@@ -16,19 +16,22 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-# Root directory where integration tests will prepare and store data
-ara_tests_root: "/tmp/ara-integration-tests"
+- name: Integration tests post-run
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Create server log directory
+      file:
+        path: "{{ ansible_user_dir }}/workspace/logs"
+        state: directory
+        recurse: yes
 
-# Directory where the virtualenv will be created
-ara_tests_virtualenv: "{{ ara_tests_root }}/ara-tests-virtualenv"
+    - name: Recover integration test data
+      command: cp -rp {{ ara_api_root_dir }}/server {{ ansible_user_dir }}/workspace/logs/server
 
-# Directory where ARA_BASE_DIR will be set
-ara_tests_data: "{{ ara_tests_root }}/.ara/server"
-
-# Name of the Ansible package
-# This can be "ansible" which will use pip or it could be something like
-# /home/user/git/ansible as well as git+https://github.com/ansible/ansible
-ara_tests_ansible_name: ansible
-
-# Version of Ansible from pypi to install
-ara_tests_ansible_version: latest
+    - name: Upload log artifacts
+      synchronize:
+        src: "{{ ansible_user_dir }}/workspace/logs"
+        dest: "{{ zuul.executor.log_root }}"
+        mode: pull
+        verify_host: true

@@ -25,4 +25,3 @@ Table of Contents
 
     ansible-role-ara-api <ansible-role-ara-api>
     ansible-role-ara-web <ansible-role-ara-web>
-    ansible-role-ara-tests <ansible-role-ara-tests>

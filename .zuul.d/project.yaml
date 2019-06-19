@@ -1,0 +1,30 @@
+- project:
+    vars:
+      rtd_webhook_id: '49230'
+    templates:
+      - docs-on-readthedocs
+    check:
+      jobs:
+        - ansible-role-ara-api-fedora-devel
+        - ansible-role-ara-api-fedora-2.8
+        - ansible-role-ara-api-ubuntu-2.7
+        - ansible-role-ara-api-ubuntu-2.6
+        - ansible-role-ara-api-ubuntu-postgresql
+        - ansible-role-ara-web-ubuntu
+        - ansible-role-ara-web-fedora
+        - ara-tox-linters
+        - ara-tox-py3
+    gate:
+      jobs:
+        - ansible-role-ara-api-fedora-devel
+        - ansible-role-ara-api-fedora-2.8
+        - ansible-role-ara-api-ubuntu-2.7
+        - ansible-role-ara-api-ubuntu-2.6
+        - ansible-role-ara-api-ubuntu-postgresql
+        - ansible-role-ara-web-ubuntu
+        - ansible-role-ara-web-fedora
+        - ara-tox-linters
+        - ara-tox-py3
+    post:
+      jobs:
+        - ara-upload-git-mirror

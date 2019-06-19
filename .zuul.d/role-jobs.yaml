@@ -1,0 +1,113 @@
+- job:
+    name: ansible-role-ara-api-base
+    parent: base
+    files:
+      - ara/*
+      - playbooks/*
+      - roles/*
+      - tests/*
+      - .zuul.d/*
+      - setup.py
+      - setup.cfg
+      - requirements.txt
+      - test-requirements.txt
+    pre-run: tests/role-integration-pre.yaml
+    run: playbooks/ara_api.yaml
+    post-run: tests/role-integration-post.yaml
+    vars:
+      ara_tests_cleanup: false
+      ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
+      ara_api_version: HEAD
+      ara_api_log_level: DEBUG
+      ara_api_debug: true
+      ara_api_root_dir: /tmp/ara-integration-tests/.ara
+      ara_tests_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
+      ara_tests_ansible_version: null
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.8
+
+- job:
+    name: ansible-role-ara-api-ubuntu
+    parent: ansible-role-ara-api-base
+    nodeset: ubuntu-bionic
+
+- job:
+    name: ansible-role-ara-api-fedora
+    parent: ansible-role-ara-api-base
+    nodeset: fedora-latest
+
+- job:
+    name: ansible-role-ara-api-fedora-devel
+    parent: ansible-role-ara-api-fedora
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: devel
+
+- job:
+    name: ansible-role-ara-api-fedora-2.8
+    parent: ansible-role-ara-api-fedora
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.8
+
+- job:
+    name: ansible-role-ara-api-ubuntu-2.7
+    parent: ansible-role-ara-api-ubuntu
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.7
+
+- job:
+    name: ansible-role-ara-api-ubuntu-2.6
+    parent: ansible-role-ara-api-ubuntu
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.6
+
+# Database server jobs
+- job:
+    name: ansible-role-ara-api-ubuntu-postgresql
+    parent: ansible-role-ara-api-ubuntu
+    roles:
+      - zuul: zuul/zuul-jobs
+    pre-run: tests/install_docker.yaml
+    run: tests/with_postgresql.yaml
+
+# ara-web jobs
+- job:
+    name: ansible-role-ara-web-base
+    parent: base
+    files:
+      # ara
+      - ara/*
+      - playbooks/*
+      - roles/*
+      - tests/*
+      - .zuul.d/*
+      - setup.py
+      - setup.cfg
+      - requirements.txt
+      - test-requirements.txt
+      # ara-web
+      - src/.*
+      - public/.*
+      - package.json
+      - package-lock.json
+    required-projects:
+      - recordsansible/ara-web
+    run: playbooks/ara_web.yaml
+    post-run: tests/role-ara-web-post.yaml
+    vars:
+      ara_web_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara-web"
+      ara_web_api_server: "https://api.demo.recordsansible.org"
+
+- job:
+    name: ansible-role-ara-web-ubuntu
+    parent: ansible-role-ara-web-base
+    nodeset: ubuntu-bionic
+
+- job:
+    name: ansible-role-ara-web-fedora
+    parent: ansible-role-ara-web-base
+    nodeset: fedora-latest
