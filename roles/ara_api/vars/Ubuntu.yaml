@@ -24,3 +24,9 @@ ara_api_postgresql_packages:
   - postgresql
   - postgresql-server-dev-10
   - gcc
+
+ara_api_mysql_packages:
+  - mariadb-client
+  - libmariadbclient-dev
+  - python3-dev
+  - gcc
