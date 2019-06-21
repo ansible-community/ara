@@ -12,7 +12,6 @@
       - requirements.txt
       - test-requirements.txt
     pre-run: tests/role-integration-pre.yaml
-    run: playbooks/ara_api.yaml
     post-run: tests/role-integration-post.yaml
     vars:
       ara_tests_cleanup: false
@@ -40,6 +39,7 @@
 - job:
     name: ansible-role-ara-api-fedora-devel
     parent: ansible-role-ara-api-fedora
+    run: tests/with_defaults.yaml
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: devel
@@ -47,6 +47,7 @@
 - job:
     name: ansible-role-ara-api-fedora-2.8
     parent: ansible-role-ara-api-fedora
+    run: tests/with_defaults.yaml
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.8
@@ -54,6 +55,7 @@
 - job:
     name: ansible-role-ara-api-ubuntu-2.7
     parent: ansible-role-ara-api-ubuntu
+    run: tests/with_defaults.yaml
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
@@ -61,6 +63,7 @@
 - job:
     name: ansible-role-ara-api-ubuntu-2.6
     parent: ansible-role-ara-api-ubuntu
+    run: tests/with_defaults.yaml
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.6
