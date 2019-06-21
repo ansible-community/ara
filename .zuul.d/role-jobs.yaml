@@ -20,7 +20,7 @@
       ara_api_version: HEAD
       ara_api_log_level: DEBUG
       ara_api_debug: true
-      ara_api_root_dir: /tmp/ara-integration-tests/.ara
+      ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
       ara_tests_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
       ara_tests_ansible_version: null
     required-projects:
