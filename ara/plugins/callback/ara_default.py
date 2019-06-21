@@ -89,6 +89,7 @@ options:
         key: api_password
   api_timeout:
     description: Timeout, in seconds, before giving up on HTTP requests
+    type: integer
     default: 30
     env:
       - name: ARA_API_TIMEOUT
