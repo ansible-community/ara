@@ -22,7 +22,7 @@
     _mysql_container_name: "ara_tests_mariadb"
     _mysql_image_name: "mariadb:10"
     ara_tests_cleanup: true
-    ara_api_root_dir: /tmp/ara-integration-tests/.ara
+    ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
     ara_api_secret_key: testing
     ara_api_debug: true
     ara_api_log_level: DEBUG

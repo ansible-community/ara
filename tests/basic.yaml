@@ -21,8 +21,7 @@
   vars:
     _ansible_name: ansible
     _ansible_version: latest
-    ara_api_root_dir: /tmp/ara-integration-tests/.ara
-    ara_api_venv_path: /tmp/ara-integration-tests/venv
+    ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
     ara_api_secret_key: testing
     ara_api_debug: true
     ara_api_log_level: DEBUG
