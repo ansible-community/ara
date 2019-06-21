@@ -13,7 +13,9 @@ ARA Offline API client
 If your use case doesn't require a remote or persistent API server, the offline
 client lets you query the API without needing to start an API server.
 
-In order to use this client, you would instanciate it like this::
+In order to use this client, you would instanciate it like this:
+
+.. code-block:: python
 
     #!/usr/bin/env python3
     # Import the client
@@ -22,6 +24,17 @@ In order to use this client, you would instanciate it like this::
     # Instanciate the offline client
     client = AraOfflineClient()
 
+Note that, by default, instanciating an offline client will automatically run
+SQL migrations.
+
+If you expect the migrations to have already been run when you instanciate
+the client, you can disable automatic SQL migrations with by specifying
+``run_sql_migrations=False``:
+
+.. code-block:: python
+
+    client = AraOfflineClient(run_sql_migrations=False)
+
 ARA HTTP API client
 ~~~~~~~~~~~~~~~~~~~
 
@@ -29,7 +42,9 @@ ARA HTTP API client
 ``AraOfflineClient``.
 
 You can set your client to communicate with a remote ``ara-server`` API by
-specifying an endpoint parameter::
+specifying an endpoint parameter:
+
+.. code-block:: python
 
     #!/usr/bin/env python3
     # Import the client

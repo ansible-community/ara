@@ -33,7 +33,7 @@ except ImportError as e:
 
 
 class AraOfflineClient(AraHttpClient):
-    def __init__(self, auth=None):
+    def __init__(self, auth=None, run_sql_migrations=True):
         self.log = logging.getLogger(__name__)
 
         from django import setup as django_setup
@@ -41,8 +41,9 @@ class AraOfflineClient(AraHttpClient):
 
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 
-        # Automatically create the database and run migrations (is there a better way?)
-        execute_from_command_line(["django", "migrate"])
+        if run_sql_migrations:
+            # Automatically create the database and run migrations (is there a better way?)
+            execute_from_command_line(["django", "migrate"])
 
         # Set up the things Django needs
         django_setup()

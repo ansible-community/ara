@@ -150,7 +150,12 @@ class ActionModule(ActionBase):
         username = options["api_username"]
         password = options["api_password"]
         self.client = client_utils.get_client(
-            client=client, endpoint=endpoint, timeout=timeout, username=username, password=password
+            client=client,
+            endpoint=endpoint,
+            timeout=timeout,
+            username=username,
+            password=password,
+            run_sql_migrations=False,
         )
 
     def create_or_update_key(self, playbook, key, value, type):
