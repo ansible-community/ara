@@ -20,9 +20,12 @@
 
 import json
 import logging
+import weakref
 
 import pbr.version
 import requests
+
+from ara.clients.utils import active_client
 
 CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
@@ -73,6 +76,7 @@ class AraHttpClient(object):
     def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
         self.log = logging.getLogger(__name__)
         self.client = HttpClient(endpoint, timeout, auth=auth)
+        active_client._instance = weakref.ref(self)
 
     def _request(self, method, url, **kwargs):
         func = getattr(self.client, method)

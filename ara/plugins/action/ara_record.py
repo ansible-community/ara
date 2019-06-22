@@ -15,7 +15,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-from ansible import constants as ansible_constants
 from ansible.playbook.play import Play
 from ansible.plugins.action import ActionBase
 
@@ -141,22 +140,7 @@ class ActionModule(ActionBase):
 
     def __init__(self, *args, **kwargs):
         super(ActionModule, self).__init__(*args, **kwargs)
-        # Retrieves the runtime plugin options for the ara_default callback plugin
-        options = ansible_constants.config.get_plugin_options("callback", "ara_default")
-
-        client = options["api_client"]
-        endpoint = options["api_server"]
-        timeout = options["api_timeout"]
-        username = options["api_username"]
-        password = options["api_password"]
-        self.client = client_utils.get_client(
-            client=client,
-            endpoint=endpoint,
-            timeout=timeout,
-            username=username,
-            password=password,
-            run_sql_migrations=False,
-        )
+        self.client = client_utils.active_client()
 
     def create_or_update_key(self, playbook, key, value, type):
         changed = False

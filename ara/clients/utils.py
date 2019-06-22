@@ -17,8 +17,6 @@
 
 from requests.auth import HTTPBasicAuth
 
-from ara.clients.http import AraHttpClient
-
 
 def get_client(
     client="offline",
@@ -40,6 +38,15 @@ def get_client(
 
         return AraOfflineClient(auth=auth, run_sql_migrations=run_sql_migrations)
     elif client == "http":
+        from ara.clients.http import AraHttpClient
+
         return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth)
     else:
         raise ValueError(f"Unsupported API client: {client} (use 'http' or 'offline')")
+
+
+def active_client():
+    return active_client._instance()
+
+
+active_client._instance = None
