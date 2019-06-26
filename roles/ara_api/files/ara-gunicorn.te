@@ -1,10 +1,15 @@
 module ara-gunicorn 1.0;
 
 require {
-    type admin_home_t;
     type init_t;
-    class file { execute execute_no_trans ioctl lock open read write };
+    type user_home_t;
+    class file { create execute execute_no_trans ioctl lock map open read write };
+    class lnk_file { getattr read };
 }
 
 #============= init_t ==============
-allow init_t admin_home_t:file { execute execute_no_trans ioctl lock open read write };
+
+#!!!! This avc can be allowed using the boolean 'domain_can_mmap_files'
+allow init_t user_home_t:file map;
+allow init_t user_home_t:file { create execute execute_no_trans ioctl lock open read write };
+allow init_t user_home_t:lnk_file { getattr read };
