@@ -73,6 +73,7 @@
       DATABASE_PASSWORD: "{{ ara_api_database_password }}"
       DATABASE_HOST: "{{ ara_api_database_host }}"
       DATABASE_PORT: "{{ ara_api_database_port }}"
+      DATABASE_CONN_MAX_AGE: "{{ ara_api_database_conn_max_age }}"
       DEBUG: "{{ ara_api_debug }}"
       LOGGING: "{{ ara_api_logging }}"
       LOG_LEVEL: "{{ ara_api_log_level }}"

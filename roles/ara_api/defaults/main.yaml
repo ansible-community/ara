@@ -169,3 +169,6 @@ ara_api_database_host: null
 
 # ARA_DATABASE_PORT - Django’s PORT database setting
 ara_api_database_port: null
+
+# ARA_DATABASE_CONN_MAX_AGE - Django's CONN_MAX_AGE database setting
+ara_api_database_conn_max_age: 0

@@ -28,6 +28,8 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_CORS_ORIGIN_WHITELIST_     | ``["http://127.0.0.1:8000", "http://localhost:3000"]`` | django-cors-headers's CORS_ORIGIN_WHITELIST_ setting |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_DATABASE_CONN_MAX_AGE_     | ``0``                                                  | Django's CONN_MAX_AGE_ database setting              |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_DATABASE_ENGINE_           | ``django.db.backends.sqlite3``                         | Django's ENGINE_ database setting                    |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_DATABASE_HOST_             | ``None``                                               | Django's HOST_ database setting                      |
@@ -69,6 +71,7 @@ For more details, click on the configuration parameters.
 .. _PASSWORD: https://docs.djangoproject.com/en/2.1/ref/settings/#password
 .. _HOST: https://docs.djangoproject.com/en/2.1/ref/settings/#host
 .. _PORT: https://docs.djangoproject.com/en/2.1/ref/settings/#port
+.. _CONN_MAX_AGE: https://docs.djangoproject.com/en/2.2/ref/settings/#conn-max-age
 
 Configuration variables
 -----------------------
@@ -130,6 +133,19 @@ Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.
 
 This setting is typically used in order to allow the API and a web client
 (such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to each other.
+
+ARA_DATABASE_CONN_MAX_AGE
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_DATABASE_CONN_MAX_AGE``
+- **Configuration file variable**: ``DATABASE_CONN_MAX_AGE``
+- **Provided by**: Django's CONN_MAX_AGE_ database setting
+- **Type**: ``integer``
+- **Default**: ``0``
+
+The lifetime of a database connection, in seconds.
+
+The default of 0 closes database connections at the end of each request.
 
 ARA_DATABASE_ENGINE
 ~~~~~~~~~~~~~~~~~~~
