@@ -63,8 +63,9 @@
   tasks:
     - block:
         - name: Set up the API with the ara_api role
-          import_role:
+          include_role:
             name: ara_api
+            public: yes
 
         # These are tasks rather than a standalone playbook to give us an easy
         # access to all the variables within the same play.
