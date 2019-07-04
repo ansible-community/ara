@@ -88,19 +88,19 @@ class SimpleLabelSerializer(serializers.ModelSerializer):
         exclude = ("created", "updated")
 
 
-class SimplePlaybookSerializer(DurationSerializer):
+class SimplePlaybookSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
         model = models.Playbook
         exclude = ("arguments", "labels", "ansible_version", "created", "updated")
 
 
-class SimplePlaySerializer(DurationSerializer):
+class SimplePlaySerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
         model = models.Play
         exclude = ("uuid", "created", "updated")
 
 
-class SimpleTaskSerializer(DurationSerializer):
+class SimpleTaskSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
         model = models.Task
         exclude = ("tags", "created", "updated")
