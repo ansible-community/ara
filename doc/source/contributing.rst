@@ -66,9 +66,7 @@ same way Github does. To do that, click on your name at the top right and go
 to the settings where you will see the tab to set up your SSH key.
 
 Note that if the username from your local machine differs from the one in Gerrit,
-you might need to set it up in your local ``~/.ssh/config`` file like this:
-
-.. code-block::
+you might need to set it up in your local ``~/.ssh/config`` file like this::
 
   Host review.opendev.org
     user foo
