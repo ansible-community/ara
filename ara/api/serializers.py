@@ -36,6 +36,17 @@ class ResultStatusSerializer(serializers.ModelSerializer):
             return obj.status
 
 
+class TaskPathSerializer(serializers.ModelSerializer):
+    class Meta:
+        abstract = True
+
+    path = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_path(obj):
+        return obj.file.path
+
+
 class DurationSerializer(serializers.ModelSerializer):
     class Meta:
         abstract = True
@@ -100,7 +111,7 @@ class SimplePlaySerializer(DurationSerializer, ItemCountSerializer):
         exclude = ("uuid", "created", "updated")
 
 
-class SimpleTaskSerializer(DurationSerializer, ItemCountSerializer):
+class SimpleTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("tags", "created", "updated")
@@ -181,7 +192,7 @@ class NestedPlaybookPlaySerializer(DurationSerializer):
     tasks = NestedPlaybookTaskSerializer(read_only=True, many=True)
 
 
-class NestedPlayTaskSerializer(DurationSerializer):
+class NestedPlayTaskSerializer(DurationSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("playbook", "play", "created", "updated")
@@ -225,7 +236,7 @@ class DetailedPlaySerializer(DurationSerializer, ItemCountSerializer):
     tasks = NestedPlayTaskSerializer(many=True, read_only=True, default=[])
 
 
-class DetailedTaskSerializer(DurationSerializer, ItemCountSerializer):
+class DetailedTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         fields = "__all__"
@@ -305,7 +316,7 @@ class ListPlaySerializer(DurationSerializer, ItemCountSerializer):
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-class ListTaskSerializer(DurationSerializer, ItemCountSerializer):
+class ListTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("created", "updated")
