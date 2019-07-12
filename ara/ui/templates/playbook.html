@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="pf-c-card" style="margin: 1em 0;" id="properties">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        <a href="#properties">Playbook properties</a>
+    </div>
+    <div class="pf-c-card__body">
+        <ul class="pf-c-list">
+            <li>Status: {{ playbook.status }}</li>
+            <li>Name: {{ playbook.name }}</li>
+            <li>Path: {{ playbook.path }}</li>
+            <li>Started: {{ playbook.started }}</li>
+            <li>Ended: {{ playbook.ended }}</li>
+            <li>Duration: {{ playbook.duration }}</li>
+            <li>Ansible version: {{ playbook.ansible_version }}</li>
+        </ul>
+    </div>
+</div>
+
+<div class="pf-c-card" style="margin: 1em 0;" id="arguments">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        <a href="#arguments">Playbook arguments</a>
+    </div>
+    <div class="pf-c-card__body">
+        <ul class="pf-c-list">
+            {% for arg, value in playbook.arguments.items %}
+            <li>{{ arg }}: {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="pf-c-card" style="margin: 1em 0;" id="hosts">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        <a href="#hosts">Playbook hosts</a>
+    </div>
+    <div class="pf-c-card__body">
+        <table class="pf-c-table pf-m-grid-md" role="grid" id="host-table">
+            <thead>
+                <tr>
+                    <td>Host</td>
+                    <td>Changed</td>
+                    <td>Failed</td>
+                    <td>Ok</td>
+                    <td>Skipped</td>
+                    <td>Unreachable</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for host in playbook.hosts %}
+                <tr>
+                    <td><a href="../host/{{ host.id }}.html">{{ host.name }}</a></td>
+                    <td>{{ host.changed }}</td>
+                    <td>{{ host.failed }}</td>
+                    <td>{{ host.ok }}</td>
+                    <td>{{ host.skipped }}</td>
+                    <td>{{ host.unreachable }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="pf-c-card" style="margin: 1em 0;" id="results">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        <a href="#results">Playbook task results</a>
+    </div>
+    <div class="pf-c-card__body">
+        <table class="pf-c-table pf-m-grid-md" role="grid" id="result-table">
+            <thead>
+                <tr>
+                    <td>Task</td>
+                    <td>Action</td>
+                    <td>Status</td>
+                    <td>Changed</td>
+                    <td>Host</td>
+                    <td>Path</td>
+                    <td>Handler</td>
+                    <td>Started</td>
+                    <td>Duration</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for play in playbook.plays %}
+                {% for task in play.tasks %}
+                {% for result in task.results %}
+                <tr>
+                    <td><a href="../result/{{ result.id }}.html">{{ task.name }}</a></td>
+                    <td>{{ task.action }}</td>
+                    <td>{{ result.status }}</td>
+                    <td>{{ result.changed }}</td>
+                    <td>{{ result.host.name }}</td>
+                    <td>
+                        <a href="../file/{{ task.file.id }}.html">{{ task.file.path | truncatechars:30 }}:{{ task.lineno }}</a>
+                    </td>
+                    <td>{{ task.handler }}</td>
+                    <td>{{ result.started }}</td>
+                    <td>{{ result.duration }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="pf-c-card" style="margin: 1em 0;" id="files">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        <a href="#files">Playbook files</a>
+    </div>
+    <div class="pf-c-card__body">
+        <ul class="pf-c-list">
+            {% for file in playbook.files %}
+            <li><a href="../file/{{ file.id }}.html">{{ file.path }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

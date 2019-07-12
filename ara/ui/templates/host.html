@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        Host: {{ host.name }}
+    </div>
+</div>
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__body">
+        <table class="pf-c-table pf-m-grid-md" role="grid">
+            <thead>
+                <tr>
+                    <th>Fact</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fact, value in host.facts.items %}
+                <tr>
+                    <td id="{{ fact }}" style="white-space: nowrap"><a href="#{{ fact }}">{{ fact }}</a></td>
+                    <td>{{ value | safe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

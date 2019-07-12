@@ -15,15 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-import pkg_resources
-from rest_framework.test import APITestCase
+from django.apps import AppConfig
 
 
-class RootTestCase(APITestCase):
-    def test_root_endpoint(self):
-        result = self.client.get("/api/")
-        self.assertEqual(set(result.data.keys()), set(["kind", "version", "api"]))
-        self.assertEqual(result.data["kind"], "ara")
-        self.assertEqual(result.data["version"], pkg_resources.get_distribution("ara").version)
-        self.assertTrue(len(result.data["api"]), 1)
-        self.assertTrue(result.data["api"][0].endswith("/api/v1/"))
+class UiConfig(AppConfig):
+    name = "ara.ui"

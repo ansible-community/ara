@@ -138,6 +138,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "ara.api",
+    "ara.ui",
     "ara.server.apps.AraAdminConfig",
 ]
 

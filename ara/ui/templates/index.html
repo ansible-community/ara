@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="pf-c-card">
+    <table class="pf-c-table pf-m-grid-md" role="grid" id="playbooks">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Started</th>
+                <th>Duration</th>
+                <th>Plays</th>
+                <th>Tasks</th>
+                <th>Results</th>
+                <th>Hosts</th>
+                <th>Files</th>
+                <th>Records</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for playbook in playbooks %}
+            <tr>
+                <td title="{{ playbook.path }}">
+                    <a href="playbook/{{ playbook.id }}.html">
+                        {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatechars:30 }}{% endif %}
+                    </a>
+                </td>
+                <td>{{ playbook.status }}</td>
+                <td>{{ playbook.started }}</td>
+                <td>{{ playbook.duration }}</td>
+                <td>{{ playbook.items.plays }}</td>
+                <td>{{ playbook.items.tasks }}</td>
+                <td>{{ playbook.items.results }}</td>
+                <td>{{ playbook.items.hosts }}</td>
+                <td>{{ playbook.items.files }}</td>
+                <td>{{ playbook.items.records }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

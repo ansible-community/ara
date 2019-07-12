@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" class="layout-pf">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% if page == "index" %}
+    <link rel="stylesheet" href="static/css/patternfly.min.css">
+    <link rel="shortcut icon" href="static/images/favicon.ico">
+    {% else %}
+    <link rel="stylesheet" href="../static/css/patternfly.min.css">
+    <link rel="shortcut icon" href="../static/images/favicon.ico">
+    {% endif %}
+    {% block head %}
+    {% endblock %}
+</head>
+
+<body>
+    <div class="pf-c-page">
+        <header role="banner" class="pf-c-page__header">
+            <div class="pf-c-page__header-brand">
+                {% if page == "index" %}
+                    <a class="pf-c-page__header-brand-link" href="">
+                    <img class="pf-c-brand" src="static/images/logo.svg" alt="ARA Records Ansible">
+                    {% else %}
+                    <a class="pf-c-page__header-brand-link" href="../">
+                    <img class="pf-c-brand" src="../static/images/logo.svg" alt="ARA Records Ansible">
+                    {% endif %}
+                    </a>
+            </div>
+            <div class="pf-c-page__header-nav">
+                <nav class="pf-c-nav" aria-label="Global">
+                    <button class="pf-c-nav__scroll-button" aria-label="Scroll left">
+                        <i class="fas fa-angle-left" aria-hidden="true"></i>
+                    </button>
+                    <ul class="pf-c-nav__horizontal-list">
+                        <li class="pf-c-nav__item">
+                            {% if page == "index" %}
+                            <a href="" class="pf-c-nav__link pf-m-current" aria-current="page">Playbooks</a>
+                            {% else %}
+                            <a href="../" class="pf-c-nav__link">Playbooks</a>
+                            {% endif %}
+                        </li>
+                        <li class="pf-c-nav__item">
+                            <a href="https://ara.readthedocs.io" class="pf-c-nav__link" target="_blank">Docs</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <main role="main" class="pf-c-page__main">
+            <section class="pf-c-page__main-section pf-m-light">
+                {% block body %}
+                {% endblock %}
+            </section>
+            <section class="pf-c-page__main-section">
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

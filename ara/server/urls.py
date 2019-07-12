@@ -33,13 +33,14 @@ class APIRoot(APIView):
             "api": list(map(lambda x: urllib.parse.urljoin(
                 request.build_absolute_uri(), x),
                 [
-                    "api/v1/",
+                    "v1/",
                 ]))
         })
 
 
 urlpatterns = [
-    path("", APIRoot.as_view()),
+    path("", include("ara.ui.urls")),
+    path("api/", APIRoot.as_view()),
     path("api/v1/", include("ara.api.urls")),
     path("admin/", admin.site.urls),
 ]

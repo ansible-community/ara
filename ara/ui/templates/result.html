@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        Result: {{ result.task.name }}
+    </div>
+</div>
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__body">
+        <table class="pf-c-table pf-m-grid-md" role="grid">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for field, value in result.content.items %}
+                <tr>
+                    <td id="{{ field }}" style="white-space: nowrap"><a href="#{{ field }}">{{ field }}</a></td>
+                    <td>{{ value | safe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
