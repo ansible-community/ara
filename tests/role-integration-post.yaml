@@ -29,6 +29,9 @@
     - name: Recover integration test data
       command: cp -rp {{ ara_api_root_dir }}/server {{ ansible_user_dir }}/workspace/logs/server
 
+    - name: Recover static report
+      command: cp -rp {{ ara_api_root_dir }}/static {{ ansible_user_dir }}/workspace/logs/static
+
     - name: Upload log artifacts
       synchronize:
         src: "{{ ansible_user_dir }}/workspace/logs"
