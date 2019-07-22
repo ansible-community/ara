@@ -69,7 +69,7 @@
 
     - name: Test that the API works
       uri:
-        url: "http://127.0.0.1:8000/{{ item }}"
+        url: "http://127.0.0.1:8000/{{ item }}/api/v1/"
         return_content: yes
       register: api_test
       loop: "{{ _test_directories }}"
