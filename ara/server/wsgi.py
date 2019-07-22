@@ -60,7 +60,7 @@ def distributed_sqlite(environ, start_response):
 
     # The root under which database files are expected
     root = settings.DISTRIBUTED_SQLITE_ROOT
-    # The prefix after which everything should be delegated (ex: /ara-api)
+    # The prefix after which everything should be delegated (ex: /ara-report)
     prefix = settings.DISTRIBUTED_SQLITE_PREFIX
 
     # Static assets should always be served by the regular app

@@ -46,7 +46,7 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_DISTRIBUTED_SQLITE_        | ``False``                                              | Whether to enable distributed sqlite backend         |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DISTRIBUTED_SQLITE_PREFIX_ | ``ara-api``                                            | Prefix to delegate to the distributed sqlite backend |
+| ARA_DISTRIBUTED_SQLITE_PREFIX_ | ``ara-report``                                         | Prefix to delegate to the distributed sqlite backend |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_DISTRIBUTED_SQLITE_ROOT_   | ``/var/www/logs``                                      | Root under which sqlite databases are expected       |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
@@ -276,13 +276,13 @@ ARA_DISTRIBUTED_SQLITE_PREFIX
 - **Configuration file variable**: ``DISTRIBUTED_SQLITE_PREFIX``
 - **Provided by**: ``ara.server.db.backends.distributed_sqlite`` and ``ara.server.wsgi.distributed_sqlite``
 - **Type**: ``string``
-- **Default**: ``ara-api``
+- **Default**: ``ara-report``
 
 Under which URL should requests be delegated to the distributed sqlite wsgi application.
-``ara-api`` would delegate everything under ``.*/ara-api/.*``
+``ara-report`` would delegate everything under ``.*/ara-report/.*``
 
 The path leading to this prefix must contain the ``ansible.sqlite`` database file, for example:
-``/var/www/logs/some/path/ara-api/ansible.sqlite``.
+``/var/www/logs/some/path/ara-report/ansible.sqlite``.
 
 For more information, see: :ref:`distributed sqlite backend <distributed-sqlite-backend>`.
 
@@ -299,8 +299,8 @@ Root directory under which databases will be found relative to the requested URL
 
 This will restrict where the WSGI application will go to seek out databases.
 
-For example, the URL ``example.org/some/path/ara-api`` would translate to
-``/var/www/logs/some/path/ara-api``.
+For example, the URL ``example.org/some/path/ara-report`` would translate to
+``/var/www/logs/some/path/ara-report``.
 
 For more information, see: :ref:`distributed sqlite backend <distributed-sqlite-backend>`.
 

@@ -91,12 +91,12 @@ SECRET_KEY = get_secret_key()
 DISTRIBUTED_SQLITE = settings.get("DISTRIBUTED_SQLITE", False)
 
 # Under which URL should requests be delegated to the distributed sqlite wsgi application
-DISTRIBUTED_SQLITE_PREFIX = settings.get("DISTRIBUTED_SQLITE_PREFIX", "ara-api")
+DISTRIBUTED_SQLITE_PREFIX = settings.get("DISTRIBUTED_SQLITE_PREFIX", "ara-report")
 
 # Root directory under which databases will be found relative to the requested URLs.
 # This will restrict where the WSGI application will go to seek out databases.
-# For example, the URL "example.org/some/path/ara-api" would translate to
-# "/var/www/logs/some/path/ara-api" instead of "/some/path/ara-api".
+# For example, the URL "example.org/some/path/ara-report" would translate to
+# "/var/www/logs/some/path/ara-report" instead of "/some/path/ara-report".
 DISTRIBUTED_SQLITE_ROOT = settings.get("DISTRIBUTED_SQLITE_ROOT", "/var/www/logs")
 
 if DISTRIBUTED_SQLITE:

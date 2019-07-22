@@ -7,8 +7,8 @@ The ARA API server provides an optional backend that dynamically loads sqlite
 databases based on the requested URL with the help of a WSGI application
 middleware.
 
-In summary, it maps an URL such as ``http://example.org/some/path/ara-api`` to
-a location on the file system like ``/var/www/logs/some/path/ara-api`` and
+In summary, it maps an URL such as ``http://example.org/some/path/ara-report``
+to a location on the file system like ``/var/www/logs/some/path/ara-report`` and
 loads an ``ansible.sqlite`` database from that directory, if it exists.
 
 .. note::

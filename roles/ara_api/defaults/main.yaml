@@ -156,7 +156,7 @@ ara_api_secret_key: null
 ara_api_distributed_sqlite: false
 
 # ARA_DISTRIBUTED_SQLITE_PREFIX - Prefix to delegate to the distributed sqlite backend
-ara_api_distributed_sqlite_prefix: ara-api
+ara_api_distributed_sqlite_prefix: ara-report
 
 # ARA_DISTRIBUTED_SQLITE_ROOT - Root under which sqlite databases are expected
 ara_api_distributed_sqlite_root: /var/www/logs
