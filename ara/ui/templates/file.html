@@ -7,7 +7,7 @@
 </div>
 <div class="pf-c-card" style="margin: 1em 0;" id="properties">
     <div class="pf-c-card__body">
-        <pre>{{ file.content | linebreaksbr }}</pre>
+        <pre>{% autoescape on %}{{ file.content | linebreaksbr }}{% endautoescape %}</pre>
     </div>
 </div>
 {% endblock %}

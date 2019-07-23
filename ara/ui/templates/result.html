@@ -18,7 +18,7 @@
                 {% for field, value in result.content.items %}
                 <tr>
                     <td id="{{ field }}" style="white-space: nowrap"><a href="#{{ field }}">{{ field }}</a></td>
-                    <td>{{ value | safe }}</td>
+                    <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

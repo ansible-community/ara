@@ -18,7 +18,7 @@
                 {% for fact, value in host.facts.items %}
                 <tr>
                     <td id="{{ fact }}" style="white-space: nowrap"><a href="#{{ fact }}">{{ fact }}</a></td>
-                    <td>{{ value | safe }}</td>
+                    <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
