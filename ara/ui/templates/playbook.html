@@ -7,11 +7,22 @@
         <a href="#arguments">Playbook arguments</a>
     </div>
     <div class="pf-c-card__body">
-        <ul class="pf-c-list">
-            {% for arg, value in playbook.arguments.items %}
-            <li>{{ arg }}: {{ value }}</li>
-            {% endfor %}
-        </ul>
+        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid">
+            <thead>
+                <tr>
+                    <th>Argument</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for arg, value in playbook.arguments.items %}
+                <tr>
+                    <td>{{ arg }}</td>
+                    <td>{{ value | safe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -20,15 +31,15 @@
         <a href="#hosts">Playbook hosts</a>
     </div>
     <div class="pf-c-card__body">
-        <table class="pf-c-table pf-m-grid-md" role="grid" id="host-table">
+        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-table">
             <thead>
                 <tr>
-                    <td>Host</td>
-                    <td>Changed</td>
-                    <td>Failed</td>
-                    <td>Ok</td>
-                    <td>Skipped</td>
-                    <td>Unreachable</td>
+                    <th>Host</th>
+                    <th>Changed</th>
+                    <th>Failed</th>
+                    <th>Ok</th>
+                    <th>Skipped</th>
+                    <th>Unreachable</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,18 +63,18 @@
         <a href="#results">Playbook task results</a>
     </div>
     <div class="pf-c-card__body">
-        <table class="pf-c-table pf-m-grid-md" role="grid" id="result-table">
+        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-table">
             <thead>
                 <tr>
-                    <td>Task</td>
-                    <td>Action</td>
-                    <td>Status</td>
-                    <td>Changed</td>
-                    <td>Host</td>
-                    <td>Path</td>
-                    <td>Handler</td>
-                    <td>Started</td>
-                    <td>Duration</td>
+                    <th>Task</th>
+                    <th>Action</th>
+                    <th>Status</th>
+                    <th>Changed</th>
+                    <th>Host</th>
+                    <th>Path</th>
+                    <th>Handler</th>
+                    <th>Started</th>
+                    <th>Duration</th>
                 </tr>
             </thead>
             <tbody>
