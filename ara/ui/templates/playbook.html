@@ -1,22 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" %}
-<div class="pf-c-card" style="margin: 1em 0;" id="properties">
-    <div class="pf-c-card__header pf-c-title pf-m-md">
-        <a href="#properties">Playbook properties</a>
-    </div>
-    <div class="pf-c-card__body">
-        <ul class="pf-c-list">
-            <li>Status: {{ playbook.status }}</li>
-            <li>Name: {{ playbook.name }}</li>
-            <li>Path: {{ playbook.path }}</li>
-            <li>Started: {{ playbook.started }}</li>
-            <li>Ended: {{ playbook.ended }}</li>
-            <li>Duration: {{ playbook.duration }}</li>
-            <li>Ansible version: {{ playbook.ansible_version }}</li>
-        </ul>
-    </div>
-</div>
 
 <div class="pf-c-card" style="margin: 1em 0;" id="arguments">
     <div class="pf-c-card__header pf-c-title pf-m-md">
