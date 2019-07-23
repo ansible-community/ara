@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
         # Generate index file with summary of playbooks
         destination = os.path.join(path, "index.html")
-        data = {"page": "index", "playbooks": playbooks["results"]}
+        data = {"playbooks": playbooks["results"], "static_generation": True, "page": "index"}
         self.render("index.html", destination, **data)
 
         for playbook in playbooks["results"]:
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
             # Generate playbook report
             destination = os.path.join(path, "playbook/%s.html" % detailed_playbook["id"])
-            data = {"playbook": detailed_playbook}
+            data = {"playbook": detailed_playbook, "static_generation": True}
             self.render("playbook.html", destination, **data)
 
             for file in detailed_playbook["files"]:
@@ -64,7 +64,7 @@ class Command(BaseCommand):
 
                 # Generate file page
                 destination = os.path.join(path, "file/%s.html" % detailed_file["id"])
-                data = {"file": detailed_file}
+                data = {"file": detailed_file, "static_generation": True}
                 self.render("file.html", destination, **data)
 
             for host in detailed_playbook["hosts"]:
@@ -73,7 +73,7 @@ class Command(BaseCommand):
 
                 # Generate host page
                 destination = os.path.join(path, "host/%s.html" % detailed_host["id"])
-                data = {"host": detailed_host}
+                data = {"host": detailed_host, "static_generation": True}
                 self.render("host.html", destination, **data)
 
             # Results are not at the top level of the playbook object but are instead
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
                 # Generate result page
                 destination = os.path.join(path, "result/%s.html" % detailed_result["id"])
-                data = {"result": detailed_result}
+                data = {"result": detailed_result, "static_generation": True}
                 self.render("result.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)
