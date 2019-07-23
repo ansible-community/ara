@@ -102,7 +102,9 @@ class SimpleLabelSerializer(serializers.ModelSerializer):
 class SimplePlaybookSerializer(DurationSerializer, ItemCountSerializer):
     class Meta:
         model = models.Playbook
-        exclude = ("arguments", "labels", "ansible_version", "created", "updated")
+        exclude = ("arguments", "created", "updated")
+
+    labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
 
 
 class SimplePlaySerializer(DurationSerializer, ItemCountSerializer):
