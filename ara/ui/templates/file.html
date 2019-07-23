@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
+{% include "partials/playbook_card.html" with playbook=file.playbook %}
+
 <div class="pf-c-card" style="margin: 1em 0;" id="properties">
     <div class="pf-c-card__header pf-c-title pf-m-md">
         File: {{ file.path }}

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
+{% include "partials/playbook_card.html" with playbook=host.playbook %}
+
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
         Host: {{ host.name }}
