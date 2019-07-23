@@ -9,6 +9,7 @@ from ara.clients.offline import AraOfflineClient
 
 class Command(BaseCommand):
     help = "Generates a static tree of the web application"
+    rendered = 0
 
     @staticmethod
     def create_dirs(path):
@@ -30,35 +31,62 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("path", help="Path where the static files will be built in", type=str)
 
+    def render(self, template, destination, **kwargs):
+        self.rendered += 1
+        with open(destination, "w") as f:
+            f.write(render_to_string(template, kwargs))
+
     def handle(self, *args, **options):
         path = options.get("path")
-        print("Generating static files at %s..." % path)
         self.create_dirs(path)
 
         client = AraOfflineClient(run_sql_migrations=False)
         playbooks = client.get("/api/v1/playbooks")
+        print("[ara] Generating static files for %s playbooks at %s..." % (playbooks["count"], path))
 
-        with open(os.path.join(path, "index.html"), "w") as f:
-            f.write(render_to_string("index.html", {"page": "index", "playbooks": playbooks["results"]}))
+        # Generate index file with summary of playbooks
+        destination = os.path.join(path, "index.html")
+        data = {"page": "index", "playbooks": playbooks["results"]}
+        self.render("index.html", destination, **data)
 
         for playbook in playbooks["results"]:
+            # Retrieve additional playbook details
             detailed_playbook = client.get("/api/v1/playbooks/%s" % playbook["id"])
-            with open(os.path.join(path, "playbook/%s.html" % detailed_playbook["id"]), "w") as f:
-                f.write(render_to_string("playbook.html", {"playbook": detailed_playbook}))
+
+            # Generate playbook report
+            destination = os.path.join(path, "playbook/%s.html" % detailed_playbook["id"])
+            data = {"playbook": detailed_playbook}
+            self.render("playbook.html", destination, **data)
 
             for file in detailed_playbook["files"]:
+                # Retrieve file details
                 detailed_file = client.get("/api/v1/files/%s" % file["id"])
-                with open(os.path.join(path, "file/%s.html" % detailed_file["id"]), "w") as f:
-                    f.write(render_to_string("file.html", {"file": detailed_file}))
+
+                # Generate file page
+                destination = os.path.join(path, "file/%s.html" % detailed_file["id"])
+                data = {"file": detailed_file}
+                self.render("file.html", destination, **data)
 
             for host in detailed_playbook["hosts"]:
+                # Retrieve host details
                 detailed_host = client.get("/api/v1/hosts/%s" % host["id"])
-                with open(os.path.join(path, "host/%s.html" % detailed_host["id"]), "w") as f:
-                    f.write(render_to_string("host.html", {"host": detailed_host}))
 
-            # This is inefficient but the results are currently nested in plays -> tasks -> results
+                # Generate host page
+                destination = os.path.join(path, "host/%s.html" % detailed_host["id"])
+                data = {"host": detailed_host}
+                self.render("host.html", destination, **data)
+
+            # Results are not at the top level of the playbook object but are instead
+            # nested inside tasks which are themselves inside plays.
+            # We can query the results endpoint to get the list of results for a playbook.
             results = client.get("/api/v1/results", playbook=detailed_playbook["id"])
             for result in results["results"]:
+                # Get result details
                 detailed_result = client.get("/api/v1/results/%s" % result["id"])
-                with open(os.path.join(path, "result/%s.html" % detailed_result["id"]), "w") as f:
-                    f.write(render_to_string("result.html", {"result": detailed_result}))
+
+                # Generate result page
+                destination = os.path.join(path, "result/%s.html" % detailed_result["id"])
+                data = {"result": detailed_result}
+                self.render("result.html", destination, **data)
+
+        print("[ara] %s files generated." % self.rendered)
