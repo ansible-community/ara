@@ -1,0 +1,78 @@
+{% if playbook.status == "completed" %}
+<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-success pf-m-inline">
+{% elif playbook.status == "failed" %}
+<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-danger pf-m-inline">
+{% elif playbook.status == "running" %}
+<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-info pf-m-inline">
+{% else %}
+<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-warning pf-m-inline">
+{% endif %}
+    <ul class="pf-c-data-list" role="list">
+        <li class="pf-c-data-list__item">
+            <div class="pf-c-data-list__item-row">
+                <div class="pf-c-data-list__item-control">
+                    {% include "partials/status_icon.html" with status=playbook.status %}
+                </div>
+                <div class="pf-c-data-list__item-content">
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em; white-space:nowrap;">
+                            <span title="Date at which the playbook started">
+                                <i class="fas fa-play-circle" aria-hidden="true"></i> {{ playbook.started }}
+                            </span><br>
+                            <span title="Date at which the playbook ended">
+                                <i class="fas fa-stop-circle" aria-hidden="true" title="Date at which the playbook ended"></i> {% if playbook.ended %}{{ playbook.ended }}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-4">
+                        <div style="padding-top:1em;" title="{{ playbook.path }}">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html">
+                                {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatechars:50 }}{% endif %}
+                            </a><br>
+                            <div title="Playbook labels">
+                                {% for label in playbook.labels %}
+                                <span class="pf-c-label">{{ label.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }} hosts</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#plays">{{ playbook.items.plays }} plays</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#results">{{ playbook.items.results }} results</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#files">{{ playbook.items.files }} files</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#records">{{ playbook.items.records }} records</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em; white-space:nowrap;" title="Duration of the playbook">
+                            <i class="fas fa-stopwatch" aria-hidden="true"></i> {{ playbook.duration }}
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em; white-space:nowrap;" title="Ansible version">
+                            Ansible {{ playbook.ansible_version }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

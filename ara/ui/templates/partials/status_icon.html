@@ -1,0 +1,17 @@
+{% if status == "completed" %}
+<div class="pf-c-alert__icon" title="Playbook completed successfully">
+    <i class="fas fa-check-circle" aria-hidden="true"></i>
+</div>
+{% elif status == "failed" %}
+<div class="pf-c-alert__icon" title="Playbook completed with errors">
+    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+</div>
+{% elif status == "running" %}
+<div class="pf-c-alert__icon" title="Playbook is either in progress or was interrupted: data might be inconsistent">
+    <i class="fas fa-info-circle" aria-hidden="true"></i>
+</div>
+{% else %}
+<div class="pf-c-alert__icon" title="Playbook status is unknown">
+    <i class="fas fa-question-circle" aria-hidden="true"></i>
+</div>
+{% endif %}
