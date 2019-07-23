@@ -4,13 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    {% if page == "index" %}
-    <link rel="stylesheet" href="static/css/patternfly.min.css">
-    <link rel="shortcut icon" href="static/images/favicon.ico">
-    {% else %}
-    <link rel="stylesheet" href="../static/css/patternfly.min.css">
-    <link rel="shortcut icon" href="../static/images/favicon.ico">
-    {% endif %}
+    <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/patternfly.min.css">
+    <link rel="shortcut icon" href="{% if page != "index" %}../{% endif %}static/images/favicon.ico">
     {% block head %}
     {% endblock %}
 </head>
@@ -19,14 +14,9 @@
     <div class="pf-c-page">
         <header role="banner" class="pf-c-page__header">
             <div class="pf-c-page__header-brand">
-                {% if page == "index" %}
-                    <a class="pf-c-page__header-brand-link" href="">
-                    <img class="pf-c-brand" src="static/images/logo.svg" alt="ARA Records Ansible">
-                    {% else %}
-                    <a class="pf-c-page__header-brand-link" href="../">
-                    <img class="pf-c-brand" src="../static/images/logo.svg" alt="ARA Records Ansible">
-                    {% endif %}
-                    </a>
+                <a class="pf-c-page__header-brand-link" href="{% if page != "index" %}../{% endif %}">
+                    <img class="pf-c-brand" src="{% if page != "index" %}../{% endif %}static/images/logo.svg" alt="ARA Records Ansible">
+                </a>
             </div>
             <div class="pf-c-page__header-nav">
                 <nav class="pf-c-nav" aria-label="Global">
