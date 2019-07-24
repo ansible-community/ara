@@ -1,0 +1,20 @@
+{% load rest_framework %}
+{% if not static_generation %}
+<li class="pf-c-nav__item">
+    {% if playbook.id %}
+        <a href="{% url 'playbook-detail' pk=playbook.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% elif result.id %}
+        <a href="{% url 'result-detail' pk=result.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% elif task.id %}
+        <a href="{% url 'task-detail' pk=task.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% elif host.id %}
+        <a href="{% url 'host-detail' pk=host.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% elif file.id %}
+        <a href="{% url 'file-detail' pk=file.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% elif record.id %}
+        <a href="{% url 'record-detail' pk=record.id %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% else %}
+        <a href="{% url 'api-index' %}" class="pf-c-nav__link" target="_blank">API</a>
+    {% endif %}
+</li>
+{% endif %}

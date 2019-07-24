@@ -31,11 +31,7 @@
                             <a href="../" class="pf-c-nav__link">Playbooks</a>
                             {% endif %}
                         </li>
-                        {% if not static_generation %}
-                        <li class="pf-c-nav__item">
-                            <a href="{% if page != "index" %}../{% endif %}api/" class="pf-c-nav__link" target="_blank">API</a>
-                        </li>
-                        {% endif %}
+                        {% include "partials/api_link.html" %}
                         <li class="pf-c-nav__item">
                             <a href="https://ara.readthedocs.io" class="pf-c-nav__link" target="_blank">Docs</a>
                         </li>

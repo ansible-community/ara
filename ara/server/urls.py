@@ -25,7 +25,7 @@ from rest_framework.views import APIView
 
 
 # fmt: off
-class APIRoot(APIView):
+class APIIndex(APIView):
     def get(self, request):
         return Response({
             "kind": "ara",
@@ -40,7 +40,7 @@ class APIRoot(APIView):
 
 urlpatterns = [
     path("", include("ara.ui.urls")),
-    path("api/", APIRoot.as_view()),
+    path("api/", APIIndex.as_view(), name='api-index'),
     path("api/v1/", include("ara.api.urls")),
     path("admin/", admin.site.urls),
 ]
