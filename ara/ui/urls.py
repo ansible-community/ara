@@ -9,4 +9,5 @@ urlpatterns = [
     path("result/<int:result_id>.html", views.result, name="result"),
     path("file/<int:file_id>.html", views.file, name="file"),
     path("host/<int:host_id>.html", views.host, name="host"),
+    path("record/<int:record_id>.html", views.record, name="record"),
 ]

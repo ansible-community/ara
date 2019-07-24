@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+{% include "partials/playbook_card.html" with playbook=record.playbook %}
+
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__header pf-c-title pf-m-md">
+        Record: {{ record.key }}
+    </div>
+</div>
+<div class="pf-c-card" style="margin: 1em 0;">
+    <div class="pf-c-card__body">
+        <pre>{% autoescape on %}{{ record.value }}{% endautoescape %}</pre>
+    </div>
+</div>
+{% endblock %}

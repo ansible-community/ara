@@ -18,7 +18,7 @@ class Command(BaseCommand):
             os.mkdir(path)
 
         # create subdirs
-        dirs = ["playbook", "file", "host", "result"]
+        dirs = ["playbook", "file", "host", "result", "record"]
         for dir in dirs:
             if not os.path.exists(os.path.join(path, dir)):
                 os.mkdir(os.path.join(path, dir))
@@ -88,5 +88,14 @@ class Command(BaseCommand):
                 destination = os.path.join(path, "result/%s.html" % detailed_result["id"])
                 data = {"result": detailed_result, "static_generation": True}
                 self.render("result.html", destination, **data)
+
+            for record in detailed_playbook["records"]:
+                # Retrieve record details
+                detailed_record = client.get("/api/v1/records/%s" % record["id"])
+
+                # Generate record page
+                destination = os.path.join(path, "record/%s.html" % record["id"])
+                data = {"record": detailed_record, "static_generation": True}
+                self.render("record.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)

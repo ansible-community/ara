@@ -28,3 +28,8 @@ def file(request, file_id):
 def result(request, result_id):
     result = client.get("/api/v1/results/%s" % result_id)
     return render(request, "result.html", {"result": result})
+
+
+def record(request, record_id):
+    record = client.get("/api/v1/records/%s" % record_id)
+    return render(request, "record.html", {"record": record})

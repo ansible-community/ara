@@ -17,11 +17,23 @@
                     {% for arg, value in playbook.arguments.items %}
                     <tr>
                         <td>{{ arg }}</td>
-                        <td>{{ value | safe }}</td>
+                        <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </details>
+        <details id="records">
+            <summary>Records</summary>
+            {% if playbook.items.records %}
+            <ul class="pf-c-list">
+                {% for record in playbook.records %}
+                <li><a href="../record/{{ record.id }}.html">{{ record.key }}</a></li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            No records have been saved with <a href="https://ara.readthedocs.io/en/latest/ara-record.html" target="_blank">ara_record</a> for this playbook.
+            {% endif %}
         </details>
         <details id="files">
             <summary>Files</summary>
