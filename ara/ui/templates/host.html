@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" with playbook=host.playbook %}
+{% load pygments_highlights %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
         Host: {{ host.name }}
     </div>
-</div>
-<div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__body">
         <table class="pf-c-table pf-m-grid-md" role="grid">
             <thead>
@@ -20,7 +19,7 @@
                 {% for fact, value in host.facts.items %}
                 <tr>
                     <td id="{{ fact }}" style="white-space: nowrap"><a href="#{{ fact }}">{{ fact }}</a></td>
-                    <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
+                    <td>{{ value | format_data | safe }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

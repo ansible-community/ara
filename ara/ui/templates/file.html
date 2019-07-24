@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" with playbook=file.playbook %}
+{% load pygments_highlights %}
 
-<div class="pf-c-card" style="margin: 1em 0;" id="properties">
+<div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
-        File: {{ file.path }}
+        <strong>{{ file.path }}</strong>
     </div>
-</div>
-<div class="pf-c-card" style="margin: 1em 0;" id="properties">
     <div class="pf-c-card__body">
-        <pre>{% autoescape on %}{{ file.content | linebreaksbr }}{% endautoescape %}</pre>
+        {{ file.content | format_yaml | safe }}
     </div>
 </div>
 {% endblock %}

@@ -6,6 +6,9 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/patternfly.min.css">
     <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/ara.css">
+    {% if file.id or record.id or host.id %}
+    <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/pygments.css">
+    {% endif %}
     <link rel="shortcut icon" href="{% if page != "index" %}../{% endif %}static/images/favicon.ico">
     {% block head %}
     {% endblock %}

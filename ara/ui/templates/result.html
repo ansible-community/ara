@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" with playbook=result.playbook %}
+{% load pygments_highlights %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
@@ -20,7 +21,7 @@
                 {% for field, value in result.content.items %}
                 <tr>
                     <td id="{{ field }}" style="white-space: nowrap"><a href="#{{ field }}">{{ field }}</a></td>
-                    <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
+                    <td>{{ value | format_data | safe }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" with playbook=record.playbook %}
+{% load pygments_highlights %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
-        Record: {{ record.key }}
+        <strong>{{ record.key }}</strong>
     </div>
-</div>
-<div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__body">
-        <pre>{% autoescape on %}{{ record.value }}{% endautoescape %}</pre>
+        {{ record.value | format_data | safe }}
     </div>
 </div>
 {% endblock %}
