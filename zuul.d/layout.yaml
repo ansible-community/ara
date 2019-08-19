@@ -3,23 +3,21 @@
       rtd_webhook_id: '46259'
     check:
       jobs:
-        - ara-integration-debian-py27-2.6.16
-        - ara-integration-centos-py27-2.5.15
-        - ara-integration-opensuse-py27-2.7.8
-        - ara-integration-ubuntu-py36-2.7.8
+        - ara-integration-debian-py27-2.7.13
+        - ara-integration-centos-py27-2.6.19
+        - ara-integration-opensuse-py27-2.8.4
+        - ara-integration-ubuntu-py36-2.8.4
         - ara-integration-ubuntu-py36-devel:
             voting: false
-        - ara-integration-fedora-py37-2.7.8
+        - ara-integration-fedora-py37-2.8.4
         - ara-integration-fedora-py37-devel:
             voting: false
         - openstack-tox-py37
     gate:
       jobs:
-        - ara-integration-debian-py27-2.6.16
-        - ara-integration-centos-py27-2.5.15
-        - ara-integration-opensuse-py27-2.7.8
-        - ara-integration-ubuntu-py36-2.7.8
-        - ara-integration-fedora-py37-2.7.8
+        - ara-integration-debian-py27-2.7.13
+        - ara-integration-centos-py27-2.6.19
+        - ara-integration-opensuse-py27-2.8.4
+        - ara-integration-ubuntu-py36-2.8.4
+        - ara-integration-fedora-py37-2.8.4
         - openstack-tox-py37
-
-# This line left intentionally blank for reloading Zuul jobs after branch change
