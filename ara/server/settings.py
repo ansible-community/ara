@@ -186,7 +186,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 USE_TZ = True
-TIME_ZONE = "UTC"
+TIME_ZONE = os.getenv('TZ', 'UTC')
 
 # We do not currently support internationalization and localization, turn these
 # off.
