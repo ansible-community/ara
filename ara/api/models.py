@@ -39,6 +39,7 @@ class Duration(Base):
 
     class Meta:
         abstract = True
+        # PLACEHOLDER_DURATION_ORDERING
 
     started = models.DateTimeField(default=timezone.now)
     ended = models.DateTimeField(blank=True, null=True)
@@ -72,7 +73,7 @@ class Playbook(Duration):
     is tied back to this one playbook.
     """
 
-    class Meta:
+    class Meta(Duration.Meta):
         db_table = "playbooks"
 
     # A playbook in ARA can be running (in progress), completed (succeeded) or failed.
@@ -153,7 +154,7 @@ class Play(Duration):
     Hosts, tasks and results are childrens of an Ansible play.
     """
 
-    class Meta:
+    class Meta(Duration.Meta):
         db_table = "plays"
 
     # A play in ARA can be running (in progress) or completed (regardless of success or failure)
@@ -174,7 +175,7 @@ class Play(Duration):
 class Task(Duration):
     """Data about Ansible tasks."""
 
-    class Meta:
+    class Meta(Duration.Meta):
         db_table = "tasks"
 
     # A task in ARA can be running (in progress) or completed (regardless of success or failure)
@@ -229,7 +230,7 @@ class Result(Duration):
     A task can have many results if the task is run on multiple hosts.
     """
 
-    class Meta:
+    class Meta(Duration.Meta):
         db_table = "results"
 
     # Ansible statuses
