@@ -186,7 +186,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 USE_TZ = True
-TIME_ZONE = "UTC"
+TIME_ZONE = settings.get("TIME_ZONE", "UTC")
 
 # We do not currently support internationalization and localization, turn these
 # off.
@@ -259,6 +259,7 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         DISTRIBUTED_SQLITE=DISTRIBUTED_SQLITE,
         DISTRIBUTED_SQLITE_PREFIX=DISTRIBUTED_SQLITE_PREFIX,
         DISTRIBUTED_SQLITE_ROOT=DISTRIBUTED_SQLITE_ROOT,
+        TIME_ZONE=TIME_ZONE,
     )
     with open(DEFAULT_SETTINGS, "w+") as settings_file:
         comment = f"""
