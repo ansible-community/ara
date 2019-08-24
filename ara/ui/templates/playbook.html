@@ -17,7 +17,7 @@
                     {% for arg, value in playbook.arguments.items %}
                     <tr>
                         <td>{{ arg }}</td>
-                        <td>{% autoescape on %}{{ value }}{% endautoescape %}</td>
+                        <td>{{ value }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
