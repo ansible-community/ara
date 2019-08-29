@@ -21,9 +21,11 @@ import os
 from distutils.sysconfig import get_python_lib
 
 exports = """
-export ANSIBLE_CALLBACK_PLUGINS={}
-export ANSIBLE_ACTION_PLUGINS={}
-""".format(callback_plugins, action_plugins)
+export ANSIBLE_CALLBACK_PLUGINS=${{ANSIBLE_CALLBACK_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
+export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
+""".format(
+    callback_plugins, action_plugins
+)
 
 if 'VIRTUAL_ENV' in os.environ:
     """ PYTHONPATH may be exported when 'ara' module is installed in a
@@ -38,7 +40,7 @@ if 'VIRTUAL_ENV' in os.environ:
         python_paths = []
     if lib not in python_paths:
         python_paths.append(lib)
-        exports += "export PYTHONPATH=%s\n" % os.pathsep.join(python_paths)
+        exports += "export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH+:}%s\n" % os.pathsep.join(python_paths)
 
 if __name__ == "__main__":
     print(exports.strip())
