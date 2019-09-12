@@ -46,5 +46,5 @@ Or as extra-vars:
 .. code-block:: bash
 
     ansible-playbook -i hosts playbook.yaml \
-        -e ansible_playbook_name=deploy-dev \
-        -e ansible_playbook_labels='["deploy", "dev"]'
+        -e ara_playbook_name=deploy-dev \
+        -e ara_playbook_labels='["deploy", "dev"]'
