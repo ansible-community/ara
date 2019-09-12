@@ -41,6 +41,7 @@ if "VIRTUAL_ENV" in os.environ:
     else:
         python_paths = []
     if lib not in python_paths:
+        python_paths.append(lib)
         exports += "export PYTHONPATH=${PYTHONPATH:-}${PYTHONPATH+:}%s\n" % os.pathsep.join(python_paths)
 
 if __name__ == "__main__":
