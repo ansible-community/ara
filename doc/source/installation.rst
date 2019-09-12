@@ -35,7 +35,7 @@ To install the latest release of ARA from PyPi_:
 .. code-block:: bash
 
     # With the API server dependencies
-    ~/.ara/virtualenv/bin/pip install ara[server]
+    ~/.ara/virtualenv/bin/pip install "ara[server]"
 
     # Without the API server dependencies
     ~/.ara/virtualenv/bin/pip install ara
@@ -47,7 +47,7 @@ Installing from source is possible by using the git repository:
     # With the API server dependencies
     # (Suffixes don't work when supplying the direct git URL)
     git clone https://github.com/ansible-community/ara ara-src
-    pip install ./ara-src[server]
+    pip install "./ara-src[server]"
 
     # Without the API server dependencies
     ~/.ara/virtualenv/bin/pip install git+https://github.com/ansible-community/ara
