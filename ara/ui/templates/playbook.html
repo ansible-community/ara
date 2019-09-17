@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 {% include "partials/playbook_card.html" %}
+{% load datetime_formatting %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__body">
@@ -100,8 +101,8 @@
                             <a href="../file/{{ task.file.id }}.html">{{ task.file.path | truncatechars:30 }}:{{ task.lineno }}</a>
                         </td>
                         <td>{{ task.handler }}</td>
-                        <td>{{ result.started }}</td>
-                        <td>{{ result.duration }}</td>
+                        <td>{{ result.started | format_date }}</td>
+                        <td>{{ result.duration | format_duration }}</td>
                     </tr>
                     {% endfor %}
                     {% endfor %}
