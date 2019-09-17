@@ -42,6 +42,9 @@ def format_yaml(code):
 def format_data(data):
     formatter = HtmlFormatter(cssclass="codehilite")
 
+    if data is None:
+        return data
+
     if isinstance(data, bool) or isinstance(data, int) or isinstance(data, float):
         return highlight(str(data), TextLexer(), formatter)
     elif isinstance(data, str):
