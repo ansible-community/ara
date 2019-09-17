@@ -1,35 +1,94 @@
-from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
 
-from ara.clients.offline import AraOfflineClient
-
-client = AraOfflineClient(run_sql_migrations=False)
-
-
-def index(request):
-    playbooks = client.get("/api/v1/playbooks")
-    return render(request, "index.html", {"page": "index", "playbooks": playbooks["results"]})
+from ara.api import models, serializers
 
 
-def playbook(request, playbook_id):
-    playbook = client.get("/api/v1/playbooks/%s" % playbook_id)
-    return render(request, "playbook.html", {"playbook": playbook})
+class Index(generics.RetrieveAPIView):
+    """
+    Returns a list of playbook summaries
+    """
+
+    queryset = models.Playbook.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "index.html"
+
+    def get(self, request, *args, **kwargs):
+        serializer = serializers.ListPlaybookSerializer(self.queryset.all(), many=True)
+        return Response({"page": "index", "playbooks": serializer.data})
 
 
-def host(request, host_id):
-    host = client.get("/api/v1/hosts/%s" % host_id)
-    return render(request, "host.html", {"host": host})
+class Playbook(generics.RetrieveAPIView):
+    """
+    Returns a page for a detailed view of a playbook
+    """
+
+    queryset = models.Playbook.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "playbook.html"
+
+    def get(self, request, *args, **kwargs):
+        playbook = self.get_object()
+        serializer = serializers.DetailedPlaybookSerializer(playbook)
+        return Response({"playbook": serializer.data})
 
 
-def file(request, file_id):
-    file = client.get("/api/v1/files/%s" % file_id)
-    return render(request, "file.html", {"file": file})
+class Host(generics.RetrieveAPIView):
+    """
+    Returns a page for a detailed view of a host
+    """
+
+    queryset = models.Host.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "host.html"
+
+    def get(self, request, *args, **kwargs):
+        host = self.get_object()
+        serializer = serializers.DetailedHostSerializer(host)
+        return Response({"host": serializer.data})
 
 
-def result(request, result_id):
-    result = client.get("/api/v1/results/%s" % result_id)
-    return render(request, "result.html", {"result": result})
+class File(generics.RetrieveAPIView):
+    """
+    Returns a page for a detailed view of a file
+    """
+
+    queryset = models.File.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "file.html"
+
+    def get(self, request, *args, **kwargs):
+        file = self.get_object()
+        serializer = serializers.DetailedFileSerializer(file)
+        return Response({"file": serializer.data})
 
 
-def record(request, record_id):
-    record = client.get("/api/v1/records/%s" % record_id)
-    return render(request, "record.html", {"record": record})
+class Result(generics.RetrieveAPIView):
+    """
+    Returns a page for a detailed view of a result
+    """
+
+    queryset = models.Result.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "result.html"
+
+    def get(self, request, *args, **kwargs):
+        result = self.get_object()
+        serializer = serializers.DetailedResultSerializer(result)
+        return Response({"result": serializer.data})
+
+
+class Record(generics.RetrieveAPIView):
+    """
+    Returns a page for a detailed view of a record
+    """
+
+    queryset = models.Record.objects.all()
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "record.html"
+
+    def get(self, request, *args, **kwargs):
+        record = self.get_object()
+        serializer = serializers.DetailedRecordSerializer(record)
+        return Response({"record": serializer.data})

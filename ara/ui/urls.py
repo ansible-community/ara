@@ -4,10 +4,10 @@ from ara.ui import views
 
 app_name = "ui"
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("playbook/<int:playbook_id>.html", views.playbook, name="playbook"),
-    path("result/<int:result_id>.html", views.result, name="result"),
-    path("file/<int:file_id>.html", views.file, name="file"),
-    path("host/<int:host_id>.html", views.host, name="host"),
-    path("record/<int:record_id>.html", views.record, name="record"),
+    path("", views.Index.as_view(), name="index"),
+    path("playbook/<int:pk>.html", views.Playbook.as_view(), name="playbook"),
+    path("result/<int:pk>.html", views.Result.as_view(), name="result"),
+    path("file/<int:pk>.html", views.File.as_view(), name="file"),
+    path("host/<int:pk>.html", views.Host.as_view(), name="host"),
+    path("record/<int:pk>.html", views.Record.as_view(), name="record"),
 ]

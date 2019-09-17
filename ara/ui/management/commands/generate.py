@@ -4,7 +4,7 @@ import shutil
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
-from ara.clients.offline import AraOfflineClient
+from ara.api import models, serializers
 
 
 class Command(BaseCommand):
@@ -40,62 +40,53 @@ class Command(BaseCommand):
         path = options.get("path")
         self.create_dirs(path)
 
-        client = AraOfflineClient(run_sql_migrations=False)
-        playbooks = client.get("/api/v1/playbooks")
-        print("[ara] Generating static files for %s playbooks at %s..." % (playbooks["count"], path))
+        # TODO: Leverage ui views directly instead of duplicating logic here
+        query = models.Playbook.objects.all()
+        serializer = serializers.ListPlaybookSerializer(query.all(), many=True)
 
-        # Generate index file with summary of playbooks
+        print("[ara] Generating static files for %s playbooks at %s..." % (query.count(), path))
+
+        # Index
         destination = os.path.join(path, "index.html")
-        data = {"playbooks": playbooks["results"], "static_generation": True, "page": "index"}
+        data = {"playbooks": serializer.data, "static_generation": True, "page": "index"}
         self.render("index.html", destination, **data)
 
-        for playbook in playbooks["results"]:
-            # Retrieve additional playbook details
-            detailed_playbook = client.get("/api/v1/playbooks/%s" % playbook["id"])
-
-            # Generate playbook report
-            destination = os.path.join(path, "playbook/%s.html" % detailed_playbook["id"])
-            data = {"playbook": detailed_playbook, "static_generation": True}
+        # Playbooks
+        for playbook in query.all():
+            destination = os.path.join(path, "playbook/%s.html" % playbook.id)
+            serializer = serializers.DetailedPlaybookSerializer(playbook)
+            data = {"playbook": serializer.data, "static_generation": True}
             self.render("playbook.html", destination, **data)
 
-            for file in detailed_playbook["files"]:
-                # Retrieve file details
-                detailed_file = client.get("/api/v1/files/%s" % file["id"])
+        # Files
+        query = models.File.objects.all()
+        for file in query.all():
+            destination = os.path.join(path, "file/%s.html" % file.id)
+            serializer = serializers.DetailedFileSerializer(file)
+            data = {"file": serializer.data, "static_generation": True}
 
-                # Generate file page
-                destination = os.path.join(path, "file/%s.html" % detailed_file["id"])
-                data = {"file": detailed_file, "static_generation": True}
-                self.render("file.html", destination, **data)
+        # Hosts
+        query = models.Host.objects.all()
+        for host in query.all():
+            destination = os.path.join(path, "host/%s.html" % host.id)
+            serializer = serializers.DetailedHostSerializer(host)
+            data = {"host": serializer.data, "static_generation": True}
+            self.render("host.html", destination, **data)
 
-            for host in detailed_playbook["hosts"]:
-                # Retrieve host details
-                detailed_host = client.get("/api/v1/hosts/%s" % host["id"])
+        # Results
+        query = models.Result.objects.all()
+        for result in query.all():
+            destination = os.path.join(path, "result/%s.html" % result.id)
+            serializer = serializers.DetailedResultSerializer(result)
+            data = {"result": serializer.data, "static_generation": True}
+            self.render("result.html", destination, **data)
 
-                # Generate host page
-                destination = os.path.join(path, "host/%s.html" % detailed_host["id"])
-                data = {"host": detailed_host, "static_generation": True}
-                self.render("host.html", destination, **data)
-
-            # Results are not at the top level of the playbook object but are instead
-            # nested inside tasks which are themselves inside plays.
-            # We can query the results endpoint to get the list of results for a playbook.
-            results = client.get("/api/v1/results", playbook=detailed_playbook["id"])
-            for result in results["results"]:
-                # Get result details
-                detailed_result = client.get("/api/v1/results/%s" % result["id"])
-
-                # Generate result page
-                destination = os.path.join(path, "result/%s.html" % detailed_result["id"])
-                data = {"result": detailed_result, "static_generation": True}
-                self.render("result.html", destination, **data)
-
-            for record in detailed_playbook["records"]:
-                # Retrieve record details
-                detailed_record = client.get("/api/v1/records/%s" % record["id"])
-
-                # Generate record page
-                destination = os.path.join(path, "record/%s.html" % record["id"])
-                data = {"record": detailed_record, "static_generation": True}
-                self.render("record.html", destination, **data)
+        # Records
+        query = models.Record.objects.all()
+        for record in query.all():
+            destination = os.path.join(path, "record/%s.html" % record.id)
+            serializer = serializers.DetailedRecordSerializer(record)
+            data = {"record": serializer.data, "static_generation": True}
+            self.render("record.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)
