@@ -19,6 +19,7 @@ import os
 import textwrap
 import warnings
 
+import tzlocal
 import yaml
 from django.utils.crypto import get_random_string
 from dynaconf import LazySettings
@@ -186,7 +187,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 USE_TZ = True
-TIME_ZONE = settings.get("TIME_ZONE", "UTC")
+LOCAL_TIME_ZONE = tzlocal.get_localzone().zone
+TIME_ZONE = settings.get("TIME_ZONE", LOCAL_TIME_ZONE)
 
 # We do not currently support internationalization and localization, turn these
 # off.
