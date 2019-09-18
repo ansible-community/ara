@@ -330,7 +330,7 @@ class ListTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerial
 class ListHostSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Host
-        exclude = ("facts", "created", "updated")
+        exclude = ("facts",)
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
