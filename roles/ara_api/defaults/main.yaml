@@ -181,3 +181,9 @@ ara_api_database_port: null
 
 # ARA_DATABASE_CONN_MAX_AGE - Django's CONN_MAX_AGE database setting
 ara_api_database_conn_max_age: 0
+
+# ARA_TIME_ZONE - Time zone used when storing and returning results
+# Note: the default provided by ARA is dynamic and is set to the local system
+# timezone but Ansible doesn't provide, for example, an ansible_timezone fact
+# that we could use here. With that in mind, UTC is the best default for now.
+ara_api_time_zone: UTC

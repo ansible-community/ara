@@ -64,6 +64,8 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_SETTINGS_                  | ``~/.ara/server/settings.yaml``                        | Path to an API server configuration file             |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
+| ARA_TIME_ZONE_                 | Local system timezone                                  | Time zone used when storing and returning results    |
++--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 | ARA_WRITE_LOGIN_REQUIRED_      | ``False``                                              | Whether authentication is required for writing data  |
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 
@@ -71,6 +73,7 @@ For more details, click on the configuration parameters.
 .. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.1/ref/settings/#allowed-hosts
 .. _DEBUG: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-DEBUG
 .. _SECRET_KEY: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-SECRET_KEY
+.. _TIME_ZONE: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-TIME_ZONE
 .. _ENGINE: https://docs.djangoproject.com/en/2.1/ref/settings/#engine
 .. _NAME: https://docs.djangoproject.com/en/2.1/ref/settings/#name
 .. _USER: https://docs.djangoproject.com/en/2.1/ref/settings/#user
@@ -465,6 +468,23 @@ cryptographic signing, and should be set to a unique, unpredictable value.
 
 If it is not set, a random token will be generated and persisted in the
 default configuration file.
+
+ARA_TIME_ZONE
+~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_TIME_ZONE``
+- **Configuration file variable**: ``TIME_ZONE``
+- **Provided by**: Django's TIME_ZONE_
+- **Type**: ``string``
+- **Default**: Local system timezone
+- **Examples**:
+
+  - ``UTC``
+  - ``US/Eastern``
+  - ``America/Montreal``
+  - ``Europe/Paris``
+
+The time zone to store and return results in.
 
 ARA_WRITE_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~~
