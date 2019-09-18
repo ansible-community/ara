@@ -8,7 +8,7 @@ environments (*such as dev, staging, prod*) and allows you to customize the
 configuration with files, environment variables or a combination of both.
 
 The API is a Django application that leverages django-rest-framework.
-Both `Django <https://docs.djangoproject.com/en/2.1/ref/settings/>`_ and
+Both `Django <https://docs.djangoproject.com/en/2.2/ref/settings/>`_ and
 `django-rest-framework <https://www.django-rest-framework.org/api-guide/settings/>`_
 have extensive configuration options which are not necessarily exposed or made
 customizable by ARA for the sake of simplicity.
@@ -70,16 +70,16 @@ For more details, click on the configuration parameters.
 +--------------------------------+--------------------------------------------------------+------------------------------------------------------+
 
 .. _CORS_ORIGIN_WHITELIST: https://github.com/ottoyiu/django-cors-headers
-.. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.1/ref/settings/#allowed-hosts
-.. _DEBUG: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-DEBUG
-.. _SECRET_KEY: https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-SECRET_KEY
+.. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts
+.. _DEBUG: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-DEBUG
+.. _SECRET_KEY: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-SECRET_KEY
 .. _TIME_ZONE: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-TIME_ZONE
-.. _ENGINE: https://docs.djangoproject.com/en/2.1/ref/settings/#engine
-.. _NAME: https://docs.djangoproject.com/en/2.1/ref/settings/#name
-.. _USER: https://docs.djangoproject.com/en/2.1/ref/settings/#user
-.. _PASSWORD: https://docs.djangoproject.com/en/2.1/ref/settings/#password
-.. _HOST: https://docs.djangoproject.com/en/2.1/ref/settings/#host
-.. _PORT: https://docs.djangoproject.com/en/2.1/ref/settings/#port
+.. _ENGINE: https://docs.djangoproject.com/en/2.2/ref/settings/#engine
+.. _NAME: https://docs.djangoproject.com/en/2.2/ref/settings/#name
+.. _USER: https://docs.djangoproject.com/en/2.2/ref/settings/#user
+.. _PASSWORD: https://docs.djangoproject.com/en/2.2/ref/settings/#password
+.. _HOST: https://docs.djangoproject.com/en/2.2/ref/settings/#host
+.. _PORT: https://docs.djangoproject.com/en/2.2/ref/settings/#port
 .. _CONN_MAX_AGE: https://docs.djangoproject.com/en/2.2/ref/settings/#conn-max-age
 
 Configuration variables

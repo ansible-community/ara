@@ -36,7 +36,7 @@ configuration file.
 User management
 ---------------
 
-The API server leverages Django's `user management <https://docs.djangoproject.com/en/2.1/topics/auth/default/>`_
+The API server leverages Django's `user management <https://docs.djangoproject.com/en/2.2/topics/auth/default/>`_
 but doesn't create any user by default.
 
 .. note::
