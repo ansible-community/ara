@@ -167,7 +167,12 @@ class CallbackModule(CallbackBase):
 
         # Create the playbook
         self.playbook = self.client.post(
-            "/api/v1/playbooks", ansible_version=ansible_version, arguments=cli_options, status="running", path=path
+            "/api/v1/playbooks",
+            ansible_version=ansible_version,
+            arguments=cli_options,
+            status="running",
+            path=path,
+            started=datetime.datetime.now().isoformat(),
         )
 
         # Record the playbook file
@@ -193,7 +198,12 @@ class CallbackModule(CallbackBase):
 
         # Create the play
         self.play = self.client.post(
-            "/api/v1/plays", name=play.name, status="running", uuid=play._uuid, playbook=self.playbook["id"]
+            "/api/v1/plays",
+            name=play.name,
+            status="running",
+            uuid=play._uuid,
+            playbook=self.playbook["id"],
+            started=datetime.datetime.now().isoformat(),
         )
 
         # Record all the hosts involved in the play
@@ -229,6 +239,7 @@ class CallbackModule(CallbackBase):
             tags=task.tags,
             lineno=lineno,
             handler=handler,
+            started=datetime.datetime.now().isoformat(),
         )
 
         return self.task
