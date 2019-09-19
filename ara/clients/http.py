@@ -34,7 +34,7 @@ class HttpClient(object):
     def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
         self.log = logging.getLogger(__name__)
 
-        self.endpoint = endpoint
+        self.endpoint = endpoint.rstrip("/")
         self.timeout = timeout
         self.headers = {
             "User-Agent": "ara-http-client_%s" % CLIENT_VERSION,
