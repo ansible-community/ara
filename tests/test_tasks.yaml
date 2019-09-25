@@ -49,8 +49,8 @@
 
 - name: Get ARA plugins directory
   environment:
-    PATH: "{{ path_with_virtualenv | default(omit) }}"
-  command: python -m ara.setup.plugins
+    PATH: "{{ path_with_virtualenv | default('/usr/bin:/usr/local/bin') }}"
+  command: python3 -m ara.setup.plugins
   changed_when: false
   register: ara_setup_plugins
 
