@@ -19,57 +19,60 @@ Overview
 This is a brief overview of the different configuration options for the API server.
 For more details, click on the configuration parameters.
 
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| Environment Variable           | default                                                | Usage                                                |
-+================================+========================================================+======================================================+
-| ARA_ALLOWED_HOSTS_             | ``["127.0.0.1", "localhost", "::1"]``                  | Django's ALLOWED_HOSTS_ setting                      |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_BASE_DIR_                  | ``~/.ara/server``                                      | Default directory for storing data and configuration |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_CORS_ORIGIN_WHITELIST_     | ``["http://127.0.0.1:8000", "http://localhost:3000"]`` | django-cors-headers's CORS_ORIGIN_WHITELIST_ setting |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_CONN_MAX_AGE_     | ``0``                                                  | Django's CONN_MAX_AGE_ database setting              |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_ENGINE_           | ``django.db.backends.sqlite3``                         | Django's ENGINE_ database setting                    |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_HOST_             | ``None``                                               | Django's HOST_ database setting                      |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_NAME_             | ``~/.ara/server/ansible.sqlite``                       | Django's NAME_ database setting                      |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_PASSWORD_         | ``None``                                               | Django's PASSWORD_ database setting                  |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_PORT_             | ``None``                                               | Django's PORT_ database setting                      |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DATABASE_USER_             | ``None``                                               | Django's USER_ database setting                      |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DEBUG_                     | ``False``                                              | Django's DEBUG_ setting                              |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DISTRIBUTED_SQLITE_        | ``False``                                              | Whether to enable distributed sqlite backend         |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DISTRIBUTED_SQLITE_PREFIX_ | ``ara-report``                                         | Prefix to delegate to the distributed sqlite backend |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_DISTRIBUTED_SQLITE_ROOT_   | ``/var/www/logs``                                      | Root under which sqlite databases are expected       |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_ENV_                       | ``default``                                            | Environment to load configuration for                |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_LOGGING_                   | See ARA_LOGGING_                                       | Logging configuration                                |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_LOG_LEVEL_                 | ``INFO``                                               | Log level of the different components                |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_PAGE_SIZE_                 | ``100``                                                | Amount of results returned per page by the API       |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_READ_LOGIN_REQUIRED_       | ``False``                                              | Whether authentication is required for reading data  |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_SECRET_KEY_                | Randomized token, see ARA_SECRET_KEY_                  | Django's SECRET_KEY_ setting                         |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_SETTINGS_                  | ``~/.ara/server/settings.yaml``                        | Path to an API server configuration file             |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_TIME_ZONE_                 | Local system timezone                                  | Time zone used when storing and returning results    |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
-| ARA_WRITE_LOGIN_REQUIRED_      | ``False``                                              | Whether authentication is required for writing data  |
-+--------------------------------+--------------------------------------------------------+------------------------------------------------------+
++--------------------------------+--------------------------------------------------------+--------------------------------------------------------------+
+| Environment Variable             | default                                                | Usage                                                      |
++==================================+========================================================+============================================================+
+| ARA_ALLOWED_HOSTS_               | ``["127.0.0.1", "localhost", "::1"]``                  | Django's ALLOWED_HOSTS_ setting                            |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_BASE_DIR_                    | ``~/.ara/server``                                      | Default directory for storing data and configuration       |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_CORS_ORIGIN_WHITELIST_       | ``["http://127.0.0.1:8000", "http://localhost:3000"]`` | django-cors-headers's CORS_ORIGIN_WHITELIST_ setting       |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_CORS_ORIGIN_REGEX_WHITELIST_ | ``[]``                                                 | django-cors-headers's CORS_ORIGIN_REGEX_WHITELIST_ setting |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_CONN_MAX_AGE_       | ``0``                                                  | Django's CONN_MAX_AGE_ database setting                    |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_ENGINE_             | ``django.db.backends.sqlite3``                         | Django's ENGINE_ database setting                          |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_HOST_               | ``None``                                               | Django's HOST_ database setting                            |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_NAME_               | ``~/.ara/server/ansible.sqlite``                       | Django's NAME_ database setting                            |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_PASSWORD_           | ``None``                                               | Django's PASSWORD_ database setting                        |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_PORT_               | ``None``                                               | Django's PORT_ database setting                            |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_USER_               | ``None``                                               | Django's USER_ database setting                            |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DEBUG_                       | ``False``                                              | Django's DEBUG_ setting                                    |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_          | ``False``                                              | Whether to enable distributed sqlite backend               |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_PREFIX_   | ``ara-report``                                         | Prefix to delegate to the distributed sqlite backend       |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DISTRIBUTED_SQLITE_ROOT_     | ``/var/www/logs``                                      | Root under which sqlite databases are expected             |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_ENV_                         | ``default``                                            | Environment to load configuration for                      |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_LOGGING_                     | See ARA_LOGGING_                                       | Logging configuration                                      |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_LOG_LEVEL_                   | ``INFO``                                               | Log level of the different components                      |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_PAGE_SIZE_                   | ``100``                                                | Amount of results returned per page by the API             |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_READ_LOGIN_REQUIRED_         | ``False``                                              | Whether authentication is required for reading data        |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_SECRET_KEY_                  | Randomized token, see ARA_SECRET_KEY_                  | Django's SECRET_KEY_ setting                               |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_SETTINGS_                    | ``~/.ara/server/settings.yaml``                        | Path to an API server configuration file                   |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_TIME_ZONE_                   | Local system timezone                                  | Time zone used when storing and returning results          |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_WRITE_LOGIN_REQUIRED_        | ``False``                                              | Whether authentication is required for writing data        |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 
-.. _CORS_ORIGIN_WHITELIST: https://github.com/ottoyiu/django-cors-headers
+.. _CORS_ORIGIN_WHITELIST: https://github.com/adamchainz/django-cors-headers#cors_origin_whitelist
+.. _CORS_ORIGIN_REGEX_WHITELIST: https://github.com/adamchainz/django-cors-headers#cors_origin_regex_whitelist
 .. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts
 .. _DEBUG: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-DEBUG
 .. _SECRET_KEY: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-SECRET_KEY
@@ -121,7 +124,7 @@ ARA_CORS_ORIGIN_WHITELIST
 
 - **Environment variable**: ``ARA_CORS_ORIGIN_WHITELIST``
 - **Configuration file variable**: ``CORS_ORIGIN_WHITELIST``
-- **Provided by**: `django-cors-headers <https://github.com/ottoyiu/django-cors-headers>`_
+- **Provided by**: `django-cors-headers <https://github.com/adamchainz/django-cors-headers>`_
 - **Type**: ``list``
 - **Default**: ``["127.0.0.1:8000", "localhost:3000"]``
 - **Examples**:
@@ -141,7 +144,38 @@ ARA_CORS_ORIGIN_WHITELIST
 Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_.
 
 This setting is typically used in order to allow the API and a web client
-(such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to each other.
+(such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to
+each other.
+
+ARA_CORS_ORIGIN_REGEX_WHITELIST
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_CORS_ORIGIN_REGEX_WHITELIST``
+- **Configuration file variable**: ``CORS_ORIGIN_REGEX_WHITELIST``
+- **Provided by**: `django-cors-headers <https://github.com/adamchainz/django-cors-headers>`_
+- **Type**: ``list``
+- **Default**: ``[]``
+- **Examples**:
+
+  - ``export ARA_CORS_ORIGIN_REGEX_WHITELIST="['^https://pr-\d+.ara-web.example.org$']"``
+  - In a YAML configuration file::
+
+      dev:
+        CORS_ORIGIN_REGEX_WHITELIST:
+          - '^https://pr-\d+.ara-web.example.org$'
+      production:
+        CORS_ORIGIN_REGEX_WHITELIST:
+          - '^https://web.ara.example.(org|net)$'
+
+Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_.
+
+This setting is typically used in order to allow the API and a web client
+(such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to
+each other.
+
+Especially useful for situations like CI where the deployment domain may not be
+known in advance, this setting is applied in addition to the individual domains
+in the CORS_ORIGIN_WHITELIST.
 
 ARA_DATABASE_CONN_MAX_AGE
 ~~~~~~~~~~~~~~~~~~~~~~~~~

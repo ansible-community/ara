@@ -70,6 +70,7 @@ LOGGING = {
 # Django built-in server and npm development server
 ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
 CORS_ORIGIN_WHITELIST = settings.get("CORS_ORIGIN_WHITELIST", ["http://127.0.0.1:8000", "http://localhost:3000"])
+CORS_ORIGIN_REGEX_WHITELIST = settings.get("CORS_ORIGIN_REGEX_WHITELIST", [])
 CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
 
 ADMINS = settings.get("ADMINS", ())
@@ -245,6 +246,7 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         BASE_DIR=BASE_DIR,
         ALLOWED_HOSTS=ALLOWED_HOSTS,
         CORS_ORIGIN_WHITELIST=CORS_ORIGIN_WHITELIST,
+        CORS_ORIGIN_REGEX_WHITELIST=CORS_ORIGIN_REGEX_WHITELIST,
         CORS_ORIGIN_ALLOW_ALL=CORS_ORIGIN_ALLOW_ALL,
         SECRET_KEY=SECRET_KEY,
         DATABASE_ENGINE=DATABASE_ENGINE,

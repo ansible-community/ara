@@ -137,6 +137,9 @@ ara_api_cors_origin_whitelist:
   - "http://127.0.0.1:8000"
   - "http://localhost:3000"
 
+# ARA_CORS_ORIGIN_REGEX_WHITELIST - django-cors-headers’s CORS_ORIGIN_REGEX_WHITELIST setting
+ara_api_cors_origin_regex_whitelist: []
+
 # ARA_SERVER_ALLOWED_HOSTS - Django’s ALLOWED_HOSTS setting
 ara_api_allowed_hosts:
   - "127.0.0.1"

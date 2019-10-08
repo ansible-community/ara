@@ -76,6 +76,7 @@
       BASE_DIR: "{{ ara_api_base_dir }}"
       CORS_ORIGIN_ALLOW_ALL: "{{ ara_api_cors_origin_allow_all }}"
       CORS_ORIGIN_WHITELIST: "{{ ara_api_cors_origin_whitelist }}"
+      CORS_ORIGIN_REGEX_WHITELIST: "{{ ara_api_cors_origin_regex_whitelist }}"
       DATABASE_ENGINE: "{{ ara_api_database_engine }}"
       DATABASE_NAME: "{{ ara_api_database_name }}"
       DATABASE_USER: "{{ ara_api_database_user }}"
