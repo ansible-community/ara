@@ -135,6 +135,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "health_check",
+    "health_check.db",
     "corsheaders",
     "rest_framework",
     "django_filters",

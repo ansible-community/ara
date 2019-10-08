@@ -43,5 +43,6 @@ urlpatterns = [
     path("api/", APIIndex.as_view(), name='api-index'),
     path("api/v1/", include("ara.api.urls")),
     path("admin/", admin.site.urls),
+    path("healthcheck/", include("health_check.urls")),
 ]
 # fmt: on
