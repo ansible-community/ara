@@ -1,0 +1,89 @@
+- name: Ensure volume directory exists
+  file:
+    path: "{{ ara_api_root_dir }}/server"
+    state: directory
+    recurse: yes
+
+- name: "Build {{ item.name }}:{{ item.tag }} with {{ item.script }}"
+  command: "{{ ara_api_source }}/contrib/container-images/{{ item.script }} {{ item.name }}:{{ item.tag }}"
+
+- name: "Start {{ item.name }}:{{ item.tag }} with podman"
+  command: |
+    podman run --name api-server --detach --tty \
+    --volume {{ ara_api_root_dir }}/server:/opt/ara:z -p 8000:8000 \
+    {{ item.name }}:{{ item.tag }}
+
+- name: Run SQL migrations
+  command: podman exec -it api-server ara-manage migrate
+  register: _sql_migrations
+  # Allow the container to settle from booting up
+  retries: 3
+  delay: 5
+  until: _sql_migrations is succeeded
+
+- block:
+    - name: Get the API root
+      uri:
+        url: "http://127.0.0.1:8000/api/"
+        return_content: yes
+        follow_redirects: none
+        method: GET
+      register: _get_root
+      # Allow the server to settle from sql migrations
+      until: _get_root.status == 200
+      retries: 3
+      delay: 5
+
+    - name: Validate the API response
+      assert:
+        that:
+          - "'gunicorn' in _get_root.server"
+          - _get_root.json["kind"] == "ara"
+          - _get_root.json["api"] == ["http://127.0.0.1:8000/api/v1/"]
+
+    - name: Create a test playbook
+      uri:
+        url: "http://127.0.0.1:8000/api/v1/playbooks"
+        return_content: yes
+        follow_redirects: none
+        method: POST
+        status_code: 201
+        body_format: json
+        body:
+          name: "Integration test playbook for {{ item.script }}"
+          ansible_version: "9.0.0.1"
+          started: "{{ ansible_date_time.iso8601_micro }}"
+          status: running
+          labels:
+            - "{{ _get_root.json['version'] }}"
+            - "{{ item.name }}:{{ item.tag }}"
+            - "{{ item.script }}"
+          path: "/tests/container_test_tasks.yaml"
+      register: _post_playbook
+
+    - name: Get the test playbook
+      uri:
+        url: "http://127.0.0.1:8000/api/v1/playbooks/{{ _post_playbook.json['id'] }}"
+        return_content: yes
+        follow_redirects: none
+        method: GET
+        status_code: 200
+      register: _get_playbook
+
+    - name: Assert the test playbook
+      assert:
+        that:
+          - _get_playbook.json["id"] == _post_playbook.json["id"]
+  always:
+    - name: Delete previous static build
+      file:
+        path: "{{ ara_api_root_dir }}/server/static"
+        state: absent
+
+    - name: Generate a static report
+      command: podman exec -it api-server ara-manage generate /opt/ara/static
+      ignore_errors: yes
+
+    # The container gets removed but the data persists in ~/.ara-tests/server
+    - name: Stop the container and remove it
+      command: podman rm -f api-server

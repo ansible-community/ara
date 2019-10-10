@@ -21,6 +21,7 @@ Table of Contents
     Setting playbook names and labels <playbook-names-and-labels>
     Recording arbitrary data in playbooks <ara-record>
     Querying ARA from inside playbooks <ara-api-lookup>
+    Running ARA API server container images <container-images>
     Contributing to ARA <contributing>
 
 .. toctree::
