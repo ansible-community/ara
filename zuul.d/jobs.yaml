@@ -22,14 +22,6 @@
     nodeset: centos-7
 
 - job:
-    name: ara-integration-opensuse-py27-2.8.4
-    parent: ara-integration-base
-    vars:
-      python_test_version: py27
-      ansible_test_version: 2.8.4
-    nodeset: opensuse-423
-
-- job:
     name: ara-integration-ubuntu-py36-2.8.4
     parent: ara-integration-base
     vars:
