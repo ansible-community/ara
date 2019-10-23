@@ -1,3 +1,9 @@
+- nodeset:
+    name: ara-fedora-30
+    nodes:
+      - name: fedora-30
+        label: fedora-30
+
 - job:
     name: ansible-role-ara-api-base
     parent: base
@@ -34,7 +40,7 @@
 - job:
     name: ansible-role-ara-api-fedora
     parent: ansible-role-ara-api-base
-    nodeset: fedora-latest
+    nodeset: ara-fedora-30
 
 - job:
     name: ansible-role-ara-api-fedora-devel
@@ -128,4 +134,4 @@
 - job:
     name: ansible-role-ara-web-fedora
     parent: ansible-role-ara-web-base
-    nodeset: fedora-latest
+    nodeset: ara-fedora-30
