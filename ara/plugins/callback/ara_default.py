@@ -139,6 +139,7 @@ class CallbackModule(CallbackBase):
         self.playbook = None
         self.stats = None
         self.loop_items = []
+        self.host_cache = {}
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
@@ -205,10 +206,6 @@ class CallbackModule(CallbackBase):
             playbook=self.playbook["id"],
             started=datetime.datetime.now().isoformat(),
         )
-
-        # Record all the hosts involved in the play
-        for host in play.hosts:
-            self._get_or_create_host(host=host)
 
         return self.play
 
@@ -313,7 +310,9 @@ class CallbackModule(CallbackBase):
     def _get_or_create_host(self, host):
         self.log.debug("Getting or creating host: %s" % host)
         # Note: The get_or_create is handled through the serializer of the API server.
-        return self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
+        if host not in self.host_cache:
+            self.host_cache[host] = self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
+        return self.host_cache[host]
 
     def _load_result(self, result, status, **kwargs):
         """
@@ -321,6 +320,7 @@ class CallbackModule(CallbackBase):
         host completes. It is responsible for logging a single result to the
         database.
         """
+        # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(result._host.get_name())
 
         # Use Ansible's CallbackBase._dump_results in order to strip internal
