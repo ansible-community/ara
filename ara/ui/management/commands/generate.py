@@ -64,6 +64,7 @@ class Command(BaseCommand):
             destination = os.path.join(path, "file/%s.html" % file.id)
             serializer = serializers.DetailedFileSerializer(file)
             data = {"file": serializer.data, "static_generation": True}
+            self.render("file.html", destination, **data)
 
         # Hosts
         query = models.Host.objects.all()
