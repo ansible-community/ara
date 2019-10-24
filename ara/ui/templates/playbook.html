@@ -79,10 +79,7 @@
                         <th>Task</th>
                         <th>Action</th>
                         <th>Status</th>
-                        <th>Changed</th>
                         <th>Host</th>
-                        <th>Path</th>
-                        <th>Handler</th>
                         <th>Started</th>
                         <th>Duration</th>
                     </tr>
@@ -93,14 +90,9 @@
                     {% for result in task.results %}
                     <tr>
                         <td><a href="../result/{{ result.id }}.html">{{ task.name }}</a></td>
-                        <td>{{ task.action }}</td>
+                        <td><a href="../file/{{ task.file.id }}.html#{{ task.lineno }}">{{ task.action }}</a></td>
                         <td>{{ result.status }}</td>
-                        <td>{{ result.changed }}</td>
                         <td>{{ result.host.name }}</td>
-                        <td>
-                            <a href="../file/{{ task.file.id }}.html">{{ task.file.path | truncatechars:30 }}:{{ task.lineno }}</a>
-                        </td>
-                        <td>{{ task.handler }}</td>
                         <td>{{ result.started | format_date }}</td>
                         <td>{{ result.duration | format_duration }}</td>
                     </tr>
