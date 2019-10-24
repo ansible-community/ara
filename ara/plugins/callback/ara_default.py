@@ -296,8 +296,8 @@ class CallbackModule(CallbackBase):
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
 
     def _get_or_create_file(self, path):
-        self.log.debug("Getting or creating file: %s" % path)
         if path not in self.file_cache:
+            self.log.debug("File not in cache, getting or creating: %s" % path)
             try:
                 with open(path, "r") as fd:
                     content = fd.read()
@@ -313,9 +313,9 @@ class CallbackModule(CallbackBase):
         return self.file_cache[path]
 
     def _get_or_create_host(self, host):
-        self.log.debug("Getting or creating host: %s" % host)
         # Note: The get_or_create is handled through the serializer of the API server.
         if host not in self.host_cache:
+            self.log.debug("Host not in cache, getting or creating: %s" % host)
             self.host_cache[host] = self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
         return self.host_cache[host]
 
