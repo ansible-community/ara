@@ -2,14 +2,24 @@
 {% block body %}
 {% include "partials/playbook_card.html" with playbook=result.playbook %}
 {% load pygments_highlights %}
+{% load datetime_formatting %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
-        Result: {{ result.task.name }}
+        <h1><strong>Details</strong></h1>
+        <ul class="pf-c-list">
+            <li><strong>Task</strong>: {{ result.task.name }}</a></li>
+            <li><strong>Action</strong>: {{ result.task.action }}</li>
+            <li><strong>Path</strong>: <a href="../file/{{ result.task.file.id }}.html#{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
+            <li><strong>Host</strong>: <a href="../host/{{ result.host.id }}.html">{{ result.host.name }}</a></li>
+            <li><strong>Status</strong>: {{ result.status }}</li>
+            <li><strong>Started</strong>: {{ result.started | format_date }}</li>
+            <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>
+            <li><strong>Duration</strong>: {{ result.duration | format_duration }}</li>
+        </ul>
     </div>
-</div>
-<div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__body">
+        <h1><strong>Result</strong></h1>
         <table class="pf-c-table pf-m-grid-md" role="grid">
             <thead>
                 <tr>
