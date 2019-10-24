@@ -139,6 +139,7 @@ class CallbackModule(CallbackBase):
         self.playbook = None
         self.stats = None
         self.loop_items = []
+        self.file_cache = {}
         self.host_cache = {}
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
@@ -296,16 +297,20 @@ class CallbackModule(CallbackBase):
 
     def _get_or_create_file(self, path):
         self.log.debug("Getting or creating file: %s" % path)
-        # Note: The get_or_create is handled through the serializer of the API server.
-        try:
-            with open(path, "r") as fd:
-                content = fd.read()
-        except IOError as e:
-            self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
-            content = """ARA was not able to read this file successfully.
-                      Refer to the logs for more information"""
+        if path not in self.file_cache:
+            try:
+                with open(path, "r") as fd:
+                    content = fd.read()
+            except IOError as e:
+                self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
+                content = """ARA was not able to read this file successfully.
+                        Refer to the logs for more information"""
 
-        return self.client.post("/api/v1/files", playbook=self.playbook["id"], path=path, content=content)
+            self.file_cache[path] = self.client.post(
+                "/api/v1/files", playbook=self.playbook["id"], path=path, content=content
+            )
+
+        return self.file_cache[path]
 
     def _get_or_create_host(self, host):
         self.log.debug("Getting or creating host: %s" % host)
