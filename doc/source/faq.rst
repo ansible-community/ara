@@ -57,25 +57,19 @@ What versions of Ansible are supported ?
 The upstream Ansible community and maintainers provide support for the latest
 three major stable releases and ARA follows the same support cycle.
 
-For example, if the latest version of Ansible is 2.8, then the latest release
-of ARA will support 2.8 as well as 2.7 and 2.6.
+For example, if the latest version of Ansible is 2.9, then the latest release
+of ARA will support 2.9 as well as 2.8 and 2.7.
 
 For more information on Ansible's release and maintenance cycle, you can refer
 to the `Ansible documentation <https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html>`_.
 
-If you are using a release of Ansible that is no longer supported, we strongly
-encourage you to upgrade as soon as possible in order to benefit from the
-latest features and security fixes.
+If you are using a release of Ansible that is no longer supported, it doesn't
+mean that ARA won't work but it will no longer be tested. We strongly encourage
+you to upgrade as soon as possible in order to benefit from the latest features
+and security fixes not just in ARA but in Ansible as well.
 
 Older unsupported versions of Ansible can contain unfixed security
 vulnerabilities (*CVE*).
-
-What versions of Python are supported ?
----------------------------------------
-
-Before version 1.0 of ARA, both python2 and python3 were supported.
-Versions of ARA after 1.0 are not designed to support python2 in consideration
-that python2 will reach end of life in `January 2020 <https://pythonclock.org/>`_.
 
 Why ARA instead of <X> ?
 ------------------------

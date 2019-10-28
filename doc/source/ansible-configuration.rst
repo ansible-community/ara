@@ -1,3 +1,5 @@
+.. _ansible-configuration:
+
 Configuring Ansible to use ARA
 ==============================
 

@@ -8,35 +8,32 @@ ARA Records Ansible playbooks and makes them easier to understand and troublesho
 ARA saves playbook results to a local or remote database by using an Ansible
 callback plugin and provides an API to integrate this data in tools and interfaces.
 
-This project provides the ARA API as well as the Ansible components.
+This project provides ARA's Ansible plugins, the REST API server as well as
+simple built-in web interfaces to browse the recorded data.
 
-For the web client interface, see `ara-web <https://github.com/ansible-community/ara-web>`_.
+A stateless javascript client interface is provided by a different project,
+`ara-web <https://github.com/ansible-community/ara-web>`_.
 
 Quickstart
 ==========
 
-Here's how you can get started from scratch with sane defaults:
+Here's how you can get started from scratch with sane defaults with python>=3.6:
 
 .. code-block:: bash
 
-    # Create a python3 virtual environment and activate it so we don't conflict
-    # with system or distribution packages
-    python3 -m venv ~/.ara/virtualenv
-    source ~/.ara/virtualenv/bin/activate
-
-    # Install Ansible, ARA and it's API server dependencies
-    pip install ansible ara[server]
+    # Install ARA and Ansible for the current user
+    python3 -m pip install --user ansible "ara[server]"
 
     # Tell Ansible to use the ARA callback plugin
-    export ANSIBLE_CALLBACK_PLUGINS="$(python -m ara.setup.callback_plugins)"
+    export ANSIBLE_CALLBACK_PLUGINS="$(python3 -m ara.setup.callback_plugins)"
 
-    # Run your playbook as usual
+    # Run your playbook
     ansible-playbook playbook.yml
 
 If nothing went wrong, your playbook data should have been saved in a local
 database at ``~/.ara/server/ansible.sqlite``.
 
-You can browse this data through the API by executing ``ara-manage runserver``
+You can take a look at the recorded data by running ``ara-manage runserver``
 and pointing your browser at http://127.0.0.1:8000/.
 
 That's it !
