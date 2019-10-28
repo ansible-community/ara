@@ -1,10 +1,8 @@
 FAQ
 ===
 
-What is ARA ?
--------------
-
-ARA Records `Ansible <https://wwwansible.com>`_ playbooks and makes them easier to understand and troubleshoot.
+Where is the source code ?
+--------------------------
 
 ARA is currently composed of three different free and open source projects:
 
@@ -12,8 +10,8 @@ ARA is currently composed of three different free and open source projects:
 - https://github.com/ansible-community/ara-web for the standalone web interface
 - https://github.com/ansible-community/ara-infra for project-specific infrastructure needs (such as the `ara.recordsansible.org <https://ara.recordsansible.org>`_ website)
 
-How does it work ?
-------------------
+How does ARA record data from Ansible ?
+---------------------------------------
 
 ARA Records Ansible playbooks through an Ansible `callback plugin`_.
 
@@ -33,6 +31,41 @@ the API.
 
 .. _callback plugin: https://docs.ansible.com/ansible/latest/plugins/callback.html
 
+How can we browse the data recorded by ARA ?
+--------------------------------------------
+
+There are currently three ways to browse data recorded by ARA:
+
+Built-in REST API Browser
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ARA API server ships with a built-in REST API browser provided by `django-rest-framework <https://www.django-rest-framework.org/>`_.
+
+.. image:: ../source/_static/ara-api-browser-root.png
+
+Built-in simple interface
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ARA also provides a simple, but limited, interface for use cases that do not need or require features provided by ara-web.
+
+.. image:: ../source/_static/ui-built-in.png
+
+ara-web
+~~~~~~~
+
+ara-web_ is a stateless javascript API client interface built with react.
+It queries a running API server to provide reporting and visualization of playbook runs.
+
+.. image:: ../source/_static/ui-ara-web.png
+
+Are there live demos available ?
+--------------------------------
+
+Yes, you can find persistent and up-to-date live demos at
+`api.demo.recordsansible.org <https://api.demo.recordsansible.org>`_ for the
+API and `web.demo.recordsansible.org <https://web.demo.recordsansible.org>`_ for
+the ara-web_ standalone interface.
+
 What's an Ansible callback ?
 ----------------------------
 
@@ -42,14 +75,6 @@ You could use a callback to do things like print additional details or, in the
 case of ARA, record the playbook run data in a database.
 
 .. _Ansible Callbacks: https://docs.ansible.com/ansible/dev_guide/developing_plugins.html
-
-Are there live demos available ?
---------------------------------
-
-Yes, you can find persistent and up-to-date live demos at
-`api.demo.recordsansible.org <https://api.demo.recordsansible.org>`_ for the
-API and `web.demo.recordsansible.org <https://web.demo.recordsansible.org>`_ for
-the ara-web_ standalone interface.
 
 What versions of Ansible are supported ?
 ----------------------------------------
