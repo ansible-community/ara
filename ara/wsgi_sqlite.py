@@ -70,7 +70,19 @@ def bad_request(environ, start_response, message):
 
 
 def application(environ, start_response):
-    # Apache SetEnv variables are passed only in environ variable
+    # Environment variables passed by mod_wsgi land in environ while environment
+    # variables passed through gunicorn land in os.environ.
+    config_variables = [
+        "ARA_WSGI_USE_VIRTUALENV",
+        "ARA_WSGI_VIRTUALENV_PATH",
+        "ARA_WSGI_TMPDIR_MAX_AGE",
+        "ARA_WSGI_LOG_ROOT",
+        "ARA_WSGI_DATABASE_DIRECTORY"
+    ]
+    for variable in config_variables:
+        if variable in os.environ:
+            environ[variable] = os.environ[variable]
+
     if (int(environ.get('ARA_WSGI_USE_VIRTUALENV', 0)) == 1 and
        environ.get('ARA_WSGI_VIRTUALENV_PATH')):
         # Backwards compatibility, we did not always suffix activate_this.py
@@ -90,11 +102,30 @@ def application(environ, start_response):
         'ara-report'
     )
 
-    request = environ['REQUEST_URI']
+    # mod_wsgi uses REQUEST_URI, standardize on PATH_INFO instead
+    if 'REQUEST_URI' in environ:
+        environ['PATH_INFO'] = environ['SCRIPT_URL']
+
+    request = environ['PATH_INFO']
     match = re.search('/(?P<path>.*/{}/)'.format(DATABASE_DIRECTORY), request)
     if not match:
         return bad_request(environ, start_response,
                            'No "/{}/" in URL.'.format(DATABASE_DIRECTORY))
+
+    # It is not sufficient to set Flask's APPLICATION_ROOT, we must also set
+    # the SCRIPT_NAME variable to define the directory out of which the
+    # application should be served.
+    # See issues:
+    #   - https://github.com/pallets/flask/issues/1714
+    #   - https://github.com/pallets/flask/issues/2759
+    if not environ['SCRIPT_NAME']:
+        environ['SCRIPT_NAME'] = "/%s" % match.group('path')
+
+    # When SCRIPT_NAME is set, remove it from PATH_INFO
+    if environ['PATH_INFO'].startswith(environ['SCRIPT_NAME']):
+        environ['PATH_INFO'] = environ['PATH_INFO'][len(environ['SCRIPT_NAME']):]
+        if not environ['PATH_INFO']:
+            environ['PATH_INFO'] = '/'
 
     path = os.path.abspath(os.path.join(LOG_ROOT, match.group('path')))
 
@@ -121,16 +152,16 @@ def application(environ, start_response):
         now = time.time()
         if now - TMPDIR_MAX_AGE > os.path.getmtime(tmpdir):
             shutil.rmtree(tmpdir, ignore_errors=True)
-    os.environ['ANSIBLE_LOCAL_TEMP'] = os.path.join(tmpdir, '.ansible')
-    os.environ['ARA_DIR'] = os.path.join(tmpdir, '.ara')
+    environ['ANSIBLE_LOCAL_TEMP'] = os.path.join(tmpdir, '.ansible')
+    environ['ARA_DIR'] = os.path.join(tmpdir, '.ara')
 
     # Path to the ARA database
-    os.environ['ARA_DATABASE'] = 'sqlite:///{}'.format(database)
+    environ['ARA_DATABASE'] = 'sqlite:///{}'.format(database)
     # The intent is that we are dealing with databases that already exist.
     # Therefore, we're not really interested in creating the database and
     # making sure that the SQL migrations are done. Toggle that off.
     # This needs to be a string, we're setting an environment variable
-    os.environ['ARA_AUTOCREATE_DATABASE'] = 'false'
+    environ['ARA_AUTOCREATE_DATABASE'] = 'false'
 
     msg = 'Request {request} mapped to {database} with root {root}'.format(
         request=request,
@@ -143,7 +174,7 @@ def application(environ, start_response):
     try:
         app = create_app()
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(database)
-        app.config['APPLICATION_ROOT'] = match.group('path')
+        app.config['APPLICATION_ROOT'] = environ['PATH_INFO']
         return app(environ, start_response)
     except Exception as e:
         # We're staying relatively vague on purpose to avoid disclosure
