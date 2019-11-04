@@ -58,7 +58,7 @@ Community and getting help
 
 - Bugs, issues and enhancements: https://github.com/ansible-community/ara/issues
 - IRC: #ara on `Freenode <https://webchat.freenode.net/?channels=#ara>`_
-- Slack: https://arecordsansible.slack.com (`invitation link <https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLWU4MmZhZTI4ZjRjOTUwZTM2MzM3MzcwNDU1YzFmNzRlMzI0NTUzNDY1MWJlNThhM2I4ZTViZjUwZTRkNTBiM2I>`_)
+- Slack: https://arecordsansible.slack.com (`invitation link <https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLTU2NTU3YjMwYzRlYmRkZTVjZTFiOWIxNjE5NGRhMDQ3ZTgzZmQyZTY2NzY5YmZmNDA5ZWY4YTY1Y2Y1ODBmNzc>`_)
 
 - Website and blog: https://ara.recordsansible.org
 - Twitter: https://twitter.com/arecordsansible
