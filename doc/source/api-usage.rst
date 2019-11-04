@@ -50,8 +50,12 @@ specifying an endpoint parameter:
     # Import the client
     from ara.clients.http import AraHttpClient
 
+    endpoint = "https://api.demo.recordsansible.org"
     # Instanciate the HTTP client with an endpoint where an API server is listening
-    client = AraHttpClient(endpoint="https://api.demo.recordsansible.org")
+    client = AraHttpClient(endpoint=endpoint)
+
+    # SSL verification can be disabled with verify=False
+    client = AraHttpClient(endpoint=endpoint, verify=False)
 
 Example API usage
 ~~~~~~~~~~~~~~~~~

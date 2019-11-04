@@ -31,11 +31,13 @@ CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
 
 class HttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
+    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
 
         self.endpoint = endpoint.rstrip("/")
+        self.auth = auth
         self.timeout = timeout
+        self.verify = verify
         self.headers = {
             "User-Agent": "ara-http-client_%s" % CLIENT_VERSION,
             "Accept": "application/json",
@@ -43,8 +45,9 @@ class HttpClient(object):
         }
         self.http = requests.Session()
         self.http.headers.update(self.headers)
-        if auth is not None:
-            self.http.auth = auth
+        if self.auth is not None:
+            self.http.auth = self.auth
+        self.http.verify = self.verify
 
     def _request(self, method, url, **payload):
         # Use requests.Session to do the query
@@ -73,9 +76,13 @@ class HttpClient(object):
 
 
 class AraHttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", timeout=30, auth=None):
+    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
-        self.client = HttpClient(endpoint, timeout, auth=auth)
+        self.endpoint = endpoint
+        self.auth = auth
+        self.timeout = timeout
+        self.verify = verify
+        self.client = HttpClient(endpoint=self.endpoint, timeout=self.timeout, auth=self.auth, verify=self.verify)
         active_client._instance = weakref.ref(self)
 
     def _request(self, method, url, **kwargs):
