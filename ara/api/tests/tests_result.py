@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -179,3 +181,21 @@ class ResultTestCase(APITestCase):
         unreachable = factories.ResultFactory(status="unreachable")
         result = self.client.get("/api/v1/results/%s" % unreachable.id)
         self.assertEqual(result.data["status"], "unreachable")
+
+    def test_get_result_by_date(self):
+        result = factories.ResultFactory()
+
+        past = datetime.datetime.now() - datetime.timedelta(hours=12)
+        negative_date_fields = ["created_before", "started_before", "updated_before"]
+        positive_date_fields = ["created_after", "started_after", "updated_after"]
+
+        # Expect no result when searching before it was created
+        for field in negative_date_fields:
+            request = self.client.get("/api/v1/results?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 0)
+
+        # Expect a result when searching after it was created
+        for field in positive_date_fields:
+            request = self.client.get("/api/v1/results?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 1)
+            self.assertEqual(request.data["results"][0]["id"], result.id)

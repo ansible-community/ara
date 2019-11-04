@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -146,3 +148,21 @@ class RecordTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(record.key, request.data["results"][0]["key"])
         self.assertEqual(record.playbook.id, request.data["results"][0]["playbook"])
+
+    def test_get_record_by_date(self):
+        record = factories.RecordFactory()
+
+        past = datetime.datetime.now() - datetime.timedelta(hours=12)
+        negative_date_fields = ["created_before", "updated_before"]
+        positive_date_fields = ["created_after", "updated_after"]
+
+        # Expect no record when searching before it was created
+        for field in negative_date_fields:
+            request = self.client.get("/api/v1/records?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 0)
+
+        # Expect a record when searching after it was created
+        for field in positive_date_fields:
+            request = self.client.get("/api/v1/records?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 1)
+            self.assertEqual(request.data["results"][0]["id"], record.id)

@@ -22,6 +22,7 @@ from ara.api import filters, models, serializers
 
 class LabelViewSet(viewsets.ModelViewSet):
     queryset = models.Label.objects.all()
+    filterset_class = filters.LabelFilter
 
     def get_serializer_class(self):
         if self.action == "list":

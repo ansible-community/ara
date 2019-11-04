@@ -142,6 +142,24 @@ class TaskTestCase(APITestCase):
         request = self.client.get("/api/v1/tasks/%s" % task.id)
         self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
 
+    def test_get_task_by_date(self):
+        task = factories.TaskFactory()
+
+        past = datetime.datetime.now() - datetime.timedelta(hours=12)
+        negative_date_fields = ["created_before", "started_before", "updated_before"]
+        positive_date_fields = ["created_after", "started_after", "updated_after"]
+
+        # Expect no task when searching before it was created
+        for field in negative_date_fields:
+            request = self.client.get("/api/v1/tasks?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 0)
+
+        # Expect a task when searching after it was created
+        for field in positive_date_fields:
+            request = self.client.get("/api/v1/tasks?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 1)
+            self.assertEqual(request.data["results"][0]["id"], task.id)
+
     def test_update_wrong_task_status(self):
         task = factories.TaskFactory()
         self.assertNotEqual("wrong", task.status)

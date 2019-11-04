@@ -111,6 +111,24 @@ class PlayTestCase(APITestCase):
         request = self.client.get("/api/v1/plays/%s" % play.id)
         self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
 
+    def test_get_play_by_date(self):
+        play = factories.PlayFactory()
+
+        past = datetime.datetime.now() - datetime.timedelta(hours=12)
+        negative_date_fields = ["created_before", "started_before", "updated_before"]
+        positive_date_fields = ["created_after", "started_after", "updated_after"]
+
+        # Expect no play when searching before it was created
+        for field in negative_date_fields:
+            request = self.client.get("/api/v1/plays?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 0)
+
+        # Expect a play when searching after it was created
+        for field in positive_date_fields:
+            request = self.client.get("/api/v1/plays?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 1)
+            self.assertEqual(request.data["results"][0]["id"], play.id)
+
     def test_update_wrong_play_status(self):
         play = factories.PlayFactory()
         self.assertNotEqual("wrong", play.status)

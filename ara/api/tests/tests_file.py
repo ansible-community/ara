@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -125,3 +127,21 @@ class FileTestCase(APITestCase):
         request = self.client.delete("/api/v1/files/%s" % file.id)
         self.assertEqual(204, request.status_code)
         self.assertEqual(0, models.File.objects.all().count())
+
+    def test_get_file_by_date(self):
+        file = factories.FileFactory()
+
+        past = datetime.datetime.now() - datetime.timedelta(hours=12)
+        negative_date_fields = ["created_before", "updated_before"]
+        positive_date_fields = ["created_after", "updated_after"]
+
+        # Expect no file when searching before it was created
+        for field in negative_date_fields:
+            request = self.client.get("/api/v1/files?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 0)
+
+        # Expect a file when searching after it was created
+        for field in positive_date_fields:
+            request = self.client.get("/api/v1/files?%s=%s" % (field, past.isoformat()))
+            self.assertEqual(request.data["count"], 1)
+            self.assertEqual(request.data["results"][0]["id"], file.id)

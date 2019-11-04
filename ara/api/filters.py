@@ -16,35 +16,62 @@
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
 import django_filters
+from django.db import models as django_models
 
 
-class PlaybookFilter(django_filters.rest_framework.FilterSet):
+class BaseFilter(django_filters.rest_framework.FilterSet):
+    created_before = django_filters.IsoDateTimeFilter(field_name="created", lookup_expr="lte")
+    created_after = django_filters.IsoDateTimeFilter(field_name="created", lookup_expr="gte")
+    updated_before = django_filters.IsoDateTimeFilter(field_name="updated", lookup_expr="lte")
+    updated_after = django_filters.IsoDateTimeFilter(field_name="updated", lookup_expr="gte")
+
+    # fmt: off
+    filter_overrides = {
+        django_models.DateTimeField: {
+            'filter_class': django_filters.IsoDateTimeFilter
+        },
+    }
+    # fmt: on
+
+
+class DateFilter(BaseFilter):
+    started_before = django_filters.IsoDateTimeFilter(field_name="started", lookup_expr="lte")
+    started_after = django_filters.IsoDateTimeFilter(field_name="started", lookup_expr="gte")
+    ended_before = django_filters.IsoDateTimeFilter(field_name="ended", lookup_expr="lte")
+    ended_after = django_filters.IsoDateTimeFilter(field_name="ended", lookup_expr="gte")
+
+
+class LabelFilter(BaseFilter):
+    pass
+
+
+class PlaybookFilter(DateFilter):
     name = django_filters.CharFilter(field_name="name", lookup_expr="iexact")
     status = django_filters.CharFilter(field_name="status", lookup_expr="iexact")
 
 
-class PlayFilter(django_filters.rest_framework.FilterSet):
+class PlayFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
 
 
-class TaskFilter(django_filters.rest_framework.FilterSet):
+class TaskFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
 
 
-class HostFilter(django_filters.rest_framework.FilterSet):
+class HostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
 
 
-class ResultFilter(django_filters.rest_framework.FilterSet):
+class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
 
 
-class FileFilter(django_filters.rest_framework.FilterSet):
+class FileFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     path = django_filters.CharFilter(field_name="path", lookup_expr="exact")
 
 
-class RecordFilter(django_filters.rest_framework.FilterSet):
+class RecordFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     key = django_filters.CharFilter(field_name="key", lookup_expr="exact")
