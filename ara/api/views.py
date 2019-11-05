@@ -17,7 +17,7 @@
 
 from rest_framework import viewsets
 
-from ara.api import models, serializers
+from ara.api import filters, models, serializers
 
 
 class LabelViewSet(viewsets.ModelViewSet):
@@ -35,7 +35,7 @@ class LabelViewSet(viewsets.ModelViewSet):
 
 class PlaybookViewSet(viewsets.ModelViewSet):
     queryset = models.Playbook.objects.all()
-    filter_fields = ("name", "status")
+    filterset_class = filters.PlaybookFilter
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -49,7 +49,7 @@ class PlaybookViewSet(viewsets.ModelViewSet):
 
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = models.Play.objects.all()
-    filter_fields = ("playbook", "uuid")
+    filterset_class = filters.PlayFilter
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -63,7 +63,7 @@ class PlayViewSet(viewsets.ModelViewSet):
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = models.Task.objects.all()
-    filter_fields = ("playbook",)
+    filterset_class = filters.TaskFilter
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -77,7 +77,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
-    filter_fields = ("playbook",)
+    filterset_class = filters.HostFilter
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -90,7 +90,7 @@ class HostViewSet(viewsets.ModelViewSet):
 
 
 class ResultViewSet(viewsets.ModelViewSet):
-    filter_fields = ("playbook",)
+    filterset_class = filters.ResultFilter
 
     def get_queryset(self):
         statuses = self.request.GET.getlist("status")
@@ -110,7 +110,7 @@ class ResultViewSet(viewsets.ModelViewSet):
 
 class FileViewSet(viewsets.ModelViewSet):
     queryset = models.File.objects.all()
-    filter_fields = ("playbook", "path")
+    filterset_class = filters.FileFilter
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -124,7 +124,7 @@ class FileViewSet(viewsets.ModelViewSet):
 
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = models.Record.objects.all()
-    filter_fields = ("playbook", "key")
+    filterset_class = filters.RecordFilter
 
     def get_serializer_class(self):
         if self.action == "list":
