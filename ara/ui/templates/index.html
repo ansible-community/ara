@@ -1,5 +1,83 @@
 {% extends "base.html" %}
 {% block body %}
+{% if not static_generation %}
+{% load datetime_formatting %}
+{% if search_query %}
+<details id="search" open>
+    <summary>Search, sort and filter</summary>
+    <a href="/">
+        <button class="pf-c-button pf-m-plain pf-m-link" type="button" aria-label="Remove">
+            <i class="fas fa-times" aria-hidden="true"></i> Clear filters
+        </button>
+    </a>
+{% else %}
+<details id="search">
+    <summary>Search, Sort and Filter by date</summary>
+{% endif %}
+    <div class="pf-l-flex pf-m-space-items-xl">
+        <div class="pf-l-flex__item">
+            <h1 class="pf-c-title pf-m-2xl"><i class="fas fa-search"></i> Search</h1>
+            <ul class="pf-c-list">
+                <form novalidate action="/" method="get" class="pf-c-form pf-m-horizontal">
+                    <div class="pf-c-form__group">
+                        <label class="pf-c-form__label" for="name">
+                            <span class="pf-c-form__label-text">Playbook name</span>
+                        </label>
+                        <div class="pf-c-form__horizontal-group">
+                            <input class="pf-c-form-control" type="text" id="name" name="name" value="{% if search_form.name.value is not null %}{{ search_form.name.value }}{% endif %}" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <label class="pf-c-form__label" for="name">
+                            <span class="pf-c-form__label-text">Playbook path</span>
+                        </label>
+                        <div class="pf-c-form__horizontal-group">
+                            <input class="pf-c-form-control" type="text" id="path" name="path" value="{% if search_form.path.value is not null %}{{ search_form.path.value }}{% endif %}" />
+                        </div>
+                    </div>
+                    <div class="pf-c-form__group">
+                        <label class="pf-c-form__label" for="status">
+                            <span class="pf-c-form__label-text">Playbook status</span>
+                        </label>
+                        <div class="pf-c-form__horizontal-group">
+                            <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
+                            {% for value, text in search_form.status.field.choices %}
+                                <label class="pf-c-check pf-c-select__menu-item" for="select-checkbox-expanded-active">
+                                    {% if value in search_form.status.data %}
+                                    <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" checked />
+                                    {% else %}
+                                    <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" />
+                                    {% endif %}
+                                    <span class="pf-c-check__label">{{ value }}</span>
+                                </label>
+                            {% endfor %}
+                            </fieldset>
+                        </div>
+                    </div>
+                    <input type="submit" value="Submit">
+                </form>
+            </ul>
+        </div>
+        <div class="pf-l-flex__item">
+            <h1 class="pf-c-title pf-m-2xl"><i class="fas fa-sort"></i> Sort by</h1>
+            <ul class="pf-c-list">
+                <li>Started: <a href="?order=started">ascending</a> | <a href="?order=-started">descending</a></li>
+                <li>Ended: <a href="?order=ended">ascending</a> | <a href="?order=-ended">descending</a></li>
+                <li>Duration: <a href="?order=duration">ascending</a> | <a href="?order=-duration">descending</a></li>
+            </ul>
+        </div>
+        <div class="pf-l-flex__item">
+            <h1 class="pf-c-title pf-m-2xl"><i class="fas fa-clock"></i> Filter by date</h1>
+            <ul class="pf-c-list">
+                <li><a href="?started_after={% past_timestamp with days=30 %}">Last 30 days</a></li>
+                <li><a href="?started_after={% past_timestamp with days=7 %}">Last 7 days</a></li>
+                <li><a href="?started_after={% past_timestamp with hours=24 %}">Last 24 hours</a></li>
+                <li><a href="?started_after={% past_timestamp with minutes=60 %}">Last 60 minutes</a></li>
+            </ul>
+        </div>
+    </div>
+</details>
+{% endif %}
 {% for playbook in playbooks %}
     {% include "partials/playbook_card.html" %}
 {% endfor %}

@@ -2,21 +2,37 @@ from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
-from ara.api import models, serializers
+from ara.api import filters, models, serializers
+from ara.ui import forms
 
 
-class Index(generics.RetrieveAPIView):
+class Index(generics.ListAPIView):
     """
     Returns a list of playbook summaries
     """
 
     queryset = models.Playbook.objects.all()
+    filterset_class = filters.PlaybookFilter
     renderer_classes = [TemplateHTMLRenderer]
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        serializer = serializers.ListPlaybookSerializer(self.queryset.all(), many=True)
-        return Response({"page": "index", "playbooks": serializer.data})
+        # TODO: Can we retrieve those fields automatically ?
+        fields = ["order", "name", "started_after", "status"]
+        search_query = False
+        for field in fields:
+            if field in request.GET:
+                search_query = True
+
+        if search_query:
+            search_form = forms.PlaybookSearchForm(request.GET)
+        else:
+            search_form = forms.PlaybookSearchForm()
+
+        serializer = serializers.ListPlaybookSerializer(self.filter_queryset(self.queryset.all()), many=True)
+        return Response(
+            {"page": "index", "playbooks": serializer.data, "search_form": search_form, "search_query": search_query}
+        )
 
 
 class Playbook(generics.RetrieveAPIView):
