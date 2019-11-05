@@ -145,3 +145,22 @@ class FileTestCase(APITestCase):
             request = self.client.get("/api/v1/files?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], file.id)
+
+    def test_get_file_order(self):
+        first_file = factories.FileFactory(path="/root/file.yaml")
+        second_file = factories.FileFactory(path="/root/some/path/file.yaml")
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/files")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated", "path"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/files?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], first_file.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/files?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], second_file.id)

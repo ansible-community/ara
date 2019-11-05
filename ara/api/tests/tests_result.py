@@ -208,3 +208,26 @@ class ResultTestCase(APITestCase):
             request = self.client.get("/api/v1/results?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], result.id)
+
+    def test_get_result_order(self):
+        old_started = timezone.now() - datetime.timedelta(hours=12)
+        old_ended = old_started + datetime.timedelta(minutes=30)
+        old_result = factories.ResultFactory(started=old_started, ended=old_ended)
+        new_started = timezone.now() - datetime.timedelta(hours=6)
+        new_ended = new_started + datetime.timedelta(hours=1)
+        new_result = factories.ResultFactory(started=new_started, ended=new_ended)
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/results")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated", "started", "ended", "duration"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/results?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], old_result.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/results?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], new_result.id)

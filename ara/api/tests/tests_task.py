@@ -161,6 +161,29 @@ class TaskTestCase(APITestCase):
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], task.id)
 
+    def test_get_task_order(self):
+        old_started = timezone.now() - datetime.timedelta(hours=12)
+        old_ended = old_started + datetime.timedelta(minutes=30)
+        old_task = factories.TaskFactory(started=old_started, ended=old_ended)
+        new_started = timezone.now() - datetime.timedelta(hours=6)
+        new_ended = new_started + datetime.timedelta(hours=1)
+        new_task = factories.TaskFactory(started=new_started, ended=new_ended)
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/tasks")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated", "started", "ended", "duration"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/tasks?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], old_task.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/tasks?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], new_task.id)
+
     def test_update_wrong_task_status(self):
         task = factories.TaskFactory()
         self.assertNotEqual("wrong", task.status)

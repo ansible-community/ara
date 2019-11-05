@@ -166,3 +166,22 @@ class RecordTestCase(APITestCase):
             request = self.client.get("/api/v1/records?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], record.id)
+
+    def test_get_record_order(self):
+        first_record = factories.RecordFactory(key="alpha")
+        second_record = factories.RecordFactory(key="beta")
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/records")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated", "key"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/records?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], first_record.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/records?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], second_record.id)

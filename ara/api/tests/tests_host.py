@@ -126,3 +126,22 @@ class HostTestCase(APITestCase):
             request = self.client.get("/api/v1/hosts?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], host.id)
+
+    def test_get_host_order(self):
+        first_host = factories.HostFactory(name="alpha")
+        second_host = factories.HostFactory(name="beta", changed=10, failed=10, ok=10, skipped=10, unreachable=10)
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/hosts")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated", "name", "changed", "failed", "ok", "skipped", "unreachable"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/hosts?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], first_host.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/hosts?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], second_host.id)

@@ -78,13 +78,32 @@ class LabelTestCase(APITestCase):
         negative_date_fields = ["created_before", "updated_before"]
         positive_date_fields = ["created_after", "updated_after"]
 
-        # Expect no host when searching before it was created
+        # Expect no label when searching before it was created
         for field in negative_date_fields:
             request = self.client.get("/api/v1/labels?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 0)
 
-        # Expect a host when searching after it was created
+        # Expect a label when searching after it was created
         for field in positive_date_fields:
             request = self.client.get("/api/v1/labels?%s=%s" % (field, past.isoformat()))
             self.assertEqual(request.data["count"], 1)
             self.assertEqual(request.data["results"][0]["id"], label.id)
+
+    def test_get_label_order(self):
+        first_label = factories.LabelFactory()
+        second_label = factories.LabelFactory()
+
+        # Ensure we have two objects
+        request = self.client.get("/api/v1/labels")
+        self.assertEqual(2, len(request.data["results"]))
+
+        order_fields = ["id", "created", "updated"]
+        # Ascending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/labels?order=%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], first_label.id)
+
+        # Descending order
+        for field in order_fields:
+            request = self.client.get("/api/v1/labels?order=-%s" % field)
+            self.assertEqual(request.data["results"][0]["id"], second_label.id)

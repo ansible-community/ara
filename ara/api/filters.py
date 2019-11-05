@@ -42,36 +42,134 @@ class DateFilter(BaseFilter):
 
 
 class LabelFilter(BaseFilter):
-    pass
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated")
+        )
+    )
+    # fmt: on
 
 
 class PlaybookFilter(DateFilter):
     name = django_filters.CharFilter(field_name="name", lookup_expr="iexact")
     status = django_filters.CharFilter(field_name="status", lookup_expr="iexact")
 
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("started", "started"),
+            ("ended", "ended"),
+            ("duration", "duration"),
+        )
+    )
+    # fmt: on
+
 
 class PlayFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
 
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("started", "started"),
+            ("ended", "ended"),
+            ("duration", "duration"),
+        )
+    )
+    # fmt: on
+
 
 class TaskFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("started", "started"),
+            ("ended", "ended"),
+            ("duration", "duration"),
+        )
+    )
+    # fmt: on
 
 
 class HostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
 
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("name", "name"),
+            ("changed", "changed"),
+            ("failed", "failed"),
+            ("ok", "ok"),
+            ("skipped", "skipped"),
+            ("unreachable", "unreachable"),
+        )
+    )
+    # fmt: on
+
 
 class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("started", "started"),
+            ("ended", "ended"),
+            ("duration", "duration"),
+        )
+    )
+    # fmt: on
 
 
 class FileFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     path = django_filters.CharFilter(field_name="path", lookup_expr="exact")
 
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("path", "path")
+        )
+    )
+    # fmt: on
+
 
 class RecordFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     key = django_filters.CharFilter(field_name="key", lookup_expr="exact")
+
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("key", "key")
+        )
+    )
+    # fmt: on
