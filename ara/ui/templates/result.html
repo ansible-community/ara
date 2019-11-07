@@ -10,7 +10,7 @@
         <ul class="pf-c-list">
             <li><strong>Task</strong>: {{ result.task.name }}</a></li>
             <li><strong>Action</strong>: {{ result.task.action }}</li>
-            <li><strong>Path</strong>: <a href="../file/{{ result.task.file.id }}.html#{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
+            <li><strong>Path</strong>: <a href="../file/{{ result.task.file }}.html#{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
             <li><strong>Host</strong>: <a href="../host/{{ result.host.id }}.html">{{ result.host.name }}</a></li>
             <li><strong>Status</strong>: {{ result.status }}</li>
             <li><strong>Started</strong>: {{ result.started | format_date }}</li>
