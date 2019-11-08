@@ -35,8 +35,13 @@ class LabelViewSet(viewsets.ModelViewSet):
 
 
 class PlaybookViewSet(viewsets.ModelViewSet):
-    queryset = models.Playbook.objects.all()
     filterset_class = filters.PlaybookFilter
+
+    def get_queryset(self):
+        statuses = self.request.GET.getlist("status")
+        if statuses:
+            return models.Playbook.objects.filter(status__in=statuses)
+        return models.Playbook.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -49,8 +54,13 @@ class PlaybookViewSet(viewsets.ModelViewSet):
 
 
 class PlayViewSet(viewsets.ModelViewSet):
-    queryset = models.Play.objects.all()
     filterset_class = filters.PlayFilter
+
+    def get_queryset(self):
+        statuses = self.request.GET.getlist("status")
+        if statuses:
+            return models.Play.objects.filter(status__in=statuses)
+        return models.Play.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -63,8 +73,13 @@ class PlayViewSet(viewsets.ModelViewSet):
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    queryset = models.Task.objects.all()
     filterset_class = filters.TaskFilter
+
+    def get_queryset(self):
+        statuses = self.request.GET.getlist("status")
+        if statuses:
+            return models.Task.objects.filter(status__in=statuses)
+        return models.Task.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":

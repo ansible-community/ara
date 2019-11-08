@@ -154,9 +154,20 @@ class PlaybookTestCase(APITestCase):
     def test_get_playbook_by_status(self):
         playbook = factories.PlaybookFactory(status="failed")
         factories.PlaybookFactory(status="completed")
+        factories.PlaybookFactory(status="running")
+
+        # Confirm we have three objects
+        request = self.client.get("/api/v1/playbooks")
+        self.assertEqual(3, len(request.data["results"]))
+
+        # Test single status
         request = self.client.get("/api/v1/playbooks?status=failed")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.status, request.data["results"][0]["status"])
+
+        # Test multiple status
+        request = self.client.get("/api/v1/playbooks?status=failed&status=completed")
+        self.assertEqual(2, len(request.data["results"]))
 
     def test_get_playbook_duration(self):
         started = timezone.now()

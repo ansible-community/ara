@@ -160,3 +160,21 @@ class PlayTestCase(APITestCase):
         self.assertEqual(400, request.status_code)
         play_updated = models.Play.objects.get(id=play.id)
         self.assertNotEqual("wrong", play_updated.status)
+
+    def test_get_play_by_status(self):
+        play = factories.PlayFactory(status="running")
+        factories.PlayFactory(status="completed")
+        factories.PlayFactory(status="unknown")
+
+        # Confirm we have three objects
+        request = self.client.get("/api/v1/plays")
+        self.assertEqual(3, len(request.data["results"]))
+
+        # Test single status
+        request = self.client.get("/api/v1/plays?status=running")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(play.status, request.data["results"][0]["status"])
+
+        # Test multiple status
+        request = self.client.get("/api/v1/plays?status=running&status=completed")
+        self.assertEqual(2, len(request.data["results"]))

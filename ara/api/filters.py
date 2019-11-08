@@ -79,6 +79,9 @@ class PlaybookFilter(DateFilter):
 class PlayFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
+    status = django_filters.MultipleChoiceFilter(
+        field_name="status", choices=ara_models.Play.STATUS, lookup_expr="iexact"
+    )
 
     # fmt: off
     order = django_filters.OrderingFilter(
@@ -96,6 +99,9 @@ class PlayFilter(DateFilter):
 
 class TaskFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    status = django_filters.MultipleChoiceFilter(
+        field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
+    )
 
     # fmt: off
     order = django_filters.OrderingFilter(
@@ -133,6 +139,9 @@ class HostFilter(BaseFilter):
 
 class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    status = django_filters.MultipleChoiceFilter(
+        field_name="status", choices=ara_models.Result.STATUS, lookup_expr="iexact"
+    )
 
     # fmt: off
     order = django_filters.OrderingFilter(

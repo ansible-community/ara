@@ -191,3 +191,21 @@ class TaskTestCase(APITestCase):
         self.assertEqual(400, request.status_code)
         task_updated = models.Task.objects.get(id=task.id)
         self.assertNotEqual("wrong", task_updated.status)
+
+    def test_get_task_by_status(self):
+        task = factories.TaskFactory(status="running")
+        factories.TaskFactory(status="completed")
+        factories.TaskFactory(status="unknown")
+
+        # Confirm we have three objects
+        request = self.client.get("/api/v1/tasks")
+        self.assertEqual(3, len(request.data["results"]))
+
+        # Test single status
+        request = self.client.get("/api/v1/tasks?status=running")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(task.status, request.data["results"][0]["status"])
+
+        # Test multiple status
+        request = self.client.get("/api/v1/tasks?status=running&status=completed")
+        self.assertEqual(2, len(request.data["results"]))
