@@ -119,9 +119,28 @@ class PlaybookTestCase(APITestCase):
     def test_get_playbook_by_name(self):
         playbook = factories.PlaybookFactory(name="playbook1")
         factories.PlaybookFactory(name="playbook2")
+
+        # Test exact match
         request = self.client.get("/api/v1/playbooks?name=playbook1")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?name=playbook")
+        self.assertEqual(len(request.data["results"]), 2)
+
+    def test_get_playbook_by_path(self):
+        playbook = factories.PlaybookFactory(path="/root/playbook.yml")
+        factories.PlaybookFactory(path="/home/playbook.yml")
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?path=/root/playbook.yml")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.path, request.data["results"][0]["path"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?path=playbook.yml")
+        self.assertEqual(len(request.data["results"]), 2)
 
     def test_patch_playbook_name(self):
         playbook = factories.PlaybookFactory()

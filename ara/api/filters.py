@@ -18,6 +18,8 @@
 import django_filters
 from django.db import models as django_models
 
+from ara.api import models as ara_models
+
 
 class BaseFilter(django_filters.rest_framework.FilterSet):
     created_before = django_filters.IsoDateTimeFilter(field_name="created", lookup_expr="lte")
@@ -54,8 +56,11 @@ class LabelFilter(BaseFilter):
 
 
 class PlaybookFilter(DateFilter):
-    name = django_filters.CharFilter(field_name="name", lookup_expr="iexact")
-    status = django_filters.CharFilter(field_name="status", lookup_expr="iexact")
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    path = django_filters.CharFilter(field_name="path", lookup_expr="icontains")
+    status = django_filters.MultipleChoiceFilter(
+        field_name="status", choices=ara_models.Playbook.STATUS, lookup_expr="iexact"
+    )
 
     # fmt: off
     order = django_filters.OrderingFilter(
