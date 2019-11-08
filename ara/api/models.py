@@ -42,6 +42,13 @@ class Duration(Base):
 
     started = models.DateTimeField(default=timezone.now)
     ended = models.DateTimeField(blank=True, null=True)
+    duration = models.DurationField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # Compute duration based on available timestamps
+        if self.ended is not None:
+            self.duration = self.ended - self.started
+        return super(Duration, self).save(*args, **kwargs)
 
 
 class Label(Base):

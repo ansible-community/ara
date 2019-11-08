@@ -47,20 +47,6 @@ class TaskPathSerializer(serializers.ModelSerializer):
         return obj.file.path
 
 
-class DurationSerializer(serializers.ModelSerializer):
-    class Meta:
-        abstract = True
-
-    # For objects that occur over a period of time
-    duration = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_duration(obj):
-        if obj.ended is None:
-            return obj.updated - obj.started
-        return obj.ended - obj.started
-
-
 class ItemCountSerializer(serializers.ModelSerializer):
     class Meta:
         abstract = True
@@ -99,7 +85,7 @@ class SimpleLabelSerializer(serializers.ModelSerializer):
         exclude = ("created", "updated")
 
 
-class SimplePlaybookSerializer(DurationSerializer, ItemCountSerializer):
+class SimplePlaybookSerializer(ItemCountSerializer):
     class Meta:
         model = models.Playbook
         exclude = ("arguments", "created", "updated")
@@ -107,19 +93,19 @@ class SimplePlaybookSerializer(DurationSerializer, ItemCountSerializer):
     labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
 
 
-class SimplePlaySerializer(DurationSerializer, ItemCountSerializer):
+class SimplePlaySerializer(ItemCountSerializer):
     class Meta:
         model = models.Play
         exclude = ("uuid", "created", "updated")
 
 
-class SimpleTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
+class SimpleTaskSerializer(ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("tags", "created", "updated")
 
 
-class SimpleResultSerializer(DurationSerializer, ResultStatusSerializer):
+class SimpleResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated")
@@ -162,7 +148,7 @@ class NestedPlaybookHostSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
-class NestedPlaybookResultSerializer(DurationSerializer, ResultStatusSerializer):
+class NestedPlaybookResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated", "playbook", "play", "task")
@@ -170,7 +156,7 @@ class NestedPlaybookResultSerializer(DurationSerializer, ResultStatusSerializer)
     host = NestedPlaybookHostSerializer(read_only=True)
 
 
-class NestedPlaybookTaskSerializer(DurationSerializer):
+class NestedPlaybookTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         exclude = ("playbook", "created", "updated")
@@ -186,7 +172,7 @@ class NestedPlaybookRecordSerializer(serializers.ModelSerializer):
         exclude = ("playbook", "value", "created", "updated")
 
 
-class NestedPlaybookPlaySerializer(DurationSerializer):
+class NestedPlaybookPlaySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Play
         exclude = ("playbook", "uuid", "created", "updated")
@@ -194,7 +180,7 @@ class NestedPlaybookPlaySerializer(DurationSerializer):
     tasks = NestedPlaybookTaskSerializer(read_only=True, many=True)
 
 
-class NestedPlayTaskSerializer(DurationSerializer, TaskPathSerializer):
+class NestedPlayTaskSerializer(TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("playbook", "play", "created", "updated")
@@ -216,7 +202,7 @@ class DetailedLabelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DetailedPlaybookSerializer(DurationSerializer, ItemCountSerializer):
+class DetailedPlaybookSerializer(ItemCountSerializer):
     class Meta:
         model = models.Playbook
         fields = "__all__"
@@ -229,7 +215,7 @@ class DetailedPlaybookSerializer(DurationSerializer, ItemCountSerializer):
     records = NestedPlaybookRecordSerializer(many=True, read_only=True, default=[])
 
 
-class DetailedPlaySerializer(DurationSerializer, ItemCountSerializer):
+class DetailedPlaySerializer(ItemCountSerializer):
     class Meta:
         model = models.Play
         fields = "__all__"
@@ -238,7 +224,7 @@ class DetailedPlaySerializer(DurationSerializer, ItemCountSerializer):
     tasks = NestedPlayTaskSerializer(many=True, read_only=True, default=[])
 
 
-class DetailedTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
+class DetailedTaskSerializer(ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         fields = "__all__"
@@ -259,7 +245,7 @@ class DetailedHostSerializer(serializers.ModelSerializer):
     facts = ara_fields.CompressedObjectField(read_only=True)
 
 
-class DetailedResultSerializer(DurationSerializer, ResultStatusSerializer):
+class DetailedResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
         fields = "__all__"
@@ -301,7 +287,7 @@ class ListLabelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ListPlaybookSerializer(DurationSerializer, ItemCountSerializer):
+class ListPlaybookSerializer(ItemCountSerializer):
     class Meta:
         model = models.Playbook
         exclude = ("created", "updated")
@@ -310,7 +296,7 @@ class ListPlaybookSerializer(DurationSerializer, ItemCountSerializer):
     labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
 
 
-class ListPlaySerializer(DurationSerializer, ItemCountSerializer):
+class ListPlaySerializer(ItemCountSerializer):
     class Meta:
         model = models.Play
         exclude = ("created", "updated")
@@ -318,7 +304,7 @@ class ListPlaySerializer(DurationSerializer, ItemCountSerializer):
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-class ListTaskSerializer(DurationSerializer, ItemCountSerializer, TaskPathSerializer):
+class ListTaskSerializer(ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
         exclude = ("created", "updated")
@@ -335,7 +321,7 @@ class ListHostSerializer(serializers.ModelSerializer):
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-class ListResultSerializer(DurationSerializer, ResultStatusSerializer):
+class ListResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
         exclude = ("content", "created", "updated")
@@ -374,7 +360,7 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PlaybookSerializer(DurationSerializer):
+class PlaybookSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Playbook
         fields = "__all__"
@@ -385,13 +371,13 @@ class PlaybookSerializer(DurationSerializer):
     )
 
 
-class PlaySerializer(DurationSerializer):
+class PlaySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Play
         fields = "__all__"
 
 
-class TaskSerializer(DurationSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Task
         fields = "__all__"
@@ -422,7 +408,7 @@ class HostSerializer(serializers.ModelSerializer):
         return host
 
 
-class ResultSerializer(DurationSerializer):
+class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Result
         fields = "__all__"

@@ -23,9 +23,9 @@ register = template.Library()
 
 @register.filter(name="format_duration")
 def format_duration(duration):
-    hours, remainder = divmod(duration.total_seconds(), 60 * 60)
-    minutes, seconds = divmod(remainder, 60)
-    return "%d:%02d:%02d" % (int(hours), int(minutes), int(seconds))
+    if duration is not None:
+        return duration[:-3]
+    return duration
 
 
 @register.filter(name="format_date")

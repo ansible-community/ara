@@ -17,6 +17,8 @@
 
 import datetime
 
+from django.utils import timezone
+from django.utils.dateparse import parse_duration
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -181,6 +183,13 @@ class ResultTestCase(APITestCase):
         unreachable = factories.ResultFactory(status="unreachable")
         result = self.client.get("/api/v1/results/%s" % unreachable.id)
         self.assertEqual(result.data["status"], "unreachable")
+
+    def test_get_result_duration(self):
+        started = timezone.now()
+        ended = started + datetime.timedelta(hours=1)
+        result = factories.ResultFactory(started=started, ended=ended)
+        request = self.client.get("/api/v1/results/%s" % result.id)
+        self.assertEqual(parse_duration(request.data["duration"]), ended - started)
 
     def test_get_result_by_date(self):
         result = factories.ResultFactory()

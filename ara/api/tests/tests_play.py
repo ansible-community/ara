@@ -18,6 +18,7 @@
 import datetime
 
 from django.utils import timezone
+from django.utils.dateparse import parse_duration
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -109,7 +110,7 @@ class PlayTestCase(APITestCase):
         ended = started + datetime.timedelta(hours=1)
         play = factories.PlayFactory(started=started, ended=ended)
         request = self.client.get("/api/v1/plays/%s" % play.id)
-        self.assertEqual(request.data["duration"], datetime.timedelta(0, 3600))
+        self.assertEqual(parse_duration(request.data["duration"]), ended - started)
 
     def test_get_play_by_date(self):
         play = factories.PlayFactory()
