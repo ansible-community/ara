@@ -21,6 +21,9 @@ from flask import current_app
 from flask import render_template
 from ara import models
 
+import six
+import codecs
+
 result = Blueprint('result', __name__)
 
 
@@ -49,5 +52,9 @@ def show_result(task_result):
     task_result = models.TaskResult.query.get(task_result)
     if task_result is None:
         abort(404)
+
+    # Work around Werkzeug UnicodeEncodeError exception when rendering results
+    if six.PY3:
+        codecs.register_error('strict', codecs.lookup_error('surrogateescape'))
 
     return render_template('task_result.html', task_result=task_result)
