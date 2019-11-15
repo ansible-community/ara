@@ -64,3 +64,7 @@
       tags:
         - untag
         - verytag
+
+    - name: Echo a binary string
+      command: echo -e '\x80abc'
+      changed_when: false
