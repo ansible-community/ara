@@ -23,11 +23,9 @@ import warnings
 
 from glob import glob
 from oslo_serialization import jsonutils
-from subunit._to_disk import to_disk
 
 import ara.shell
 import ara.cli.data
-import ara.cli.generate
 import ara.cli.host
 import ara.cli.play
 import ara.cli.playbook
@@ -42,6 +40,11 @@ from ara.tests.unit.common import TestAra
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
     from lxml import etree
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=DeprecationWarning)
+    import ara.cli.generate
+    from subunit._to_disk import to_disk
 
 
 class TestCLIData(TestAra):
