@@ -152,16 +152,14 @@ def application(environ, start_response):
         now = time.time()
         if now - TMPDIR_MAX_AGE > os.path.getmtime(tmpdir):
             shutil.rmtree(tmpdir, ignore_errors=True)
-    environ['ANSIBLE_LOCAL_TEMP'] = os.path.join(tmpdir, '.ansible')
-    environ['ARA_DIR'] = os.path.join(tmpdir, '.ara')
+    os.environ['ANSIBLE_LOCAL_TEMP'] = os.path.join(tmpdir, '.ansible')
+    os.environ['ARA_DIR'] = os.path.join(tmpdir, '.ara')
 
-    # Path to the ARA database
-    environ['ARA_DATABASE'] = 'sqlite:///{}'.format(database)
     # The intent is that we are dealing with databases that already exist.
     # Therefore, we're not really interested in creating the database and
     # making sure that the SQL migrations are done. Toggle that off.
     # This needs to be a string, we're setting an environment variable
-    environ['ARA_AUTOCREATE_DATABASE'] = 'false'
+    os.environ['ARA_AUTOCREATE_DATABASE'] = 'false'
 
     msg = 'Request {request} mapped to {database} with root {root}'.format(
         request=request,
