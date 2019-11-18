@@ -17,7 +17,7 @@ A stateless javascript client interface is provided by a different project,
 Quickstart
 ==========
 
-Here's how you can get started from scratch with sane defaults with python>=3.6:
+Here's how you can get started from scratch with sane defaults with python>=3.5:
 
 .. code-block:: bash
 

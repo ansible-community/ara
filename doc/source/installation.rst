@@ -18,7 +18,7 @@ the project's `README <https://github.com/ansible-community/ara-web>`_.
 Requirements and dependencies
 -----------------------------
 
-ARA should work on any Linux distribution as long as python3.6 and greater is
+ARA should work on any Linux distribution as long as python3.5 and greater is
 available.
 
 In order to record data, ARA provides Ansible plugins that must be installed

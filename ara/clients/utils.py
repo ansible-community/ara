@@ -42,7 +42,7 @@ def get_client(
 
         return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth)
     else:
-        raise ValueError(f"Unsupported API client: {client} (use 'http' or 'offline')")
+        raise ValueError("Unsupported API client: %s (use 'http' or 'offline')" % client)
 
 
 def active_client():

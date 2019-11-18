@@ -18,16 +18,16 @@
 
 # The ansible_python_version fact might end up retrieving the version of
 # python2 so we need to explicitely get the version of python 3 available.
-- name: Validate availability of Python 3.6
+- name: Validate availability of Python 3.5
   command: /usr/bin/python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'
   changed_when: false
   failed_when: false
   register: python_version
 
-- name: Fail pre-emptively if running Python <3.6
+- name: Fail pre-emptively if running Python <3.5
   fail:
-    msg: "Python >=3.6 is required to run ARA"
-  when: python_version.stdout is version('3.6', '<') or python_version.rc != 0
+    msg: "Python >=3.5 is required to run ARA"
+  when: python_version.stdout is version('3.5', '<') or python_version.rc != 0
 
 - name: Get list of installed packages
   package_facts:

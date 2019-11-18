@@ -33,7 +33,7 @@ def main():
         raise MissingDjangoException from e
 
     execute_from_command_line(sys.argv)
-    print(f"[ara] Using settings file: {settings.ARA_SETTINGS}")
+    print("[ara] Using settings file: %s" % settings.ARA_SETTINGS)
 
 
 if __name__ == "__main__":
