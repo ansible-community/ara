@@ -12,6 +12,15 @@
     vars:
       tox_envlist: linters
 
+# Equivalent to tox -e ansible-integration
+- job:
+    name: ara-basic-ansible-integration
+    parent: base
+    nodeset: fedora-latest
+    run: tests/basic.yaml
+    vars:
+      ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
+
 - secret:
     name: ara_git_mirror_credentials
     data:
