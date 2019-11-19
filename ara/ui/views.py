@@ -1,3 +1,5 @@
+import codecs
+
 from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -90,6 +92,8 @@ class Result(generics.RetrieveAPIView):
     template_name = "result.html"
 
     def get(self, request, *args, **kwargs):
+        # Results can contain a wide array of non-ascii or binary characters, escape them
+        codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
         result = self.get_object()
         serializer = serializers.DetailedResultSerializer(result)
         return Response({"result": serializer.data})

@@ -230,6 +230,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework.authentication.BasicAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": ("ara.api.auth.APIAccessPermission",),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "UNICODE_JSON": False,
 }
 
 ARA_SETTINGS = os.getenv("ARA_SETTINGS", DEFAULT_SETTINGS)

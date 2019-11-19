@@ -65,6 +65,6 @@
         - untag
         - verytag
 
-    - name: Echo a binary string
+    - name: Echo the �abc binary string
       command: echo -e '\x80abc'
       changed_when: false
