@@ -18,5 +18,17 @@
 
 class MissingDjangoException(Exception):
     def __init__(self):
-        exc = "Unable to import Django: the server dependencies can be installed with 'pip install ara[server]'"
+        exc = "The server dependencies must be installed to record data offline or run the API server."
+        super().__init__(exc)
+
+
+class MissingPsycopgException(Exception):
+    def __init__(self):
+        exc = "The psycopg2 python library must be installed in order to use the PostgreSQL database engine."
+        super().__init__(exc)
+
+
+class MissingMysqlclientException(Exception):
+    def __init__(self):
+        exc = "The mysqlclient python library must be installed in order to use the MySQL database engine."
         super().__init__(exc)

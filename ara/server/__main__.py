@@ -21,7 +21,7 @@ import sys
 
 from django.conf import settings
 
-from ara.setup.exceptions import MissingDjangoException
+from ara.setup.exceptions import MissingDjangoException, MissingMysqlclientException, MissingPsycopgException
 
 
 def main():
@@ -31,6 +31,18 @@ def main():
         from django.core.management import execute_from_command_line
     except ImportError as e:
         raise MissingDjangoException from e
+
+    if settings.DATABASE_ENGINE == "django.db.backends.postgresql":
+        try:
+            import psycopg2  # noqa
+        except ImportError as e:
+            raise MissingPsycopgException from e
+
+    if settings.DATABASE_ENGINE == "django.db.backends.mysql":
+        try:
+            import MySQLdb  # noqa
+        except ImportError as e:
+            raise MissingMysqlclientException from e
 
     execute_from_command_line(sys.argv)
     print("[ara] Using settings file: %s" % settings.ARA_SETTINGS)
