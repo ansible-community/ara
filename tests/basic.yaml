@@ -105,6 +105,7 @@
     - environment:
         ANSIBLE_CALLBACK_PLUGINS: "{{ ara_setup_plugins.stdout }}/callback"
         ANSIBLE_ACTION_PLUGINS: "{{ ara_setup_plugins.stdout }}/action"
+        ANSIBLE_LOOKUP_PLUGINS: "{{ ara_setup_plugins.stdout }}/lookup"
         ARA_DEBUG: "{{ ara_api_debug }}"
         ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
         ARA_BASE_DIR: "{{ ara_api_root_dir }}/server"
@@ -119,6 +120,9 @@
         # smoke.yaml tests setting ara_playbook_name in one of three plays
         - name: Run smoke.yaml integration test
           command: "ansible-playbook -vvv {{ _test_root }}/smoke.yaml"
+
+        - name: Run lookup integration tests
+          command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
         - name: Run hosts.yaml integration test
           command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"

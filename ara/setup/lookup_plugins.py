@@ -17,16 +17,7 @@
 
 from __future__ import print_function
 
-from . import action_plugins, callback_plugins, lookup_plugins
-
-config = """
-[defaults]
-callback_plugins={}
-action_plugins={}
-lookup_plugins={}
-""".format(
-    callback_plugins, action_plugins, lookup_plugins
-)
+from . import lookup_plugins
 
 if __name__ == "__main__":
-    print(config.strip())
+    print(lookup_plugins)

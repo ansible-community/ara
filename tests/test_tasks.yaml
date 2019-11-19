@@ -78,6 +78,7 @@
 - environment:
     ANSIBLE_CALLBACK_PLUGINS: "{{ ara_setup_plugins.stdout }}/callback"
     ANSIBLE_ACTION_PLUGINS: "{{ ara_setup_plugins.stdout }}/action"
+    ANSIBLE_LOOKUP_PLUGINS: "{{ ara_setup_plugins.stdout }}/lookup"
     ARA_SETTINGS: "{{ ara_api_settings }}"
     ARA_API_CLIENT: "{{ ara_api_client | default('offline') }}"
     ARA_API_SERVER: "{{ ara_api_server | default('http://127.0.0.1:8000') }}"
@@ -89,6 +90,9 @@
     # smoke.yaml tests setting ara_playbook_name in one of three plays
     - name: Run smoke.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/smoke.yaml"
+
+    - name: Run lookups.yaml integration test
+      command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
     - name: Run hosts.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"

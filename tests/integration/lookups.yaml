@@ -1,0 +1,33 @@
+- name: Assert playbook properties
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    ara_playbook_name: ARA self tests
+    ara_playbook_labels:
+      - lookup-tests
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Recover data from ARA
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        playbook: "{{ lookup('ara_api', '/api/v1/playbooks/' + playbook_id) }}"
+        tasks: "{{ lookup('ara_api', '/api/v1/tasks?playbook=' + playbook_id) }}"
+        results: "{{ lookup('ara_api', '/api/v1/results?playbook=' + playbook_id) }}"
+
+    - name: Assert playbook properties
+      assert:
+        that:
+          - playbook.name == 'ARA self tests'
+          - "playbook.labels | selectattr('name', 'search', 'lookup-tests') | list | length == 1"
+          - playbook.ansible_version == ansible_version.full
+          - playbook_dir in playbook.path
+          - "'tests/integration/lookups.yaml' in playbook.path"
+          - "playbook.files | length == playbook['items']['files']"
+          - "playbook.hosts | length == playbook['items']['hosts']"
+          - "playbook.plays | length == playbook['items']['plays']"
+          - "tasks.results | length == playbook['items']['tasks']"
+          - "results.results | length == playbook['items']['results']"

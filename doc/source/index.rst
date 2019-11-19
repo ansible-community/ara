@@ -20,6 +20,7 @@ Table of Contents
     API: Distributed sqlite backend <distributed-sqlite-backend>
     Setting playbook names and labels <playbook-names-and-labels>
     Recording arbitrary data in playbooks <ara-record>
+    Querying ARA from inside playbooks <ara-api-lookup>
     Contributing to ARA <contributing>
 
 .. toctree::

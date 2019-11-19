@@ -20,13 +20,14 @@ from __future__ import print_function
 import os
 from distutils.sysconfig import get_python_lib
 
-from . import action_plugins, callback_plugins
+from . import action_plugins, callback_plugins, lookup_plugins
 
 exports = """
 export ANSIBLE_CALLBACK_PLUGINS=${{ANSIBLE_CALLBACK_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
 export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_ACTION_PLUGINS+:}}{}
+export ANSIBLE_LOOKUP_PLUGINS=${{ANSIBLE_LOOKUP_PLUGINS:-}}${{ANSIBLE_LOOKUP_PLUGINS+:}}{}
 """.format(
-    callback_plugins, action_plugins
+    callback_plugins, action_plugins, lookup_plugins
 )
 
 if "VIRTUAL_ENV" in os.environ:
