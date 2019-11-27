@@ -4,5 +4,6 @@ coverage
 flake8
 sphinx>=1.4
 sphinx-rtd-theme
+sphinxcontrib-programoutput
 black==19.3b0 # Exact version for prerelease
 isort
