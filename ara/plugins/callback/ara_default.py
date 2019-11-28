@@ -87,6 +87,15 @@ options:
     ini:
       - section: ara
         key: api_password
+  api_insecure:
+    description: Can be enabled to ignore SSL certification of the API server
+    type: bool
+    default: false
+    env:
+      - name: ARA_API_INSECURE
+    ini:
+      - section: ara
+        key: api_insecure
   api_timeout:
     description: Timeout, in seconds, before giving up on HTTP requests
     type: integer
@@ -153,8 +162,14 @@ class CallbackModule(CallbackBase):
         timeout = self.get_option("api_timeout")
         username = self.get_option("api_username")
         password = self.get_option("api_password")
+        insecure = self.get_option("api_insecure")
         self.client = client_utils.get_client(
-            client=client, endpoint=endpoint, timeout=timeout, username=username, password=password
+            client=client,
+            endpoint=endpoint,
+            timeout=timeout,
+            username=username,
+            password=password,
+            verify=False if insecure else True,
         )
 
     def v2_playbook_on_start(self, playbook):
