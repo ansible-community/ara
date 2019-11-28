@@ -1,0 +1,14 @@
+sphinx>=1.4
+sphinx-rtd-theme
+sphinxcontrib-programoutput
+
+# For programoutput, we need to include server extra dependencies from setup.cfg
+Django>=2.1.5
+djangorestframework>=3.9.1
+django-cors-headers
+django-filter
+django-health-check
+dynaconf[yaml]
+tzlocal
+whitenoise
+pygments
