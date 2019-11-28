@@ -32,6 +32,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--password", type=str, default=None, help="API password to use for the query (default: None)"
         )
+        parser.add_argument("--insecure", action="store_true", help="Disables SSL certificate validation")
         parser.add_argument("--timeout", type=int, default=10, help="Timeout for API queries (default: 10)")
         parser.add_argument(
             "--days", type=int, default=31, help="Delete playbooks started this many days ago (default: 31)"
@@ -47,6 +48,7 @@ class Command(BaseCommand):
         endpoint = options.get("endpoint")
         username = options.get("username")
         password = options.get("password")
+        insecure = options.get("insecure")
         timeout = options.get("timeout")
         days = options.get("days")
         confirm = options.get("confirm")
@@ -58,6 +60,7 @@ class Command(BaseCommand):
             endpoint=endpoint,
             username=username,
             password=password,
+            verify=False if insecure else True,
             timeout=timeout,
             run_sql_migrations=False,
         )
