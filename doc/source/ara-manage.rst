@@ -24,6 +24,13 @@ ara-manage
 
 .. command-output:: ara-manage --help
 
+ara-manage prune
+----------------
+
+Used to delete playbooks that are older than a specified amount of days.
+
+.. command-output:: ara-manage prune --help
+
 ara-manage changepassword
 -------------------------
 
