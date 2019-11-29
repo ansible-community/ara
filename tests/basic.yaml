@@ -89,6 +89,16 @@
       command: "{{ ara_api_venv_path }}/bin/python -m ara.setup.plugins"
       register: ara_setup_plugins
 
+    - name: Set default labels with Zuul
+      set_fact:
+        _default_labels:
+          - "nodepool.provider:{{ nodepool.provider }}"
+          - "zuul.change:{{ zuul.change }}"
+          - "zuul.executor:{{ zuul.executor.hostname }}"
+          - "zuul.pipeline:{{ zuul.pipeline }}"
+          - "zuul.project:{{ zuul.project.canonical_name }}"
+      when: zuul is defined
+
     # These aren't in the same task (i.e, with loop) so we can tell individual test
     # runs apart easily rather than keeping all the output bundled in a single task.
     # TODO: Add validation for the tests
@@ -101,6 +111,7 @@
         ARA_SECRET_KEY: "{{ ara_api_secret_key }}"
         ARA_API_CLIENT: "{{ ara_api_client | default('offline') }}"
         ARA_API_SERVER: "{{ ara_api_server | default('http://127.0.0.1:8000') }}"
+        ARA_DEFAULT_LABELS: "{{ _default_labels | join(', ') | default('default-label') }}"
         PATH: "{{ ara_api_venv_path }}/bin:/bin:/usr/bin:/usr/local/bin"
       vars:
         _test_root: "{{ ara_api_source }}/tests/integration"

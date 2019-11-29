@@ -105,6 +105,15 @@ options:
     ini:
       - section: ara
         key: api_timeout
+  default_labels:
+    description: A list of default labels that will be applied to playbooks
+    type: list
+    default: []
+    env:
+      - name: ARA_DEFAULT_LABELS
+    ini:
+      - section: ara
+        key: default_labels
   ignored_facts:
     description: List of host facts that will not be saved by ARA
     type: list
@@ -154,6 +163,7 @@ class CallbackModule(CallbackBase):
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
+        self.default_labels = self.get_option("default_labels")
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
 
@@ -206,8 +216,20 @@ class CallbackModule(CallbackBase):
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
         if "ara_playbook_name" in play_vars:
             self._set_playbook_name(name=play_vars["ara_playbook_name"])
+
+        labels = self.default_labels
         if "ara_playbook_labels" in play_vars:
-            self._set_playbook_labels(labels=play_vars["ara_playbook_labels"])
+            # ara_playbook_labels can be supplied as a list inside a playbook
+            # but it might also be specified as a comma separated string when
+            # using extra-vars
+            if isinstance(play_vars["ara_playbook_labels"], list):
+                labels.extend(play_vars["ara_playbook_labels"])
+            elif isinstance(play_vars["ara_playbook_labels"], str):
+                labels.extend(play_vars["ara_playbook_labels"].split(","))
+            else:
+                raise TypeError("ara_playbook_labels must be a list or a comma-separated string")
+        if labels:
+            self._set_playbook_labels(labels=labels)
 
         # Record all the files involved in the play
         for path in play._loader._FILE_CACHE.keys():
@@ -307,7 +329,7 @@ class CallbackModule(CallbackBase):
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
 
     def _set_playbook_labels(self, labels):
-        if self.playbook["labels"] != labels:
+        if sorted(self.playbook["labels"]) != sorted(labels):
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
 
     def _get_or_create_file(self, path):
