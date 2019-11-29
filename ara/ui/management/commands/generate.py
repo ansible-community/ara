@@ -1,3 +1,4 @@
+import codecs
 import os
 import shutil
 
@@ -50,6 +51,9 @@ class Command(BaseCommand):
         destination = os.path.join(path, "index.html")
         data = {"playbooks": serializer.data, "static_generation": True, "page": "index"}
         self.render("index.html", destination, **data)
+
+        # Escape surrogates to prevent UnicodeEncodeError exceptions
+        codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
 
         # Playbooks
         for playbook in query.all():
