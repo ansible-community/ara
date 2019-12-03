@@ -24,7 +24,7 @@ from . import action_plugins, callback_plugins
 
 exports = """
 export ANSIBLE_CALLBACK_PLUGINS=${{ANSIBLE_CALLBACK_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
-export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
+export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_ACTION_PLUGINS+:}}{}
 """.format(
     callback_plugins, action_plugins
 )
