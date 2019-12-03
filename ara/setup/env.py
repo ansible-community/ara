@@ -22,7 +22,7 @@ from distutils.sysconfig import get_python_lib
 
 exports = """
 export ANSIBLE_CALLBACK_PLUGINS=${{ANSIBLE_CALLBACK_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
-export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_CALLBACK_PLUGINS+:}}{}
+export ANSIBLE_ACTION_PLUGINS=${{ANSIBLE_ACTION_PLUGINS:-}}${{ANSIBLE_ACTION_PLUGINS+:}}{}
 """.format(
     callback_plugins, action_plugins
 )
