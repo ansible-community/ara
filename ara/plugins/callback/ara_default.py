@@ -373,7 +373,7 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get("ignore_errors", False) or False,
         )
 
-        if self.task["action"] == "setup" and "ansible_facts" in results:
+        if self.task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
             # Potentially sanitize some Ansible facts to prevent them from
             # being saved both in the host facts and in the task results.
             for fact in self.ignored_facts:
