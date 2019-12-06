@@ -6,9 +6,9 @@
     check:
       jobs:
         - ansible-role-ara-api-fedora-devel
-        - ansible-role-ara-api-fedora-2.8
+        - ansible-role-ara-api-fedora-2.9
+        - ansible-role-ara-api-ubuntu-2.8
         - ansible-role-ara-api-ubuntu-2.7
-        - ansible-role-ara-api-ubuntu-2.6
         - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-api-ubuntu-mysql
         - ansible-role-ara-api-fedora-distributed-sqlite
@@ -20,9 +20,9 @@
     gate:
       jobs:
         - ansible-role-ara-api-fedora-devel
-        - ansible-role-ara-api-fedora-2.8
+        - ansible-role-ara-api-fedora-2.9
+        - ansible-role-ara-api-ubuntu-2.8
         - ansible-role-ara-api-ubuntu-2.7
-        - ansible-role-ara-api-ubuntu-2.6
         - ansible-role-ara-api-ubuntu-postgresql
         - ansible-role-ara-api-ubuntu-mysql
         - ansible-role-ara-api-fedora-distributed-sqlite
