@@ -30,7 +30,7 @@
       ara_tests_ansible_version: null
     required-projects:
       - name: github.com/ansible/ansible
-        override-checkout: stable-2.8
+        override-checkout: stable-2.9
 
 - job:
     name: ansible-role-ara-api-ubuntu
@@ -51,8 +51,16 @@
         override-checkout: devel
 
 - job:
-    name: ansible-role-ara-api-fedora-2.8
+    name: ansible-role-ara-api-fedora-2.9
     parent: ansible-role-ara-api-fedora
+    run: tests/with_defaults.yaml
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.9
+
+- job:
+    name: ansible-role-ara-api-ubuntu-2.8
+    parent: ansible-role-ara-api-ubuntu
     run: tests/with_defaults.yaml
     required-projects:
       - name: github.com/ansible/ansible
@@ -65,14 +73,6 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
-
-- job:
-    name: ansible-role-ara-api-ubuntu-2.6
-    parent: ansible-role-ara-api-ubuntu
-    run: tests/with_defaults.yaml
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.6
 
 # Database server jobs
 - job:
