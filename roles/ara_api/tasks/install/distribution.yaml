@@ -16,20 +16,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
-# ARA has not been packaged for Ubuntu yet
-ara_distribution_packages: []
+- name: Validate if the distribution is supported
+  fail:
+    msg: |
+      {{ ansible_distribution }} does not support installation from distribution packages yet.
+  when: ara_distribution_packages | length == 0
 
-ara_api_required_packages:
-  - git
-  - python3-venv
-
-ara_api_postgresql_packages:
-  - postgresql
-  - postgresql-server-dev-10
-  - gcc
-
-ara_api_mysql_packages:
-  - mariadb-client
-  - libmariadbclient-dev
-  - python3-dev
-  - gcc
+- name: Install ara from distribution packages
+  become: yes
+  package:
+    name: "{{ ara_distribution_packages }}"
+    state: present

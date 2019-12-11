@@ -16,6 +16,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
+ara_distribution_packages:
+  - ara
+  - ara-server
+
 ara_api_required_packages:
   - git
   - python3-virtualenv

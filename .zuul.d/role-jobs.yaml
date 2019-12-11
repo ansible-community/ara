@@ -98,6 +98,13 @@
       - zuul: zuul/zuul-jobs
     run: tests/with_distributed_sqlite.yaml
 
+# Distribution package tests
+
+- job:
+    name: ansible-role-ara-api-fedora-packages
+    parent: ansible-role-ara-api-fedora
+    run: tests/with_fedora_packages.yaml
+
 # ara-web jobs
 - job:
     name: ansible-role-ara-web-base

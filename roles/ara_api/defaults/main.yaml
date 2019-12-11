@@ -32,6 +32,7 @@ ara_api_venv_path: "{{ ara_api_root_dir }}/virtualenv"
 
 # How ARA will be installed
 # - source [default]: installs from a local or remote git repository
+# - distribution: installs from distribution packages, if available
 # - pypi [planned]: installs from pypi
 ara_api_install_method: source
 
