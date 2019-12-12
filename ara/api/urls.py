@@ -20,13 +20,13 @@ from rest_framework.routers import DefaultRouter
 from ara.api import views
 
 router = DefaultRouter(trailing_slash=False)
-router.register("labels", views.LabelViewSet, base_name="label")
-router.register("playbooks", views.PlaybookViewSet, base_name="playbook")
-router.register("plays", views.PlayViewSet, base_name="play")
-router.register("tasks", views.TaskViewSet, base_name="task")
-router.register("hosts", views.HostViewSet, base_name="host")
-router.register("results", views.ResultViewSet, base_name="result")
-router.register("files", views.FileViewSet, base_name="file")
-router.register("records", views.RecordViewSet, base_name="record")
+router.register("labels", views.LabelViewSet, basename="label")
+router.register("playbooks", views.PlaybookViewSet, basename="playbook")
+router.register("plays", views.PlayViewSet, basename="play")
+router.register("tasks", views.TaskViewSet, basename="task")
+router.register("hosts", views.HostViewSet, basename="host")
+router.register("results", views.ResultViewSet, basename="result")
+router.register("files", views.FileViewSet, basename="file")
+router.register("records", views.RecordViewSet, basename="record")
 
 urlpatterns = router.urls

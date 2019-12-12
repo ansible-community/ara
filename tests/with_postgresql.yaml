@@ -59,7 +59,7 @@
           postgres:10
       when:
         - _docker_run is failed
-        - "'Failed to import docker or docker-py' in _docker_run.msg"
+        - "'Failed to import docker or docker-py' in _docker_run.msg or 'Failed to import the required Python library' in _docker_run.msg"
   tasks:
     - block:
         - name: Set up the API with the ara_api role
