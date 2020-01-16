@@ -57,8 +57,8 @@
     parent: ara-api-database-backends
     nodeset: ara-database-server-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
-      tests it against a central PostgreSQL server installed on CentOS 8.
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      and tests it against a central PostgreSQL server installed on CentOS 8.
       The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
       ARA API clients as well as the API itself.
     run: tests/with_postgresql.yaml
@@ -69,8 +69,8 @@
     parent: ara-api-database-backends
     nodeset: ara-database-server-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
-      tests it against a central MySQL server installed on CentOS 8.
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      and tests it against a central MySQL server installed on CentOS 8.
       The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
       ARA API clients as well as the API itself.
     run: tests/with_mysql.yaml
@@ -81,8 +81,8 @@
     parent: ara-api-database-backends
     nodeset: ara-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
-      tests it using the distributed sqlite database backend.
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      and tests it using the distributed sqlite database backend.
     run: tests/with_distributed_sqlite.yaml
 
 # TODO: The job should build a package from current source and test that package

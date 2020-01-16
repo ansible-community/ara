@@ -16,6 +16,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
+# EL8 doesn't install a python3 interpreter by default.
+# System packages rely on /usr/libexec/platform-python and Ansible will use it
+# but we want to use the non-system one. Install it if it's missing.
+- name: Ensure python3 is installed for EL8
+  package:
+    name: python3
+    state: present
+  become: yes
+  when:
+    - ansible_distribution | lower in ["redhat", "centos"]
+    - ansible_distribution_major_version == "8"
+
 # The ansible_python_version fact might end up retrieving the version of
 # python2 so we need to explicitely get the version of python 3 available.
 - name: Validate availability of Python 3.5

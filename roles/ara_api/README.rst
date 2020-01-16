@@ -7,7 +7,7 @@ This Ansible role provides a framework for installing one or many instances of
 `ARA Records Ansible <https://github.com/ansible-community/ara>`_ in a variety of
 opinionated deployment topologies.
 
-It is currently tested and supported against Ubuntu 18.04 and Fedora 29.
+It is currently tested and supported against Ubuntu 18.04, Fedora 30 and CentOS 8.
 
 Role Variables
 --------------

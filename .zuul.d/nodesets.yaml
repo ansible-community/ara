@@ -9,6 +9,8 @@
         label: ubuntu-bionic
       - name: fedora-30
         label: fedora-30
+      - name: centos-8
+        label: centos-8
     groups:
       - name: ara-database-server
         nodes:
@@ -17,6 +19,7 @@
         nodes:
           - ubuntu-bionic
           - fedora-30
+          - centos-8
 
 # Nodeset used to test instances of ARA API deployed on different operating
 # systems simultaneously.
@@ -27,11 +30,14 @@
         label: ubuntu-bionic
       - name: fedora-30
         label: fedora-30
+      - name: centos-8
+        label: centos-8
     groups:
       - name: ara-api-server
         nodes:
           - ubuntu-bionic
           - fedora-30
+          - centos-8
 
 - nodeset:
     name: ara-fedora-30
