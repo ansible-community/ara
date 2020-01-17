@@ -28,3 +28,4 @@
     ARA_SETTINGS: "{{ ara_api_settings }}"
     PATH: "{{ path_with_virtualenv | default('/usr/bin:/usr/local/bin') }}"
   command: ara-manage migrate
+  run_once: true
