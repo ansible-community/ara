@@ -96,6 +96,19 @@ ARA_ALLOWED_HOSTS
 - **Type**: ``list``
 - **Provided by**: Django's ALLOWED_HOSTS_
 - **Default**: ``["127.0.0.1", "localhost", "::1"]``
+- **Examples**:
+
+  - ``export ARA_ALLOWED_HOSTS="['api.ara.example.org', 'web.ara.example.org']"``
+  - In a YAML configuration file::
+
+      dev:
+        ALLOWED_HOSTS:
+          - 127.0.0.1
+          - localhost
+      production:
+        ALLOWED_HOSTS:
+          - api.ara.example.org
+          - web.ara.example.org
 
 A list of strings representing the host/domain names that this Django site can
 serve.
