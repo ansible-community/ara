@@ -82,6 +82,9 @@ celerybeat-schedule
 # dotenv
 .env
 
+# vscode stuff
+.vscode
+
 # virtualenv
 .venv/
 venv/
