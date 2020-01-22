@@ -48,3 +48,7 @@
     PATH: "{{ path_with_virtualenv | default('/usr/bin:/usr/local/bin') }}"
   command: ara-manage migrate
   run_once: true
+  register: _ara_sql_migrations
+  retries: 3
+  delay: 5
+  until: _ara_sql_migrations is succeeded
