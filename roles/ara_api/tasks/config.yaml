@@ -106,7 +106,7 @@
       # Managed by the ara Ansible role
       {{ ara_api_configuration | to_nice_yaml(indent=2) }}
     dest: "{{ ara_api_settings }}"
-    mode: 0750
+    mode: 0640
   notify:
     - restart ara-api
   no_log: yes
