@@ -32,7 +32,7 @@
 - name: Get list of installed packages
   package_facts:
     manager: "auto"
-  no_log: yes
+  no_log: "{{ ara_api_secure_logging }}"
 
 - name: Retrieve list of missing required packages
   set_fact:

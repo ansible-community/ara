@@ -30,7 +30,7 @@
     - name: Read the existing configuration file
       command: cat "{{ ara_api_settings }}"
       changed_when: false
-      no_log: yes
+      no_log: "{{ ara_api_secure_logging }}"
       register: settings_contents
 
     - name: Recover existing secret key
@@ -38,7 +38,7 @@
         config: "{{ settings_contents.stdout | from_yaml }}"
       set_fact:
         ara_api_secret_key: "{{ config[ara_api_env]['SECRET_KEY'] }}"
-      no_log: yes
+      no_log: "{{ ara_api_secure_logging }}"
 
 # If no secret key has been provided and this is the first time we are
 # running, generate a new random secret key that will be persisted in the
@@ -51,13 +51,13 @@
       environment:
         PATH: "{{ path_with_virtualenv | default('/usr/bin:/usr/local/bin') }}"
       command: python3 -c "from django.utils.crypto import get_random_string; print(get_random_string(length=50))"
-      no_log: yes
+      no_log: "{{ ara_api_secure_logging }}"
       register: generated_key
 
     - name: Set ara_api_secret_key
       set_fact:
         ara_api_secret_key: "{{ generated_key.stdout }}"
-      no_log: yes
+      no_log: "{{ ara_api_secure_logging }}"
 
 - name: Validate distributed sqlite configuration
   assert:
@@ -97,7 +97,7 @@
       TIME_ZONE: "{{ ara_api_time_zone }}"
   set_fact:
     ara_api_configuration: "{'{{ ara_api_env }}': {{ reconciled_configuration }} }"
-  no_log: yes
+  no_log: "{{ ara_api_secure_logging }}"
 
 - name: Set up the ARA API configuration file
   copy:
@@ -109,4 +109,4 @@
     mode: 0640
   notify:
     - restart ara-api
-  no_log: yes
+  no_log: "{{ ara_api_secure_logging }}"

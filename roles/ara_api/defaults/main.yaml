@@ -16,6 +16,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
+# By default, tasks in this role that could result in configuration or
+# credentials being printed by Ansible are set up to hide the output to prevent
+# sensitive information from being exposed.
+# Setting ara_api_secure_logging to false will make Ansible print the raw,
+# unfiltered result of these tasks.
+# Note that it does not have any impact on tasks that are recorded by ARA.
+# It is only for the output when running this specific role.
+ara_api_secure_logging: true
+
 # Root directory where every file for the ARA installation are located
 ara_api_root_dir: "{{ ansible_user_dir }}/.ara"
 
