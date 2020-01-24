@@ -478,10 +478,11 @@ ARA_PAGE_SIZE
 - **Environment variable**: ``ARA_PAGE_SIZE``
 - **Configuration file variable**: ``PAGE_SIZE``
 - **Type**: ``integer``
-- **Default**: ``50``
+- **Default**: ``100``
 - **Provided by**: django-rest-framework `pagination <https://www.django-rest-framework.org/api-guide/pagination/>`_
 
-When querying the API server, the amount of items per page returned.
+When querying the API server or the built-in reporting interface, the amount
+of items per page returned by default.
 
 ARA_READ_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~
