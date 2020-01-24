@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from ara.api import filters, models, serializers
 from ara.ui import forms
+from ara.ui.pagination import LimitOffsetPaginationWithLinks
 
 
 class Index(generics.ListAPIView):
@@ -16,6 +17,7 @@ class Index(generics.ListAPIView):
     queryset = models.Playbook.objects.all()
     filterset_class = filters.PlaybookFilter
     renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
@@ -31,9 +33,28 @@ class Index(generics.ListAPIView):
         else:
             search_form = forms.PlaybookSearchForm()
 
-        serializer = serializers.ListPlaybookSerializer(self.filter_queryset(self.queryset.all()), many=True)
+        query = self.filter_queryset(self.queryset.all())
+        page = self.paginate_queryset(query)
+        if page is not None:
+            serializer = serializers.ListPlaybookSerializer(page, many=True)
+        else:
+            serializer = serializers.ListPlaybookSerializer(query, many=True)
+        response = self.get_paginated_response(serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
         return Response(
-            {"page": "index", "playbooks": serializer.data, "search_form": search_form, "search_query": search_query}
+            {
+                "page": "index",
+                "data": response.data,
+                "search_form": search_form,
+                "search_query": search_query,
+                "current_page_results": current_page_results,
+            }
         )
 
 
