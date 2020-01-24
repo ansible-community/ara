@@ -186,9 +186,21 @@ ARA_DATABASE_CONN_MAX_AGE
 - **Type**: ``integer``
 - **Default**: ``0``
 
-The lifetime of a database connection, in seconds.
+The lifetime of a database connection, in seconds, before it is recycled by
+Django.
 
-The default of 0 closes database connections at the end of each request.
+The default of ``0`` results in connections being closed automatically
+after each request and is appropriate if the API server is not running as a
+persistent service.
+
+When running the API server as a persistent service, this setting can be
+increased to values such as ``300`` in order to enable persistent connections
+and avoid the performance overhead of re-establishing connections for each
+request.
+
+When using the ``django.db.backends.mysql`` database engine, this value should
+be lower than the MySQL server's ``wait_timeout`` configuration to prevent the
+database server from closing the connection before Django can complete queries.
 
 ARA_DATABASE_ENGINE
 ~~~~~~~~~~~~~~~~~~~
