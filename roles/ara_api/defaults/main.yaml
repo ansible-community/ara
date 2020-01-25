@@ -83,8 +83,8 @@ ara_api_wsgi_server: null
 # "ara_api_cors_origin_whitelist".
 ara_api_wsgi_bind: "127.0.0.1:8000"
 
-# When using a frontend server, the domain it will be listening on
-ara_api_fqdn: "{{ ansible_default_ipv4['address'] }}"
+# When using a frontend server, the domain or address it will be listening on
+ara_api_fqdn: "{{ ansible_default_ipv4['address'] | default(ansible_default_ipv6['address']) }}"
 
 ####################################
 # ara API configuration settings
@@ -155,7 +155,7 @@ ara_api_allowed_hosts:
   - "127.0.0.1"
   - "localhost"
   - "::1"
-  - "{{ ansible_default_ipv4['address'] }}"
+  - "{{ ara_api_fqdn }}"
 
 # ARA_DEBUG - Django's DEBUG setting
 # It is not recommended to run with debug enabled in production.
