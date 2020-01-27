@@ -19,30 +19,24 @@
 - name: Basic ARA tests without Ansible roles
   hosts: all
   vars:
-    ara_tests_ansible_name: ansible
-    ara_tests_ansible_version: latest
     ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
     ara_api_venv_path: "{{ ara_api_root_dir }}/virtualenv"
     ara_api_secret_key: testing
     ara_api_debug: true
     ara_api_log_level: DEBUG
   tasks:
-    - name: Ensure root directory exists
-      file:
-        path: "{{ ara_api_root_dir }}"
-        state: directory
-
-    - name: Set source to checked out repository if it isn't specified
+    # The name can be "ansible" when installing from pip or the path to an
+    # Ansible git repository on-disk.
+    # We're handling it here to allow various levels of variable precedence.
+    - name: Set default Ansible name if unset
       set_fact:
-        ara_api_source: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
-      when: ara_api_source is not defined or ara_api_source is none
+        ara_tests_ansible_name: ansible
+      when: ara_tests_ansible_name is not defined or ara_tests_ansible_name is none
 
-    - name: Ensure python3-venv is installed for Ubuntu
-      become: yes
-      package:
-        name: python3-venv
-        state: present
-      when: ansible_distribution == "Ubuntu"
+    - name: Set default Ansible version is unset
+      set_fact:
+        ara_tests_ansible_version: latest
+      when: ara_tests_ansible_version is not defined or ara_tests_ansible_version is none
 
     # If a version is not explicitly set we want to make sure to
     # completely omit the version argument to pip, as it will be coming
@@ -58,6 +52,23 @@
       set_fact:
         _install_ansible_state: latest
       when: ara_tests_ansible_version == "latest"
+
+    - name: Set source to checked out repository if it isn't specified
+      set_fact:
+        ara_api_source: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
+      when: ara_api_source is not defined or ara_api_source is none
+
+    - name: Ensure root directory exists
+      file:
+        path: "{{ ara_api_root_dir }}"
+        state: directory
+
+    - name: Ensure python3-venv is installed for Ubuntu
+      become: yes
+      package:
+        name: python3-venv
+        state: present
+      when: ansible_distribution == "Ubuntu"
 
     - name: Initialize virtual environment with Ansible
       pip:
@@ -86,35 +97,38 @@
         ANSIBLE_ACTION_PLUGINS: "{{ ara_setup_plugins.stdout }}/action"
         ARA_DEBUG: "{{ ara_api_debug }}"
         ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
-        ARA_BASE_DIR: "{{ ara_api_root_dir }}"
+        ARA_BASE_DIR: "{{ ara_api_root_dir }}/server"
         ARA_SECRET_KEY: "{{ ara_api_secret_key }}"
         ARA_API_CLIENT: "{{ ara_api_client | default('offline') }}"
         ARA_API_SERVER: "{{ ara_api_server | default('http://127.0.0.1:8000') }}"
+        PATH: "{{ ara_api_venv_path }}/bin:/bin:/usr/bin:/usr/local/bin"
       vars:
-        _ansible_playbook: "{{ ara_api_venv_path }}/bin/ansible-playbook -vvv"
         _test_root: "{{ ara_api_source }}/tests/integration"
       block:
         # smoke.yaml tests setting ara_playbook_name in one of three plays
         - name: Run smoke.yaml integration test
-          command: "{{ _ansible_playbook }} {{ _test_root }}/smoke.yaml"
+          command: "ansible-playbook -vvv {{ _test_root }}/smoke.yaml"
 
         - name: Run hosts.yaml integration test
-          command: "{{ _ansible_playbook }} {{ _test_root }}/hosts.yaml"
+          command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"
 
         - name: Run import.yaml integration test
-          command: "{{ _ansible_playbook }} {{ _test_root }}/import.yaml"
+          command: "ansible-playbook -vvv {{ _test_root }}/import.yaml"
 
         # Tests setting ara_playbook_name as an extra var
         - name: Run failed.yaml integration test
           command: >
-            {{ _ansible_playbook }} {{ _test_root }}/failed.yaml -e ara_playbook_name="Failed playbook"
+            ansible-playbook -vvv {{ _test_root }}/failed.yaml -e ara_playbook_name="Failed playbook"
           ignore_errors: yes
 
         - name: Run incomplete.yaml integration test
           shell: |
-            {{ _ansible_playbook }} {{ _test_root }}/incomplete.yaml &
+            ansible-playbook -vvv {{ _test_root }}/incomplete.yaml &
             sleep 5
             kill $!
           args:
             executable: /bin/bash
           ignore_errors: yes
+
+        - name: Generate static report
+          command: ara-manage generate {{ ara_api_root_dir }}/static

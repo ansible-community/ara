@@ -10,13 +10,12 @@
         - ara-api-postgresql
         - ara-api-fedora-packages:
             voting: false
-        - ansible-role-ara-api-fedora-devel
-        - ansible-role-ara-api-fedora-2.9
-        - ansible-role-ara-api-ubuntu-2.8
-        - ansible-role-ara-api-ubuntu-2.7
+        - ara-basic-ansible-devel:
+            voting: false
+        - ara-basic-ansible-2.8
+        - ara-basic-ansible-2.7
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
-        - ara-basic-ansible-integration
         - ara-tox-linters
         - ara-tox-py3
     gate:
@@ -24,13 +23,10 @@
         - ara-api-distributed-sqlite
         - ara-api-mysql
         - ara-api-postgresql
-        - ansible-role-ara-api-fedora-devel
-        - ansible-role-ara-api-fedora-2.9
-        - ansible-role-ara-api-ubuntu-2.8
-        - ansible-role-ara-api-ubuntu-2.7
+        - ara-basic-ansible-2.8
+        - ara-basic-ansible-2.7
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora
-        - ara-basic-ansible-integration
         - ara-tox-linters
         - ara-tox-py3
     post:

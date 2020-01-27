@@ -95,3 +95,38 @@
       Deploys the ARA API server on Fedora 30 using distribution packages for
       ARA and Ansible.
     run: tests/with_fedora_packages.yaml
+
+- job:
+    name: ara-ansible-integration-base
+    parent: ara-integration-base
+    nodeset: ara-fedora-30
+    vars:
+      ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
+    run: tests/basic.yaml
+
+- job:
+    name: ara-basic-ansible-devel
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible devel.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: devel
+
+- job:
+    name: ara-basic-ansible-2.8
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.8.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.8
+
+- job:
+    name: ara-basic-ansible-2.7
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.7.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.7
