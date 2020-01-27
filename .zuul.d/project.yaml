@@ -5,12 +5,12 @@
       - docs-on-readthedocs
     check:
       jobs:
+        - ara-api-mysql
         - ansible-role-ara-api-fedora-devel
         - ansible-role-ara-api-fedora-2.9
         - ansible-role-ara-api-ubuntu-2.8
         - ansible-role-ara-api-ubuntu-2.7
         - ansible-role-ara-api-ubuntu-postgresql
-        - ansible-role-ara-api-ubuntu-mysql
         - ansible-role-ara-api-fedora-distributed-sqlite
         - ansible-role-ara-api-fedora-packages:
             voting: false
@@ -21,12 +21,12 @@
         - ara-tox-py3
     gate:
       jobs:
+        - ara-api-mysql
         - ansible-role-ara-api-fedora-devel
         - ansible-role-ara-api-fedora-2.9
         - ansible-role-ara-api-ubuntu-2.8
         - ansible-role-ara-api-ubuntu-2.7
         - ansible-role-ara-api-ubuntu-postgresql
-        - ansible-role-ara-api-ubuntu-mysql
         - ansible-role-ara-api-fedora-distributed-sqlite
         - ansible-role-ara-web-ubuntu
         - ansible-role-ara-web-fedora

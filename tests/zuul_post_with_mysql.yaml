@@ -1,0 +1,48 @@
+---
+#  Copyright (c) 2020 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA Records Ansible is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA Records Ansible is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
+
+- name: Recover mysql server data
+  hosts: ara-database-server
+  gather_facts: yes
+  vars_files:
+    - vars/mysql_tests.yaml
+  tasks:
+    - name: Ensure mysqldump is installed
+      become: yes
+      package:
+        name: mariadb
+        state: present
+
+    # The zuul-output directory is retrieved by the fetch-output role
+    # https://opendev.org/zuul/zuul-jobs/src/branch/master/roles/fetch-output
+    - name: Create log directory
+      file:
+        path: "{{ ansible_user_dir }}/zuul-output/logs"
+        state: directory
+        recurse: yes
+
+    # Dump is suffixed by .txt so we don't need magic mimetypes when
+    # viewing on the web.
+    - name: Dump database file
+      shell: |
+        mysqldump \
+          --host=127.0.0.1 \
+          --port={{ ara_api_database_port }} \
+          --user={{ ara_api_database_user }} \
+          --password={{ ara_api_database_password }} \
+          {{ ara_api_database_name }} > {{ ansible_user_dir }}/zuul-output/logs/mysqldump.sql.txt

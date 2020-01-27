@@ -84,14 +84,6 @@
     run: tests/with_postgresql.yaml
 
 - job:
-    name: ansible-role-ara-api-ubuntu-mysql
-    parent: ansible-role-ara-api-ubuntu
-    roles:
-      - zuul: zuul/zuul-jobs
-    pre-run: tests/install_docker.yaml
-    run: tests/with_mysql.yaml
-
-- job:
     name: ansible-role-ara-api-fedora-distributed-sqlite
     parent: ansible-role-ara-api-fedora
     roles:

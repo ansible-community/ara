@@ -1,0 +1,39 @@
+- job:
+    name: ara-integration-base
+    parent: base
+    files:
+      - ara/*
+      - playbooks/*
+      - roles/*
+      - tests/*
+      - .zuul.d/*
+      - manage.py
+      - setup.py
+      - setup.cfg
+      - requirements.txt
+      - test-requirements.txt
+    vars:
+      ara_tests_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
+      ara_tests_ansible_version: null
+      ara_api_secure_logging: false
+    post-run: tests/zuul_post_logs.yaml
+
+- job:
+    name: ara-api-database-backends
+    parent: ara-integration-base
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.9
+    pre-run: tests/zuul_pre_multinode_networking.yaml
+
+- job:
+    name: ara-api-mysql
+    parent: ara-api-database-backends
+    nodeset: ara-database-server-multinode
+    description: |
+      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
+      tests it against a central MySQL server installed on CentOS 8.
+      The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
+      ARA API clients as well as the API itself.
+    run: tests/with_mysql.yaml
+    post-run: tests/zuul_post_with_mysql.yaml
