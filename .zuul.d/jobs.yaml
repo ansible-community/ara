@@ -49,3 +49,12 @@
       ARA API clients as well as the API itself.
     run: tests/with_mysql.yaml
     post-run: tests/zuul_post_with_mysql.yaml
+
+- job:
+    name: ara-api-distributed-sqlite
+    parent: ara-api-database-backends
+    nodeset: ara-multinode
+    description: |
+      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
+      tests it using the distributed sqlite database backend.
+    run: tests/with_distributed_sqlite.yaml

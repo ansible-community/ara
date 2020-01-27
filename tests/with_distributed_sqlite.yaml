@@ -18,21 +18,8 @@
 - name: Test the ARA API with the distributed sqlite backend
   hosts: all
   gather_facts: yes
-  vars:
-    ara_tests_cleanup: true
-    ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
-    ara_api_distributed_sqlite_root: "{{ ansible_user_dir }}/.ara-tests"
-    ara_api_distributed_sqlite_prefix: ara-test-report
-    ara_api_wsgi_server: gunicorn
-    ara_api_secret_key: testing
-    ara_api_debug: true
-    ara_api_log_level: DEBUG
-    ara_api_server: "http://127.0.0.1:8000"
-    ara_api_client: http
-    _test_directories:
-      - "tests/some/path/ara-test-report"
-      - "tests/dev/ara-test-report"
-      - "tests/prod/ara-test-report"
+  vars_files:
+    - vars/distributed_sqlite_tests.yaml
   tasks:
     # Generate ourselves a fresh database to run tests with
     - name: Set up the API with the default sqlite backend

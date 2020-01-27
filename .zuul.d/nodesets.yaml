@@ -17,3 +17,18 @@
         nodes:
           - ubuntu-bionic
           - fedora-30
+
+# Nodeset used to test instances of ARA API deployed on different operating
+# systems simultaneously.
+- nodeset:
+    name: ara-multinode
+    nodes:
+      - name: ubuntu-bionic
+        label: ubuntu-bionic
+      - name: fedora-30
+        label: fedora-30
+    groups:
+      - name: ara-api-server
+        nodes:
+          - ubuntu-bionic
+          - fedora-30
