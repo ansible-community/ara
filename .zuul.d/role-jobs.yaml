@@ -1,9 +1,3 @@
-- nodeset:
-    name: ara-fedora-30
-    nodes:
-      - name: fedora-30
-        label: fedora-30
-
 - job:
     name: ansible-role-ara-api-base
     parent: base
@@ -73,13 +67,6 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
-
-# Distribution package tests
-
-- job:
-    name: ansible-role-ara-api-fedora-packages
-    parent: ansible-role-ara-api-fedora
-    run: tests/with_fedora_packages.yaml
 
 # ara-web jobs
 - job:

@@ -32,3 +32,13 @@
         nodes:
           - ubuntu-bionic
           - fedora-30
+
+- nodeset:
+    name: ara-fedora-30
+    nodes:
+      - name: fedora-30
+        label: fedora-30
+    groups:
+      - name: ara-api-server
+        nodes:
+          - fedora-30

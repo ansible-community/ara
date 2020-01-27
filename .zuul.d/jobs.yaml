@@ -58,3 +58,14 @@
       Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
       tests it using the distributed sqlite database backend.
     run: tests/with_distributed_sqlite.yaml
+
+# TODO: The job should build a package from current source and test that package
+# instead of the package in the stable distribution.
+- job:
+    name: ara-api-fedora-packages
+    parent: ara-integration-base
+    nodeset: ara-fedora-30
+    description: |
+      Deploys the ARA API server on Fedora 30 using distribution packages for
+      ARA and Ansible.
+    run: tests/with_fedora_packages.yaml
