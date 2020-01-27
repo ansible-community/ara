@@ -27,6 +27,18 @@
     pre-run: tests/zuul_pre_multinode_networking.yaml
 
 - job:
+    name: ara-api-postgresql
+    parent: ara-api-database-backends
+    nodeset: ara-database-server-multinode
+    description: |
+      Deploys the ARA API server on Ubuntu 18.04 as well as Fedora 30 and
+      tests it against a central PostgreSQL server installed on CentOS 8.
+      The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
+      ARA API clients as well as the API itself.
+    run: tests/with_postgresql.yaml
+    post-run: tests/zuul_post_with_postgresql.yaml
+
+- job:
     name: ara-api-mysql
     parent: ara-api-database-backends
     nodeset: ara-database-server-multinode

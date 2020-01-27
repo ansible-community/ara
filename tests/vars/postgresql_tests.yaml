@@ -1,0 +1,16 @@
+ara_tests_cleanup: true
+ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
+ara_api_secret_key: testing
+ara_api_debug: true
+ara_api_log_level: DEBUG
+# Set to 0 because tests could be using the offline client
+ara_api_database_conn_max_age: 0
+ara_api_database_engine: django.db.backends.postgresql
+ara_api_database_name: ara
+ara_api_database_user: ara
+ara_api_database_password: password
+ara_api_database_port: 5432
+# The host is defined dynamically based on the address of the database server
+# ara_api_database_host: 127.0.0.1
+_postgresql_container_name: ara-postgresql-tests
+_postgresql_image_name: docker.io/postgres:10
