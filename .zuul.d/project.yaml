@@ -14,8 +14,6 @@
             voting: false
         - ara-basic-ansible-2.8
         - ara-basic-ansible-2.7
-        - ansible-role-ara-web-ubuntu
-        - ansible-role-ara-web-fedora
         - ara-tox-linters
         - ara-tox-py3
     gate:
@@ -25,8 +23,6 @@
         - ara-api-postgresql
         - ara-basic-ansible-2.8
         - ara-basic-ansible-2.7
-        - ansible-role-ara-web-ubuntu
-        - ansible-role-ara-web-fedora
         - ara-tox-linters
         - ara-tox-py3
     post:
