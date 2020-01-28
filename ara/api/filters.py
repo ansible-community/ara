@@ -61,6 +61,7 @@ class PlaybookFilter(DateFilter):
     status = django_filters.MultipleChoiceFilter(
         field_name="status", choices=ara_models.Playbook.STATUS, lookup_expr="iexact"
     )
+    label = django_filters.CharFilter(field_name="labels", lookup_expr="name__iexact")
 
     # fmt: off
     order = django_filters.OrderingFilter(
