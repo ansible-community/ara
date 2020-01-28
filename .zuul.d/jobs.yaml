@@ -39,6 +39,7 @@
       - requirements.txt
       - test-requirements.txt
     vars:
+      ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
       ara_tests_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
       ara_tests_ansible_version: null
       ara_api_secure_logging: false
