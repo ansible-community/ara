@@ -29,12 +29,7 @@
                         <div style="padding-top:1em;" title="{{ playbook.path }}">
                             <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html">
                                 {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatechars:50 }}{% endif %}
-                            </a><br>
-                            <div title="Playbook labels">
-                                {% for label in playbook.labels %}
-                                <span class="pf-c-label">{{ label.name }}</span>
-                                {% endfor %}
-                            </div>
+                            </a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
@@ -74,6 +69,30 @@
                     </div>
                 </div>
             </div>
+            {% if playbook.labels %}
+            <div class="pf-c-data-list__item-row">
+                <ul class="pf-c-chip-group pf-m-toolbar">
+                    <li>
+                        <h4 class="pf-c-chip-group__label">Playbook labels</h4>
+                        <ul class="pf-c-chip-group">
+                            {% for label in playbook.labels %}
+                            <li class="pf-c-chip" title="{{ label.name }}">
+                                <span class="pf-c-chip__text">{{ label.name }}</span>
+                                {% if not static_generation %}
+                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" href="?label={{ label.name }}">
+                                {% else %}
+                                {# TODO: Lack of link and icon breaks styling #}
+                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" disabled>
+                                {% endif %}
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
         </li>
     </ul>
 </div>
