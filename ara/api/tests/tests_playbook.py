@@ -226,4 +226,17 @@ class PlaybookTestCase(APITestCase):
         playbook_updated = models.Playbook.objects.get(id=playbook.id)
         self.assertEqual([label.name for label in playbook_updated.labels.all()], labels)
 
-    # TODO: Add tests for incrementally updating files
+    def test_get_playbook_by_label(self):
+        # Create two playbooks, one with labels and one without
+        playbook = factories.PlaybookFactory()
+        self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"labels": ["test-label"]})
+        factories.PlaybookFactory()
+
+        # Ensure we have two objects when searching without labels
+        request = self.client.get("/api/v1/playbooks")
+        self.assertEqual(2, len(request.data["results"]))
+
+        # Search with label and ensure we have the right one
+        request = self.client.get("/api/v1/playbooks?label=%s" % "test-label")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(request.data["results"][0]["labels"][0]["name"], "test-label")
