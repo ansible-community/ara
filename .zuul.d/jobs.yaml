@@ -147,3 +147,4 @@
     secrets:
       - name: ara_api_credentials
         secret: ara_api_demo_credentials
+        pass-to-parent: true
