@@ -33,7 +33,7 @@ class Index(generics.ListAPIView):
         else:
             search_form = forms.PlaybookSearchForm()
 
-        query = self.filter_queryset(self.queryset.all())
+        query = self.filter_queryset(self.queryset.all().order_by("-id"))
         page = self.paginate_queryset(query)
         if page is not None:
             serializer = serializers.ListPlaybookSerializer(page, many=True)
