@@ -89,14 +89,8 @@
       command: "{{ ara_api_venv_path }}/bin/python -m ara.setup.plugins"
       register: ara_setup_plugins
 
-    - name: Set default labels with Zuul
-      set_fact:
-        _default_labels:
-          - "nodepool.provider:{{ nodepool.provider }}"
-          - "zuul.change:{{ zuul.change }}"
-          - "zuul.executor:{{ zuul.executor.hostname }}"
-          - "zuul.pipeline:{{ zuul.pipeline }}"
-          - "zuul.project:{{ zuul.project.canonical_name }}"
+    - name: Record Zuul metadata for ARA playbooks
+      include_tasks: zuul_metadata.yaml
       when: zuul is defined
 
     - name: Template an ansible.cfg file
