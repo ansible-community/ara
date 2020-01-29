@@ -28,3 +28,4 @@
     post:
       jobs:
         - ara-upload-git-mirror
+        - ara-demo

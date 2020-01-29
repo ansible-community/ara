@@ -131,3 +131,19 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.7
+
+- job:
+    name: ara-demo
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.9 and sends
+      them to the live demo.
+    vars:
+      ara_api_client: http
+      ara_api_server: "https://api.demo.recordsansible.org"
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.9
+    secrets:
+      - name: ara_api_credentials
+        secret: ara_api_demo_credentials
