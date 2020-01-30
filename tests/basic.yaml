@@ -104,7 +104,9 @@
           [ara]
           api_client = {{ ara_api_client | default('offline') }}
           api_server = {{ ara_api_server | default('http://127.0.0.1') }}
-          default_labels = "{{ _default_labels | join(',') | default('default-label') }}"
+          {% if _default_labels is defined %}
+          default_labels = "{{ _default_labels | join(',') }}"
+          {% endif %}
         dest: "{{ ara_api_root_dir }}/ansible.cfg"
 
     # We need to do this because we can't omit a dictionary key if it's not set
