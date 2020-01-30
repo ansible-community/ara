@@ -83,6 +83,10 @@ ara_api_wsgi_server: null
 # "ara_api_cors_origin_whitelist".
 ara_api_wsgi_bind: "127.0.0.1:8000"
 
+# Amount of worker processes for the wsgi server
+# Recommended default formula by gunicorn: https://docs.gunicorn.org/en/stable/design.html#how-many-workers
+ara_api_wsgi_workers: "{{ ansible_processor_count * ansible_processor_cores * ansible_processor_threads_per_core * 2 + 1 }}"
+
 # When using a frontend server, the domain or address it will be listening on
 ara_api_fqdn: "{{ ansible_default_ipv4['address'] | default(ansible_default_ipv6['address']) }}"
 
