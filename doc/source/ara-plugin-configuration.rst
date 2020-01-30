@@ -49,8 +49,8 @@ an ``ansible.cfg`` file:
     api_password = password
     api_timeout = 15
     default_labels = dev,deploy
-    ignored_facts = '["ansible_env", "ansible_all_ipv4_addresses"]'
-    ignored_arguments = '["extra_vars", "vault_password_files"]'
+    ignored_facts = ansible_env,ansible_all_ipv4_addresses
+    ignored_arguments = extra_vars,vault_password_files
 
 or as environment variables:
 
@@ -62,8 +62,8 @@ or as environment variables:
     export ARA_API_PASSWORD=password
     export ARA_API_TIMEOUT=15
     export ARA_DEFAULT_LABELS=dev,deploy
-    export ARA_IGNORED_FACTS='["ansible_env", "ansible_all_ipv4_addresses"]'
-    export ARA_IGNORED_ARGUMENTS='["extra_vars", "vault_password_files"]'
+    export ARA_IGNORED_FACTS=ansible_env,ansible_all_ipv4_addresses
+    export ARA_IGNORED_ARGUMENTS=extra_vars,vault_password_files
 
 ARA action plugin: ara_record
 -----------------------------
