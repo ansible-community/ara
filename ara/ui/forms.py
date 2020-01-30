@@ -26,3 +26,4 @@ class PlaybookSearchForm(forms.Form):
     status = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=models.Playbook.STATUS, required=False
     )
+    label = forms.CharField(label="Playbook label", max_length=255, required=False)

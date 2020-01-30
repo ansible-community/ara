@@ -54,6 +54,14 @@
                             </fieldset>
                         </div>
                     </div>
+                    <div class="pf-c-form__group">
+                        <label class="pf-c-form__label" for="label">
+                            <span class="pf-c-form__label-text">Playbook label</span>
+                        </label>
+                        <div class="pf-c-form__horizontal-group">
+                            <input class="pf-c-form-control" type="text" id="label" name="label" value="{% if search_form.label.value is not null %}{{ search_form.label.value }}{% endif %}" />
+                        </div>
+                    </div>
                     <input type="submit" value="Submit">
                 </form>
             </ul>
