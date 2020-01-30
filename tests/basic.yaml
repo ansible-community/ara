@@ -58,10 +58,11 @@
         ara_api_source: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
       when: ara_api_source is not defined or ara_api_source is none
 
-    - name: Ensure root directory exists
+    - name: Ensure root server directory exists
       file:
-        path: "{{ ara_api_root_dir }}"
+        path: "{{ ara_api_root_dir }}/server"
         state: directory
+        recurse: yes
 
     - name: Ensure python3-venv is installed for Ubuntu
       become: yes
@@ -105,16 +106,16 @@
           api_client = {{ ara_api_client | default('offline') }}
           api_server = {{ ara_api_server | default('http://127.0.0.1') }}
           {% if _default_labels is defined %}
-          default_labels = "{{ _default_labels | join(',') }}"
+          default_labels = {{ _default_labels | join(',') }}
           {% endif %}
-        dest: "{{ ara_api_root_dir }}/ansible.cfg"
+        dest: "{{ ara_api_root_dir }}/server/ansible.cfg"
 
     # We need to do this because we can't omit a dictionary key if it's not set
     # https://github.com/ansible/ansible/issues/14130
     - name: Set environment variables without authentication
       set_fact:
         _env:
-          ANSIBLE_CONFIG: "{{ ara_api_root_dir }}/ansible.cfg"
+          ANSIBLE_CONFIG: "{{ ara_api_root_dir }}/server/ansible.cfg"
           ARA_DEBUG: "{{ ara_api_debug }}"
           ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
           ARA_BASE_DIR: "{{ ara_api_root_dir }}/server"
@@ -125,7 +126,7 @@
     - name: Set environment variables with authentication
       set_fact:
         _env:
-          ANSIBLE_CONFIG: "{{ ara_api_root_dir }}/ansible.cfg"
+          ANSIBLE_CONFIG: "{{ ara_api_root_dir }}/server/ansible.cfg"
           ARA_DEBUG: "{{ ara_api_debug }}"
           ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
           ARA_BASE_DIR: "{{ ara_api_root_dir }}/server"
