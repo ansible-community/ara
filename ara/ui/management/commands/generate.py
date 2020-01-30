@@ -42,8 +42,8 @@ class Command(BaseCommand):
         self.create_dirs(path)
 
         # TODO: Leverage ui views directly instead of duplicating logic here
-        query = models.Playbook.objects.all()
-        serializer = serializers.ListPlaybookSerializer(query.all(), many=True)
+        query = models.Playbook.objects.all().order_by("-id")
+        serializer = serializers.ListPlaybookSerializer(query, many=True)
 
         print("[ara] Generating static files for %s playbooks at %s..." % (query.count(), path))
 
@@ -56,7 +56,7 @@ class Command(BaseCommand):
         codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
 
         # Playbooks
-        for playbook in query.all():
+        for playbook in query:
             destination = os.path.join(path, "playbook/%s.html" % playbook.id)
             serializer = serializers.DetailedPlaybookSerializer(playbook)
             data = {"playbook": serializer.data, "static_generation": True}

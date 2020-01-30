@@ -40,8 +40,8 @@ class PlaybookViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Playbook.objects.filter(status__in=statuses)
-        return models.Playbook.objects.all()
+            return models.Playbook.objects.filter(status__in=statuses).order_by("-id")
+        return models.Playbook.objects.all().order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -59,8 +59,8 @@ class PlayViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Play.objects.filter(status__in=statuses)
-        return models.Play.objects.all()
+            return models.Play.objects.filter(status__in=statuses).order_by("-id")
+        return models.Play.objects.all().order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -78,8 +78,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Task.objects.filter(status__in=statuses)
-        return models.Task.objects.all()
+            return models.Task.objects.filter(status__in=statuses).order_by("-id")
+        return models.Task.objects.all().order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -111,8 +111,8 @@ class ResultViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Result.objects.filter(status__in=statuses)
-        return models.Result.objects.all()
+            return models.Result.objects.filter(status__in=statuses).order_by("-id")
+        return models.Result.objects.all().order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":

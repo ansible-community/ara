@@ -136,8 +136,8 @@ class ResultTestCase(APITestCase):
         factories.ResultFactory(playbook=playbook, host=host_two, status="skipped")
         request = self.client.get("/api/v1/results?playbook=%s" % playbook.id)
         self.assertEqual(2, len(request.data["results"]))
-        self.assertEqual(result.status, request.data["results"][0]["status"])
-        self.assertEqual("skipped", request.data["results"][1]["status"])
+        self.assertEqual(result.status, request.data["results"][1]["status"])
+        self.assertEqual("skipped", request.data["results"][0]["status"])
 
     def test_get_result_by_statuses(self):
         failed_result = factories.ResultFactory(status="failed")
@@ -156,8 +156,8 @@ class ResultTestCase(APITestCase):
 
         results = self.client.get("/api/v1/results?status=failed&status=skipped").data["results"]
         self.assertEqual(2, len(results))
-        self.assertEqual(failed_result.status, results[0]["status"])
-        self.assertEqual(skipped_result.status, results[1]["status"])
+        self.assertEqual(failed_result.status, results[1]["status"])
+        self.assertEqual(skipped_result.status, results[0]["status"])
 
     def test_result_status_serializer(self):
         ok = factories.ResultFactory(status="ok")

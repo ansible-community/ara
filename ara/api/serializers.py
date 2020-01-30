@@ -162,8 +162,13 @@ class NestedPlaybookTaskSerializer(serializers.ModelSerializer):
         exclude = ("playbook", "created", "updated")
 
     tags = ara_fields.CompressedObjectField(read_only=True)
-    results = NestedPlaybookResultSerializer(read_only=True, many=True)
     file = NestedPlaybookFileSerializer(read_only=True)
+    results = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_results(obj):
+        results = obj.results.all().order_by("-id")
+        return NestedPlaybookResultSerializer(results, many=True).data
 
 
 class NestedPlaybookRecordSerializer(serializers.ModelSerializer):
@@ -177,7 +182,12 @@ class NestedPlaybookPlaySerializer(serializers.ModelSerializer):
         model = models.Play
         exclude = ("playbook", "uuid", "created", "updated")
 
-    tasks = NestedPlaybookTaskSerializer(read_only=True, many=True)
+    tasks = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_tasks(obj):
+        tasks = obj.tasks.all().order_by("-id")
+        return NestedPlaybookTaskSerializer(tasks, many=True).data
 
 
 class NestedPlayTaskSerializer(TaskPathSerializer):
@@ -209,10 +219,15 @@ class DetailedPlaybookSerializer(ItemCountSerializer):
 
     arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT, read_only=True)
     labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
-    plays = NestedPlaybookPlaySerializer(many=True, read_only=True, default=[])
     hosts = SimpleHostSerializer(many=True, read_only=True, default=[])
     files = SimpleFileSerializer(many=True, read_only=True, default=[])
     records = NestedPlaybookRecordSerializer(many=True, read_only=True, default=[])
+    plays = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_plays(obj):
+        plays = obj.plays.all().order_by("-id")
+        return NestedPlaybookPlaySerializer(plays, many=True).data
 
 
 class DetailedPlaySerializer(ItemCountSerializer):
