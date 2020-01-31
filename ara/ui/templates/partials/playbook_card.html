@@ -79,7 +79,7 @@
                             <li class="pf-c-chip" title="{{ label.name }}">
                                 <span class="pf-c-chip__text">{{ label.name }}</span>
                                 {% if not static_generation %}
-                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" href="?label={{ label.name }}">
+                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" href="{% if page != 'index' %}../{% endif %}?label={{ label.name }}">
                                 {% else %}
                                 {# TODO: Lack of link and icon breaks styling #}
                                 <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" disabled>
