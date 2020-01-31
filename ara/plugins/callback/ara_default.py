@@ -132,6 +132,15 @@ options:
     ini:
       - section: ara
         key: ignored_arguments
+  ignored_files:
+    description: List of patterns that will not be saved by ARA
+    type: list
+    default: []
+    env:
+      - name: ARA_IGNORED_FILES
+    ini:
+      - section: ara
+        key: ignored_files
 """
 
 
@@ -150,6 +159,7 @@ class CallbackModule(CallbackBase):
         self.client = None
         self.ignored_facts = []
         self.ignored_arguments = []
+        self.ignored_files = []
 
         self.result = None
         self.task = None
@@ -166,6 +176,7 @@ class CallbackModule(CallbackBase):
         self.default_labels = self.get_option("default_labels")
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
+        self.ignored_files = self.get_option("ignored_files")
 
         client = self.get_option("api_client")
         endpoint = self.get_option("api_server")
@@ -335,13 +346,19 @@ class CallbackModule(CallbackBase):
     def _get_or_create_file(self, path):
         if path not in self.file_cache:
             self.log.debug("File not in cache, getting or creating: %s" % path)
-            try:
-                with open(path, "r") as fd:
-                    content = fd.read()
-            except IOError as e:
-                self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
-                content = """ARA was not able to read this file successfully.
-                        Refer to the logs for more information"""
+            content = None
+            for ignored_file_pattern in self.ignored_files:
+                if ignored_file_pattern in path:
+                    self.log.debug("Ignoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
+                    content = "Not saved by ARA as configured by 'ignored_files'"
+            if content is None:
+                try:
+                    with open(path, "r") as fd:
+                        content = fd.read()
+                except IOError as e:
+                    self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
+                    content = """ARA was not able to read this file successfully.
+                            Refer to the logs for more information"""
 
             self.file_cache[path] = self.client.post(
                 "/api/v1/files", playbook=self.playbook["id"], path=path, content=content
