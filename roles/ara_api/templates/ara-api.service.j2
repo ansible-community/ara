@@ -8,9 +8,9 @@ RuntimeDirectory=ara-api
 WorkingDirectory={{ ara_api_root_dir }}
 Environment=ARA_SETTINGS={{ ara_api_settings }}
 {% if ara_api_venv %}
-ExecStart={{ ara_api_venv_path }}/bin/gunicorn --workers=4 --bind {{ ara_api_wsgi_bind }} {{ _ara_api_wsgi_application | default('ara.server.wsgi') }}
+ExecStart={{ ara_api_venv_path }}/bin/gunicorn --workers={{ ara_api_wsgi_workers }} --bind {{ ara_api_wsgi_bind }} {{ _ara_api_wsgi_application | default('ara.server.wsgi') }}
 {% else %}
-ExecStart=gunicorn --workers=4 --bind {{ ara_api_wsgi_bind }} {{ _ara_api_wsgi_application | default('ara.server.wsgi') }}
+ExecStart=gunicorn --workers={{ ara_api_wsgi_workers }} --bind {{ ara_api_wsgi_bind }} {{ _ara_api_wsgi_application | default('ara.server.wsgi') }}
 {% endif %}
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
