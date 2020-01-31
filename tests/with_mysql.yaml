@@ -37,6 +37,10 @@
           -e MYSQL_USER={{ ara_api_database_user }} \
           -e MYSQL_PASSWORD={{ ara_api_database_password }} \
           {{ _mysql_image_name }}
+      register: db_container
+      retries: 3
+      delay: 5
+      until: db_container is succeeded
 
     # podman doesn't appear to be able to listen on ipv6 yet: https://github.com/containers/libpod/issues/3245
     # If we have a node on IPv6, redirect the traffic from v6 to v4 with socat
