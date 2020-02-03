@@ -28,6 +28,8 @@ class Command(BaseCommand):
         shutil.rmtree(os.path.join(path, "static"), ignore_errors=True)
         ui_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
         shutil.copytree(os.path.join(ui_path, "static"), os.path.join(path, "static"))
+        # copy robots.txt from templates to root directory
+        shutil.copyfile(os.path.join(ui_path, "templates/robots.txt"), os.path.join(path, "robots.txt"))
 
     def add_arguments(self, parser):
         parser.add_argument("path", help="Path where the static files will be built in", type=str)
