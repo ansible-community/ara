@@ -340,7 +340,9 @@ class CallbackModule(CallbackBase):
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
 
     def _set_playbook_labels(self, labels):
-        if sorted(self.playbook["labels"]) != sorted(labels):
+        current_labels = [label["name"] for label in self.playbook["labels"]]
+        if sorted(current_labels) != sorted(labels):
+            self.log.debug("Updating playbook labels to match: %s" % ",".join(labels))
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
 
     def _get_or_create_file(self, path):
