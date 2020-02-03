@@ -17,6 +17,7 @@
 
 import datetime
 
+from django.db.utils import IntegrityError
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
@@ -90,8 +91,8 @@ class LabelTestCase(APITestCase):
             self.assertEqual(request.data["results"][0]["id"], label.id)
 
     def test_get_label_order(self):
-        first_label = factories.LabelFactory()
-        second_label = factories.LabelFactory()
+        first_label = factories.LabelFactory(name="first")
+        second_label = factories.LabelFactory(name="second")
 
         # Ensure we have two objects
         request = self.client.get("/api/v1/labels")
@@ -101,9 +102,16 @@ class LabelTestCase(APITestCase):
         # Ascending order
         for field in order_fields:
             request = self.client.get("/api/v1/labels?order=%s" % field)
-            self.assertEqual(request.data["results"][0]["id"], first_label.id)
+            self.assertEqual(request.data["results"][0]["name"], first_label.name)
 
         # Descending order
         for field in order_fields:
             request = self.client.get("/api/v1/labels?order=-%s" % field)
-            self.assertEqual(request.data["results"][0]["id"], second_label.id)
+            self.assertEqual(request.data["results"][0]["name"], second_label.name)
+
+    def test_unique_label_names(self):
+        # Create a first label
+        factories.LabelFactory(name="label")
+        with self.assertRaises(IntegrityError):
+            # Creating a second label with the same name should yield an exception
+            factories.LabelFactory(name="label")

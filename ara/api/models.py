@@ -66,7 +66,7 @@ class Label(Base):
     class Meta:
         db_table = "labels"
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return "<Label %s: %s>" % (self.id, self.name)
