@@ -81,6 +81,9 @@ class CreatableSlugRelatedField(serializers.SlugRelatedField):
     Used for creating or retrieving labels by name.
     """
 
+    def to_representation(self, obj):
+        return {"id": obj.id, "name": obj.name}
+
     def to_internal_value(self, data):
         try:
             return self.get_queryset().get_or_create(**{self.slug_field: data})[0]
