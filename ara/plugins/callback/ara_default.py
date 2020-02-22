@@ -24,7 +24,9 @@ import os
 
 import six
 from ansible import __version__ as ansible_version
+from ansible.parsing.ajson import AnsibleJSONEncoder
 from ansible.plugins.callback import CallbackBase
+from ansible.vars.clean import module_response_deepcopy, strip_internal_keys
 
 from ara.clients import utils as client_utils
 
@@ -166,7 +168,6 @@ class CallbackModule(CallbackBase):
         self.play = None
         self.playbook = None
         self.stats = None
-        self.loop_items = []
         self.file_cache = {}
         self.host_cache = {}
 
@@ -315,7 +316,6 @@ class CallbackModule(CallbackBase):
                 "/api/v1/tasks/%s" % self.task["id"], status="completed", ended=datetime.datetime.now().isoformat()
             )
             self.task = None
-            self.loop_items = []
 
     def _end_play(self):
         if self.play is not None:
@@ -384,20 +384,24 @@ class CallbackModule(CallbackBase):
         # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(result._host.get_name())
 
-        # Use Ansible's CallbackBase._dump_results in order to strip internal
-        # keys, respect no_log directive, etc.
-        if self.loop_items:
-            # NOTE (dmsimard): There is a known issue in which Ansible can send
-            # callback hooks out of order and "exit" the task before all items
-            # have returned, this can cause one of the items to be missing
-            # from the task result in ARA.
-            # https://github.com/ansible/ansible/issues/24207
-            results = [self._dump_results(result._result)]
-            for item in self.loop_items:
-                results.append(self._dump_results(item._result))
-            results = json.loads(json.dumps(results))
-        else:
-            results = json.loads(self._dump_results(result._result))
+        results = strip_internal_keys(module_response_deepcopy(result._result))
+
+        # Round-trip through JSON to sort keys and convert Ansible types
+        # to standard types
+        try:
+            jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=True)
+        except TypeError:
+            # Python 3 can't sort non-homogenous keys.
+            # https://bugs.python.org/issue25457
+            jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=False)
+        results = json.loads(jsonified)
+
+        # Sanitize facts
+        if "ansible_facts" in results:
+            for fact in self.ignored_facts:
+                if fact in results["ansible_facts"]:
+                    self.log.debug("Ignoring fact: %s" % fact)
+                    results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
 
         self.result = self.client.post(
             "/api/v1/results",
@@ -415,13 +419,6 @@ class CallbackModule(CallbackBase):
         )
 
         if self.task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
-            # Potentially sanitize some Ansible facts to prevent them from
-            # being saved both in the host facts and in the task results.
-            for fact in self.ignored_facts:
-                if fact in results["ansible_facts"]:
-                    self.log.debug("Ignoring fact: %s" % fact)
-                    results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
-
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
 
     def _load_stats(self, stats):
