@@ -120,6 +120,7 @@ class TaskFilter(DateFilter):
 
 class HostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     # fmt: off
     order = django_filters.OrderingFilter(
