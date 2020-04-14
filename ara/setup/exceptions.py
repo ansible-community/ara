@@ -32,3 +32,9 @@ class MissingMysqlclientException(Exception):
     def __init__(self):
         exc = "The mysqlclient python library must be installed in order to use the MySQL database engine."
         super().__init__(exc)
+
+
+class MissingSettingsException(Exception):
+    def __init__(self):
+        exc = "The specified settings file does not exist or permissions are insufficient to read it."
+        super().__init__(exc)

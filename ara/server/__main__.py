@@ -21,7 +21,12 @@ import sys
 
 from django.conf import settings
 
-from ara.setup.exceptions import MissingDjangoException, MissingMysqlclientException, MissingPsycopgException
+from ara.setup.exceptions import (
+    MissingDjangoException,
+    MissingMysqlclientException,
+    MissingPsycopgException,
+    MissingSettingsException,
+)
 
 
 def main():
@@ -31,6 +36,12 @@ def main():
         from django.core.management import execute_from_command_line
     except ImportError as e:
         raise MissingDjangoException from e
+
+    # Validate that the settings file exists and is readable before bootstrapping
+    if not os.path.exists(settings.ARA_SETTINGS):
+        print("[ara] Unable to access or read settings file: %s" % settings.ARA_SETTINGS)
+        raise MissingSettingsException
+    print("[ara] Using settings file: %s" % settings.ARA_SETTINGS)
 
     if settings.DATABASE_ENGINE == "django.db.backends.postgresql":
         try:
@@ -45,7 +56,6 @@ def main():
             raise MissingMysqlclientException from e
 
     execute_from_command_line(sys.argv)
-    print("[ara] Using settings file: %s" % settings.ARA_SETTINGS)
 
 
 if __name__ == "__main__":
