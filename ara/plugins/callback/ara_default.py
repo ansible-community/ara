@@ -196,7 +196,16 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
-        path = os.path.abspath(playbook._file_name)
+
+        content = None
+
+        if playbook._file_name == "__adhoc_playbook__":
+            content = cli_options["module_name"]
+            if cli_options["module_args"]:
+                content = "{0}: {1}".format(content, cli_options["module_args"])
+            path = "Ad-Hoc: {0}".format(content)
+        else:
+            path = os.path.abspath(playbook._file_name)
 
         # Potentially sanitize some user-specified keys
         for argument in self.ignored_arguments:
@@ -215,7 +224,7 @@ class CallbackModule(CallbackBase):
         )
 
         # Record the playbook file
-        self._get_or_create_file(path)
+        self._get_or_create_file(path, content)
 
         return self.playbook
 
@@ -345,10 +354,9 @@ class CallbackModule(CallbackBase):
             self.log.debug("Updating playbook labels to match: %s" % ",".join(labels))
             self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
 
-    def _get_or_create_file(self, path):
+    def _get_or_create_file(self, path, content=None):
         if path not in self.file_cache:
             self.log.debug("File not in cache, getting or creating: %s" % path)
-            content = None
             for ignored_file_pattern in self.ignored_files:
                 if ignored_file_pattern in path:
                     self.log.debug("Ignoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
