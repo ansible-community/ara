@@ -1,4 +1,5 @@
 {% load datetime_formatting %}
+{% load truncatepath %}
 {% if playbook.status == "completed" %}
 <div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-success pf-m-inline">
 {% elif playbook.status == "failed" %}
@@ -28,7 +29,7 @@
                     <div class="pf-c-data-list__cell pf-m-flex-4">
                         <div style="padding-top:1em;" title="{{ playbook.path }}">
                             <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html">
-                                {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatechars:50 }}{% endif %}
+                                {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
                             </a>
                         </div>
                     </div>
