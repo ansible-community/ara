@@ -146,6 +146,7 @@ class ResultFilter(DateFilter):
     status = django_filters.MultipleChoiceFilter(
         field_name="status", choices=ara_models.Result.STATUS, lookup_expr="iexact"
     )
+    ignore_errors = django_filters.BooleanFilter(field_name="ignore_errors", lookup_expr="exact")
 
     # fmt: off
     order = django_filters.OrderingFilter(

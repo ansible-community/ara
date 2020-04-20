@@ -184,6 +184,24 @@ class ResultTestCase(APITestCase):
         result = self.client.get("/api/v1/results/%s" % unreachable.id)
         self.assertEqual(result.data["status"], "unreachable")
 
+    def test_get_result_with_ignore_errors(self):
+        failed = factories.ResultFactory(status="failed", ignore_errors=False)
+        ignored = factories.ResultFactory(status="failed", ignore_errors=True)
+
+        # Searching for failed should return both
+        results = self.client.get("/api/v1/results?status=failed").data["results"]
+        self.assertEqual(2, len(results))
+
+        # Searching for failed with ignore_errors=True should only return the ignored result
+        results = self.client.get("/api/v1/results?status=failed&ignore_errors=true").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(ignored.id, results[0]["id"])
+
+        # Searching for failed with ignore_errors=False should only return the failed result
+        results = self.client.get("/api/v1/results?status=failed&ignore_errors=false").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(failed.id, results[0]["id"])
+
     def test_get_result_duration(self):
         started = timezone.now()
         ended = started + datetime.timedelta(hours=1)
