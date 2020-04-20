@@ -11,13 +11,24 @@ figure out the right paths.
 
 Once you've set up the ``callback_plugins`` configuration or the
 ``ANSIBLE_CALLBACK_PLUGINS`` environment variable, Ansible will automatically
-use the ARA callback plugin to start recording data.
+use the ARA callback plugin to start recording data from Ansible playbooks.
 
 ``ANSIBLE_ACTION_PLUGINS`` or ``action_plugins`` must be set if you'd like to
 use the ``ara_record`` or ``ara_playbook`` action plugins.
 
 If you would like to use the ``ara_api`` lookup plugin, then
 ``ANSIBLE_LOOKUP_PLUGINS`` or ``lookup_plugins`` must also be set.
+
+.. note::
+    Starting with ARA 1.4.1 and Ansible 2.9.7, it is also possible to record
+    `ad-hoc commands <https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html>`_
+    in addition to playbooks.
+
+    To enable ad-hoc command recording by ARA, you must set either the
+    ``ANSIBLE_LOAD_CALLBACK_PLUGINS`` environment variable or the corresponding
+    ansible.cfg configuration variable,
+    `bin_ansible_callbacks <https://docs.ansible.com/ansible/latest/plugins/callback.html#setting-a-callback-plugin-for-ad-hoc-commands>`_,
+    to ``true``.
 
 Using setup helper modules
 --------------------------
