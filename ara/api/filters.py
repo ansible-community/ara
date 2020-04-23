@@ -164,7 +164,7 @@ class ResultFilter(DateFilter):
 
 class FileFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
-    path = django_filters.CharFilter(field_name="path", lookup_expr="exact")
+    path = django_filters.CharFilter(field_name="path", lookup_expr="icontains")
 
     # fmt: off
     order = django_filters.OrderingFilter(

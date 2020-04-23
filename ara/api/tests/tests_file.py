@@ -164,3 +164,17 @@ class FileTestCase(APITestCase):
         for field in order_fields:
             request = self.client.get("/api/v1/files?order=-%s" % field)
             self.assertEqual(request.data["results"][0]["id"], second_file.id)
+
+    def test_get_file_by_path(self):
+        # Create two files with similar paths
+        first_file = factories.FileFactory(path="/root/file.yaml")
+        factories.FileFactory(path="/root/some/path/file.yaml")
+
+        # Exact search should match one
+        request = self.client.get("/api/v1/files?path=/root/file.yaml")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(first_file.path, request.data["results"][0]["path"])
+
+        # Partial match should match both files
+        request = self.client.get("/api/v1/files?path=file.yaml")
+        self.assertEqual(2, len(request.data["results"]))
