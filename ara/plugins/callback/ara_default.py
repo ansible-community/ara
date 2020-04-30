@@ -22,7 +22,6 @@ import json
 import logging
 import os
 
-import six
 from ansible import __version__ as ansible_version
 from ansible.parsing.ajson import AnsibleJSONEncoder
 from ansible.plugins.callback import CallbackBase
@@ -366,7 +365,7 @@ class CallbackModule(CallbackBase):
                     with open(path, "r") as fd:
                         content = fd.read()
                 except IOError as e:
-                    self.log.error("Unable to open {0} for reading: {1}".format(path, six.text_type(e)))
+                    self.log.error("Unable to open {0} for reading: {1}".format(path, str(e)))
                     content = """ARA was not able to read this file successfully.
                             Refer to the logs for more information"""
 
