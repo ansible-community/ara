@@ -25,6 +25,8 @@
         name: "{{ item }}"
         ansible_host: "127.0.0.1"
         ansible_connection: "local"
+        # Not required for 2.8 and above
+        ansible_python_interpreter: /usr/bin/python3
       with_items:
         - host1
         - host2
