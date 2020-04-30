@@ -151,3 +151,11 @@
       - name: ara_api_credentials
         secret: ara_api_demo_credentials
         pass-to-parent: true
+
+- job:
+    name: ara-container-images
+    parent: ara-integration-base
+    nodeset: ara-fedora-31
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+    run: tests/with_container_images.yaml
