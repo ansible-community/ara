@@ -31,3 +31,4 @@
       jobs:
         - ara-upload-git-mirror
         - ara-demo
+        - ara-container-images-dockerhub
