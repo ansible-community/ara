@@ -58,7 +58,7 @@
     parent: ara-api-database-backends
     nodeset: ara-database-server-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 31 as well as CentOS 8
       and tests it against a central PostgreSQL server installed on CentOS 8.
       The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
       ARA API clients as well as the API itself.
@@ -70,7 +70,7 @@
     parent: ara-api-database-backends
     nodeset: ara-database-server-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 31 as well as CentOS 8
       and tests it against a central MySQL server installed on CentOS 8.
       The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
       ARA API clients as well as the API itself.
@@ -82,7 +82,7 @@
     parent: ara-api-database-backends
     nodeset: ara-multinode
     description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 30 as well as CentOS 8
+      Deploys the ARA API server on Ubuntu 18.04, Fedora 31 as well as CentOS 8
       and tests it using the distributed sqlite database backend.
     run: tests/with_distributed_sqlite.yaml
 
@@ -91,16 +91,16 @@
 - job:
     name: ara-api-fedora-packages
     parent: ara-integration-base
-    nodeset: ara-fedora-30
+    nodeset: ara-fedora-31
     description: |
-      Deploys the ARA API server on Fedora 30 using distribution packages for
+      Deploys the ARA API server on Fedora 31 using distribution packages for
       ARA and Ansible.
     run: tests/with_fedora_packages.yaml
 
 - job:
     name: ara-ansible-integration-base
     parent: ara-integration-base
-    nodeset: ara-fedora-30
+    nodeset: ara-fedora-31
     vars:
       ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
     run: tests/basic.yaml
@@ -126,6 +126,9 @@
 - job:
     name: ara-basic-ansible-2.7
     parent: ara-ansible-integration-base
+    vars:
+      # Not required for 2.8 and above
+      ansible_python_interpreter: /usr/bin/python3
     description: |
       Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.7.
     required-projects:
