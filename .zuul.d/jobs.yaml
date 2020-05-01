@@ -163,6 +163,7 @@
 - job:
     name: ara-container-images-dockerhub
     parent: ara-integration-base
+    nodeset: ara-fedora-31
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to dockerhub if successful.
