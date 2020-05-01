@@ -162,10 +162,11 @@
 
 - job:
     name: ara-container-images-dockerhub
-    parent: ara-container-images
+    parent: ara-integration-base
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to dockerhub if successful.
+    pre-run: tests/with_container_images.yaml
     run: tests/zuul_publish_dockerhub.yaml
     secrets:
       - name: ara_dockerhub_credentials
