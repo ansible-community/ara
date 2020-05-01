@@ -34,18 +34,13 @@
       command: cp -rp {{ ara_api_root_dir }}/server {{ ansible_user_dir }}/zuul-output/logs/server
       ignore_errors: yes
 
-    # Static report is generated with ara-manage generate in test_tasks.yaml
-    - name: Recover static report
-      command: cp -rp {{ ara_api_root_dir }}/static {{ ansible_user_dir }}/zuul-output/logs/static
-      ignore_errors: yes
-
     - name: Link the static report to the Zuul build with multiple nodes
       zuul_return:
         data:
           zuul:
             artifacts:
-               - name: "Static report for {{ inventory_hostname }}"
-                 url: "{{ inventory_hostname }}/static/"
+               - name: "Integration test static report for {{ inventory_hostname }}"
+                 url: "{{ inventory_hostname }}/server/static/index.html"
       when: groups['all'] | length > 1
 
     - name: Link the static report to the Zuul build with a single node
@@ -53,8 +48,8 @@
         data:
           zuul:
             artifacts:
-               - name: Static report
-                 url: "static/"
+               - name: Integration test static report
+                 url: "server/static/index.html"
       when: groups['all'] | length == 1
 
 - name: Generate Zuul ARA report
