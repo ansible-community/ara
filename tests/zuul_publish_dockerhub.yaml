@@ -30,17 +30,21 @@
         tag: source-latest
   tasks:
     - name: Tag images with buildah
-      command: buildah tag {{ item.name }}:{{ item:tag }} {{ destination }}:{{ item:tag }}
+      command: |
+        buildah tag {{ item.name }}:{{ item:tag }} {{ destination }}:{{ item:tag }}
       loop: "{{ images }}"
 
     - name: Tag latest from source-latest
-      command: buildah tag {{ destination }}:source-latest {{ destination }}:latest
+      command: |
+        buildah tag {{ destination }}:source-latest {{ destination }}:latest
 
     - name: Push latest
-      command: buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:latest
+      command: |
+        buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:latest
       no_log: yes
 
     - name: Push the remainder of the tags
-      command: buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:{{ item.tag }}
+      command: |
+        buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:{{ item.tag }}
       no_log: yes
       loop: "{{ images }}"
