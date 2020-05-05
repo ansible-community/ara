@@ -89,14 +89,9 @@ You can validate if the container is running properly with podman:
     $ podman ps
     CONTAINER ID  IMAGE                     COMMAND               CREATED         STATUS             PORTS                   NAMES
     bc4b7630c265  localhost/ara-api:latest  /usr/bin/gunicorn...  12 seconds ago  Up 11 seconds ago  0.0.0.0:8000->8000/tcp  api-server
-
-At this point, the API server is running but if it is your first time launching
-it, it will not be able to accept requests until you run initial database
-migrations for the default sqlite backend:
-
-.. code-block:: bash
-
-    $ podman exec -it api-server ara-manage migrate
+    $ podman logs api-server
+    [ara] No setting found for SECRET_KEY. Generating a random key...
+    [ara] Writing default settings to /opt/ara/settings.yaml
     [ara] Using settings file: /opt/ara/settings.yaml
     Operations to perform:
     Apply all migrations: admin, api, auth, contenttypes, db, sessions
@@ -124,9 +119,15 @@ migrations for the default sqlite backend:
     Applying auth.0011_update_proxy_permissions... OK
     Applying db.0001_initial... OK
     Applying sessions.0001_initial... OK
+    [2020-05-05 17:29:22 +0000] [1] [INFO] Starting gunicorn 20.0.4
+    [2020-05-05 17:29:22 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)
+    [2020-05-05 17:29:22 +0000] [1] [INFO] Using worker: sync
+    [2020-05-05 17:29:22 +0000] [5] [INFO] Booting worker with pid: 5
+    [2020-05-05 17:29:22 +0000] [6] [INFO] Booting worker with pid: 6
+    [2020-05-05 17:29:23 +0000] [7] [INFO] Booting worker with pid: 7
+    [2020-05-05 17:29:23 +0000] [8] [INFO] Booting worker with pid: 8
 
-Once SQL migrations have been run, the API server should be reachable at
-http://127.0.0.1:8000 but it'll be empty.
+At this point, the API server will be running but it'll be empty.
 
 Data must be sent to it by running an Ansible playbook with the ARA callback
 installed and configured to use this API server.
@@ -198,3 +199,43 @@ To connect to database backends other than the sqlite default, edit
 - `DATABASE_HOST <https://ara.readthedocs.io/en/latest/api-configuration.html#ara-database-host>`_
 - `DATABASE_PORT <https://ara.readthedocs.io/en/latest/api-configuration.html#ara-database-port>`_
 - `DATABASE_CONN_MAX_AGE <https://ara.readthedocs.io/en/latest/api-configuration.html#ara-database-conn-max-age>`_
+
+Running SQL migrations
+~~~~~~~~~~~~~~~~~~~~~~
+
+The container image will automatically take care of running SQL migrations before
+starting.
+
+However, if you need to run them manually, either for a new database or after
+an upgrade, the command ``ara-manage migrate`` can be run from inside the container:
+
+.. code-block:: bash
+
+    $ podman exec -it api-server ara-manage migrate
+    [ara] Using settings file: /opt/ara/settings.yaml
+    Operations to perform:
+    Apply all migrations: admin, api, auth, contenttypes, db, sessions
+    Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying auth.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying admin.0003_logentry_add_action_flag_choices... OK
+    Applying api.0001_initial... OK
+    Applying api.0002_remove_host_alias... OK
+    Applying api.0003_add_missing_result_properties... OK
+    Applying api.0004_duration_in_database... OK
+    Applying api.0005_unique_label_names... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying auth.0009_alter_user_last_name_max_length... OK
+    Applying auth.0010_alter_group_name_max_length... OK
+    Applying auth.0011_update_proxy_permissions... OK
+    Applying db.0001_initial... OK
+    Applying sessions.0001_initial... OK

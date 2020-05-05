@@ -13,14 +13,6 @@
     --volume {{ ara_api_root_dir }}/server:/opt/ara:z -p 8000:8000 \
     {{ item.name }}:{{ item.tag }}
 
-- name: Run SQL migrations
-  command: podman exec -it api-server ara-manage migrate
-  register: _sql_migrations
-  # Allow the container to settle from booting up
-  retries: 3
-  delay: 5
-  until: _sql_migrations is succeeded
-
 - block:
     - name: Get the API root
       uri:
