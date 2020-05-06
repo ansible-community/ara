@@ -63,9 +63,10 @@ Deploy the ARA API and web client on the same machine with defaults:
         ara_api_allowed_hosts:
         - api.ara.example.org
         ara_api_cors_origin_whitelist:
-        - web.ara.example.org
+        - "http://web.ara.example.org"
         # ara_web
         ara_web_fqdn: web.ara.example.org
+        ara_web_frontend_server: nginx
         ara_web_api_endpoint: "http://api.ara.example.org"
     roles:
         - ara_api
