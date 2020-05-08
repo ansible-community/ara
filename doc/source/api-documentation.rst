@@ -12,15 +12,15 @@ favorite web browser.
 For example, if you run ``ara-manage runserver``, this interface would be
 available at ``http://127.0.0.1:8000/api/v1/``:
 
-.. image:: ../source/_static/ara-api-browser-root.png
+.. image:: ../source/_static/ui-api-browser.png
 
 You can navigate the interface and drill down to list views, for example:
 
-.. image:: ../source/_static/ara-api-browser-playbooks.png
+.. image:: ../source/_static/ui-api-browser-playbooks.png
 
 You can also see what a detailed view looks like by querying a specific object id:
 
-.. image:: ../source/_static/ara-api-browser-playbook.png
+.. image:: ../source/_static/ui-api-browser-playbook.png
 
 Alternatively, you may also find an up-to-date live demonstration of the API at
 ``https://api.demo.recordsansible.org``.
