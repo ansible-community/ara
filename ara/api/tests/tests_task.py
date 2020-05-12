@@ -220,3 +220,17 @@ class TaskTestCase(APITestCase):
         # Test multiple status
         request = self.client.get("/api/v1/tasks?status=running&status=completed")
         self.assertEqual(2, len(request.data["results"]))
+
+    def test_get_task_by_action(self):
+        task = factories.TaskFactory(action="debug")
+        factories.TaskFactory(action="setup")
+
+        # Confirm we have two objects
+        request = self.client.get("/api/v1/tasks")
+        self.assertEqual(2, len(request.data["results"]))
+
+        # Expect the correct single result when searching
+        request = self.client.get("/api/v1/tasks?action=debug")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(task.id, request.data["results"][0]["id"])
+        self.assertEqual(task.action, request.data["results"][0]["action"])

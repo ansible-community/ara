@@ -105,6 +105,7 @@ class TaskFilter(DateFilter):
         field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
     )
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    action = django_filters.CharFilter(field_name="action", lookup_expr="iexact")
 
     # fmt: off
     order = django_filters.OrderingFilter(
