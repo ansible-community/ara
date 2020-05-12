@@ -234,3 +234,21 @@ class TaskTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(task.id, request.data["results"][0]["id"])
         self.assertEqual(task.action, request.data["results"][0]["action"])
+
+    def test_get_task_by_path(self):
+        # Create two files with different paths
+        first_file = factories.FileFactory(path="/root/roles/foo/tasks/main.yml")
+        second_file = factories.FileFactory(path="/root/roles/bar/tasks/main.yml")
+
+        # Create two tasks using these files
+        task = factories.TaskFactory(file=first_file)
+        factories.TaskFactory(file=second_file)
+
+        # Test exact match
+        request = self.client.get("/api/v1/tasks?path=/root/roles/foo/tasks/main.yml")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(task.file.path, request.data["results"][0]["path"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/tasks?path=main.yml")
+        self.assertEqual(len(request.data["results"]), 2)
