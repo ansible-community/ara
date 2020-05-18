@@ -1,5 +1,5 @@
 #!/bin/bash -x
-# Builds an ARA API server container image using the latest PyPi packages on Fedora 32.
+# Builds an ARA API server container image using the latest PyPi packages on CentOS 8.
 build=$(buildah from centos:8)
 
 # Get all updates, install pip, database backends and gunicorn application server
