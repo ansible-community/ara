@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA Records Ansible. If not, see <http://www.gnu.org/licenses/>.
 
+import collections
 import hashlib
 import json
 import zlib
@@ -83,6 +84,30 @@ class CreatableSlugRelatedField(serializers.SlugRelatedField):
 
     def to_representation(self, obj):
         return {"id": obj.id, "name": obj.name}
+
+    # Overriding RelatedField.to_representation causes error in Browseable API
+    # https://github.com/encode/django-rest-framework/issues/5141
+    def get_choices(self, cutoff=None):
+        queryset = self.get_queryset()
+        if queryset is None:
+            # Ensure that field.choices returns something sensible
+            # even when accessed with a read-only field.
+            return {}
+
+        if cutoff is not None:
+            queryset = queryset[:cutoff]
+
+        return collections.OrderedDict(
+            [
+                (
+                    # This is the only line that differs
+                    # from the RelatedField's implementation
+                    item.pk,
+                    self.display_value(item),
+                )
+                for item in queryset
+            ]
+        )
 
     def to_internal_value(self, data):
         try:
