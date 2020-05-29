@@ -1,0 +1,23 @@
+{% if not static_generation %}
+    {% if request.GET.order == "-duration" %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=duration">Duration
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-long-arrow-alt-down"></i>
+        </span>
+    </a>
+    {% elif request.GET.order == "duration" %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=-duration">Duration
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-long-arrow-alt-up"></i>
+        </span>
+    </a>
+    {% else %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=-duration">Duration
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-arrows-alt-v"></i>
+        </span>
+    </a>
+    {% endif %}
+{% else %}
+Duration
+{% endif %}

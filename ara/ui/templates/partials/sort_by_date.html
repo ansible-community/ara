@@ -1,0 +1,30 @@
+{% if not static_generation %}
+    {% if request.GET.order == "-started" %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=started">Date
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-long-arrow-alt-down"></i>
+        </span>
+    </a>
+    {% elif request.GET.order == "started" %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=-started">Date
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-long-arrow-alt-up"></i>
+        </span>
+    </a>
+    {% elif not request.GET.order %}
+    {# The default sorting is by date #}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=started">Date
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-long-arrow-alt-down"></i>
+        </span>
+    </a>
+    {% else %}
+    <a class="pf-c-button pf-m-plain" type="button" href="?order=-started">Date
+        <span class="pf-c-table__sort-indicator">
+            <i class="fas fa-arrows-alt-v"></i>
+        </span>
+    </a>
+    {% endif %}
+{% else %}
+Date
+{% endif %}

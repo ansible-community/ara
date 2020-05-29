@@ -26,13 +26,13 @@ register = template.Library()
 @register.filter(name="format_duration")
 def format_duration(duration):
     if duration is not None:
-        return duration[:-3]
+        return duration[:-4]
     return duration
 
 
 @register.filter(name="format_date")
 def format_datetime(datetime):
-    return parse_datetime(datetime).strftime("%a, %d %b %Y %H:%M:%S %z")
+    return parse_datetime(datetime).strftime("%d %b %Y %H:%M:%S %z")
 
 
 @register.simple_tag(name="past_timestamp")
