@@ -1,0 +1,43 @@
+{% if status == "ok" %}
+<div class="pf-c-alert pf-m-success pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task completed successfully">
+        <i class="fas fa-check-circle" aria-hidden="true"></i>
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% elif status == "failed" or status == "unreachable" %}
+<div class="pf-c-alert pf-m-danger pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task completed with errors">
+        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% elif status == "ignored" %}
+<div class="pf-c-alert pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task failed but errors were ignored">
+        <i class="fas fa-volume-mute"  aria-hidden="true"></i>
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% elif status == "skipped" %}
+<div class="pf-c-alert pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task was skipped">
+        <i class="fas fa-forward" aria-hidden="true"></i>
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% elif status == "changed" %}
+<div class="pf-c-alert pf-m-warning pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task completed with changes">
+        <i class="fas fa-sync-alt" aria-hidden="true"></i>
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% else %}
+<div class="pf-c-alert pf-m-warning pf-m-inline pf-m-fit-content">
+    <div class="pf-c-alert__icon" title="Task status is unknown">
+        <i class="fas fa-question-circle" aria-hidden="true"></i> {{ status | upper }}
+        <p>&nbsp;{{ status | upper }}</p>
+    </div>
+</div>
+{% endif %}

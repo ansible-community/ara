@@ -29,3 +29,7 @@ tbody tr:hover {
 .pf-c-form-control {
     width: 175px;
 }
+
+.pf-c-alert p {
+    font-size: 0.8em;
+}
