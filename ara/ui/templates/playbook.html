@@ -26,27 +26,74 @@
             </ul>
         </details>
         <details id="hosts" open="true">
-            <summary>Hosts</summary>
+            <summary><i class="fas fa-server"></i> Hosts</summary>
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-table">
                 <thead>
-                    <tr>
-                        <th>Host</th>
-                        <th>Changed</th>
-                        <th>Failed</th>
-                        <th>Ok</th>
-                        <th>Skipped</th>
-                        <th>Unreachable</th>
+                    <tr role="row">
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">Host</th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            <div class="pf-c-alert pf-m-warning pf-m-inline pf-m-fit-content">
+                                <div class="pf-c-alert__icon" title="Tasks completed with changes">
+                                    <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                                    <p>&nbsp;CHANGED</p>
+                                </div>
+                            </div>
+                        </th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            <div class="pf-c-alert pf-m-danger pf-m-inline pf-m-fit-content">
+                                <div class="pf-c-alert__icon" title="Tasks completed with errors">
+                                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                                    <p>&nbsp;FAILED</p>
+                                </div>
+                            </div>
+                        </th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            <div class="pf-c-alert pf-m-success pf-m-inline pf-m-fit-content">
+                                <div class="pf-c-alert__icon" title="Tasks completed successfully">
+                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                    <p>&nbsp;OK</p>
+                                </div>
+                            </div>
+                        </th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            <div class="pf-c-alert pf-m-inline pf-m-fit-content">
+                                <div class="pf-c-alert__icon" title="Tasks was skipped">
+                                    <i class="fas fa-forward" aria-hidden="true"></i>
+                                    <p>&nbsp;SKIPPED</p>
+                                </div>
+                            </div>
+                        </th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            <div class="pf-c-alert pf-m-danger pf-m-inline pf-m-fit-content">
+                                <div class="pf-c-alert__icon" title="Tasks completed with errors">
+                                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                                    <p>&nbsp;UNREACHABLE</p>
+                                </div>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for host in playbook.hosts %}
                     <tr>
-                        <td><a href="../host/{{ host.id }}.html">{{ host.name }}</a></td>
-                        <td>{{ host.changed }}</td>
-                        <td>{{ host.failed }}</td>
-                        <td>{{ host.ok }}</td>
-                        <td>{{ host.skipped }}</td>
-                        <td>{{ host.unreachable }}</td>
+                        <td role="cell" data-label="Hostname" class="pf-m-fit-content">
+                            <a href="../host/{{ host.id }}.html">{{ host.name }}</a>
+                        </td>
+                        <td role="cell" data-label="Changed" class="pf-m-fit-content">
+                            {{ host.changed }}
+                        </td>
+                        <td role="cell" data-label="Failed" class="pf-m-fit-content">
+                            {{ host.failed }}
+                        </td>
+                        <td role="cell" data-label="Ok" class="pf-m-fit-content">
+                            {{ host.ok }}
+                        </td>
+                        <td role="cell" data-label="Skipped" class="pf-m-fit-content">
+                            {{ host.skipped }}
+                        </td>
+                        <td role="cell" data-label="Unreachable" class="pf-m-fit-content">
+                            {{ host.unreachable }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
