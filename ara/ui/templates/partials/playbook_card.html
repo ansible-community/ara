@@ -12,11 +12,11 @@
     <ul class="pf-c-data-list" role="list">
         <li class="pf-c-data-list__item">
             <div class="pf-c-data-list__item-row">
-                <div class="pf-c-data-list__item-control">
-                    {% include "partials/status_icon.html" with status=playbook.status %}
+                <div class="pf-c-data-list__item-control pf-m-fit-content">
+                    {% include "partials/playbook_status_icon.html" with status=playbook.status %}
                 </div>
                 <div class="pf-c-data-list__item-content">
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                    <div class="pf-c-data-list__cell pf-m-fit-content">
                         <div style="padding-top:1em; white-space:nowrap;">
                             <span title="Date at which the playbook started">
                                 <i class="fas fa-play-circle" aria-hidden="true"></i> {{ playbook.started | format_date }}
@@ -26,7 +26,17 @@
                             </span>
                         </div>
                     </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-4">
+                    <div class="pf-c-data-list__cell pf-m-fit-content">
+                        <div style="padding-top:1em; white-space:nowrap;" title="Duration of the playbook">
+                            <i class="fas fa-stopwatch" aria-hidden="true"></i> {{ playbook.duration | format_duration }}
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-fit-content">
+                        <div style="padding-top:1em; white-space:nowrap;" title="Ansible version">
+                            Ansible {{ playbook.ansible_version }}
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-5">
                         <div style="padding-top:1em;" title="{{ playbook.path }}">
                             <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html">
                                 {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
@@ -59,14 +69,25 @@
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em; white-space:nowrap;" title="Duration of the playbook">
-                            <i class="fas fa-stopwatch" aria-hidden="true"></i> {{ playbook.duration | format_duration }}
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em; white-space:nowrap;" title="Ansible version">
-                            Ansible {{ playbook.ansible_version }}
-                        </div>
+                        <details id="cli-arguments-details">
+                            <summary><a>CLI arguments</a></summary>
+                            <table class="pf-c-table pf-m-compact pf-m-grid-md" role="grid" aria-label="cli-arguments" id="cli-arguments">
+                                <thead>
+                                    <tr role="row">
+                                        <th role="columnheader" scope="col">Argument</th>
+                                        <th role="columnheader" scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody role="rowgroup">
+                                    {% for arg, value in playbook.arguments.items %}
+                                    <tr role="row">
+                                        <td role="cell" data-label="Argument" class="pf-m-fit-content" style="white-space: nowrap;">{{ arg }}</td>
+                                        <td role="cell" data-label="Value" class="pf-m-fit-content">{{ value }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </details>
                     </div>
                 </div>
             </div>

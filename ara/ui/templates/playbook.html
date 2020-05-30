@@ -5,25 +5,6 @@
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__body">
-        <details id="arguments">
-            <summary>Arguments and configuration</summary>
-            <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid">
-                <thead>
-                    <tr>
-                        <th>Argument</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for arg, value in playbook.arguments.items %}
-                    <tr>
-                        <td>{{ arg }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </details>
         <details id="records">
             <summary>Records</summary>
             {% if playbook.items.records %}
