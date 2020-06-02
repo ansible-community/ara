@@ -6,10 +6,9 @@ build=$(buildah from centos:8)
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
 # Note: We use the packaged versions of psycopg2 and mysql python libraries so
 #       we don't need to install development libraries before installing them from PyPi.
-buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y epel-release && dnf install -y python3-pip python3-gunicorn python3-psycopg2 && dnf clean all"
+buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y epel-release && dnf install -y python3-pip python3-gunicorn python3-psycopg2 mysql mysql-devel gcc platform-python-devel && dnf clean all"
 
-# Install PyMySQL from pypi as not yet packaged for epel8
-buildah run "${build}" -- /bin/bash -c "pip3 install PyMySQL"
+buildah run "${build}" -- /bin/bash -c "pip3 install PyMySQL mysqlclient"
 
 # Install ara from source with API server extras for dependencies (django & django-rest-framework)
 buildah run "${build}" -- /bin/bash -c "pip3 install ara[server]"
@@ -21,4 +20,3 @@ buildah config --port 8000 "${build}"
 
 # Commit this container to an image name
 buildah commit "${build}" "${1:-$USER/ara-api}"
-
