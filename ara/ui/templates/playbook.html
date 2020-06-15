@@ -105,15 +105,15 @@
                 <thead>
                     <tr role="row">
                         <th role="columnheader" scope="col" class="pf-m-fit-content">Status</th>
-                        <th role="columnheader" scope="col" class="pf-m-fit-content">
-                            Date
-                        </th>
+                        <th role="columnheader" scope="col">Host</th>
+                        <th role="columnheader" scope="col">Task</th>
+                        <th role="columnheader" scope="col">Action</th>
                         <th role="columnheader" scope="col" class="pf-m-fit-content">
                             Duration
                         </th>
-                        <th role="columnheader" scope="col">Task</th>
-                        <th role="columnheader" scope="col">Action</th>
-                        <th role="columnheader" scope="col">Host</th>
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">
+                            Date
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -124,11 +124,8 @@
                         <td role="cell" data-label="Status" class="pf-c-table__icon pf-m-fit-content">
                             {% include "partials/result_status_icon.html" with status=result.status %}
                         </td>
-                        <td role="cell" data-label="Date" class="pf-m-fit-content">
-                            {{ result.started | format_date }}
-                        </td>
-                        <td role="cell" data-label="Duration" class="pf-m-fit-content">
-                            {{ result.duration | format_duration }}
+                        <td role="cell" data-label="Host" class="pf-m-fit-content">
+                            {{ result.host.name }}
                         </td>
                         <td role="cell" data-label="Name" class="pf-m-fit-content">
                             <a href="../result/{{ result.id }}.html">{{ task.name }}</a>
@@ -136,8 +133,11 @@
                         <td role="cell" data-label="Action" class="pf-m-fit-content">
                             <a href="../file/{{ task.file.id }}.html#{{ task.lineno }}">{{ task.action }}</a>
                         </td>
-                        <td role="cell" data-label="Host" class="pf-m-fit-content">
-                            {{ result.host.name }}
+                        <td role="cell" data-label="Duration" class="pf-m-fit-content">
+                            {{ result.duration | format_duration }}
+                        </td>
+                        <td role="cell" data-label="Date" class="pf-m-fit-content">
+                            {{ result.started | format_date }}
                         </td>
                     </tr>
                     {% endfor %}
