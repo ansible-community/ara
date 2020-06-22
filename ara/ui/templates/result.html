@@ -3,6 +3,7 @@
 {% include "partials/playbook_card.html" with playbook=result.playbook %}
 {% load pygments_highlights %}
 {% load datetime_formatting %}
+{% load diff_result %}
 
 <div class="pf-c-card" style="margin: 1em 0;">
     <div class="pf-c-card__header pf-c-title pf-m-md">
@@ -35,7 +36,11 @@
                         <a href="#{{ field }}">{{ field }}</a>
                     </td>
                     <td role="cell" data-label="Value" class="pf-m-width-80">
-                        {{ value | format_data | safe }}
+                        {% if field == "diff" %}
+                            {{ value | diff_result | format_data | safe }}
+                        {% else %}
+                            {{ value | format_data | safe }}
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
