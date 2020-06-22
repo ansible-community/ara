@@ -8,18 +8,22 @@
         Host: {{ host.name }}
     </div>
     <div class="pf-c-card__body">
-        <table class="pf-c-table pf-m-grid-md" role="grid">
+        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-details">
             <thead>
-                <tr>
-                    <th>Fact</th>
-                    <th>Value</th>
+                <tr role="row">
+                    <th role="columnheader" scope="col" class="pf-m-width-20">Fact</th>
+                    <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
                 </tr>
             </thead>
             <tbody>
                 {% for fact, value in host.facts.items %}
-                <tr>
-                    <td id="{{ fact }}" style="white-space: nowrap"><a href="#{{ fact }}">{{ fact }}</a></td>
-                    <td>{{ value | format_data | safe }}</td>
+                <tr role="row">
+                    <td role="cell" id="{{ fact }}" data-label="{{ fact }}" class="pf-m-width-20">
+                        <a href="#{{ fact }}">{{ fact }}</a>
+                    </td>
+                    <td role="cell" data-label="Value" class="pf-m-width-80">
+                        {{ value | format_data | safe }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

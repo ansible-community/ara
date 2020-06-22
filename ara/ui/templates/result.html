@@ -20,18 +20,22 @@
     </div>
     <div class="pf-c-card__body">
         <h1><strong>Result</strong></h1>
-        <table class="pf-c-table pf-m-grid-md" role="grid">
+        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-details">
             <thead>
-                <tr>
-                    <th>Field</th>
-                    <th>Value</th>
+                <tr role="row">
+                    <th role="columnheader" scope="col" class="pf-m-width-20">Field</th>
+                    <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
                 </tr>
             </thead>
             <tbody>
                 {% for field, value in result.content.items %}
-                <tr>
-                    <td id="{{ field }}" style="white-space: nowrap"><a href="#{{ field }}">{{ field }}</a></td>
-                    <td>{{ value | format_data | safe }}</td>
+                <tr role="row">
+                    <td role="cell" id="{{ field }}" data-label="{{ field }}" class="pf-m-width-20">
+                        <a href="#{{ field }}">{{ field }}</a>
+                    </td>
+                    <td role="cell" data-label="Value" class="pf-m-width-80">
+                        {{ value | format_data | safe }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

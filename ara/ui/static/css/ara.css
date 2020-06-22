@@ -33,3 +33,11 @@ tbody tr:hover {
 .pf-c-alert p {
     font-size: 0.8em;
 }
+
+#host-details pre {
+    white-space: pre-wrap;
+}
+
+#result-details pre {
+    white-space: pre-wrap;
+}
