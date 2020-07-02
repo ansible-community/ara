@@ -11,6 +11,9 @@ buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y python3-
 # Install ara from source with API server extras for dependencies (django & django-rest-framework)
 buildah run "${build}" -- /bin/bash -c "pip3 install ara[server]"
 
+# TODO: Remove after 1.4.2 is released with pyyaml/ruamel.yaml fix
+buildah run "${build}" -- /bin/bash -c "pip3 install PyYAML"
+
 # Set up the container to execute SQL migrations and run the API server with gunicorn
 buildah config --env ARA_BASE_DIR=/opt/ara "${build}"
 buildah config --cmd "bash -c '/usr/local/bin/ara-manage migrate && /usr/bin/gunicorn-3 --workers=4 --access-logfile - --bind 0.0.0.0:8000 ara.server.wsgi'" "${build}"

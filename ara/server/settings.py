@@ -20,9 +20,15 @@ import textwrap
 import warnings
 
 import tzlocal
-import yaml
 from django.utils.crypto import get_random_string
 from dynaconf import LazySettings
+
+# dynaconf prefers ruamel.yaml but works with pyyaml
+# https://github.com/rochacbruno/dynaconf/commit/d5cf87cbbdf54625ccf1138a4e4c210956791e61
+try:
+    import ruamel.yaml as yaml
+except ImportError:
+    import yaml
 
 BASE_DIR = os.environ.get("ARA_BASE_DIR", os.path.expanduser("~/.ara/server"))
 DEFAULT_SETTINGS = os.path.join(BASE_DIR, "settings.yaml")
