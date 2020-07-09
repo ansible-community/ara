@@ -10,10 +10,10 @@ Table of Contents
 
     Frequently asked questions <faq>
     Installing ARA <installation>
-    CLI: ara-manage <ara-manage>
     Configuring Ansible to use ARA <ansible-configuration>
     Configuring the ARA Ansible plugins <ara-plugin-configuration>
     Configuring the ARA API server <api-configuration>
+    CLI: ara and ara-manage <cli>
     API: Authentication and security <api-security>
     API: Endpoint documentation <api-documentation>
     API: Usage with built-in clients <api-usage>

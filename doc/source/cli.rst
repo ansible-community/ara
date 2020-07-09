@@ -1,5 +1,44 @@
-ara-manage commandline interface
-================================
+CLI: ara API client
+===================
+
+Installing ara provides an ``ara`` command line interface client in order to
+query API servers from shell scripts or from the terminal.
+
+ara
+---
+
+.. command-output:: ara --help
+
+ara playbook list
+-----------------
+
+.. command-output:: ara playbook list --help
+
+Query a running API server for the 10 latest failed playbooks:
+
+.. code-block:: bash
+
+    ara playbook list --client http \
+      --server https://api.demo.recordsansible.org \
+      --status failed \
+      --limit 10
+
+Get a list of playbooks matching a partial path and order the results by
+duration using the default offline API client:
+
+.. code-block:: bash
+
+    ara playbook list --path="playbooks/site.yaml" --order=duration
+
+Get a list of playbooks and format the results as json or yaml instead of pretty tables:
+
+.. code-block:: bash
+
+    ara playbook list -f json
+    ara playbook list -f yaml
+
+CLI: ara-manage (django)
+========================
 
 ``ara-manage`` is a command provided by ARA when the API server dependencies
 are installed.
