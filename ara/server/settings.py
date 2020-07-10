@@ -26,7 +26,7 @@ from dynaconf import LazySettings
 # dynaconf prefers ruamel.yaml but works with pyyaml
 # https://github.com/rochacbruno/dynaconf/commit/d5cf87cbbdf54625ccf1138a4e4c210956791e61
 try:
-    import ruamel.yaml as yaml
+    from ruamel import yaml as yaml
 except ImportError:
     import yaml
 

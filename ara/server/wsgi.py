@@ -21,8 +21,8 @@ import os
 from ara.setup.exceptions import MissingDjangoException
 
 try:
-    from django.core.wsgi import get_wsgi_application
     from django.core.handlers.wsgi import get_path_info, get_script_name
+    from django.core.wsgi import get_wsgi_application
 except ImportError as e:
     raise MissingDjangoException from e
 
