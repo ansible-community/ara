@@ -37,6 +37,24 @@ Get a list of playbooks and format the results as json or yaml instead of pretty
     ara playbook list -f json
     ara playbook list -f yaml
 
+ara playbook show
+-----------------
+
+.. command-output:: ara playbook show --help
+
+Show details about a playbook from a running API server and format the result in json:
+
+.. code-block:: bash
+
+    ara playbook show --client http --server https://api.demo.recordsansible.org 1 -f json
+
+Show details about a playbook from a local installation using the default offline
+API client and format the result in yaml:
+
+.. code-block:: bash
+
+    ara playbook show 1 -f yaml
+
 CLI: ara-manage (django)
 ========================
 

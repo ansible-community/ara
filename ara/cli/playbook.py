@@ -2,8 +2,10 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import logging
+import sys
 
 from cliff.lister import Lister
+from cliff.show import ShowOne
 
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
@@ -97,3 +99,57 @@ class PlaybookList(Lister):
             )
         )
         # fmt: on
+
+
+class PlaybookShow(ShowOne):
+    """ Returns a detailed view of a specified playbook """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PlaybookShow, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "playbook_id",
+            metavar="<playbook-id>",
+            help="Playbook to show",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        # TODO: Render json properly in pretty tables
+        if args.formatter == "table":
+            self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
+
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        playbook = client.get("/api/v1/playbooks/%s" % args.playbook_id)
+        if "detail" in playbook and playbook["detail"] == "Not found.":
+            self.log.error("Playbook not found: %s" % args.playbook_id)
+            sys.exit(1)
+
+        playbook["report"] = "%s/playbooks/%s.html" % (args.server, args.playbook_id)
+        columns = (
+            "id",
+            "report",
+            "status",
+            "path",
+            "started",
+            "ended",
+            "duration",
+            "ansible_version",
+            "items",
+            "labels",
+            "arguments",
+        )
+        return (columns, ([playbook[column] for column in columns]))
