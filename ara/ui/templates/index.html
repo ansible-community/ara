@@ -140,7 +140,7 @@
                     {{ playbook.ansible_version }}
                 </td>
                 <td role="cell" data-label="Name (or path)" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html" title="{{ playbook.path }}">
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html" title="{{ playbook.path }}">
                         {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
                     </a>
                 </td>
@@ -158,19 +158,19 @@
                     </div>
                 </td>
                 <td role="cell" data-label="Hosts" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }}</a>
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }}</a>
                 </td>
                 <td role="cell" data-label="Plays" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#plays">{{ playbook.items.plays }}</a>
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#plays">{{ playbook.items.plays }}</a>
                 </td>
                 <td role="cell" data-label="Results" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#results">{{ playbook.items.results }}</a>
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }}</a>
                 </td>
                 <td role="cell" data-label="Files" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#files">{{ playbook.items.files }}</a>
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#files">{{ playbook.items.files }}</a>
                 </td>
                 <td role="cell" data-label="Records" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#records">{{ playbook.items.records }}</a>
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#records">{{ playbook.items.records }}</a>
                 </td>
                 <td role="cell" data-label="CLI arguments">
                     <details id="cli-arguments-details">

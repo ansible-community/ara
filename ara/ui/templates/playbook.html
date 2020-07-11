@@ -10,7 +10,7 @@
             {% if playbook.items.records %}
             <ul class="pf-c-list">
                 {% for record in playbook.records %}
-                <li><a href="../record/{{ record.id }}.html">{{ record.key }}</a></li>
+                <li><a href="../records/{{ record.id }}.html">{{ record.key }}</a></li>
                 {% endfor %}
             </ul>
             {% else %}
@@ -21,7 +21,7 @@
             <summary>Files</summary>
             <ul class="pf-c-list">
                 {% for file in playbook.files %}
-                <li><a href="../file/{{ file.id }}.html">{{ file.path }}</a></li>
+                <li><a href="../files/{{ file.id }}.html">{{ file.path }}</a></li>
                 {% endfor %}
             </ul>
         </details>
@@ -77,7 +77,7 @@
                     {% for host in playbook.hosts %}
                     <tr>
                         <td role="cell" data-label="Hostname" class="pf-m-fit-content">
-                            <a href="../host/{{ host.id }}.html">{{ host.name }}</a>
+                            <a href="../hosts/{{ host.id }}.html">{{ host.name }}</a>
                         </td>
                         <td role="cell" data-label="Changed" class="pf-m-fit-content">
                             {{ host.changed }}
@@ -128,10 +128,10 @@
                             {{ result.host.name }}
                         </td>
                         <td role="cell" data-label="Name" class="pf-m-fit-content">
-                            <a href="../result/{{ result.id }}.html">{{ task.name }}</a>
+                            <a href="../results/{{ result.id }}.html">{{ task.name }}</a>
                         </td>
                         <td role="cell" data-label="Action" class="pf-m-fit-content">
-                            <a href="../file/{{ task.file.id }}.html#{{ task.lineno }}">{{ task.action }}</a>
+                            <a href="../files/{{ task.file.id }}.html#{{ task.lineno }}">{{ task.action }}</a>
                         </td>
                         <td role="cell" data-label="Duration" class="pf-m-fit-content">
                             {{ result.duration | format_duration }}

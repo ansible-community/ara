@@ -38,34 +38,34 @@
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-5">
                         <div style="padding-top:1em;" title="{{ playbook.path }}">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html">
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html">
                                 {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
                             </a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }} hosts</a>
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }} hosts</a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#plays">{{ playbook.items.plays }} plays</a>
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#plays">{{ playbook.items.plays }} plays</a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#results">{{ playbook.items.results }} results</a>
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }} results</a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#files">{{ playbook.items.files }} files</a>
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#files">{{ playbook.items.files }} files</a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbook/{{ playbook.id }}.html#records">{{ playbook.items.records }} records</a>
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#records">{{ playbook.items.records }} records</a>
                         </div>
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
