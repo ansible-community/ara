@@ -55,6 +55,16 @@ API client and format the result in yaml:
 
     ara playbook show 1 -f yaml
 
+ara playbook delete
+-------------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara playbook delete --help
+
 CLI: ara-manage (django)
 ========================
 
