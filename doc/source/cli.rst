@@ -94,6 +94,31 @@ List the host results for a specific playbook and format the result in json:
 
     ara host list --playbook 1 -f json
 
+ara host show
+-------------
+
+.. command-output:: ara host show --help
+
+.. note::
+
+    From the perspective of ARA, each host is unique to a playbook run.
+    Their records contain the Ansible host facts as well as their stats for a
+    particular playbook run.
+
+Return stats for a specified host as well as a link to the playbook report it is
+involved in:
+
+.. code-block:: bash
+
+    ara host show 1
+
+Include host facts as well formatted in json:
+
+.. code-block:: bash
+
+    # Facts do not render well in the default pretty table format
+    ara host show 1 --with-facts -f json
+
 CLI: ara-manage (django)
 ========================
 
