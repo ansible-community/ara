@@ -4,6 +4,7 @@
 import logging
 import sys
 
+from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
@@ -157,3 +158,34 @@ class HostShow(ShowOne):
             )
             # fmt: on
         return (columns, ([host[column] for column in columns]))
+
+
+class HostDelete(Command):
+    """ Deletes the specified host and associated resources """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(HostDelete, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "host_id",
+            metavar="<host-id>",
+            help="Host to delete",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        client.delete("/api/v1/hosts/%s" % args.host_id)

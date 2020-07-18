@@ -119,6 +119,16 @@ Include host facts as well formatted in json:
     # Facts do not render well in the default pretty table format
     ara host show 1 --with-facts -f json
 
+ara host delete
+---------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara host delete --help
+
 CLI: ara-manage (django)
 ========================
 
