@@ -65,6 +65,35 @@ ara playbook delete
 
 .. command-output:: ara playbook delete --help
 
+ara host list
+-------------
+
+.. command-output:: ara host list --help
+
+.. note::
+
+    From the perspective of ARA, each host is unique to a playbook run.
+    Their records contain the Ansible host facts as well as their stats for a
+    particular playbook run.
+
+Search for a specific host name across playbook runs against a local API server:
+
+.. code-block:: bash
+
+    ara host list --client http --server http://127.0.0.1:8000 --name localhost
+
+List the 100 most recently updated hosts using the offline API client:
+
+.. code-block:: bash
+
+    ara host list
+
+List the host results for a specific playbook and format the result in json:
+
+.. code-block:: bash
+
+    ara host list --playbook 1 -f json
+
 CLI: ara-manage (django)
 ========================
 
