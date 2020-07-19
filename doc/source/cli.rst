@@ -173,6 +173,38 @@ ara result delete
 
 .. command-output:: ara result delete --help
 
+ara task list
+-------------
+
+.. command-output:: ara task list --help
+
+.. note::
+
+    ara doesn't have the concept of roles but it is possible to search for
+    them by path, for example: ``ara task list --path "roles/install_apache"``
+
+    Role names are included in the task names and it is possible to search for
+    role-specific tasks there as well: ``ara task list --name install_apache``.
+
+Examples:
+
+.. code-block:: bash
+
+    # Return the top 25 longest running tasks
+    ara task list --order=-duration --limit 25
+
+    # Return tasks from a specific playbook
+    ara task list --playbook 9001
+
+    # Return tasks for the package action
+    ara task list --action package
+
+    # Return tasks matching a path (partial or full)
+    ara task list --path="roles/install_apache"
+
+    # Return tasks matching a name (partial or full)
+    ara task list --name install_apache
+
 CLI: ara-manage (django)
 ========================
 
