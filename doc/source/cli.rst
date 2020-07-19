@@ -163,6 +163,16 @@ Return detailed information about a specific result, including formatted content
 
     ara result show 9001 --with-content -f json
 
+ara result delete
+-----------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara result delete --help
+
 CLI: ara-manage (django)
 ========================
 

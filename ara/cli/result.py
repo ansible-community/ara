@@ -4,6 +4,7 @@
 import logging
 import sys
 
+from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
@@ -202,3 +203,34 @@ class ResultShow(ShowOne):
                 "ansible_version",
             )
         return (columns, ([result[column] for column in columns]))
+
+
+class ResultDelete(Command):
+    """ Deletes the specified result and associated resources """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(ResultDelete, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "result_id",
+            metavar="<result-id>",
+            help="Result to delete",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        client.delete("/api/v1/results/%s" % args.result_id)
