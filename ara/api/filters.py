@@ -145,6 +145,9 @@ class HostFilter(BaseFilter):
 
 class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    task = django_filters.NumberFilter(field_name="task__id", lookup_expr="exact")
+    play = django_filters.NumberFilter(field_name="play__id", lookup_expr="exact")
+    host = django_filters.NumberFilter(field_name="host__id", lookup_expr="exact")
     changed = django_filters.BooleanFilter(field_name="changed", lookup_expr="exact")
     status = django_filters.MultipleChoiceFilter(
         field_name="status", choices=ara_models.Result.STATUS, lookup_expr="iexact"

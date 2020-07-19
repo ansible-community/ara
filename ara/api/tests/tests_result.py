@@ -128,16 +128,33 @@ class ResultTestCase(APITestCase):
         request = self.client.get("/api/v1/results/%s" % result.id)
         self.assertEqual(result.status, request.data["status"])
 
-    def test_get_result_by_playbook(self):
-        playbook = factories.PlaybookFactory()
-        host_one = factories.HostFactory(name="one")
-        host_two = factories.HostFactory(name="two")
-        result = factories.ResultFactory(playbook=playbook, host=host_one, status="failed")
-        factories.ResultFactory(playbook=playbook, host=host_two, status="skipped")
-        request = self.client.get("/api/v1/results?playbook=%s" % playbook.id)
+    def test_get_result_by_association(self):
+        # Create two results in necessarily two different playbooks with different children:
+        # playbook -> play -> task -> result <- host
+        first_result = factories.ResultFactory()
+        second_result = factories.ResultFactory()
+
+        # the fields with the association ids
+        associations = ["playbook", "play", "task", "host"]
+
+        # Validate that we somehow didn't wind up with the same association ids
+        for association in associations:
+            first = getattr(first_result, association)
+            second = getattr(second_result, association)
+            self.assertNotEqual(first.id, second.id)
+
+        # In other words, there must be two distinct results
+        request = self.client.get("/api/v1/results")
+        self.assertEqual(2, request.data["count"])
         self.assertEqual(2, len(request.data["results"]))
-        self.assertEqual(result.status, request.data["results"][1]["status"])
-        self.assertEqual("skipped", request.data["results"][0]["status"])
+
+        # Searching for the first_result associations should only yield one result
+        for association in associations:
+            assoc_id = getattr(first_result, association).id
+            results = self.client.get("/api/v1/results?%s=%s" % (association, assoc_id))
+            self.assertEqual(1, results.data["count"])
+            self.assertEqual(1, len(results.data["results"]))
+            self.assertEqual(assoc_id, results.data["results"][0][association])
 
     def test_get_result_by_statuses(self):
         failed_result = factories.ResultFactory(status="failed")
