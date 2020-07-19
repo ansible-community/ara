@@ -249,3 +249,21 @@ class ResultTestCase(APITestCase):
         for field in order_fields:
             request = self.client.get("/api/v1/results?order=-%s" % field)
             self.assertEqual(request.data["results"][0]["id"], new_result.id)
+
+    def test_get_changed_results(self):
+        changed_result = factories.ResultFactory(changed=True)
+        unchanged_result = factories.ResultFactory(changed=False)
+
+        # Assert two results
+        results = self.client.get("/api/v1/results").data["results"]
+        self.assertEqual(2, len(results))
+
+        # Assert one changed
+        results = self.client.get("/api/v1/results?changed=true").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(results[0]["id"], changed_result.id)
+
+        # Assert one unchanged
+        results = self.client.get("/api/v1/results?changed=false").data["results"]
+        self.assertEqual(1, len(results))
+        self.assertEqual(results[0]["id"], unchanged_result.id)
