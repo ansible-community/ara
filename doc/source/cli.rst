@@ -146,6 +146,23 @@ Return the 15 results with the highest duration for a specific playbook:
 
     ara result list --playbook 389 --order=-duration --limit 15
 
+ara result show
+---------------
+
+.. command-output:: ara result show --help
+
+Return detailed information about a specific result:
+
+.. code-block:: bash
+
+    ara result show 9001
+
+Return detailed information about a specific result, including formatted content:
+
+.. code-block:: bash
+
+    ara result show 9001 --with-content -f json
+
 CLI: ara-manage (django)
 ========================
 

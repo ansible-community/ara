@@ -2,8 +2,10 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import logging
+import sys
 
 from cliff.lister import Lister
+from cliff.show import ShowOne
 
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
@@ -110,3 +112,93 @@ class ResultList(Lister):
             )
         )
         # fmt: on
+
+
+class ResultShow(ShowOne):
+    """ Returns a detailed view of a specified result """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(ResultShow, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "result_id",
+            metavar="<result-id>",
+            help="Result to show",
+        )
+        parser.add_argument(
+            "--with-content",
+            action="store_true",
+            help="Also include the result content in the response (use with '-f json' or '-f yaml')"
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        # TODO: Render json properly in pretty tables
+        if args.with_content and args.formatter == "table":
+            self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
+
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        result = client.get("/api/v1/results/%s" % args.result_id)
+        if "detail" in result and result["detail"] == "Not found.":
+            self.log.error("Result not found: %s" % args.result_id)
+            sys.exit(1)
+
+        # Parse data from playbook and format it for display
+        result["ansible_version"] = result["playbook"]["ansible_version"]
+        playbook = "(%s) %s" % (result["playbook"]["id"], result["playbook"]["name"] or result["playbook"]["path"])
+        result["report"] = "%s/playbooks/%s.html" % (args.server, result["playbook"]["id"])
+        result["playbook"] = playbook
+
+        # Parse data from play and format it for display
+        play = "(%s) %s" % (result["play"]["id"], result["play"]["name"])
+        result["play"] = play
+
+        # Parse data from task and format it for display
+        task = "(%s) %s" % (result["task"]["id"], result["task"]["name"])
+        path = "(%s) %s:%s" % (result["task"]["file"], result["task"]["path"], result["task"]["lineno"])
+        result["task"] = task
+        result["path"] = path
+
+        if args.with_content:
+            columns = (
+                "id",
+                "report",
+                "status",
+                "playbook",
+                "play",
+                "task",
+                "path",
+                "started",
+                "ended",
+                "duration",
+                "ansible_version",
+                "content",
+            )
+        else:
+            columns = (
+                "id",
+                "report",
+                "status",
+                "playbook",
+                "play",
+                "task",
+                "path",
+                "started",
+                "ended",
+                "duration",
+                "ansible_version",
+            )
+        return (columns, ([result[column] for column in columns]))
