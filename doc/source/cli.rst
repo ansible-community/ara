@@ -129,6 +129,23 @@ ara host delete
 
 .. command-output:: ara host delete --help
 
+ara result list
+---------------
+
+.. command-output:: ara result list --help
+
+Return the 10 most recent failed results:
+
+.. code-block:: bash
+
+    ara result list --status failed --limit 10
+
+Return the 15 results with the highest duration for a specific playbook:
+
+.. code-block:: bash
+
+    ara result list --playbook 389 --order=-duration --limit 15
+
 CLI: ara-manage (django)
 ========================
 
