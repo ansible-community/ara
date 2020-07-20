@@ -51,7 +51,7 @@ class PlaybookList(Lister):
             metavar="<order>",
             default="-started",
             help=(
-                "Orders results by a field ('id', 'created', 'updated', 'started', 'ended', 'duration')\n"
+                "Orders playbooks by a field ('id', 'created', 'updated', 'started', 'ended', 'duration')\n"
                 "Defaults to '-started' descending so the most recent playbook is at the top.\n"
                 "The order can be reversed by omitting the '-': ara playbook list --order=started"
             ),

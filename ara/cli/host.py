@@ -40,7 +40,7 @@ class HostList(Lister):
             metavar="<order>",
             default="-updated",
             help=(
-                "Orders results by a field ('id', 'created', 'updated', 'name')\n"
+                "Orders hosts by a field ('id', 'created', 'updated', 'name')\n"
                 "Defaults to '-updated' descending so the most recent host is at the top.\n"
                 "The order can be reversed by omitting the '-': ara host list --order=updated"
             ),
