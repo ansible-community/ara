@@ -27,7 +27,25 @@ class ResultList(Lister):
             "--playbook",
             metavar="<playbook_id>",
             default=None,
-            help=("List results for a specified playbook id"),
+            help=("List results for the specified playbook"),
+        )
+        parser.add_argument(
+            "--play",
+            metavar="<play_id>",
+            default=None,
+            help=("List results for the specified play"),
+        )
+        parser.add_argument(
+            "--task",
+            metavar="<task_id>",
+            default=None,
+            help=("List results for the specified task"),
+        )
+        parser.add_argument(
+            "--host",
+            metavar="<host_id>",
+            default=None,
+            help=("List results for the specified host"),
         )
         parser.add_argument(
             "--status",
@@ -81,6 +99,12 @@ class ResultList(Lister):
         query = {}
         if args.playbook is not None:
             query["playbook"] = args.playbook
+        if args.play is not None:
+            query["play"] = args.play
+        if args.task is not None:
+            query["task"] = args.task
+        if args.host is not None:
+            query["host"] = args.host
 
         if args.status is not None:
             query["status"] = args.status
