@@ -205,6 +205,17 @@ Examples:
     # Return tasks matching a name (partial or full)
     ara task list --name install_apache
 
+ara task show
+-------------
+
+.. command-output:: ara task show --help
+
+Return detailed information about a specific task:
+
+.. code-block:: bash
+
+    ara task show 9001
+
 CLI: ara-manage (django)
 ========================
 

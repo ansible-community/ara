@@ -2,8 +2,10 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import logging
+import sys
 
 from cliff.lister import Lister
+from cliff.show import ShowOne
 
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
@@ -106,3 +108,54 @@ class TaskList(Lister):
             )
         )
         # fmt: on
+
+
+class TaskShow(ShowOne):
+    """ Returns a detailed view of a specified task """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(TaskShow, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "task_id",
+            metavar="<task-id>",
+            help="Task to show",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        task = client.get("/api/v1/tasks/%s" % args.task_id)
+        if "detail" in task and task["detail"] == "Not found.":
+            self.log.error("Task not found: %s" % args.task_id)
+            sys.exit(1)
+
+        task["report"] = "%s/playbooks/%s.html" % (args.server, task["playbook"]["id"])
+        columns = (
+            "id",
+            "report",
+            "name",
+            "action",
+            "status",
+            "path",
+            "lineno",
+            "started",
+            "ended",
+            "duration",
+            "tags",
+            "handler",
+        )
+        return (columns, ([task[column] for column in columns]))
