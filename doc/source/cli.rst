@@ -216,6 +216,16 @@ Return detailed information about a specific task:
 
     ara task show 9001
 
+ara task delete
+---------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara task delete --help
+
 CLI: ara-manage (django)
 ========================
 
