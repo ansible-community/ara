@@ -52,10 +52,12 @@
                  url: "server/static/index.html"
       when: groups['all'] | length == 1
 
-- name: Generate Zuul ARA report
-  hosts: localhost
-  vars:
-    ara_report_type: html
-    ara_report_path: ara-report
-  roles:
-    - ara-report
+# Temporarily disable this to prevent "Executing local code is prohibited"
+# https://review.opendev.org/#/c/742229/
+#- name: Generate Zuul ARA report
+#  hosts: localhost
+#  vars:
+#    ara_report_type: html
+#    ara_report_path: ara-report
+#  roles:
+#    - ara-report
