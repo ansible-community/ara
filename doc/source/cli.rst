@@ -76,23 +76,30 @@ ara host list
     Their records contain the Ansible host facts as well as their stats for a
     particular playbook run.
 
-Search for a specific host name across playbook runs against a local API server:
+Examples:
 
 .. code-block:: bash
 
-    ara host list --client http --server http://127.0.0.1:8000 --name localhost
+    # List the latest 25 host results
+    ara host list --limit 25
 
-List the 100 most recently updated hosts using the offline API client:
+    # List host records for a specific host name
+    ara host list --name localhost
 
-.. code-block:: bash
-
-    ara host list
-
-List the host results for a specific playbook and format the result in json:
-
-.. code-block:: bash
-
+    # List all the host results for a specific playbook and format the result in json
     ara host list --playbook 1 -f json
+
+    # Only return hosts with or without unreachable task results
+    ara host list --with-unreachable
+    ara host list --without-unreachable
+
+    # Only return hosts with or without changed task results
+    ara host list --with-changed
+    ara host list --without-changed
+
+    # Only return hosts with or without failed task results
+    ara host list --with-failed
+    ara host list --without-failed
 
 ara host show
 -------------

@@ -35,6 +35,48 @@ class HostList(Lister):
             default=None,
             help=("List hosts for a specified playbook id"),
         )
+
+        changed = parser.add_mutually_exclusive_group()
+        changed.add_argument(
+            "--with-changed",
+            action="store_true",
+            default=False,
+            help=("Return hosts with changed results")
+        )
+        changed.add_argument(
+            "--without-changed",
+            action="store_true",
+            default=False,
+            help=("Don't return hosts with changed results")
+        )
+
+        failed = parser.add_mutually_exclusive_group()
+        failed.add_argument(
+            "--with-failed",
+            action="store_true",
+            default=False,
+            help=("Return hosts with failed results")
+        )
+        failed.add_argument(
+            "--without-failed",
+            action="store_true",
+            default=False,
+            help=("Don't return hosts with failed results")
+        )
+
+        unreachable = parser.add_mutually_exclusive_group()
+        unreachable.add_argument(
+            "--with-unreachable",
+            action="store_true",
+            default=False,
+            help=("Return hosts with unreachable results")
+        )
+        unreachable.add_argument(
+            "--without-unreachable",
+            action="store_true",
+            default=False,
+            help=("Don't return hosts with unreachable results")
+        )
         parser.add_argument(
             "--order",
             metavar="<order>",
@@ -69,6 +111,19 @@ class HostList(Lister):
 
         if args.playbook is not None:
             query["playbook"] = args.playbook
+
+        if args.with_changed:
+            query["changed__gt"] = 0
+        if args.without_changed:
+            query["changed__lt"] = 1
+        if args.with_failed:
+            query["failed__gt"] = 0
+        if args.without_failed:
+            query["failed__lt"] = 1
+        if args.with_unreachable:
+            query["unreachable__gt"] = 0
+        if args.without_unreachable:
+            query["unreachable__lt"] = 1
 
         query["order"] = args.order
         query["limit"] = args.limit
