@@ -101,6 +101,11 @@ class HostFactory(factory.DjangoModelFactory):
     facts = utils.compressed_obj(HOST_FACTS)
     name = "hostname"
     playbook = factory.SubFactory(PlaybookFactory)
+    changed = 0
+    failed = 0
+    ok = 0
+    skipped = 0
+    unreachable = 0
 
 
 class ResultFactory(factory.DjangoModelFactory):

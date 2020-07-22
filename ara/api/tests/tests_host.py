@@ -120,6 +120,32 @@ class HostTestCase(APITestCase):
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(host.name, request.data["results"][0]["name"])
 
+    def test_get_hosts_by_stats(self):
+        # Create two hosts with different stats
+        first_host = factories.HostFactory(name="first_host", changed=2, failed=2, ok=2, skipped=2, unreachable=2)
+        second_host = factories.HostFactory(name="second_host", changed=0, failed=0, ok=0, skipped=0, unreachable=0)
+
+        # There must be two distinct hosts
+        request = self.client.get("/api/v1/hosts")
+        self.assertEqual(2, request.data["count"])
+        self.assertEqual(2, len(request.data["results"]))
+
+        statuses = ["changed", "failed", "ok", "skipped", "unreachable"]
+
+        # Searching for > should only return the first host
+        for status in statuses:
+            request = self.client.get("/api/v1/hosts?%s__gt=1" % status)
+            self.assertEqual(1, request.data["count"])
+            self.assertEqual(1, len(request.data["results"]))
+            self.assertEqual(first_host.id, request.data["results"][0]["id"])
+
+        # Searching for < should only return the second host
+        for status in statuses:
+            request = self.client.get("/api/v1/hosts?%s__lt=1" % status)
+            self.assertEqual(1, request.data["count"])
+            self.assertEqual(1, len(request.data["results"]))
+            self.assertEqual(second_host.id, request.data["results"][0]["id"])
+
     def test_get_host_by_date(self):
         host = factories.HostFactory()
 

@@ -126,6 +126,18 @@ class HostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
+    # For example: /api/v1/hosts/failed__gt=0 to return hosts with 1 failure or more
+    changed__gt = django_filters.NumberFilter(field_name="changed", lookup_expr="gt")
+    changed__lt = django_filters.NumberFilter(field_name="changed", lookup_expr="lt")
+    failed__gt = django_filters.NumberFilter(field_name="failed", lookup_expr="gt")
+    failed__lt = django_filters.NumberFilter(field_name="failed", lookup_expr="lt")
+    ok__gt = django_filters.NumberFilter(field_name="ok", lookup_expr="gt")
+    ok__lt = django_filters.NumberFilter(field_name="ok", lookup_expr="lt")
+    skipped__gt = django_filters.NumberFilter(field_name="skipped", lookup_expr="gt")
+    skipped__lt = django_filters.NumberFilter(field_name="skipped", lookup_expr="lt")
+    unreachable__gt = django_filters.NumberFilter(field_name="unreachable", lookup_expr="gt")
+    unreachable__lt = django_filters.NumberFilter(field_name="unreachable", lookup_expr="lt")
+
     # fmt: off
     order = django_filters.OrderingFilter(
         fields=(
