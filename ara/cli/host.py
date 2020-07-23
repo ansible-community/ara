@@ -2,6 +2,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import logging
+import os
 import sys
 
 from cliff.command import Command
@@ -77,6 +78,7 @@ class HostList(Lister):
             default=False,
             help=("Don't return hosts with unreachable results")
         )
+
         parser.add_argument(
             "--order",
             metavar="<order>",
@@ -90,8 +92,8 @@ class HostList(Lister):
         parser.add_argument(
             "--limit",
             metavar="<limit>",
-            default=100,
-            help=("Returns the first <limit> determined by the ordering. Defaults to 100.")
+            default=os.environ.get("ARA_CLI_LIMIT", 50),
+            help=("Returns the first <limit> determined by the ordering. Defaults to ARA_CLI_LIMIT or 50.")
         )
         # fmt: on
         return parser
