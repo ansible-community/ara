@@ -25,14 +25,17 @@
       # These are in chronological order of release so that we don't end up
       # running SQL migrations backwards during the tests.
       - name: localhost/ara-api
-        tag: distribution-latest
-        script: fedora-distribution.sh
+        tag: fedora32-source-latest
+        script: fedora32-source.sh
       - name: localhost/ara-api
-        tag: pypi-latest
-        script: fedora-pypi.sh
+        tag: fedora32-pypi-latest
+        script: fedora32-pypi.sh
       - name: localhost/ara-api
-        tag: source-latest
-        script: fedora-source.sh
+        tag: centos8-pypi-latest
+        script: centos8-pypi.sh
+      - name: localhost/ara-api
+        tag: fedora32-distribution-latest
+        script: fedora32-distribution.sh
   tasks:
     - name: Install git, buildah and podman
       become: yes
