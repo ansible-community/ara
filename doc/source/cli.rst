@@ -65,6 +65,25 @@ ara playbook delete
 
 .. command-output:: ara playbook delete --help
 
+ara play list
+-------------
+
+.. command-output:: ara play list --help
+
+Examples:
+
+.. code-block:: bash
+
+    # List the top 25 longest plays
+    ara play list --order=-duration --limit 25
+
+    # List plays matching a name (full or partial)
+    ara play list --name apache
+
+    # List the plays for a specific playbook and format the result in json
+    ara play list --playbook 1 -f json
+
+
 ara host list
 -------------
 
