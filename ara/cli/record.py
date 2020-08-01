@@ -3,8 +3,10 @@
 
 import logging
 import os
+import sys
 
 from cliff.lister import Lister
+from cliff.show import ShowOne
 
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
@@ -81,3 +83,58 @@ class RecordList(Lister):
             )
         )
         # fmt: on
+
+
+class RecordShow(ShowOne):
+    """ Returns a detailed view of a specified record """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(RecordShow, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "record_id",
+            metavar="<record-id>",
+            help="Record to show",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        # TODO: Render json properly in pretty tables
+        if args.formatter == "table":
+            self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
+
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        record = client.get("/api/v1/records/%s" % args.record_id)
+        if "detail" in record and record["detail"] == "Not found.":
+            self.log.error("Record not found: %s" % args.record_id)
+            sys.exit(1)
+
+        playbook = "(%s) %s" % (record["playbook"]["id"], record["playbook"]["name"] or record["playbook"]["path"])
+        record["report"] = "%s/playbooks/%s.html" % (args.server, record["playbook"]["id"])
+        record["playbook"] = playbook
+
+        # fmt: off
+        columns = (
+            "id",
+            "report",
+            "playbook",
+            "key",
+            "value",
+            "created",
+            "updated",
+        )
+        # fmt: on
+        return (columns, ([record[column] for column in columns]))

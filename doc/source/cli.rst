@@ -191,6 +191,18 @@ Examples:
     # List records for a specific playbook
     ara record list --playbook 9001
 
+ara record show
+---------------
+
+.. command-output:: ara record show --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Show a specific record and format the results as json
+    ara record show 9001 -f json
+
 ara result list
 ---------------
 
