@@ -83,6 +83,17 @@ Examples:
     # List the plays for a specific playbook and format the result in json
     ara play list --playbook 1 -f json
 
+ara play show
+-------------
+
+.. command-output:: ara play show --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Show a specific play and format the results as json
+    ara play show 9001 -f json
 
 ara host list
 -------------

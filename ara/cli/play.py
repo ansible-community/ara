@@ -3,8 +3,10 @@
 
 import logging
 import os
+import sys
 
 from cliff.lister import Lister
+from cliff.show import ShowOne
 
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
@@ -98,3 +100,56 @@ class PlayList(Lister):
             )
         )
         # fmt: on
+
+
+class PlayShow(ShowOne):
+    """ Returns a detailed view of a specified play """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PlayShow, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "play_id",
+            metavar="<play-id>",
+            help="Play to show",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        play = client.get("/api/v1/plays/%s" % args.play_id)
+        if "detail" in play and play["detail"] == "Not found.":
+            self.log.error("Play not found: %s" % args.play_id)
+            sys.exit(1)
+
+        playbook = "(%s) %s" % (play["playbook"]["id"], play["playbook"]["name"] or play["playbook"]["path"])
+        play["report"] = "%s/playbooks/%s.html" % (args.server, play["playbook"]["id"])
+        play["playbook"] = playbook
+
+        # fmt: off
+        columns = (
+            "id",
+            "report",
+            "status",
+            "name",
+            "playbook",
+            "started",
+            "ended",
+            "duration",
+            "items",
+        )
+        # fmt: on
+        return (columns, ([play[column] for column in columns]))
