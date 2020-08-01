@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 
+from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
@@ -153,3 +154,34 @@ class PlayShow(ShowOne):
         )
         # fmt: on
         return (columns, ([play[column] for column in columns]))
+
+
+class PlayDelete(Command):
+    """ Deletes the specified play and associated resources """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PlayDelete, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "play_id",
+            metavar="<play-id>",
+            help="Play to delete",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+        )
+
+        # TODO: Improve client to be better at handling exceptions
+        client.delete("/api/v1/plays/%s" % args.play_id)

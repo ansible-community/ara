@@ -95,6 +95,16 @@ Examples:
     # Show a specific play and format the results as json
     ara play show 9001 -f json
 
+ara play delete
+---------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara play delete --help
+
 ara host list
 -------------
 
