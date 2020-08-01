@@ -176,6 +176,21 @@ ara host delete
 
 .. command-output:: ara host delete --help
 
+ara record list
+---------------
+
+.. command-output:: ara record list --help
+
+Examples:
+
+.. code-block:: bash
+
+    # List records for a specific key
+    ara record list --key log_url
+
+    # List records for a specific playbook
+    ara record list --playbook 9001
+
 ara result list
 ---------------
 
