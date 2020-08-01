@@ -305,7 +305,7 @@ class ListLabelSerializer(serializers.ModelSerializer):
 class ListPlaybookSerializer(ItemCountSerializer):
     class Meta:
         model = models.Playbook
-        exclude = ("created", "updated")
+        fields = "__all__"
 
     arguments = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT, read_only=True)
     labels = SimpleLabelSerializer(many=True, read_only=True, default=[])
@@ -314,7 +314,7 @@ class ListPlaybookSerializer(ItemCountSerializer):
 class ListPlaySerializer(ItemCountSerializer):
     class Meta:
         model = models.Play
-        exclude = ("created", "updated")
+        fields = "__all__"
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -322,7 +322,7 @@ class ListPlaySerializer(ItemCountSerializer):
 class ListTaskSerializer(ItemCountSerializer, TaskPathSerializer):
     class Meta:
         model = models.Task
-        exclude = ("created", "updated")
+        fields = "__all__"
 
     tags = ara_fields.CompressedObjectField(read_only=True)
     play = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -339,7 +339,7 @@ class ListHostSerializer(serializers.ModelSerializer):
 class ListResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
-        exclude = ("content", "created", "updated")
+        exclude = ("content",)
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
     play = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -350,7 +350,7 @@ class ListResultSerializer(ResultStatusSerializer):
 class ListFileSerializer(FileSha1Serializer):
     class Meta:
         model = models.File
-        exclude = ("content", "created", "updated")
+        exclude = ("content",)
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -358,7 +358,7 @@ class ListFileSerializer(FileSha1Serializer):
 class ListRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Record
-        exclude = ("value", "created", "updated")
+        exclude = ("value",)
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
