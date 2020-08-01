@@ -203,6 +203,11 @@ Examples:
     # Show a specific record and format the results as json
     ara record show 9001 -f json
 
+ara record delete
+-----------------
+
+.. command-output:: ara record delete --help
+
 ara result list
 ---------------
 
