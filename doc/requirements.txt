@@ -9,9 +9,7 @@ djangorestframework>=3.9.1
 django-cors-headers
 django-filter
 django-health-check
-# Pin due to settings regression in 3.0
-# See https://github.com/ansible-community/ara/issues/149
-dynaconf[yaml]<3.0
+dynaconf[yaml]
 tzlocal
 whitenoise
 pygments
