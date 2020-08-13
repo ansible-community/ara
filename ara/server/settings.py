@@ -223,6 +223,12 @@ ROOT_URLCONF = "ara.server.urls"
 APPEND_SLASH = False
 
 PAGE_SIZE = settings.get("PAGE_SIZE", 100)
+
+if EXTERNAL_AUTH:
+    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.RemoteUserAuthentication",)
+else:
+    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.BasicAuthentication",)
+
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": PAGE_SIZE,
@@ -236,7 +242,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework.authentication.BasicAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": REST_FRAMEWORK_AUTH,
     "DEFAULT_PERMISSION_CLASSES": ("ara.api.auth.APIAccessPermission",),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "UNICODE_JSON": False,
