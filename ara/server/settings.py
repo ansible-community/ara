@@ -159,6 +159,9 @@ EXTERNAL_AUTH_MIDDLEWARE = []
 if EXTERNAL_AUTH:
     EXTERNAL_AUTH_MIDDLEWARE = ["django.contrib.auth.middleware.RemoteUserMiddleware"]
     AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.RemoteUserBackend"]
+    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.RemoteUserAuthentication",)
+else:
+    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.BasicAuthentication",)
 
 # fmt: off
 MIDDLEWARE = [
@@ -224,11 +227,6 @@ APPEND_SLASH = False
 
 PAGE_SIZE = settings.get("PAGE_SIZE", 100)
 
-if EXTERNAL_AUTH:
-    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.RemoteUserAuthentication",)
-else:
-    REST_FRAMEWORK_AUTH = ("rest_framework.authentication.BasicAuthentication",)
-
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": PAGE_SIZE,
@@ -264,6 +262,7 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         CORS_ORIGIN_WHITELIST=CORS_ORIGIN_WHITELIST.to_list(),
         CORS_ORIGIN_REGEX_WHITELIST=CORS_ORIGIN_REGEX_WHITELIST.to_list(),
         CORS_ORIGIN_ALLOW_ALL=CORS_ORIGIN_ALLOW_ALL,
+        EXTERNAL_AUTH=EXTERNAL_AUTH,
         SECRET_KEY=SECRET_KEY,
         DATABASE_ENGINE=DATABASE_ENGINE,
         DATABASE_NAME=DATABASE_NAME,
