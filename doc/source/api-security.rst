@@ -93,6 +93,16 @@ This is done with the two following configuration options:
 
 These settings are global and are effective for all API endpoints.
 
+Enabling external authentication
+------------------------------------------------
+
+Once you you have enabled authentication against the API, you can enable external
+authentication. This is usefull especially in production environments.
+
+This is done with the following configuration option:
+
+- :ref:`api-configuration:ARA_EXTERNAL_AUTH` for external authentication
+
 Setting up authentication for the Ansible plugins
 -------------------------------------------------
 

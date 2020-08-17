@@ -54,6 +54,8 @@ For more details, click on the configuration parameters.
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_ENV_                         | ``default``                                            | Environment to load configuration for                      |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_EXTERNAL_AUTH_               | ``False``                                              | Whether or not to enable external authentication           |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_LOGGING_                     | See ARA_LOGGING_                                       | Logging configuration                                      |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_LOG_LEVEL_                   | ``INFO``                                               | Log level of the different components                      |
@@ -417,6 +419,17 @@ or ``prod.yaml`` instead.
    environment.
    This lets users override only the parameters they are interested in for
    specific environments.
+
+ARA_EXTERNAL_AUTH
+~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_EXTERNAL_AUTH``
+- **Configuration file variable**: ``EXTERNAL_AUTH``
+- **Type**: ``bool``
+- **Default**: ``False``
+- **Provided by**: django-rest-framework `authentication <https://www.django-rest-framework.org/api-guide/authentication/>`_
+
+Whether or not to enable external authentication.
 
 ARA_LOGGING
 ~~~~~~~~~~~
