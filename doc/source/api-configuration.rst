@@ -44,6 +44,8 @@ For more details, click on the configuration parameters.
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_DATABASE_USER_               | ``None``                                               | Django's USER_ database setting                            |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_DATABASE_OPTIONS_            | ``{}``                                                 | Django's OPTIONS_ database setting                         |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_DEBUG_                       | ``False``                                              | Django's DEBUG_ setting                                    |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_DISTRIBUTED_SQLITE_          | ``False``                                              | Whether to enable distributed sqlite backend               |
@@ -86,6 +88,7 @@ For more details, click on the configuration parameters.
 .. _HOST: https://docs.djangoproject.com/en/2.2/ref/settings/#host
 .. _PORT: https://docs.djangoproject.com/en/2.2/ref/settings/#port
 .. _CONN_MAX_AGE: https://docs.djangoproject.com/en/2.2/ref/settings/#conn-max-age
+.. _OPTIONS: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-OPTIONS
 
 Configuration variables
 -----------------------
@@ -303,6 +306,24 @@ The port to use when connecting to the database server.
 
 It is not required to set the port if you're using default ports for MySQL or
 PostgreSQL.
+
+ARA_DATABASE_OPTIONS
+~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_DATABASE_OPTIONS``
+- **Configuration file variable**: ``DATABASE_OPTIONS``
+- **Provided by**: Django's OPTIONS_ database setting
+- **Type**: ``dictionary``
+- **Default**: ``{}``
+- **Example**::
+
+    export ARA_DATABASE_OPTIONS='@json {"ssl": {"ca": "/etc/ssl/certificate.pem"}}'
+    # or in settings.yaml:
+    DATABASE_OPTIONS:
+      ssl:
+        ca: "/etc/ssl/certificate.pem"
+
+Database options to pass to the Django database backend.
 
 ARA_DEBUG
 ~~~~~~~~~
