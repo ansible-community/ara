@@ -9,6 +9,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -76,6 +77,12 @@ class ResultList(Lister):
             help=("Include additional fields: changed, ignore_errors, play")
         )
         parser.add_argument(
+            "--resolve",
+            action="store_true",
+            default=os.environ.get("ARA_CLI_RESOLVE", False),
+            help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-started",
@@ -124,6 +131,22 @@ class ResultList(Lister):
         query["limit"] = args.limit
 
         results = client.get("/api/v1/results", **query)
+
+        if args.resolve:
+            for result in results["results"]:
+                playbook = cli_utils.get_playbook(client, result["playbook"])
+                result["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+
+                task = cli_utils.get_task(client, result["task"])
+                result["task"] = "(%s) %s" % (task["id"], task["name"])
+
+                host = cli_utils.get_host(client, result["host"])
+                result["host"] = "(%s) %s" % (host["id"], host["name"])
+
+                if args.long:
+                    play = cli_utils.get_play(client, result["play"])
+                    result["play"] = "(%s) %s" % (play["id"], play["name"])
+
         # fmt: off
         if args.long:
             columns = (
