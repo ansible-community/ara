@@ -70,6 +70,12 @@ class ResultList(Lister):
             help=("Return only changed results, defaults to false")
         )
         parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Include additional fields: changed, ignore_errors, play")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-started",
@@ -118,19 +124,31 @@ class ResultList(Lister):
         query["limit"] = args.limit
 
         results = client.get("/api/v1/results", **query)
-        columns = (
-            "id",
-            "status",
-            "changed",
-            "ignore_errors",
-            "duration",
-            "playbook",
-            "play",
-            "task",
-            "host",
-            "started",
-        )
         # fmt: off
+        if args.long:
+            columns = (
+                "id",
+                "status",
+                "changed",
+                "ignore_errors",
+                "playbook",
+                "play",
+                "task",
+                "host",
+                "started",
+                "duration",
+            )
+        else:
+            columns = (
+                "id",
+                "status",
+                "playbook",
+                "task",
+                "host",
+                "started",
+                "duration",
+            )
+
         return (
             columns, (
                 [result[column] for column in columns]
