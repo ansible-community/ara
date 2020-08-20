@@ -92,8 +92,29 @@ class PlaybookList(Lister):
         query["limit"] = args.limit
 
         playbooks = client.get("/api/v1/playbooks", **query)
-        columns = ("id", "status", "path", "started", "duration")
+        # Send items to columns
+        for playbook in playbooks["results"]:
+            playbook["plays"] = playbook["items"]["plays"]
+            playbook["tasks"] = playbook["items"]["tasks"]
+            playbook["results"] = playbook["items"]["results"]
+            playbook["hosts"] = playbook["items"]["hosts"]
+            playbook["files"] = playbook["items"]["files"]
+            playbook["records"] = playbook["items"]["records"]
+
         # fmt: off
+        columns = (
+            "id",
+            "status",
+            "path",
+            "plays",
+            "tasks",
+            "results",
+            "hosts",
+            "files",
+            "records",
+            "started",
+            "duration"
+        )
         return (
             columns, (
                 [playbook[column] for column in columns]
