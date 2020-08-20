@@ -48,6 +48,12 @@ class PlaybookList(Lister):
             help=("List playbooks matching a specific status ('completed', 'running', 'failed')"),
         )
         parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Include additional fields: name, plays, files, records")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-started",
@@ -102,19 +108,32 @@ class PlaybookList(Lister):
             playbook["records"] = playbook["items"]["records"]
 
         # fmt: off
-        columns = (
-            "id",
-            "status",
-            "path",
-            "plays",
-            "tasks",
-            "results",
-            "hosts",
-            "files",
-            "records",
-            "started",
-            "duration"
-        )
+        if args.long:
+            columns = (
+                "id",
+                "status",
+                "name",
+                "path",
+                "plays",
+                "tasks",
+                "results",
+                "hosts",
+                "files",
+                "records",
+                "started",
+                "duration"
+            )
+        else:
+            columns = (
+                "id",
+                "status",
+                "path",
+                "tasks",
+                "results",
+                "hosts",
+                "started",
+                "duration"
+            )
         return (
             columns, (
                 [playbook[column] for column in columns]
