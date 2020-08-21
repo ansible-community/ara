@@ -20,11 +20,32 @@
 import warnings
 from six.moves import configparser
 
+try:
+    from ansible.config.manager import get_config
+except ImportError:
+    import os
+
+    # Config wrapper for Ansible 2.10 which deprecated this
+    def get_config(parser, section, key, env_var, default_value, value_type=None, expand_relative_paths=False):
+        value = None
+        # small reconstruction of the old code env/ini/default
+        value = os.environ.get(env_var, None)
+        if value is None:
+            try:
+                value = get_ini_config_value(parser, {'key': key, 'section': section})
+            except:
+                pass
+        if value is None:
+            value = default_value
+
+        value = ensure_type(value, value_type)
+
+        return value
+
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
     import ansible.constants
-    from ansible.constants import get_config
-    from ansible.config.manager import find_ini_config_file
+    from ansible.config.manager import ensure_type, find_ini_config_file, get_ini_config_value
 
 
 # Please don't scream deprecated warnings at us
