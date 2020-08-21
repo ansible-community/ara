@@ -1,0 +1,7 @@
+# 106: Role name does not match ``^[a-z][a-z0-9_]+$`` pattern
+#  These aren't collections so this doesn't matter
+
+skip_list:
+  - '106'
+use_default_rules: true
+verbosity: 1

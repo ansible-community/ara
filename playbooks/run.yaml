@@ -4,6 +4,11 @@
     - include_role:
         name: bindep
 
+    - include_role:
+        name: ensure-tox
+      vars:
+        ensure_global_symlinks: true
+
     - name: Run integration tests
       shell:
         cmd: |
