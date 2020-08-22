@@ -116,8 +116,9 @@ class TaskList(Lister):
 
         tasks = client.get("/api/v1/tasks", **query)
 
-        if args.resolve:
-            for task in tasks["results"]:
+        for task in tasks["results"]:
+            task["results"] = task["items"]["results"]
+            if args.resolve:
                 playbook = cli_utils.get_playbook(client, task["playbook"])
                 task["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
 
@@ -130,6 +131,7 @@ class TaskList(Lister):
             columns = (
                 "id",
                 "status",
+                "results",
                 "action",
                 "name",
                 "tags",
@@ -145,9 +147,9 @@ class TaskList(Lister):
             columns = (
                 "id",
                 "status",
+                "results",
                 "action",
                 "name",
-                "tags",
                 "playbook",
                 "started",
                 "duration"
