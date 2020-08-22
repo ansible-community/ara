@@ -74,6 +74,7 @@ class PlayList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
         query = {}
         if args.playbook is not None:
@@ -128,6 +129,7 @@ class PlayShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions
@@ -181,6 +183,7 @@ class PlayDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions

@@ -80,6 +80,7 @@ class PlaybookList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
         query = {}
         if args.label is not None:
@@ -172,6 +173,7 @@ class PlaybookShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions
@@ -222,6 +224,7 @@ class PlaybookDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions

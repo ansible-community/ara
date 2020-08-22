@@ -62,6 +62,7 @@ class RecordList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
         query = {}
         if args.playbook is not None:
@@ -115,6 +116,7 @@ class RecordShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions
@@ -166,6 +168,7 @@ class RecordDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            run_sql_migrations=False,
         )
 
         # TODO: Improve client to be better at handling exceptions
