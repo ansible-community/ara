@@ -8,7 +8,7 @@ Table of Contents
 .. toctree::
     :maxdepth: 3
 
-    Installing ARA <installation>
+    Getting started <getting-started>
     Ansible: configuration to use ARA <ansible-configuration>
     Ansible: plugins and use cases <ansible-plugins-and-use-cases>
     API: Server configuration <api-configuration>
@@ -20,9 +20,3 @@ Table of Contents
     CLI: ara and ara-manage <cli>
     Contributing to ARA <contributing>
     Frequently asked questions <faq>
-
-.. toctree::
-   :maxdepth: 1
-
-    ansible-role-ara-api <ansible-role-ara-api>
-    ansible-role-ara-web <ansible-role-ara-web>
