@@ -1,39 +1,12 @@
 .. _ansible-configuration:
 
-Configuring Ansible to use ARA
-==============================
+Ansible configuration to use ara
+================================
 
-To begin using ARA, you'll first need to tell Ansible where it is located.
+In order to be able to use ara :ref:`Ansible plugins <ansible_plugins>`, Ansible must first know where they have been installed.
 
-Since this location will be different depending on your operating system and
-how you are installing ARA, there are convenient python modules to help you
-figure out the right paths.
-
-Once you've set up the ``callback_plugins`` configuration or the
-``ANSIBLE_CALLBACK_PLUGINS`` environment variable, Ansible will automatically
-use the ARA callback plugin to start recording data from Ansible playbooks.
-
-``ANSIBLE_ACTION_PLUGINS`` or ``action_plugins`` must be set if you'd like to
-use the ``ara_record`` or ``ara_playbook`` action plugins.
-
-If you would like to use the ``ara_api`` lookup plugin, then
-``ANSIBLE_LOOKUP_PLUGINS`` or ``lookup_plugins`` must also be set.
-
-.. note::
-    Starting with ARA 1.4.1 and Ansible 2.9.7, it is also possible to record
-    `ad-hoc commands <https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html>`_
-    in addition to playbooks.
-
-    To enable ad-hoc command recording by ARA, you must set either the
-    ``ANSIBLE_LOAD_CALLBACK_PLUGINS`` environment variable or the corresponding
-    ansible.cfg configuration variable,
-    `bin_ansible_callbacks <https://docs.ansible.com/ansible/latest/plugins/callback.html#setting-a-callback-plugin-for-ad-hoc-commands>`_,
-    to ``true``.
-
-Using setup helper modules
---------------------------
-
-The modules can be used directly on the command line:
+Since this location will be different depending on the operating system, the version of python or how ara has been
+installed, there are convenient python helper modules that provide the right paths:
 
 .. code-block:: bash
 
@@ -45,15 +18,18 @@ The modules can be used directly on the command line:
 
     $ python3 -m ara.setup.action_plugins
     /usr/lib/python3.7/site-packages/ara/plugins/action
+    $ export ANSIBLE_ACTION_PLUGINS=$(python3 -m ara.setup.action_plugins)
 
     $ python3 -m ara.setup.callback_plugins
     /usr/lib/python3.7/site-packages/ara/plugins/callback
+    $ export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
 
     $ python3 -m ara.setup.lookup_plugins
     /usr/lib/python3.7/site-packages/ara/plugins/lookup
+    $ export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
 
     # Note: This doesn't export anything, it only prints the commands.
-    # If you want to export directly from the command, you can use:
+    # To export directly from the command, use:
     #     source <(python3 -m ara.setup.env)
     $ python3 -m ara.setup.env
     export ANSIBLE_CALLBACK_PLUGINS=/usr/lib/python3.7/site-packages/ara/plugins/callback
@@ -66,7 +42,7 @@ The modules can be used directly on the command line:
     action_plugins=/usr/lib/python3.7/site-packages/ara/plugins/action
     lookup_plugins=/usr/lib/python3.7/site-packages/ara/plugins/lookup
 
-Or from python, for example:
+These helpers are also available directly in python:
 
 .. code-block:: python
 

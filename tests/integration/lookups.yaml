@@ -31,3 +31,39 @@
           - "playbook.plays | length == playbook['items']['plays']"
           - "tasks.results | length == playbook['items']['tasks']"
           - "results.results | length == playbook['items']['results']"
+
+    #####
+    # Examples taken from docs on Ansible plugins and use cases
+    #####
+    - name: Get failed results
+      set_fact:
+        failed: "{{ lookup('ara_api', '/api/v1/results?status=failed') }}"
+
+    - name: Print task data from failed results
+      vars:
+        task_id: "{{ item.task | string }}"
+        task: "{{ lookup('ara_api', '/api/v1/tasks/' + task_id ) }}"
+        host_id: "{{ item.host | string }}"
+        host: "{{ lookup('ara_api', '/api/v1/hosts/' + host_id) }}"
+      debug:
+        msg: "{{ host.name }} failed | {{ task.name }} ({{ task.path }}:{{ task.lineno }})"
+      loop: "{{ failed.results }}"
+
+    - name: Get the currently running playbook
+      ara_playbook:
+      register: query
+
+    - name: Retrieve playbook id
+      set_fact:
+        playbook_id: "{{ query.playbook.id | string }}"
+
+    # With the playbook id we can create a link to the playbook report
+    - name: Recover base url from ara
+      set_fact:
+        api_base_url: "{{ lookup('ara_api', '/api/') }}"
+
+    - name: Print link to playbook report
+      vars:
+        ui_base_url: "{{ api_base_url.api[0] | regex_replace('/api/v1/', '') }}"
+      debug:
+        msg: "{{ ui_base_url }}/playbooks/{{ playbook_id }}.html"

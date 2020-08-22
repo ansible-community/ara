@@ -305,8 +305,8 @@ ara task delete
 
 .. command-output:: ara task delete --help
 
-CLI: ara-manage (django)
-========================
+CLI: ara-manage (django API server)
+===================================
 
 ``ara-manage`` is a command provided by ARA when the API server dependencies
 are installed.
