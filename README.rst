@@ -159,7 +159,7 @@ Community and getting help
 - Slack: https://arecordsansible.slack.com (`invitation link <https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLTU2NTU3YjMwYzRlYmRkZTVjZTFiOWIxNjE5NGRhMDQ3ZTgzZmQyZTY2NzY5YmZmNDA5ZWY4YTY1Y2Y1ODBmNzc>`_)
 
 - Website and blog: https://ara.recordsansible.org
-- Twitter: https://twitter.com/arecordsansible
+- Twitter: https://twitter.com/recordsansible
 
 Contributing
 ============
