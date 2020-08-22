@@ -8,7 +8,7 @@ ARA Records Ansible playbooks and makes them easier to understand and troublesho
 How it works
 ============
 
-ARA saves Ansible playbook execution results to local or remote databases by
+ARA Records Ansible playbook execution results to local or remote databases by
 using an Ansible `callback plugin <https://docs.ansible.com/ansible/latest/plugins/callback.html>`_.
 
 This callback plugin leverages built-in python API clients to send data to a
@@ -48,12 +48,20 @@ javascript interface to the API built with react and patternfly.
 Getting started
 ===============
 
+Requirements
+------------
+
+- Any recent Linux distribution with python >=3.5 available
+- The ara Ansible plugins must be installed for the same python interpreter as Ansible itself
+
+For RHEL 7 and CentOS 7 it is recommended to run the API server in a container due to missing or outdated dependencies.
+See this `issue <https://github.com/ansible-community/ara/issues/99>`_ for more information.
+
 Recording playbooks without an API server
 -----------------------------------------
 
-The default API client, ``offline``, requires API server dependencies to be
-installed but does not need the API server to be running in order to query or
-send data.
+The default API client, ``offline``, requires API server dependencies to be installed but does not need the API server
+to be running in order to query or send data.
 
 With defaults and using a local sqlite database:
 
@@ -68,32 +76,38 @@ With defaults and using a local sqlite database:
     # Run an Ansible playbook
     ansible-playbook playbook.yaml
 
+    # Use the CLI to see recorded playbooks
+    ara playbook list
+
     # Start the built-in development server to browse recorded results
     ara-manage runserver
 
 Recording playbooks with an API server
 --------------------------------------
 
-When running Ansible from multiple servers or locations, data can be aggregated
-by running the API server as a service and configuring the ARA Ansible callback
-plugin to use the ``http`` API client with the API server endpoint.
+When running Ansible from multiple servers or locations, data can be aggregated by running the API server as a service
+and configuring the ARA Ansible callback plugin to use the ``http`` API client with the API server endpoint.
 
-The API server is a relatively simple django web application written in python
-that can run with WSGI application servers such as gunicorn, uwsgi or mod_wsgi.
+The API server is a relatively simple django web application written in python that can run with WSGI application
+servers such as gunicorn, uwsgi or mod_wsgi.
 
-Alternatively, the API server can also run from a container image such as the
-one available on `DockerHub <https://hub.docker.com/r/recordsansible/ara-api>`_:
+Alternatively, the API server can also run from a container image such as the one available on
+`DockerHub <https://hub.docker.com/r/recordsansible/ara-api>`_:
 
 .. code-block:: bash
 
-    # Start an API server from the image on DockerHub:
+    # Start an API server with podman from the image on DockerHub:
     mkdir -p ~/.ara/server
     podman run --name api-server --detach --tty \
       --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
       docker.io/recordsansible/ara-api:latest
 
-Once the server is running, Ansible playbook results can be sent to it by
-configuring the ARA callback plugin:
+    # or with docker:
+    docker run --name api-server --detach --tty \
+      --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
+      docker.io/recordsansible/ara-api:latest
+
+Once the server is running, Ansible playbook results can be sent to it by configuring the ARA callback plugin:
 
 .. code-block:: bash
 
@@ -110,8 +124,12 @@ configuring the ARA callback plugin:
     # Run an Ansible playbook
     ansible-playbook playbook.yaml
 
-Data will be available on the API server in real time as the playbook progresses
-and completes.
+    # Use the CLI to see recorded playbooks
+    ara playbook list
+
+Data will be available on the API server in real time as the playbook progresses and completes.
+
+Read more about how container images are built and how to run them in the `documentation <https://ara.readthedocs.io/en/latest/container-images.html>`_.
 
 Live demo
 =========
