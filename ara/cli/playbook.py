@@ -4,6 +4,7 @@
 import logging
 import os
 import sys
+from datetime import datetime, timedelta
 
 from cliff.command import Command
 from cliff.lister import Lister
@@ -229,3 +230,65 @@ class PlaybookDelete(Command):
 
         # TODO: Improve client to be better at handling exceptions
         client.delete("/api/v1/playbooks/%s" % args.playbook_id)
+
+
+class PlaybookPrune(Command):
+    """ Deletes playbooks beyond a specified age in days """
+
+    log = logging.getLogger(__name__)
+    deleted = 0
+
+    def get_parser(self, prog_name):
+        parser = super(PlaybookPrune, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "--days", type=int, default=31, help="Delete playbooks started this many days ago (default: 31)"
+        )
+        parser.add_argument(
+            "--confirm",
+            action="store_true",
+            help="Confirm deletion of playbooks, otherwise runs without deleting any playbook",
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+            run_sql_migrations=False,
+        )
+
+        if not args.confirm:
+            self.log.info("--confirm was not specified, no playbooks will be deleted")
+
+        # generate a timestamp from n days ago in a format we can query the API with
+        # ex: 2019-11-21T00:57:41.702229
+        limit_date = (datetime.now() - timedelta(days=args.days)).isoformat()
+
+        playbooks = client.get("/api/v1/playbooks", started_before=limit_date)
+
+        # TODO: Improve client validation and exception handling
+        if "count" not in playbooks:
+            # If we didn't get an answer we can parse, it's probably due to an error 500, 403, 401, etc.
+            # The client would have logged the error.
+            self.log.error("Client failed to retrieve results, see logs for ara.clients.offline or ara.clients.http.")
+            sys.exit(1)
+
+        self.log.info("Found %s playbooks matching query" % playbooks["count"])
+        for playbook in playbooks["results"]:
+            if not args.confirm:
+                msg = "Dry-run: playbook {id} ({path}) would have been deleted, start date: {started}"
+                self.log.info(msg.format(id=playbook["id"], path=playbook["path"], started=playbook["started"]))
+            else:
+                msg = "Deleting playbook {id} ({path}), start date: {started}"
+                self.log.info(msg.format(id=playbook["id"], path=playbook["path"], started=playbook["started"]))
+                client.delete("/api/v1/playbooks/%s" % playbook["id"])
+                self.deleted += 1
+
+        self.log.info("%s playbooks deleted" % self.deleted)

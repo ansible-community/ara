@@ -65,6 +65,26 @@ ara playbook delete
 
 .. command-output:: ara playbook delete --help
 
+ara playbook prune
+------------------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara playbook prune --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Query which playbooks would be deleted without deleting them
+    ara playbook prune
+
+    # Delete playbooks older than 14 days
+    ara playbook prune --days 14 --confirm
+
 ara play list
 -------------
 
@@ -333,6 +353,10 @@ ara-manage
 
 ara-manage prune
 ----------------
+
+.. warning::
+    ara-manage prune has been replaced by `ara playbook prune`_ in ara 1.5.
+    It will be removed in ara 1.6.
 
 Used to delete playbooks that are older than a specified amount of days.
 
