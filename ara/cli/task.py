@@ -54,6 +54,12 @@ class TaskList(Lister):
             help=("List tasks matching a specific action/ansible module (ex: 'debug', 'package', 'set_fact')"),
         )
         parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Include additional fields: path, lineno, handler, play")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-started",
@@ -102,7 +108,33 @@ class TaskList(Lister):
         query["limit"] = args.limit
 
         tasks = client.get("/api/v1/tasks", **query)
-        columns = ("id", "playbook", "status", "action", "name", "started", "duration")
+        # fmt: off
+        if args.long:
+            columns = (
+                "id",
+                "status",
+                "action",
+                "name",
+                "tags",
+                "path",
+                "lineno",
+                "handler",
+                "playbook",
+                "play",
+                "started",
+                "duration"
+            )
+        else:
+            columns = (
+                "id",
+                "status",
+                "action",
+                "name",
+                "tags",
+                "playbook",
+                "started",
+                "duration"
+            )
         # fmt: off
         return (
             columns, (
