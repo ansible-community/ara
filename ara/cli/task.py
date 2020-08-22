@@ -9,6 +9,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -60,6 +61,12 @@ class TaskList(Lister):
             help=("Include additional fields: path, lineno, handler, play")
         )
         parser.add_argument(
+            "--resolve",
+            action="store_true",
+            default=os.environ.get("ARA_CLI_RESOLVE", False),
+            help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-started",
@@ -107,6 +114,16 @@ class TaskList(Lister):
         query["limit"] = args.limit
 
         tasks = client.get("/api/v1/tasks", **query)
+
+        if args.resolve:
+            for task in tasks["results"]:
+                playbook = cli_utils.get_playbook(client, task["playbook"])
+                task["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+
+                if args.long:
+                    play = cli_utils.get_play(client, task["play"])
+                    task["play"] = "(%s) %s" % (play["id"], play["name"])
+
         # fmt: off
         if args.long:
             columns = (
