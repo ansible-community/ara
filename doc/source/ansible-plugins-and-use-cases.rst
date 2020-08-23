@@ -70,8 +70,8 @@ They can be provided directly in playbook files:
       vars:
         ara_playbook_name: deploy prod
         ara_playbook_labels:
-            - deploy
-            - prod
+          - deploy
+          - prod
       roles:
         - application
 
