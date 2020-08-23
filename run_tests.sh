@@ -87,7 +87,7 @@ if ! [[ "${ansible_version}" =~ "latest" ]]; then
     current_version=$(grep "ansible" requirements.txt)
     echo "Will use Ansible ${ansible_version} instead of ${current_version} in tests..."
     if [[ "${ansible_version}" =~ "devel" ]]; then
-        echo "git+https://github.com/ansible/ansible@devel#egg=ansible" > ${CONSTRAINTS_FILE}
+        echo "git+https://github.com/ansible/ansible@devel#egg=ansible-base" > ${CONSTRAINTS_FILE}
     else
         echo "ansible==${ansible_version}" > ${CONSTRAINTS_FILE}
     fi
