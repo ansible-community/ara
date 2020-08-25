@@ -140,10 +140,8 @@ and test purposes:
 - https://api.demo.recordsansible.org
 - https://web.demo.recordsansible.org
 
-These live demos are deployed using the ara_api_ and ara_web_ Ansible roles.
-
-.. _ara_api: https://ara.readthedocs.io/en/latest/ansible-role-ara-api.html
-.. _ara_web: https://ara.readthedocs.io/en/latest/ansible-role-ara-web.html
+These live demos are deployed using the ara_api and ara_web Ansible roles from the ara Ansible collection:
+https://github.com/ansible-community/ara-collection
 
 Documentation
 =============
