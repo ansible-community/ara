@@ -51,7 +51,7 @@ Getting started
 Requirements
 ------------
 
-- Any recent Linux distribution with python >=3.5 available
+- Any recent Linux distribution or Mac OS with python >=3.5 available
 - The ara Ansible plugins must be installed for the same python interpreter as Ansible itself
 
 For RHEL 7 and CentOS 7 it is recommended to run the API server in a container due to missing or outdated dependencies.

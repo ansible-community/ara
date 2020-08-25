@@ -4,7 +4,7 @@ Getting started
 Requirements
 ------------
 
-- Any recent Linux distribution with python >=3.5 available
+- Any recent Linux distribution or Mac OS with python >=3.5 available
 - The ara Ansible plugins must be installed for the same python interpreter as Ansible itself
 
 .. note::
