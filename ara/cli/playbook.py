@@ -245,6 +245,47 @@ class PlaybookPrune(Command):
         parser.add_argument(
             "--days", type=int, default=31, help="Delete playbooks started this many days ago (default: 31)"
         )
+        # Playbook search arguments like 'ara playbook list'
+        parser.add_argument(
+            "--label",
+            metavar="<label>",
+            default=None,
+            help=("Only delete playbooks matching the provided label"),
+        )
+        parser.add_argument(
+            "--name",
+            metavar="<name>",
+            default=None,
+            help=("Only delete playbooks matching the provided name (full or partial)"),
+        )
+        parser.add_argument(
+            "--path",
+            metavar="<path>",
+            default=None,
+            help=("Only delete only playbooks matching the provided path (full or partial)"),
+        )
+        parser.add_argument(
+            "--status",
+            metavar="<status>",
+            default=None,
+            help=("Only delete playbooks matching a specific status ('completed', 'running', 'failed')"),
+        )
+        parser.add_argument(
+            "--order",
+            metavar="<order>",
+            default="started",
+            help=(
+                "Orders playbooks by a field ('id', 'created', 'updated', 'started', 'ended', 'duration')\n"
+                "Defaults to 'started' descending so the oldest playbook would be deleted first.\n"
+                "The order can be reversed by using '-': ara playbook list --order=-started"
+            ),
+        )
+        parser.add_argument(
+            "--limit",
+            metavar="<limit>",
+            default=os.environ.get("ARA_CLI_LIMIT", 200),
+            help=("Only delete the first <limit> determined by the ordering. Defaults to ARA_CLI_LIMIT or 200.")
+        )
         parser.add_argument(
             "--confirm",
             action="store_true",
@@ -267,11 +308,26 @@ class PlaybookPrune(Command):
         if not args.confirm:
             self.log.info("--confirm was not specified, no playbooks will be deleted")
 
+        query = {}
+        if args.label is not None:
+            query["label"] = args.label
+
+        if args.name is not None:
+            query["name"] = args.name
+
+        if args.path is not None:
+            query["path"] = args.path
+
+        if args.status is not None:
+            query["status"] = args.status
+
         # generate a timestamp from n days ago in a format we can query the API with
         # ex: 2019-11-21T00:57:41.702229
-        limit_date = (datetime.now() - timedelta(days=args.days)).isoformat()
+        query["started_before"] = (datetime.now() - timedelta(days=args.days)).isoformat()
+        query["order"] = args.order
+        query["limit"] = args.limit
 
-        playbooks = client.get("/api/v1/playbooks", started_before=limit_date)
+        playbooks = client.get("/api/v1/playbooks", **query)
 
         # TODO: Improve client validation and exception handling
         if "count" not in playbooks:
