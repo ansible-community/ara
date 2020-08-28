@@ -4,7 +4,7 @@
 Changelog and release notes
 ***************************
 
-1.4.3 (2020-08-10)
+1.4.3 (2020-08-11)
 ##################
 
 https://github.com/ansible-community/ara/releases/tag/1.4.3
@@ -17,7 +17,7 @@ https://github.com/ansible-community/ara/releases/tag/1.4.3
     latest version of dynaconf. For more information, see the issue:
     https://github.com/ansible-community/ara/issues/149
 
-1.4.2 (2020-07-01)
+1.4.2 (2020-07-02)
 ##################
 
 https://github.com/ansible-community/ara/releases/tag/1.4.2
@@ -436,7 +436,7 @@ https://github.com/ansible-community/ara/releases/tag/1.2.0
     and includes a SQL migration that needs to be run before it can be used.
     SQL migrations can be executed by running ``ara-manage migrate``.
 
-1.1.0 (2019-06-14)
+1.1.0 (2019-07-02)
 ##################
 
 https://github.com/ansible-community/ara/releases/tag/1.1.0
@@ -569,7 +569,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.3
     - Adjust how CLI options are saved to support the upcoming release of
       Ansible, 2.8.
 
-0.16.2 (2018-12-31)
+0.16.2 (2019-01-02)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.16.2
@@ -731,7 +731,7 @@ https://github.com/ansible-community/ara/releases/tag/0.15.0
     [2]: https://github.com/openstack/ara/commit/87272840bfc8b4c5db10593e47884e33a0f4af40
     [3]: https://github.com/openstack/ara#contributing-testing-issues-and-bugs
 
-0.14.6 (2018-02-04)
+0.14.6 (2018-02-05)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.14.6
@@ -786,7 +786,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.5
     [1]: http://ara.readthedocs.io/en/latest/advanced.html#serving-ara-sqlite-databases-over-http
     [2]: https://github.com/ansible/ansible/pull/31200
 
-0.14.4 (2017-09-19)
+0.14.4 (2017-09-20)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.14.4
@@ -805,7 +805,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.4
     Changelog:
     - Add support for Ansible 2.4
 
-0.14.3 (2017-09-15)
+0.14.3 (2017-09-17)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.14.3
@@ -1181,7 +1181,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.3
     It includes two fixes for the data and tooltips in the
     host panel to display properly.
 
-0.12.2 (2017-03-06)
+0.12.2 (2017-03-07)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.12.2
@@ -1206,7 +1206,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.1
     This is a small bugfix release to ensure pages from
     pagination can be detected as html mimetype.
 
-0.12.0 (2017-02-24)
+0.12.0 (2017-03-01)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.12.0
@@ -1320,7 +1320,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.5
     
     [1]: https://github.com/ansible/ansible/commit/6c6570583f6e74521e3a4f95fe42ffddb69634fe
 
-0.10.4 (2017-01-14)
+0.10.4 (2017-01-15)
 ###################
 
 https://github.com/ansible-community/ara/releases/tag/0.10.4
@@ -1441,7 +1441,7 @@ https://github.com/ansible-community/ara/releases/tag/0.9.1
     - Introduced a parameter (defaulting to true) to hide warnings
       introduced in 0.9.0 that are safe to ignore.
 
-0.9.0 (2016-08-12)
+0.9.0 (2016-09-13)
 ##################
 
 https://github.com/ansible-community/ara/releases/tag/0.9.0

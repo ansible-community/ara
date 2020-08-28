@@ -30,7 +30,7 @@ header "Changelog and release notes"
 # Order the git repository tags by date, exclude alpha, beta and rc releases,
 # then reverse it so the most recent one is at the top instead.
 for tag in $(git tag -l --sort=creatordate | egrep -v "a|b|rc" | tac); do
-    tag_date=$(git log -1 --pretty='%ad' --date=format:'%Y-%m-%d' $tag)
+    tag_date=$(git log -1 --pretty='%cd' --date=format:'%Y-%m-%d' $tag)
     smallheader "${tag} (${tag_date})"
     echo "https://github.com/ansible-community/ara/releases/tag/${tag}"
     echo
