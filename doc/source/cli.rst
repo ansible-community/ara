@@ -68,6 +68,10 @@ ara playbook delete
 ara playbook prune
 ------------------
 
+Pruning keeps the database size in check and the performance optimal by deleting older playbooks.
+It is recommended to run this command inside a task scheduler (such as cron) since the server does not run this command
+automatically.
+
 .. note::
 
     This command requires write privileges.
@@ -79,11 +83,23 @@ Examples:
 
 .. code-block:: bash
 
-    # Query which playbooks would be deleted without deleting them
+    # Return which playbooks would be deleted by ommitting --confirm
     ara playbook prune
 
-    # Delete playbooks older than 14 days
-    ara playbook prune --days 14 --confirm
+    # Different retention for successful and unsuccessful playbooks
+    ara playbook prune --status ok --days 30 --confirm
+    ara playbook prune --status failed --days 90 --confirm
+
+    # Different retention based on labels
+    ara playbook prune --label dev --days 7 --confirm
+    ara playbook prune --label prod --days 90 --confirm
+
+    # Different retention based on name or path
+    ara playbook prune --name demo --days 7
+    ara playbook prune --path /home/jenkins --days 14
+
+    # Delete more than 200 playbooks per command execution
+    ara playbook prune --limit 9000 --confirm
 
 ara play list
 -------------
