@@ -131,7 +131,7 @@
                             <a href="../results/{{ result.id }}.html">{{ task.name }}</a>
                         </td>
                         <td role="cell" data-label="Action" class="pf-m-fit-content">
-                            <a href="../files/{{ task.file.id }}.html#{{ task.lineno }}">{{ task.action }}</a>
+                            <a href="../files/{{ task.file.id }}.html#line-{{ task.lineno }}">{{ task.action }}</a>
                         </td>
                         <td role="cell" data-label="Duration" class="pf-m-fit-content">
                             {{ result.duration | format_duration }}
