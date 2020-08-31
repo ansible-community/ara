@@ -9,6 +9,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -78,7 +79,12 @@ class HostList(Lister):
             default=False,
             help=("Don't return hosts with unreachable results")
         )
-
+        parser.add_argument(
+            "--resolve",
+            action="store_true",
+            default=os.environ.get("ARA_CLI_RESOLVE", False),
+            help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
+        )
         parser.add_argument(
             "--order",
             metavar="<order>",
@@ -132,6 +138,12 @@ class HostList(Lister):
         query["limit"] = args.limit
 
         hosts = client.get("/api/v1/hosts", **query)
+
+        if args.resolve:
+            for host in hosts["results"]:
+                playbook = cli_utils.get_playbook(client, host["playbook"])
+                host["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+
         columns = ("id", "name", "playbook", "changed", "failed", "ok", "skipped", "unreachable", "updated")
         # fmt: off
         return (
