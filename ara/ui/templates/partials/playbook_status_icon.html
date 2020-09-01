@@ -10,6 +10,10 @@
 <div class="pf-c-alert__icon" title="Playbook is either in progress or was interrupted: data might be inconsistent">
     <i class="fas fa-info-circle" aria-hidden="true"></i>
 </div>
+{% elif status == "expired" %}
+<div class="pf-c-alert__icon" title="Playbook was running but never finished, it has expired: data might be inconsistent">
+    <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+</div>
 {% else %}
 <div class="pf-c-alert__icon" title="Playbook status is unknown">
     <i class="fas fa-question-circle" aria-hidden="true"></i>

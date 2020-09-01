@@ -111,6 +111,15 @@ class PlaybookTestCase(APITestCase):
         playbook_updated = models.Playbook.objects.get(id=playbook.id)
         self.assertNotEqual("wrong", playbook_updated.status)
 
+    def test_expired_playbook(self):
+        playbook = factories.PlaybookFactory(status="running")
+        self.assertEqual("running", playbook.status)
+
+        request = self.client.patch("/api/v1/playbooks/%s" % playbook.id, {"status": "expired"})
+        self.assertEqual(200, request.status_code)
+        playbook_updated = models.Playbook.objects.get(id=playbook.id)
+        self.assertEqual("expired", playbook_updated.status)
+
     def test_get_playbook(self):
         playbook = factories.PlaybookFactory()
         request = self.client.get("/api/v1/playbooks/%s" % playbook.id)

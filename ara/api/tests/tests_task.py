@@ -122,6 +122,15 @@ class TaskTestCase(APITestCase):
         task_updated = models.Task.objects.get(id=task.id)
         self.assertEqual("update", task_updated.name)
 
+    def test_expired_task(self):
+        task = factories.TaskFactory(status="running")
+        self.assertEqual("running", task.status)
+
+        request = self.client.patch("/api/v1/tasks/%s" % task.id, {"status": "expired"})
+        self.assertEqual(200, request.status_code)
+        task_updated = models.Task.objects.get(id=task.id)
+        self.assertEqual("expired", task_updated.status)
+
     def test_get_task(self):
         task = factories.TaskFactory()
         request = self.client.get("/api/v1/tasks/%s" % task.id)

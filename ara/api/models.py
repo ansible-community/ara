@@ -87,7 +87,14 @@ class Playbook(Duration):
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
-    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (FAILED, "failed"))
+    EXPIRED = "expired"
+    STATUS = (
+        (UNKNOWN, "unknown"),
+        (EXPIRED, "expired"),
+        (RUNNING, "running"),
+        (COMPLETED, "completed"),
+        (FAILED, "failed"),
+    )
 
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
@@ -167,7 +174,8 @@ class Play(Duration):
     UNKNOWN = "unknown"
     RUNNING = "running"
     COMPLETED = "completed"
-    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"))
+    EXPIRED = "expired"
+    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (EXPIRED, "expired"))
 
     name = models.CharField(max_length=255, blank=True, null=True)
     uuid = models.UUIDField()
@@ -189,7 +197,8 @@ class Task(Duration):
     UNKNOWN = "unknown"
     RUNNING = "running"
     COMPLETED = "completed"
-    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"))
+    EXPIRED = "expired"
+    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (EXPIRED, "expired"))
 
     name = models.TextField(blank=True, null=True)
     action = models.TextField()

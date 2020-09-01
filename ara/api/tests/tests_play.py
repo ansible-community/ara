@@ -86,6 +86,15 @@ class PlayTestCase(APITestCase):
         play_updated = models.Play.objects.get(id=play.id)
         self.assertEqual("update", play_updated.name)
 
+    def test_expired_play(self):
+        play = factories.PlayFactory(status="running")
+        self.assertEqual("running", play.status)
+
+        request = self.client.patch("/api/v1/plays/%s" % play.id, {"status": "expired"})
+        self.assertEqual(200, request.status_code)
+        play_updated = models.Play.objects.get(id=play.id)
+        self.assertEqual("expired", play_updated.status)
+
     def test_get_play(self):
         play = factories.PlayFactory()
         request = self.client.get("/api/v1/plays/%s" % play.id)
