@@ -68,9 +68,35 @@ class Playbook(generics.RetrieveAPIView):
     template_name = "playbook.html"
 
     def get(self, request, *args, **kwargs):
-        playbook = self.get_object()
-        serializer = serializers.DetailedPlaybookSerializer(playbook)
-        return Response({"playbook": serializer.data})
+        playbook = serializers.DetailedPlaybookSerializer(self.get_object())
+        hosts = serializers.ListHostSerializer(
+            models.Host.objects.filter(playbook=playbook.data["id"]).all(), many=True
+        )
+        files = serializers.ListFileSerializer(
+            models.File.objects.filter(playbook=playbook.data["id"]).all(), many=True
+        )
+        records = serializers.ListRecordSerializer(
+            models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
+        )
+        results = serializers.ListResultSerializer(
+            models.Result.objects.filter(playbook=playbook.data["id"]).all(), many=True
+        )
+
+        for result in results.data:
+            task_id = result["task"]
+            result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+            host_id = result["host"]
+            result["host"] = serializers.SimpleHostSerializer(models.Host.objects.get(pk=host_id)).data
+
+        # fmt: off
+        return Response({
+            "playbook": playbook.data,
+            "hosts": hosts.data,
+            "files": files.data,
+            "records": records.data,
+            "results": results.data
+        })
+        # fmt: on
 
 
 class Host(generics.RetrieveAPIView):

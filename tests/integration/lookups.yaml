@@ -26,11 +26,6 @@
           - playbook.ansible_version == ansible_version.full
           - playbook_dir in playbook.path
           - "'tests/integration/lookups.yaml' in playbook.path"
-          - "playbook.files | length == playbook['items']['files']"
-          - "playbook.hosts | length == playbook['items']['hosts']"
-          - "playbook.plays | length == playbook['items']['plays']"
-          - "tasks.results | length == playbook['items']['tasks']"
-          - "results.results | length == playbook['items']['results']"
 
     #####
     # Examples taken from docs on Ansible plugins and use cases

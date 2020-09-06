@@ -82,25 +82,30 @@ Here's a code example to help you get started:
     # If there are any results from our query, get more information about the
     # failure and print something helpful
     template = "{timestamp}: {host} failed '{task}' ({task_file}:{lineno})"
-    for playbook in playbooks["results"]:
-        # Get a detailed version of the playbook that provides additional context
-        detailed_playbook = client.get("/api/v1/playbooks/%s" % playbook["id"])
 
-        # Iterate through the playbook to get the context
-        # Playbook -> Play -> Task -> Result <- Host
-        for play in detailed_playbook["plays"]:
-            for task in play["tasks"]:
-                for result in task["results"]:
-                    if result["status"] in ["failed", "unreachable"]:
-                        print(template.format(
-                            timestamp=result["ended"],
-                            host=result["host"]["name"],
-                            task=task["name"],
-                            task_file=task["file"]["path"],
-                            lineno=task["lineno"]
-                        ))
+    for playbook in playbooks["results"]:
+        # Get failed results for the playbook
+        results = client.get("/api/v1/results?playbook=%s" % playbook["id"])
+
+        # For each result, print the task and host information
+        for result in results["results"]:
+            task = client.get("/api/v1/tasks/%s" % result["task"])
+            host = client.get("/api/v1/hosts/%s" % result["host"])
+
+            print(template.format(
+                timestamp=result["ended"],
+                host=host["name"],
+                task=task["name"],
+                task_file=task["path"],
+                lineno=task["lineno"]
+            ))
 
 Running this script would then provide an output that looks like the following::
 
-    2019-03-20T16:18:41.710765: localhost failed 'smoke-tests : Return false' (tests/integration/roles/smoke-tests/tasks/test-ops.yaml:25)
-    2019-03-20T16:19:17.332663: localhost failed 'fail' (tests/integration/failed.yaml:22)
+    2020-04-18T17:16:13.394056Z: aio1_repo_container-0c92f7a2 failed 'repo_server : Install EPEL gpg keys' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_install.yml:16)
+    2020-04-18T17:14:59.930995Z: aio1_repo_container-0c92f7a2 failed 'repo_server : File and directory setup (root user)' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:78)
+    2020-04-18T17:14:57.909155Z: aio1_repo_container-0c92f7a2 failed 'repo_server : Git service data folder setup' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:70)
+    2020-04-18T17:14:57.342091Z: aio1_repo_container-0c92f7a2 failed 'repo_server : Check if the git folder exists already' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:65)
+    2020-04-18T17:14:56.793499Z: aio1_repo_container-0c92f7a2 failed 'repo_server : Drop repo pre/post command script' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:53)
+    2020-04-18T17:14:54.507660Z: aio1_repo_container-0c92f7a2 failed 'repo_server : File and directory setup (non-root user)' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:32)
+    2020-04-18T17:14:51.281530Z: aio1_repo_container-0c92f7a2 failed 'repo_server : Create the nginx system user' (/home/zuul/src/opendev.org/openstack/openstack-ansible-repo_server/tasks/repo_pre_install.yml:22)

@@ -7,7 +7,7 @@
     <div class="pf-c-card__body">
         <details id="records">
             <summary>Records</summary>
-            {% if playbook.items.records %}
+            {% if records %}
             <ul class="pf-c-list">
                 {% for record in playbook.records %}
                 <li><a href="../records/{{ record.id }}.html">{{ record.key }}</a></li>
@@ -20,7 +20,7 @@
         <details id="files">
             <summary>Files</summary>
             <ul class="pf-c-list">
-                {% for file in playbook.files %}
+                {% for file in files %}
                 <li><a href="../files/{{ file.id }}.html">{{ file.path }}</a></li>
                 {% endfor %}
             </ul>
@@ -74,7 +74,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for host in playbook.hosts %}
+                    {% for host in hosts %}
                     <tr>
                         <td role="cell" data-label="Hostname" class="pf-m-fit-content">
                             <a href="../hosts/{{ host.id }}.html">{{ host.name }}</a>
@@ -117,9 +117,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for play in playbook.plays %}
-                    {% for task in play.tasks %}
-                    {% for result in task.results %}
+                    {% for result in results %}
                     <tr role="row">
                         <td role="cell" data-label="Status" class="pf-c-table__icon pf-m-fit-content">
                             {% include "partials/result_status_icon.html" with status=result.status %}
@@ -128,10 +126,10 @@
                             {{ result.host.name }}
                         </td>
                         <td role="cell" data-label="Name" class="pf-m-fit-content">
-                            <a href="../results/{{ result.id }}.html">{{ task.name }}</a>
+                            <a href="../results/{{ result.id }}.html">{{ result.task.name }}</a>
                         </td>
                         <td role="cell" data-label="Action" class="pf-m-fit-content">
-                            <a href="../files/{{ task.file.id }}.html#line-{{ task.lineno }}">{{ task.action }}</a>
+                            <a href="../files/{{ task.file.id }}.html#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
                         </td>
                         <td role="cell" data-label="Duration" class="pf-m-fit-content">
                             {{ result.duration | format_duration }}
@@ -140,8 +138,6 @@
                             {{ result.started | format_date }}
                         </td>
                     </tr>
-                    {% endfor %}
-                    {% endfor %}
                     {% endfor %}
                 </tbody>
             </table>
