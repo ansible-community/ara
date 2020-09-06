@@ -80,13 +80,18 @@ class Playbook(generics.RetrieveAPIView):
             models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
         )
 
-        results = models.Result.objects.filter(playbook=playbook.data["id"])
+        search_form = forms.ResultSearchForm(request.GET)
+        order = "-started"
+        if "order" in request.GET:
+            order = request.GET["order"]
+        result_queryset = models.Result.objects.filter(playbook=playbook.data["id"]).order_by(order).all()
+        result_filter = filters.ResultFilter(request.GET, queryset=result_queryset)
 
-        page = self.paginate_queryset(results)
+        page = self.paginate_queryset(result_filter.qs)
         if page is not None:
             serializer = serializers.ListResultSerializer(page, many=True)
         else:
-            serializer = serializers.ListResultSerializer(results, many=True)
+            serializer = serializers.ListResultSerializer(result_filter, many=True)
 
         for result in serializer.data:
             task_id = result["task"]
@@ -109,6 +114,7 @@ class Playbook(generics.RetrieveAPIView):
             "records": records.data,
             "results": paginated_results.data,
             "current_page_results": current_page_results,
+            "search_form": search_form
         })
         # fmt: on
 
