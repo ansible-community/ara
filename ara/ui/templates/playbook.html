@@ -101,6 +101,9 @@
         </details>
         <details id="results" open="true">
             <summary>Task results</summary>
+            {% if not static_generation %}
+            {% include "partials/pagination.html" with data=results %}
+            {% endif %}
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-table">
                 <thead>
                     <tr role="row">
@@ -117,7 +120,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for result in results %}
+                    {% for result in results.results %}
                     <tr role="row">
                         <td role="cell" data-label="Status" class="pf-c-table__icon pf-m-fit-content">
                             {% include "partials/result_status_icon.html" with status=result.status %}

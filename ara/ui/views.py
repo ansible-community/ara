@@ -65,6 +65,7 @@ class Playbook(generics.RetrieveAPIView):
 
     queryset = models.Playbook.objects.all()
     renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
     template_name = "playbook.html"
 
     def get(self, request, *args, **kwargs):
@@ -78,15 +79,27 @@ class Playbook(generics.RetrieveAPIView):
         records = serializers.ListRecordSerializer(
             models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
         )
-        results = serializers.ListResultSerializer(
-            models.Result.objects.filter(playbook=playbook.data["id"]).all(), many=True
-        )
 
-        for result in results.data:
+        results = models.Result.objects.filter(playbook=playbook.data["id"])
+
+        page = self.paginate_queryset(results)
+        if page is not None:
+            serializer = serializers.ListResultSerializer(page, many=True)
+        else:
+            serializer = serializers.ListResultSerializer(results, many=True)
+
+        for result in serializer.data:
             task_id = result["task"]
             result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
             host_id = result["host"]
             result["host"] = serializers.SimpleHostSerializer(models.Host.objects.get(pk=host_id)).data
+        paginated_results = self.get_paginated_response(serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
 
         # fmt: off
         return Response({
@@ -94,7 +107,8 @@ class Playbook(generics.RetrieveAPIView):
             "hosts": hosts.data,
             "files": files.data,
             "records": records.data,
-            "results": results.data
+            "results": paginated_results.data,
+            "current_page_results": current_page_results,
         })
         # fmt: on
 
