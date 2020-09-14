@@ -19,11 +19,3 @@
 list_items:
   - one
   - two
-
-dict_items:
-  one:
-    name: "key-one"
-    value: "value-one"
-  two:
-    name: "key-two"
-    value: "value-two"

@@ -46,11 +46,6 @@
     msg: "{{ item }}"
   with_items: "{{ list_items }}"
 
-- name: Test with_dict
-  debug:
-    msg: "{{ item.value.name }}: {{ item.value.value }}"
-  with_dict: "{{ dict_items }}"
-
 - name: Test for XSS
   command: echo "<script>alert(document.cookie)</script>"
   changed_when: False

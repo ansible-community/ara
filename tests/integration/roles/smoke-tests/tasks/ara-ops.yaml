@@ -103,16 +103,13 @@
   register: somelist
 
 - name: Validate somelist key
-  vars:
-    someitems:
-      - one
-      - two
-      - three
-      - go
   assert:
     that:
       - somelist.key == "somelist"
-      - somelist.value == someitems
+      - "'one' in somelist.value"
+      - "'two' in somelist.value"
+      - "'three' in somelist.value"
+      - "'go' in somelist.value"
       - somelist.type == "list"
 
 - name: Record a dict value
@@ -127,14 +124,11 @@
   register: somedict
 
 - name: Validate somedict key
-  vars:
-    dictdata:
-      foo: "bar"
-      bar: "foo"
   assert:
     that:
       - somedict.key == "somedict"
-      - somedict.value == dictdata
+      - "'bar' in somedict.value"
+      - "'foo' in somedict.value"
       - somedict.type == "dict"
 
 - name: Record a list as a text type
@@ -151,14 +145,11 @@
 # The key is still recorded as an actual list, however, it will be rendered
 # as text in the UI.
 - name: Validate list_as_text key
-  vars:
-    list:
-      - foo
-      - bar
   assert:
     that:
       - list_as_text.key == "list_as_text"
-      - list_as_text.value == list
+      - "'foo' in list_as_text.value"
+      - "'bar' in list_as_text.value"
       - list_as_text.value != "[u'foo', u'bar']"
       - list_as_text.type == "text"
 

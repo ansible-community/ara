@@ -7,8 +7,8 @@
         label: centos-8
       - name: ubuntu-bionic
         label: ubuntu-bionic
-      - name: fedora-31
-        label: fedora-31
+      - name: fedora-32
+        label: fedora-32
       - name: centos-8
         label: centos-8
     groups:
@@ -18,7 +18,7 @@
       - name: ara-api-server
         nodes:
           - ubuntu-bionic
-          - fedora-31
+          - fedora-32
           - centos-8
 
 # Nodeset used to test instances of ARA API deployed on different operating
@@ -28,17 +28,28 @@
     nodes:
       - name: ubuntu-bionic
         label: ubuntu-bionic
-      - name: fedora-31
-        label: fedora-31
+      - name: fedora-32
+        label: fedora-32
       - name: centos-8
         label: centos-8
     groups:
       - name: ara-api-server
         nodes:
           - ubuntu-bionic
-          - fedora-31
+          - fedora-32
           - centos-8
 
+- nodeset:
+    name: ara-fedora-32
+    nodes:
+      - name: fedora-32
+        label: fedora-32
+    groups:
+      - name: ara-api-server
+        nodes:
+          - fedora-32
+
+# TODO: Remove ara-fedora-31 after bumping ara-collection as well
 - nodeset:
     name: ara-fedora-31
     nodes:

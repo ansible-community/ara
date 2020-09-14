@@ -79,6 +79,11 @@
         virtualenv: "{{ ara_api_venv_path }}"
         virtualenv_command: /usr/bin/python3 -m venv
 
+    - name: Get effective version of Ansible installed
+      shell: "{{ ara_api_venv_path }}/bin/ansible --version | head -n1 | awk '{print $2}'"
+      changed_when: false
+      register: _installed_ansible_version
+
     - name: Install ARA from source in virtual environment
       pip:
         name: "{{ ara_api_source }}[server]"
@@ -150,6 +155,9 @@
 
         - name: Run lookup integration tests
           command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
+          # TODO: ansible.utils.unsafe_proxy.AnsibleUnsafeText errors on 2.7
+          when:
+            - _installed_ansible_version.stdout is version('2.8', '>=')
 
         - name: Run hosts.yaml integration test
           command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"
