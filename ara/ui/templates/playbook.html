@@ -130,8 +130,7 @@
                                 <div class="pf-c-form__group pf-m-inline">
                                     <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
                                     {% for value, text in search_form.status.field.choices %}
-                                    {# searching ignored or changed is broken: https://github.com/ansible-community/ara/issues/150 #}
-                                    {% if value not in "ignored,changed,unknown" %}
+                                    {% if value != "unknown" %}
                                         <label class="pf-c-check pf-c-select__menu-item" for="{{ value }}">
                                             {% if value in search_form.status.data %}
                                             <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" checked />
@@ -142,9 +141,20 @@
                                         </label>
                                     {% endif %}
                                     {% endfor %}
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-l-flex__item">
+                            <div class="pf-c-form__group">
+                               <label class="pf-c-form__label" for="changed">
+                                    <span class="pf-c-form__label-text">changed</span>
+                                </label>
+                                <div class="pf-c-form__group pf-m-inline">
+                                    <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
                                     <label class="pf-c-check pf-c-select__menu-item" for="changed">
                                         <input class="pf-c-check__input" type="checkbox" id="changed" name="changed" value=True {% if search_form.changed.value %}checked{% endif %} />
-                                        <span class="pf-c-check__label">changed</span>
+                                        <span class="pf-c-check__label">True</span>
                                     </label>
                                     </fieldset>
                                 </div>
