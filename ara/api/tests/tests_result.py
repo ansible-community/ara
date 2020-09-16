@@ -59,7 +59,7 @@ class ResultTestCase(APITestCase):
         serializer = serializers.ResultSerializer(
             data={
                 "content": factories.RESULT_CONTENTS,
-                "status": "changed",
+                "status": "ok",
                 "host": host.id,
                 "task": task.id,
                 "play": task.play.id,

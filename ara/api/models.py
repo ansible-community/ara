@@ -244,20 +244,18 @@ class Result(Duration):
     FAILED = "failed"
     SKIPPED = "skipped"
     UNREACHABLE = "unreachable"
-    # ARA specific statuses (derived or assumed)
-    CHANGED = "changed"
-    IGNORED = "ignored"
+    # ARA specific status, it's the default when not specified
     UNKNOWN = "unknown"
 
+    # fmt:off
     STATUS = (
         (OK, "ok"),
         (FAILED, "failed"),
         (SKIPPED, "skipped"),
         (UNREACHABLE, "unreachable"),
-        (CHANGED, "changed"),
-        (IGNORED, "ignored"),
         (UNKNOWN, "unknown"),
     )
+    # fmt:on
 
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     changed = models.BooleanField(default=False)
