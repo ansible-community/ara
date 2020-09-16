@@ -104,7 +104,7 @@
             {% if not static_generation %}
             <div class="pf-l-flex">
                 <div class="pf-l-flex">
-                    <form method="get" class="pf-c-form">
+                    <form method="get" action="{% url 'ui:playbook' playbook.id %}#results" class="pf-c-form">
                     <div class="pf-c-form__group pf-m-inline">
                         <div class="pf-l-flex__item pf-m-flex-1" for="{{ search_form.host.id_for_label }}">
                             <label class="pf-c-form__label" for="{{ search_form.host.id_for_label }}">
@@ -168,7 +168,7 @@
                         {% if request.GET %}
                         <div class="pf-l-flex__item">
                             <div class="pf-c-form__actions">
-                                <a href="{% url 'ui:playbook' playbook.id %}">
+                                <a href="{% url 'ui:playbook' playbook.id %}#results">
                                     <button class="pf-c-button pf-m-plain pf-m-link" type="button" aria-label="Remove">
                                         <i class="fas fa-times" aria-hidden="true"></i> Clear filters
                                     </button>
