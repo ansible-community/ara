@@ -19,6 +19,12 @@ import logging
 
 import factory
 
+try:
+    from factory import DjangoModelFactory
+except ImportError:
+    # >3.0 moved the location of DjangoModelFactory
+    from factory.django import DjangoModelFactory
+
 from ara.api import models
 from ara.api.tests import utils
 
@@ -33,7 +39,7 @@ TASK_TAGS = ["always", "never"]
 RECORD_LIST = ["one", "two", "three"]
 
 
-class PlaybookFactory(factory.DjangoModelFactory):
+class PlaybookFactory(DjangoModelFactory):
     class Meta:
         model = models.Playbook
 
@@ -44,7 +50,7 @@ class PlaybookFactory(factory.DjangoModelFactory):
     path = "/path/playbook.yml"
 
 
-class FileContentFactory(factory.DjangoModelFactory):
+class FileContentFactory(DjangoModelFactory):
     class Meta:
         model = models.FileContent
         django_get_or_create = ("sha1",)
@@ -53,7 +59,7 @@ class FileContentFactory(factory.DjangoModelFactory):
     contents = utils.compressed_str(FILE_CONTENTS)
 
 
-class FileFactory(factory.DjangoModelFactory):
+class FileFactory(DjangoModelFactory):
     class Meta:
         model = models.File
 
@@ -62,14 +68,14 @@ class FileFactory(factory.DjangoModelFactory):
     playbook = factory.SubFactory(PlaybookFactory)
 
 
-class LabelFactory(factory.DjangoModelFactory):
+class LabelFactory(DjangoModelFactory):
     class Meta:
         model = models.Label
 
     name = "test label"
 
 
-class PlayFactory(factory.DjangoModelFactory):
+class PlayFactory(DjangoModelFactory):
     class Meta:
         model = models.Play
 
@@ -79,7 +85,7 @@ class PlayFactory(factory.DjangoModelFactory):
     playbook = factory.SubFactory(PlaybookFactory)
 
 
-class TaskFactory(factory.DjangoModelFactory):
+class TaskFactory(DjangoModelFactory):
     class Meta:
         model = models.Task
 
@@ -94,7 +100,7 @@ class TaskFactory(factory.DjangoModelFactory):
     playbook = factory.SubFactory(PlaybookFactory)
 
 
-class HostFactory(factory.DjangoModelFactory):
+class HostFactory(DjangoModelFactory):
     class Meta:
         model = models.Host
 
@@ -108,7 +114,7 @@ class HostFactory(factory.DjangoModelFactory):
     unreachable = 0
 
 
-class ResultFactory(factory.DjangoModelFactory):
+class ResultFactory(DjangoModelFactory):
     class Meta:
         model = models.Result
 
@@ -122,7 +128,7 @@ class ResultFactory(factory.DjangoModelFactory):
     ignore_errors = False
 
 
-class RecordFactory(factory.DjangoModelFactory):
+class RecordFactory(DjangoModelFactory):
     class Meta:
         model = models.Record
 
