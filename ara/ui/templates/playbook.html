@@ -224,6 +224,7 @@
             </div>
             {% include "partials/pagination.html" with data=results %}
             {% endif %}
+            {% if results.count %}
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-table">
                 <thead>
                     <tr role="row">
@@ -264,6 +265,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+                {% if request.GET %}
+                    No task results have been found for this query: <a href="{% url 'ui:playbook' playbook.id %}#results">clear filters</a>
+                {% else %}
+                    No task results have been recorded for this playbook yet. It may be in progress or has been interrupted.
+                {% endif %}
+            {% endif %}
         </details>
     </div>
 </div>
