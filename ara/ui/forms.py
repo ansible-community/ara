@@ -27,3 +27,13 @@ class PlaybookSearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple, choices=models.Playbook.STATUS, required=False
     )
     label = forms.CharField(label="Playbook label", max_length=255, required=False)
+
+
+class ResultSearchForm(forms.Form):
+    host = forms.CharField(label="Host id", max_length=10, required=False)
+    task = forms.CharField(label="Task id", max_length=10, required=False)
+    changed = forms.BooleanField(label="Changed", required=False)
+
+    status = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple, choices=models.Result.STATUS, required=False
+    )

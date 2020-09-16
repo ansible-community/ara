@@ -9,7 +9,7 @@
             <summary>Records</summary>
             {% if records %}
             <ul class="pf-c-list">
-                {% for record in playbook.records %}
+                {% for record in records %}
                 <li><a href="../records/{{ record.id }}.html">{{ record.key }}</a></li>
                 {% endfor %}
             </ul>
@@ -25,7 +25,7 @@
                 {% endfor %}
             </ul>
         </details>
-        <details id="hosts" open="true">
+        <details id="hosts" {% if not request.GET %}open="true"{% endif %}>
             <summary><i class="fas fa-server"></i> Hosts</summary>
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-table">
                 <thead>
@@ -102,6 +102,74 @@
         <details id="results" open="true">
             <summary>Task results</summary>
             {% if not static_generation %}
+            <div class="pf-l-flex">
+                <div class="pf-l-flex">
+                    <form method="get" class="pf-c-form">
+                    <div class="pf-c-form__group pf-m-inline">
+                        <div class="pf-l-flex__item pf-m-flex-1" for="{{ search_form.host.id_for_label }}">
+                            <label class="pf-c-form__label" for="{{ search_form.host.id_for_label }}">
+                                <span class="pf-c-form__label-text">Host id</span>
+                            </label>
+                            <div class="pf-c-form__horizontal-group">
+                                <input class="pf-c-form-control" type="text" id="host" name="host" value="{{ search_form.host.value | default_if_none:'' }}" />
+                            </div>
+                        </div>
+                        <div class="pf-l-flex__item pf-m-flex-1" for="{{ search_form.task.id_for_label }}">
+                            <label class="pf-c-form__label" for="{{ search_form.task.id_for_label }}">
+                                <span class="pf-c-form__label-text">Task id</span>
+                            </label>
+                            <div class="pf-c-form__horizontal-group">
+                                <input class="pf-c-form-control" type="text" id="task" name="task" value="{{ search_form.task.value | default_if_none:'' }}" />
+                            </div>
+                        </div>
+                        <div class="pf-l-flex__item">
+                            <div class="pf-c-form__group">
+                                <label class="pf-c-form__label" for="status">
+                                    <span class="pf-c-form__label-text">Status</span>
+                                </label>
+                                <div class="pf-c-form__group pf-m-inline">
+                                    <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
+                                    {% for value, text in search_form.status.field.choices %}
+                                    {# searching ignored or changed is broken: https://github.com/ansible-community/ara/issues/150 #}
+                                    {% if value not in "ignored,changed,unknown" %}
+                                        <label class="pf-c-check pf-c-select__menu-item" for="{{ value }}">
+                                            {% if value in search_form.status.data %}
+                                            <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" checked />
+                                            {% else %}
+                                            <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" />
+                                            {% endif %}
+                                            <span class="pf-c-check__label">{{ value }}</span>
+                                        </label>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <label class="pf-c-check pf-c-select__menu-item" for="changed">
+                                        <input class="pf-c-check__input" type="checkbox" id="changed" name="changed" value=True {% if search_form.changed.value %}checked{% endif %} />
+                                        <span class="pf-c-check__label">changed</span>
+                                    </label>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-l-flex__item">
+                            <div class="pf-c-form__actions">
+                                <button class="pf-c-button pf-m-primary" type="submit"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                        {% if request.GET %}
+                        <div class="pf-l-flex__item">
+                            <div class="pf-c-form__actions">
+                                <a href="{% url 'ui:playbook' playbook.id %}">
+                                    <button class="pf-c-button pf-m-plain pf-m-link" type="button" aria-label="Remove">
+                                        <i class="fas fa-times" aria-hidden="true"></i> Clear filters
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    </form>
+                </div>
+            </div>
             {% include "partials/pagination.html" with data=results %}
             {% endif %}
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-table">
@@ -111,11 +179,11 @@
                         <th role="columnheader" scope="col">Host</th>
                         <th role="columnheader" scope="col">Task</th>
                         <th role="columnheader" scope="col">Action</th>
-                        <th role="columnheader" scope="col" class="pf-m-fit-content">
-                            Duration
+                        <th role="columnheader" scope="col" class="pf-m-fit-content pf-c-table__sort">
+                            {% include "partials/sort_by_duration.html" %}
                         </th>
-                        <th role="columnheader" scope="col" class="pf-m-fit-content">
-                            Date
+                        <th role="columnheader" scope="col" class="pf-m-fit-content pf-c-table__sort">
+                            {% include "partials/sort_by_date.html" %}
                         </th>
                     </tr>
                 </thead>
@@ -132,7 +200,7 @@
                             <a href="../results/{{ result.id }}.html">{{ result.task.name }}</a>
                         </td>
                         <td role="cell" data-label="Action" class="pf-m-fit-content">
-                            <a href="../files/{{ task.file.id }}.html#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+                            <a href="../files/{{ result.task.file }}.html#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
                         </td>
                         <td role="cell" data-label="Duration" class="pf-m-fit-content">
                             {{ result.duration | format_duration }}
