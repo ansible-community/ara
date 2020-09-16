@@ -30,6 +30,7 @@
             <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-table">
                 <thead>
                     <tr role="row">
+                        <th role="columnheader" scope="col" class="pf-m-fit-content">Facts</th>
                         <th role="columnheader" scope="col" class="pf-m-fit-content">Host</th>
                         <th role="columnheader" scope="col" class="pf-m-fit-content">
                             <div class="pf-c-alert pf-m-warning pf-m-inline pf-m-fit-content">
@@ -76,23 +77,64 @@
                 <tbody>
                     {% for host in hosts %}
                     <tr>
+                        <td role="cell" data-label="Host Facts" class="pf-m-fit-content">
+                            <a href="../hosts/{{ host.id }}.html" title="Host facts for {{ host.name }}">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </td>
                         <td role="cell" data-label="Hostname" class="pf-m-fit-content">
-                            <a href="../hosts/{{ host.id }}.html">{{ host.name }}</a>
+                            {% if static_generation %}
+                            {{ host.name }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}#results" title="Search results for {{ host.name }}">
+                                {{ host.name }}
+                            </a>
+                            {% endif %}
                         </td>
                         <td role="cell" data-label="Changed" class="pf-m-fit-content">
+                            {% if static_generation or host.changed == 0 %}
                             {{ host.changed }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&changed=True#results" title="Search changed results for {{ host.name }}">
+                                <strong>{{ host.changed }}</strong>
+                            </a>
+                            {% endif %}
                         </td>
                         <td role="cell" data-label="Failed" class="pf-m-fit-content">
+                            {% if static_generation or host.failed == 0 %}
                             {{ host.failed }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=failed#results" title="Search failed results for {{ host.name }}">
+                                <strong>{{ host.failed }}</strong>
+                            </a>
+                            {% endif %}
                         </td>
                         <td role="cell" data-label="Ok" class="pf-m-fit-content">
+                            {% if static_generation or host.ok == 0 %}
                             {{ host.ok }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=ok#results" title="Search ok results for {{ host.name }}">
+                                <strong>{{ host.ok }}</strong>
+                            </a>
+                            {% endif %}
                         </td>
                         <td role="cell" data-label="Skipped" class="pf-m-fit-content">
+                            {% if static_generation or host.skipped == 0 %}
                             {{ host.skipped }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=skipped#results" title="Search skipped results for {{ host.name }}">
+                                <strong>{{ host.skipped }}</strong>
+                            </a>
+                            {% endif %}
                         </td>
                         <td role="cell" data-label="Unreachable" class="pf-m-fit-content">
+                            {% if static_generation or host.unreachable == 0 %}
                             {{ host.unreachable }}
+                            {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=unreachable#results" title="Search unreachable results for {{ host.name }}">
+                                <strong>{{ host.unreachable }}</strong>
+                            </a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
