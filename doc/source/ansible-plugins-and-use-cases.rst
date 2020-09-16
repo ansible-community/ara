@@ -29,6 +29,7 @@ For example, a customized callback plugin configuration might look like this in 
     api_username = user
     api_password = password
     api_timeout = 15
+    argument_labels = check,tags,subset
     default_labels = prod,deploy
     ignored_facts = ansible_env,ansible_all_ipv4_addresses
     ignored_arguments = extra_vars,vault_password_files
@@ -42,6 +43,7 @@ or as environment variables:
     export ARA_API_USERNAME=user
     export ARA_API_PASSWORD=password
     export ARA_API_TIMEOUT=15
+    export ARA_ARGUMENT_LABELS=check,tags,subset
     export ARA_DEFAULT_LABELS=prod,deploy
     export ARA_IGNORED_FACTS=ansible_env,ansible_all_ipv4_addresses
     export ARA_IGNORED_ARGUMENTS=extra_vars,vault_password_files
@@ -111,6 +113,33 @@ or through the environment variable ``ARA_DEFAULT_LABELS``:
 .. code-block:: bash
 
     export ARA_DEFAULT_LABELS=deploy,prod
+
+CLI argument labels
+~~~~~~~~~~~~~~~~~~~
+
+CLI argument labels will automatically apply labels to playbooks when specified CLI arguments are used.
+
+For example, if ``--check`` is used and set up as an argument label, the playbook will be tagged with
+``check:True`` if ``--check`` was used or ``check:False`` if it wasn't.
+
+.. note::
+   Some CLI arguments are not always named the same as how they are represented by Ansible.
+   For example, ``--limit`` is "subset", ``--user`` is "remote_user" but ``--check`` is "check".
+
+Argument labels can be configured through an ``ansible.cfg`` file:
+
+.. code-block:: ini
+
+    [defaults]
+    # ...
+    [ara]
+    argument_labels = check,subset,tags
+
+or through the environment variable ``ARA_ARGUMENT_LABELS``:
+
+.. code-block:: bash
+
+    export ARA_DEFAULT_LABELS=check,subset,tags
 
 ara_api: free-form API queries
 ------------------------------

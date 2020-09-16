@@ -106,6 +106,23 @@ options:
     ini:
       - section: ara
         key: api_timeout
+  argument_labels:
+    description: |
+        A list of CLI arguments that, if set, will be automatically applied to playbooks as labels.
+        Note that CLI arguments are not always named the same as how they are represented by Ansible.
+        For example, --limit is "subset", --user is "remote_user" but --check is "check".
+    type: list
+    default:
+      - remote_user
+      - check
+      - tags
+      - skip_tags
+      - subset
+    env:
+      - name: ARA_ARGUMENT_LABELS
+    ini:
+      - section: ara
+        key: argument_labels
   default_labels:
     description: A list of default labels that will be applied to playbooks
     type: list
@@ -173,6 +190,7 @@ class CallbackModule(CallbackBase):
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
+        self.argument_labels = self.get_option("argument_labels")
         self.default_labels = self.get_option("default_labels")
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
@@ -212,6 +230,23 @@ class CallbackModule(CallbackBase):
                 self.log.debug("Ignoring argument: %s" % argument)
                 cli_options[argument] = "Not saved by ARA as configured by 'ignored_arguments'"
 
+        # Retrieve and format CLI options for argument labels
+        argument_labels = []
+        for label in self.argument_labels:
+            if label in cli_options:
+                # Some arguments are lists or tuples
+                if isinstance(cli_options[label], tuple) or isinstance(cli_options[label], list):
+                    # Only label these if they're not empty
+                    if cli_options[label]:
+                        argument_labels.append("%s:%s" % (label, ",".join(cli_options[label])))
+                # Some arguments are booleans
+                elif isinstance(cli_options[label], bool):
+                    argument_labels.append("%s:%s" % (label, cli_options[label]))
+                # The rest can be printed as-is if there is something set
+                elif cli_options[label]:
+                    argument_labels.append("%s:%s" % (label, cli_options[label]))
+        self.argument_labels = argument_labels
+
         # Create the playbook
         self.playbook = self.client.post(
             "/api/v1/playbooks",
@@ -237,7 +272,7 @@ class CallbackModule(CallbackBase):
         if "ara_playbook_name" in play_vars:
             self._set_playbook_name(name=play_vars["ara_playbook_name"])
 
-        labels = self.default_labels
+        labels = self.default_labels + self.argument_labels
         if "ara_playbook_labels" in play_vars:
             # ara_playbook_labels can be supplied as a list inside a playbook
             # but it might also be specified as a comma separated string when
