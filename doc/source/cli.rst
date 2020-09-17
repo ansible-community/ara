@@ -9,6 +9,26 @@ ara
 
 .. command-output:: ara --help
 
+ara expire
+----------
+
+.. note::
+
+    This command requires write privileges.
+    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+
+.. command-output:: ara expire --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Return which objects would be expired by ommitting --confirm
+    ara expire
+
+    # Expire running objects without updates faster than the default
+    ara expire --hours 4 --confirm
+
 ara playbook list
 -----------------
 
