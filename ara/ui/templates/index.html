@@ -41,6 +41,7 @@
                     <div class="pf-c-form__group pf-m-inline">
                         <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
                         {% for value, text in search_form.status.field.choices %}
+                        {% if value != "unknown" %}
                             <label class="pf-c-check pf-c-select__menu-item" for="{{ value }}">
                                 {% if value in search_form.status.data %}
                                 <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" checked />
@@ -49,6 +50,7 @@
                                 {% endif %}
                                 <span class="pf-c-check__label">{{ value }}</span>
                             </label>
+                        {% endif %}
                         {% endfor %}
                         </fieldset>
                     </div>
