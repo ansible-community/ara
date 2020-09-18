@@ -163,7 +163,6 @@ class CallbackModule(CallbackBase):
         self.ignored_files = []
 
         self.result = None
-        self.result_timestamp = None
         self.task = None
         self.play = None
         self.playbook = None
@@ -419,7 +418,7 @@ class CallbackModule(CallbackBase):
             play=self.task["play"],
             content=results,
             status=status,
-            started=self.result_timestamp or self.task["started"],
+            started=self.task["started"],
             ended=datetime.datetime.now().isoformat(),
             changed=result._result.get("changed", False),
             # Note: ignore_errors might be None instead of a boolean
@@ -428,11 +427,6 @@ class CallbackModule(CallbackBase):
 
         if self.task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
-
-        # The last thing that runs before the next result is loaded: use that as start date for the next result.
-        # If it's the first result, the started value of the task would be used as start date instead.
-        # See: https://github.com/ansible-community/ara/issues/173
-        self.result_timestamp = datetime.datetime.now().isoformat()
 
     def _load_stats(self, stats):
         hosts = sorted(stats.processed.keys())
