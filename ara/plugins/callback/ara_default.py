@@ -163,6 +163,8 @@ class CallbackModule(CallbackBase):
         self.ignored_files = []
 
         self.result = None
+        self.result_started = {}
+        self.result_ended = {}
         self.task = None
         self.play = None
         self.playbook = None
@@ -299,6 +301,10 @@ class CallbackModule(CallbackBase):
 
         return self.task
 
+    def v2_runner_on_start(self, host, task):
+        # v2_runner_on_start was added in 2.8 so this doesn't get run for Ansible 2.7 and below.
+        self.result_started[host.get_name()] = datetime.datetime.now().isoformat()
+
     def v2_runner_on_ok(self, result, **kwargs):
         self._load_result(result, "ok", **kwargs)
 
@@ -388,8 +394,11 @@ class CallbackModule(CallbackBase):
         host completes. It is responsible for logging a single result to the
         database.
         """
+        hostname = result._host.get_name()
+        self.result_ended[hostname] = datetime.datetime.now().isoformat()
+
         # Retrieve the host so we can associate the result to the host id
-        host = self._get_or_create_host(result._host.get_name())
+        host = self._get_or_create_host(hostname)
 
         results = strip_internal_keys(module_response_deepcopy(result._result))
 
@@ -418,8 +427,8 @@ class CallbackModule(CallbackBase):
             play=self.task["play"],
             content=results,
             status=status,
-            started=self.task["started"],
-            ended=datetime.datetime.now().isoformat(),
+            started=self.result_started[hostname] if hostname in self.result_started else self.task["started"],
+            ended=self.result_ended[hostname],
             changed=result._result.get("changed", False),
             # Note: ignore_errors might be None instead of a boolean
             ignore_errors=kwargs.get("ignore_errors", False) or False,
