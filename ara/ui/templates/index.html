@@ -142,8 +142,16 @@
                     {{ playbook.ansible_version }}
                 </td>
                 <td role="cell" data-label="Name (or path)" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html" title="{{ playbook.path }}">
-                        {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
+                    {% if static_generation %}
+                        <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html" title="{{ playbook.path }}">
+                    {% else %}
+                        {% if playbook.status == "failed" %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?status=failed&status=unreachable#results">
+                        {% else %}
+                            <a href="{% url 'ui:playbook' playbook.id %}?changed=True#results">
+                        {% endif %}
+                    {% endif %}
+                    {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
                     </a>
                 </td>
                 <td role="cell" data-label="Labels" class="pf-m-wrap">
