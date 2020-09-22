@@ -19,7 +19,7 @@ class Command(BaseCommand):
             os.mkdir(path)
 
         # create subdirs
-        dirs = ["playbook", "file", "host", "result", "record"]
+        dirs = ["playbooks", "files", "hosts", "results", "records"]
         for dir in dirs:
             if not os.path.exists(os.path.join(path, dir)):
                 os.mkdir(os.path.join(path, dir))
@@ -58,16 +58,49 @@ class Command(BaseCommand):
         codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
 
         # Playbooks
-        for playbook in query:
-            destination = os.path.join(path, "playbook/%s.html" % playbook.id)
-            serializer = serializers.DetailedPlaybookSerializer(playbook)
-            data = {"playbook": serializer.data, "static_generation": True}
-            self.render("playbook.html", destination, **data)
+        for pb in query:
+            playbook = serializers.DetailedPlaybookSerializer(pb)
+            hosts = serializers.ListHostSerializer(
+                models.Host.objects.filter(playbook=playbook.data["id"]).all(), many=True
+            )
+            files = serializers.ListFileSerializer(
+                models.File.objects.filter(playbook=playbook.data["id"]).all(), many=True
+            )
+            records = serializers.ListRecordSerializer(
+                models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
+            )
+            results = serializers.ListResultSerializer(
+                models.Result.objects.filter(playbook=playbook.data["id"]).all(), many=True
+            )
+
+            # Backfill task and host data into results
+            for result in results.data:
+                task_id = result["task"]
+                result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+                host_id = result["host"]
+                result["host"] = serializers.SimpleHostSerializer(models.Host.objects.get(pk=host_id)).data
+
+            # Results are paginated in the dynamic version and the template expects data in a specific format
+            formatted_results = {"count": len(results.data), "results": results.data}
+
+            destination = os.path.join(path, "playbooks/%s.html" % playbook.data["id"])
+            self.render(
+                "playbook.html",
+                destination,
+                static_generation=True,
+                playbook=playbook.data,
+                hosts=hosts.data,
+                files=files.data,
+                records=records.data,
+                results=formatted_results,
+                current_page_results=None,
+                search_form=None,
+            )
 
         # Files
         query = models.File.objects.all()
         for file in query.all():
-            destination = os.path.join(path, "file/%s.html" % file.id)
+            destination = os.path.join(path, "files/%s.html" % file.id)
             serializer = serializers.DetailedFileSerializer(file)
             data = {"file": serializer.data, "static_generation": True}
             self.render("file.html", destination, **data)
@@ -75,7 +108,7 @@ class Command(BaseCommand):
         # Hosts
         query = models.Host.objects.all()
         for host in query.all():
-            destination = os.path.join(path, "host/%s.html" % host.id)
+            destination = os.path.join(path, "hosts/%s.html" % host.id)
             serializer = serializers.DetailedHostSerializer(host)
             data = {"host": serializer.data, "static_generation": True}
             self.render("host.html", destination, **data)
@@ -83,7 +116,7 @@ class Command(BaseCommand):
         # Results
         query = models.Result.objects.all()
         for result in query.all():
-            destination = os.path.join(path, "result/%s.html" % result.id)
+            destination = os.path.join(path, "results/%s.html" % result.id)
             serializer = serializers.DetailedResultSerializer(result)
             data = {"result": serializer.data, "static_generation": True}
             self.render("result.html", destination, **data)
@@ -91,7 +124,7 @@ class Command(BaseCommand):
         # Records
         query = models.Record.objects.all()
         for record in query.all():
-            destination = os.path.join(path, "record/%s.html" % record.id)
+            destination = os.path.join(path, "records/%s.html" % record.id)
             serializer = serializers.DetailedRecordSerializer(record)
             data = {"record": serializer.data, "static_generation": True}
             self.render("record.html", destination, **data)
