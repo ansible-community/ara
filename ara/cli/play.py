@@ -93,7 +93,12 @@ class PlayList(Lister):
         query["limit"] = args.limit
 
         plays = client.get("/api/v1/plays", **query)
-        columns = ("id", "status", "name", "started", "duration")
+        # Send items to columns
+        for play in plays["results"]:
+            play["tasks"] = play["items"]["tasks"]
+            play["results"] = play["items"]["results"]
+
+        columns = ("id", "status", "name", "playbook", "tasks", "results", "started", "duration")
         # fmt: off
         return (
             columns, (
