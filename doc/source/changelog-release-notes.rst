@@ -4,6 +4,16 @@
 Changelog and release notes
 ***************************
 
+1.5.1 (2020-09-23)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.1
+
+.. code-block:: text
+
+    This is a re-release of the 1.5.0 stable version of ara in order to fix
+    a release issue to PyPi.
+
 1.5.0 (2020-09-23)
 ##################
 
