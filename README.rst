@@ -36,6 +36,16 @@ dependencies.
 
 .. image:: doc/source/_static/ui-playbook-search.png
 
+ara CLI
+-------
+
+A built-in CLI client for querying and managing playbooks and their recorded data.
+
+.. image:: doc/source/_static/cli-playbook-list.png
+
+The full list of commands, their arguments as well as examples can be found in
+the `documentation <https://ara.readthedocs.io/en/latest/cli.html#cli-ara-api-client>`_.
+
 ara-web
 -------
 
