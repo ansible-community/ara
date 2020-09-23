@@ -9,6 +9,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -46,6 +47,18 @@ class PlayList(Lister):
             metavar="<status>",
             default=None,
             help=("List plays matching a specific status ('completed', 'running', 'failed')"),
+        )
+        parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Don't truncate paths")
+        )
+        parser.add_argument(
+            "--resolve",
+            action="store_true",
+            default=os.environ.get("ARA_CLI_RESOLVE", False),
+            help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
         )
         parser.add_argument(
             "--order",
@@ -93,10 +106,18 @@ class PlayList(Lister):
         query["limit"] = args.limit
 
         plays = client.get("/api/v1/plays", **query)
-        # Send items to columns
         for play in plays["results"]:
+            # Send items to columns
             play["tasks"] = play["items"]["tasks"]
             play["results"] = play["items"]["results"]
+
+            if args.resolve:
+                playbook = cli_utils.get_playbook(client, play["playbook"])
+                # Paths can easily take up too much width real estate
+                if not args.long:
+                    play["playbook"] = "(%s) %s" % (playbook["id"], cli_utils.truncatepath(playbook["path"], 50))
+                else:
+                    play["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
 
         columns = ("id", "status", "name", "playbook", "tasks", "results", "started", "duration")
         # fmt: off

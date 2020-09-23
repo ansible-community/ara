@@ -86,6 +86,12 @@ class HostList(Lister):
             help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
         )
         parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Don't truncate paths")
+        )
+        parser.add_argument(
             "--order",
             metavar="<order>",
             default="-updated",
@@ -142,7 +148,11 @@ class HostList(Lister):
         if args.resolve:
             for host in hosts["results"]:
                 playbook = cli_utils.get_playbook(client, host["playbook"])
-                host["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+                # Paths can easily take up too much width real estate
+                if not args.long:
+                    host["playbook"] = "(%s) %s" % (playbook["id"], cli_utils.truncatepath(playbook["path"], 50))
+                else:
+                    host["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
 
         columns = ("id", "name", "playbook", "changed", "failed", "ok", "skipped", "unreachable", "updated")
         # fmt: off

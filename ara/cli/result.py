@@ -74,7 +74,7 @@ class ResultList(Lister):
             "--long",
             action="store_true",
             default=False,
-            help=("Include additional fields: changed, ignore_errors, play")
+            help=("Don't truncate paths and include additional fields: changed, ignore_errors, play")
         )
         parser.add_argument(
             "--resolve",
@@ -136,7 +136,11 @@ class ResultList(Lister):
         if args.resolve:
             for result in results["results"]:
                 playbook = cli_utils.get_playbook(client, result["playbook"])
-                result["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+                # Paths can easily take up too much width real estate
+                if not args.long:
+                    result["playbook"] = "(%s) %s" % (playbook["id"], cli_utils.truncatepath(playbook["path"], 50))
+                else:
+                    result["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
 
                 task = cli_utils.get_task(client, result["task"])
                 result["task"] = "(%s) %s" % (task["id"], task["name"])

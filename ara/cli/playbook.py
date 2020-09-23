@@ -10,6 +10,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -52,7 +53,7 @@ class PlaybookList(Lister):
             "--long",
             action="store_true",
             default=False,
-            help=("Include additional fields: name, plays, files, records")
+            help=("Don't truncate paths and include additional fields: name, plays, files, records")
         )
         parser.add_argument(
             "--order",
@@ -100,14 +101,17 @@ class PlaybookList(Lister):
         query["limit"] = args.limit
 
         playbooks = client.get("/api/v1/playbooks", **query)
-        # Send items to columns
         for playbook in playbooks["results"]:
+            # Send items to columns
             playbook["plays"] = playbook["items"]["plays"]
             playbook["tasks"] = playbook["items"]["tasks"]
             playbook["results"] = playbook["items"]["results"]
             playbook["hosts"] = playbook["items"]["hosts"]
             playbook["files"] = playbook["items"]["files"]
             playbook["records"] = playbook["items"]["records"]
+            # Paths can easily take up too much width real estate
+            if not args.long:
+                playbook["path"] = cli_utils.truncatepath(playbook["path"], 50)
 
         # fmt: off
         if args.long:
