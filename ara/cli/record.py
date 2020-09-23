@@ -9,6 +9,7 @@ from cliff.command import Command
 from cliff.lister import Lister
 from cliff.show import ShowOne
 
+import ara.cli.utils as cli_utils
 from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
@@ -34,6 +35,18 @@ class RecordList(Lister):
             metavar="<key>",
             default=None,
             help=("List records matching the specified key"),
+        )
+        parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Don't truncate paths")
+        )
+        parser.add_argument(
+            "--resolve",
+            action="store_true",
+            default=os.environ.get("ARA_CLI_RESOLVE", False),
+            help=("Resolve IDs to identifiers (such as path or names). Defaults to ARA_CLI_RESOLVE or False")
         )
         parser.add_argument(
             "--order",
@@ -75,8 +88,16 @@ class RecordList(Lister):
         query["limit"] = args.limit
 
         records = client.get("/api/v1/records", **query)
-        # TODO: Record list API should provide timestamps
-        columns = ("id", "playbook", "key", "type", "updated")
+        if args.resolve:
+            for record in records["results"]:
+                playbook = cli_utils.get_playbook(client, record["playbook"])
+                # Paths can easily take up too much width real estate
+                if not args.long:
+                    record["playbook"] = "(%s) %s" % (playbook["id"], cli_utils.truncatepath(playbook["path"], 50))
+                else:
+                    record["playbook"] = "(%s) %s" % (playbook["id"], playbook["path"])
+
+        columns = ("id", "key", "type", "playbook", "updated")
         # fmt: off
         return (
             columns, (
