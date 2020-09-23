@@ -44,7 +44,7 @@ A built-in CLI client for querying and managing playbooks and their recorded dat
 .. image:: doc/source/_static/cli-playbook-list.png
 
 The full list of commands, their arguments as well as examples can be found in
-the `documentation <https://ara.readthedocs.io/en/latest/cli.html#cli-ara-api-client>`_.
+the `CLI documentation <https://ara.readthedocs.io/en/latest/cli.html#cli-ara-api-client>`_.
 
 ara-web
 -------
