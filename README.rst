@@ -34,7 +34,7 @@ Reporting interface
 A simple reporting interface built-in to the API server without any extra
 dependencies.
 
-.. image:: doc/source/_static/ui-playbook-search.png
+.. image:: doc/source/_static/ui-playbook-details.png
 
 ara CLI
 -------
