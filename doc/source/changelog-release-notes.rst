@@ -4,6 +4,136 @@
 Changelog and release notes
 ***************************
 
+1.5.0 (2020-09-23)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.0
+
+.. code-block:: text
+
+    This is the 1.5.0 stable release of ARA.
+    
+    Changes since 1.4.3:
+    
+    CLI
+    ---
+    
+    A new 'ara' CLI API client is now available with the following commands:
+    
+    - expire           Expires objects that have been in the running state for too long
+    - host delete      Deletes the specified host and associated resources
+    - host list        Returns a list of hosts based on search queries
+    - host show        Returns a detailed view of a specified host
+    - play delete      Deletes the specified play and associated resources
+    - play list        Returns a list of plays based on search queries
+    - play show        Returns a detailed view of a specified play
+    - playbook delete  Deletes the specified playbook and associated resources
+    - playbook list    Returns a list of playbooks based on search queries
+    - playbook prune   Deletes playbooks beyond a specified age in days
+    - playbook show    Returns a detailed view of a specified playbook
+    - record delete    Deletes the specified record and associated resources
+    - record list      Returns a list of records based on search queries
+    - record show      Returns a detailed view of a specified record
+    - result delete    Deletes the specified result and associated resources
+    - result list      Returns a list of results based on search queries
+    - result show      Returns a detailed view of a specified result
+    - task delete      Deletes the specified task and associated resources
+    - task list        Returns a list of tasks based on search queries
+    - task show        Returns a detailed view of a specified task
+    
+    More information on the CLI commands is available in the docs:
+    https://ara.readthedocs.io/en/latest/cli.html
+    
+    API server
+    ----------
+    
+    New settings have been added:
+    
+    - ARA_EXTERNAL_AUTH for enabling Django's external authentication
+    - ARA_DATABASE_OPTIONS for passing options to the Django database backend such as SSL.
+    
+    More information on the API server settings are available in the docs:
+    https://ara.readthedocs.io/en/latest/api-configuration.html
+    
+    API
+    ---
+    
+    - Added created/updated fields to list views (ex: /api/v1/playbooks, /api/v1/results)
+    - Added support for filtering hosts based on their results, for example:
+      - return hosts with no changes: /api/v1/hosts?changed__lt=1
+      - return hosts with failures: /api/v1/hosts?failed__gt=0
+      - return hosts with unreachable tasks: /api/v1/hosts?unreachable__gt=0
+    - Added support for searching results by changed (ex: /api/v1/results?changed=true)
+    - Added support for searching results by play, task or host (ex: /api/v1/results?task=<id>)
+    - Nested children resources are no longer returned, improving performance
+      considerably for larger playbooks. For example, querying a single playbook's
+      details no longer returns it's entire hierarchy of plays, tasks, results and hosts.
+      These must now instead be queried individually, ex: /api/v1/results?playbook=<id>
+      See https://github.com/ansible-community/ara/issues/158 for details.
+    - The result statuses "changed" and "ignored" have been removed. These weren't
+      actually used anywhere, it was instead inferred by a combination of the status
+      as well as the "changed" and "ignore_error" fields.
+      See https://github.com/ansible-community/ara/issues/150 for details.
+    - A new status was added for playbooks, plays and tasks: "expired".
+      This status is meant to be used to identify resources that have been in the
+      "running" state for too long and will never complete.
+      Use the new "ara expire" CLI command for expiring resources.
+      See https://github.com/ansible-community/ara/issues/26 for details.
+    
+    UI
+    --
+    
+    - URLs have been pluralized to match the endpoints provided by the API.
+      For example:
+        /playbook/1.html -> /playbooks/1.html
+        /result/1.html -> /results/1.html
+    - Links to playbooks from the index will now filter results by default based on
+      their status. For example, a failed playbook will link to results that are failed
+      or unreachable while a successful playbook will link to results that are changed.
+    
+    When browsing a playbook's details:
+    - Links to files from task actions have been fixed to use the correct anchor
+      when linking to a specific line
+    - Task results are now paginated
+    - A search form has been added to the task results pane, allowing search
+      by host id, task id, status and changed
+    - The hosts table has been updated to leverage the new search
+      capabilities. Clicking on the host will search tasks for this host and
+      clicking on the number in status column for a host (i.e, "20" changed)
+      will search for that host and that status. As a result, host facts
+      have been moved to it's own column.
+    
+    Ansible plugins
+    ---------------
+    
+    - New feature: argument labels.
+      Based on the configuration, the callback will now automatically label
+      playbooks after specified CLI arguments. For example, when "--check" is used,
+      it will label the playbook with "check:True" -- or "check:False" when it isn't used.
+    - Starting with Ansible 2.8, the callback leverages a new hook in order to improve
+      the accuracy of task result durations.
+      See https://github.com/ansible-community/ara/issues/173 for details.
+    
+    Documentation
+    -------------
+    
+    - Refreshed installation docs into a "getting started" guide
+    - Added notes about installation on CentOS 7 / RHEL 7 as well as Mac OS
+    - Refreshed and merged Ansible plugin configuration and use case docs
+    - Changelogs and release notes have been incorporated in the docs
+    
+    Upgrade notes
+    -------------
+    
+    - The introduction of the new CLI adds a requirement on the cliff python library.
+    - ara 1.5.0 introduces significant API changes, some of which aren't backwards
+      compatible such as no longer returning nested resources.
+    - Two small SQL migrations have been added to remove result statuses and add the
+      expired status for playbooks, plays and tasks. Run them with "ara-manage migrate".
+    - "ara-manage prune" has been deprecated and is replaced by "ara playbook prune".
+      The new prune command provides additional filters in order to only delete
+      playbooks matching certain criteria such as label, name, path or status.
+
 1.4.3 (2020-08-11)
 ##################
 
