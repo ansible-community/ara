@@ -96,8 +96,10 @@ Alternatively, the API server can also run from a container image such as the on
 
 .. code-block:: bash
 
-    # Start an API server with podman from the image on DockerHub:
+    # Create a directory for a volume to store settings and a sqlite database
     mkdir -p ~/.ara/server
+
+    # Start an API server with podman from the image on DockerHub:
     podman run --name api-server --detach --tty \
       --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
       docker.io/recordsansible/ara-api:latest
