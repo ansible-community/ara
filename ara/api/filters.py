@@ -107,6 +107,7 @@ class TaskFilter(DateFilter):
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     action = django_filters.CharFilter(field_name="action", lookup_expr="iexact")
     path = django_filters.CharFilter(field_name="file__path", lookup_expr="icontains")
+    handler = django_filters.BooleanFilter(field_name="handler", lookup_expr="exact")
 
     # fmt: off
     order = django_filters.OrderingFilter(
