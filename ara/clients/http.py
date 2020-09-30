@@ -36,7 +36,7 @@ class HttpClient(object):
 
         self.endpoint = endpoint.rstrip("/")
         self.auth = auth
-        self.timeout = timeout
+        self.timeout = int(timeout)
         self.verify = verify
         self.headers = {
             "User-Agent": "ara-http-client_%s" % CLIENT_VERSION,
@@ -80,7 +80,7 @@ class AraHttpClient(object):
         self.log = logging.getLogger(__name__)
         self.endpoint = endpoint
         self.auth = auth
-        self.timeout = timeout
+        self.timeout = int(timeout)
         self.verify = verify
         self.client = HttpClient(endpoint=self.endpoint, timeout=self.timeout, auth=self.auth, verify=self.verify)
         active_client._instance = weakref.ref(self)
