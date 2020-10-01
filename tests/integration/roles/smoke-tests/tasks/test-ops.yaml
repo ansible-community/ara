@@ -49,3 +49,16 @@
 - name: Test for XSS
   command: echo "<script>alert(document.cookie)</script>"
   changed_when: False
+
+- name: Notify something for a handler task
+  command: /bin/true
+  notify:
+    - handler
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Assert that handler task has run
+  assert:
+    that:
+      - _handler_run is success

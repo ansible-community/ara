@@ -304,6 +304,11 @@ class CallbackModule(CallbackBase):
 
         return self.play
 
+    def v2_playbook_on_handler_task_start(self, task):
+        self.log.debug("v2_playbook_on_handler_task_start")
+        # TODO: Why doesn't `v2_playbook_on_handler_task_start` have is_conditional ?
+        self.v2_playbook_on_task_start(task, False, handler=True)
+
     def v2_playbook_on_task_start(self, task, is_conditional, handler=False):
         self.log.debug("v2_playbook_on_task_start")
         self._end_task()
