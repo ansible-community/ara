@@ -1,0 +1,29 @@
+# Copyright (c) 2020 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- name: Create many hosts
+  hosts: localhost
+  gather_facts: no
+  vars:
+    benchmark_host_count: 25
+  tasks:
+    - name: Add a host to the inventory
+      add_host:
+        ansible_connection: local
+        hostname: "host-{{ item }}"
+        groups: benchmark
+      with_sequence: start=1 end={{ benchmark_host_count }}
+
+- name: Run tasks on many hosts
+  hosts: benchmark
+  vars:
+    benchmark_task_file: "{{ playbook_dir }}/benchmark_tasks.yaml"
+    # Run N tasks per host
+    benchmark_task_count: 50
+    # Off by default to prevent accidental load spike on localhost
+    benchmark_gather_facts: no
+  gather_facts: "{{ benchmark_gather_facts }}"
+  tasks:
+    - name: Include a task file
+      include_tasks: "{{ benchmark_task_file }}"
+      with_sequence: start=1 end={{ benchmark_task_count }}
