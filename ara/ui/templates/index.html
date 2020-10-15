@@ -106,6 +106,7 @@
                 <th role="columnheader" scope="col">Labels</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Hosts</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Plays</th>
+                <th role="columnheader" scope="col" class="pf-m-fit-content">Tasks</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Results</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Files</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Records</th>
@@ -172,6 +173,9 @@
                 </td>
                 <td role="cell" data-label="Plays" class="pf-m-fit-content">
                     <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#plays">{{ playbook.items.plays }}</a>
+                </td>
+                <td role="cell" data-label="Tasks" class="pf-m-fit-content">
+                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.tasks }}</a>
                 </td>
                 <td role="cell" data-label="Results" class="pf-m-fit-content">
                     <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }}</a>

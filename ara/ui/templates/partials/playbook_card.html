@@ -55,6 +55,11 @@
                     </div>
                     <div class="pf-c-data-list__cell pf-m-flex-1">
                         <div style="padding-top:1em;">
+                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.tasks }} Tasks</a>
+                        </div>
+                    </div>
+                    <div class="pf-c-data-list__cell pf-m-flex-1">
+                        <div style="padding-top:1em;">
                             <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }} results</a>
                         </div>
                     </div>
