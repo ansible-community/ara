@@ -48,32 +48,32 @@ this::
 
     /var/www/logs/
     ├── 1
-    │   ├── ara-api
+    │   ├── ara-report
     │   │   └── ansible.sqlite
     │   └── console.txt
     ├── 2
     │   ├── logs.tar.gz
     │   └── some
     │       └── path
-    │           └── ara-api
+    │           └── ara-report
     │               └── ansible.sqlite
     └── 3
         ├── builds.txt
         ├── dev
-        │   └── ara-api
+        │   └── ara-report
         │       └── ansible.sqlite
         └── prod
-            └── ara-api
+            └── ara-report
                 └── ansible.sqlite
 
 With the above example file tree, a single instance of the API server with the
 distributed sqlite backend enabled would be able to respond to queries at the
 following endpoints:
 
-- http://example.org/1/ara-api
-- http://example.org/2/some/path/ara-api
-- http://example.org/3/dev/ara-api
-- http://example.org/3/prod/ara-api
+- http://example.org/1/ara-report
+- http://example.org/2/some/path/ara-report
+- http://example.org/3/dev/ara-report
+- http://example.org/3/prod/ara-report
 
 Configuration
 -------------
