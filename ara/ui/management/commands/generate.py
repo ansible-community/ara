@@ -61,7 +61,7 @@ class Command(BaseCommand):
         for pb in query:
             playbook = serializers.DetailedPlaybookSerializer(pb)
             hosts = serializers.ListHostSerializer(
-                models.Host.objects.filter(playbook=playbook.data["id"]).all(), many=True
+                models.Host.objects.filter(playbook=playbook.data["id"]).order_by("name").all(), many=True
             )
             files = serializers.ListFileSerializer(
                 models.File.objects.filter(playbook=playbook.data["id"]).all(), many=True

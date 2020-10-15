@@ -71,7 +71,7 @@ class Playbook(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         playbook = serializers.DetailedPlaybookSerializer(self.get_object())
         hosts = serializers.ListHostSerializer(
-            models.Host.objects.filter(playbook=playbook.data["id"]).all(), many=True
+            models.Host.objects.filter(playbook=playbook.data["id"]).order_by("name").all(), many=True
         )
         files = serializers.ListFileSerializer(
             models.File.objects.filter(playbook=playbook.data["id"]).all(), many=True
