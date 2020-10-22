@@ -4,10 +4,50 @@
 Changelog and release notes
 ***************************
 
+1.5.2 (2020-10-16)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.2
+
+.. code-block:: text
+
+    This is the 1.5.2 stable release of ARA.
+    
+    Changes since 1.5.1:
+    
+    Ansible callback plugin
+    -----------------------
+    
+    - Significant performance improvement by running non-blocking API calls in threads
+      https://github.com/ansible-community/ara/issues/171
+    - Handler tasks are now also recorded in addition to regular tasks
+      https://github.com/ansible-community/ara/issues/178
+    
+    API
+    ---
+    
+    - Add support for searching handler tasks (ex: /api/v1/tasks?handler=true)
+    
+    UI
+    --
+    
+    - Hosts in the playbook report are now sorted alphabetically by hostname
+    - Added a column to display the number of tasks in the playbook summary
+
 1.5.1 (2020-09-23)
 ##################
 
 https://github.com/ansible-community/ara/releases/tag/1.5.1
+
+.. code-block:: text
+
+    This is a re-release of the 1.5.0 stable version of ara in order to fix
+    a release issue to PyPi.
+
+1.5.0.1 (2020-09-23)
+####################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.0.1
 
 .. code-block:: text
 
