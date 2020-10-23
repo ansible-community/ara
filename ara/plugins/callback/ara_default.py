@@ -175,14 +175,13 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         super(CallbackModule, self).__init__()
         self.log = logging.getLogger("ara.plugins.callback.default")
+        # These are configured in self.set_options
         self.client = None
-        # TODO: Consider un-hardcoding this and plumbing pool_maxsize to requests.adapters.HTTPAdapter.
-        #       In the meantime default to 10 because that's the value of requests.adapters.DEFAULT_POOLSIZE.
-        #       Otherwise we can hit "urllib3.connectionpool: Connection pool is full"
-        self.thread_count = 10
-        self.global_threads = ThreadPoolExecutor(max_workers=self.thread_count)
+        self.thread_count = None
+        self.global_threads = None
         # Need individual threads for tasks to ensure all results are saved before moving on to next task
         self.task_threads = None
+
         self.ignored_facts = []
         self.ignored_arguments = []
         self.ignored_files = []
@@ -220,6 +219,14 @@ class CallbackModule(CallbackBase):
             password=password,
             verify=False if insecure else True,
         )
+
+        # TODO: Consider un-hardcoding this and plumbing pool_maxsize to requests.adapters.HTTPAdapter.
+        #       In the meantime default to 4 so we don't go above requests.adapters.DEFAULT_POOLSIZE.
+        #       Otherwise we can hit "urllib3.connectionpool: Connection pool is full"
+        # TODO: Using >= 2 threads with the offline client can result in execution getting locked up
+        self.thread_count = 1 if client == "offline" else 4
+        self.global_threads = ThreadPoolExecutor(max_workers=self.thread_count)
+        self.log.debug("working with %s thread(s)" % self.thread_count)
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
@@ -382,6 +389,7 @@ class CallbackModule(CallbackBase):
                 ended=datetime.datetime.now().isoformat(),
             )
             # Flush threads before moving on to next task to make sure all results are saved
+            self.log.debug("waiting for task threads...")
             self.task_threads.shutdown(wait=True)
             self.task_threads = None
             self.task = None
@@ -409,6 +417,7 @@ class CallbackModule(CallbackBase):
             status=status,
             ended=datetime.datetime.now().isoformat(),
         )
+        self.log.debug("waiting for global threads...")
         self.global_threads.shutdown(wait=True)
 
     def _set_playbook_name(self, name):
