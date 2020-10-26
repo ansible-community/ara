@@ -4,6 +4,21 @@
 Changelog and release notes
 ***************************
 
+1.5.3 (2020-10-23)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.3
+
+.. code-block:: text
+
+    This is the 1.5.3 stable release of ARA.
+    
+    This release works around a bug introduced in 1.5.2 which could
+    sometimes cause the Ansible playbook execution to lock up when using the
+    default offline API client.
+    
+    For details, see https://github.com/ansible-community/ara/issues/183
+
 1.5.2 (2020-10-16)
 ##################
 
