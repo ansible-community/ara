@@ -89,6 +89,13 @@ ara playbook prune
 ------------------
 
 Pruning keeps the database size in check and the performance optimal by deleting older playbooks.
+
+Unused disk space can be reclaimed after pruning depending on your database backend, for example:
+
+- `sqlite <https://sqlite.org/lang_vacuum.html>`_: ``sqlite3 ~/.ara/server/ansible.sqlite vacuum``
+- `mysql/mariadb <https://mariadb.com/kb/en/optimize-table/>`_: ``mysqlcheck --optimize --databases ara``
+- `postgresql <https://www.postgresql.org/docs/current/app-vacuumdb.html>`_: ``vacuumdb --dbname=ara``
+
 It is recommended to run this command inside a task scheduler (such as cron) since the server does not run this command
 automatically.
 
