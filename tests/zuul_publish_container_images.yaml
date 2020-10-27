@@ -15,11 +15,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
 
-- name: Publish container images to DockerHub
+- name: Publish container images
   hosts: all
   gather_facts: yes
   vars:
-    destination: docker.io/recordsansible/ara-api
+    destination: "{{ destination_repository | default('docker.io/recordsansible/ara-api') }}"
     images:
       # These images are meant to be provided by the "with_container_images.yaml" playbook
       - name: localhost/ara-api

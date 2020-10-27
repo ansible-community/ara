@@ -170,7 +170,7 @@
     pre-run: tests/with_container_images.yaml
     run: tests/zuul_publish_container_images.yaml
     vars:
-      destination: docker.io/recordsansible/ara-api
+      destination_repository: docker.io/recordsansible/ara-api
     secrets:
       - name: ara_registry_credentials
         secret: ara_dockerhub_credentials
@@ -186,7 +186,7 @@
     pre-run: tests/with_container_images.yaml
     run: tests/zuul_publish_container_images.yaml
     vars:
-      destination: quay.io/recordsansible/ara-api
+      destination_repository: quay.io/recordsansible/ara-api
     secrets:
       - name: ara_registry_credentials
         secret: ara_quayio_credentials
