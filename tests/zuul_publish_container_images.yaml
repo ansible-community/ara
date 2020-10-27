@@ -42,11 +42,11 @@
 
     - name: Push latest
       command: |
-        buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:latest
+        buildah push --creds {{ ara_registry_credentials.username }}:{{ ara_registry_credentials.password }} {{ destination }}:latest
       no_log: yes
 
     - name: Push the remainder of the tags
       command: |
-        buildah push --creds {{ ara_dockerhub_credentials.username }}:{{ ara_dockerhub_credentials.password }} {{ destination }}:{{ item.tag }}
+        buildah push --creds {{ ara_registry_credentials.username }}:{{ ara_registry_credentials.password }} {{ destination }}:{{ item.tag }}
       no_log: yes
       loop: "{{ images }}"

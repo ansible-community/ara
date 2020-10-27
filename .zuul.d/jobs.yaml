@@ -166,10 +166,28 @@
     nodeset: ara-fedora-32
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
-      The resulting images are pushed to dockerhub if successful.
+      The resulting images are pushed to docker.io/recordsansible/ara-api if successful.
     pre-run: tests/with_container_images.yaml
-    run: tests/zuul_publish_dockerhub.yaml
+    run: tests/zuul_publish_container_images.yaml
+    vars:
+      destination: docker.io/recordsansible/ara-api
     secrets:
-      - name: ara_dockerhub_credentials
+      - name: ara_registry_credentials
         secret: ara_dockerhub_credentials
+        pass-to-parent: true
+
+- job:
+    name: ara-container-images-quayio
+    parent: ara-integration-base
+    nodeset: ara-fedora-32
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+      The resulting images are pushed to quay.io/recordsansible/ara-api if successful.
+    pre-run: tests/with_container_images.yaml
+    run: tests/zuul_publish_container_images.yaml
+    vars:
+      destination: quay.io/recordsansible/ara-api
+    secrets:
+      - name: ara_registry_credentials
+        secret: ara_quayio_credentials
         pass-to-parent: true
