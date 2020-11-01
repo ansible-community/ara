@@ -3,6 +3,7 @@
 
 import functools
 import os
+from datetime import datetime, timedelta
 
 
 @functools.lru_cache(maxsize=10)
@@ -27,6 +28,35 @@ def get_task(client, task_id):
 def get_host(client, host_id):
     host = client.get("/api/v1/hosts/%s" % host_id)
     return host
+
+
+def parse_timedelta(string, pattern="%H:%M:%S.%f"):
+    """ Parses a timedelta string back into a timedelta object """
+    parsed = datetime.strptime(string, pattern)
+    # fmt: off
+    return timedelta(
+        hours=parsed.hour,
+        minutes=parsed.minute,
+        seconds=parsed.second,
+        microseconds=parsed.microsecond
+    )
+    # fmt: on
+
+
+def sum_timedelta(first, second):
+    """
+    Returns the sum of two timedeltas as provided by the API, for example:
+    00:00:02.031557 + 00:00:04.782581 = ?
+    """
+    first = parse_timedelta(first)
+    second = parse_timedelta(second)
+    return str(first + second)
+
+
+def avg_timedelta(timedelta, count):
+    """ Returns an average timedelta based on the amount of occurrences """
+    timedelta = parse_timedelta(timedelta)
+    return str(timedelta / count)
 
 
 # Also see: ui.templatetags.truncatepath

@@ -369,6 +369,46 @@ ara task delete
 
 .. command-output:: ara task delete --help
 
+ara task metrics
+----------------
+
+.. command-output:: ara task metrics --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Return metrics about more than the last 1000 tasks
+    ara task metrics --limit 10000
+
+    # Return task metrics in json or csv
+    ara task metrics -f json
+    ara task metrics -f csv
+
+    # Don't truncate paths and include additional task status fields
+    ara task metrics --long
+
+    # Return metrics about tasks from a specific playbook
+    ara task metrics --playbook 9001
+
+    # Return metrics for tasks matching a (full or partial) path
+    ara task metrics --path ansible-role-foo
+
+    # Only return metrics about a specific action
+    ara task metrics --action package
+
+    # Return metrics for tasks matching a name
+    ara task metrics --name apache
+
+    # Return metrics about the longest tasks and then sort them by total duration
+    ara task metrics --order=-duration --sort-column duration_total
+
+    # Aggregate metrics by task name rather than action
+    ara task metrics --aggregate name
+
+    # Aggregate metrics by task file rather than action
+    ara task metrics --aggregate path
+
 CLI: ara-manage (django API server)
 ===================================
 
