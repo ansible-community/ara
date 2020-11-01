@@ -5,4 +5,4 @@
 
 - name: Run a task
   debug:
-    msg: "{{ inventory_hostname }} running task #{{ item }}"
+    msg: "{{ inventory_hostname }} running task {{ item }}/{{ benchmark_task_count }}"
