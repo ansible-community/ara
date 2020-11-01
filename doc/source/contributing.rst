@@ -50,6 +50,8 @@ OpenDev's Gerrit_ instance currently uses Launchpad_ for authentication.
 If you do not already have a Launchpad account, you will need to create one
 here_.
 
+.. image:: _static/ubuntu-launchpad.png
+
 .. _here: https://login.launchpad.net/+login
 
 Set up your Gerrit code review account
@@ -61,9 +63,13 @@ Gerrit code review account.
 Once you have your Launchpad account, you will be able to sign in to
 `review.opendev.org`_.
 
+.. image:: _static/gerrit-sign-in.png
+
 To be able to submit code, Gerrit needs to have your public SSH key in the
 same way Github does. To do that, click on your name at the top right and go
 to the settings where you will see the tab to set up your SSH key.
+
+.. image:: _static/gerrit-ssh-key.png
 
 Note that if the username from your local machine differs from the one in Gerrit,
 you might need to set it up in your local ``~/.ssh/config`` file like this::
@@ -71,6 +77,8 @@ you might need to set it up in your local ``~/.ssh/config`` file like this::
   Host review.opendev.org
     user foo
     identityfile /home/foo/.ssh/gerrit
+
+.. image:: _static/gerrit-profile.png
 
 .. _Launchpad: https://login.launchpad.net/+login
 .. _review.opendev.org: https://review.opendev.org/
@@ -82,9 +90,11 @@ Git Review is a python module that adds a "git review" command that wraps
 around the process of sending a commit for review in Gerrit. You need to
 install it to be able to send patches for code reviews.
 
-There are different ways to install git-review, `choose your favorite`_.
+git-review is already packaged for most linux distributions and so you should
+be able to install it with your package manager:
 
-.. _choose your favorite: https://docs.openstack.org/infra/manual/developers.html#install-the-git-review-utility
+- RHEL, CentOS and Fedora: dnf install git-review
+- Ubuntu/Debian: apt-get install git-review
 
 Sending a patch for review
 --------------------------
@@ -96,11 +106,11 @@ The process looks a bit like this:
     $ git clone https://opendev.org/recordsansible/ara
     # or git clone https://github.com/ansible-community/ara
     $ cd ara
-    # Create a new local branch
-    $ git checkout -b super_cool_feature
-    # hack on super_cool_feature
+    # hack on cool feature
     $ git commit -a --message="This is my super cool feature"
     $ git review
+
+.. image:: _static/gerrit-new-patch.gif
 
 When you send a commit for review, it'll create a code review request in
 Gerrit_ for you.
@@ -116,12 +126,19 @@ are completed. If you're interested in digging into the logs for a particular
 test, clicking on the results of the test will take you to console, debug
 logs and a built version of ARA's web interface.
 
-If you get a failed test result and you believe you have fixed the issue, add
-the files, amend your commit (``git commit --amend``) and send it for review
-once again. This will create a new patchset that will be up for review and
-testing.
+Sending a new patchset for an existing change
+---------------------------------------------
 
-To be able to merge a patch, the tests have to come back successful and the
-core reviewers must provide their agreement with the patch.
+If you don't already have the change checked out, you can run ``git-review -d <change #>``
+and git-review will pull the change into a dedicated local branch.
+
+Then, it's only a matter of modifying the bits you want, doing a ``git add`` on
+the files and then, instead of creating a new commit, amend the previous one with
+``git commit --amend``.
+
+This will create an updated version of your commit which you can then send for
+review with ``git review``.
+
+.. image:: _static/gerrit-edit-patch.gif
 
 .. _Gerrit: https://review.opendev.org
