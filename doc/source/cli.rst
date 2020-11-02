@@ -240,6 +240,38 @@ ara host delete
 
 .. command-output:: ara host delete --help
 
+ara host metrics
+----------------
+
+.. command-output:: ara host metrics --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Return metrics about more than the last 1000 hosts
+    ara host metrics --limit 10000
+
+    # Return host metrics in json or csv
+    ara host metrics -f json
+    ara host metrics -f csv
+
+    # Return metrics for hosts matching a name
+    ara host metrics --name localhost
+
+    # Return metrics for hosts involved in a specific playbook
+    ara host metrics --playbook 9001
+
+    # Return metrics only for hosts with changed, failed or unreachable results
+    ara host metrics --with-changed
+    ara host metrics --with-failed
+    ara host metrics --with-unreachable
+
+    # Return metrics only for hosts without changed, failed or unreachable results
+    ara host metrics --without-changed
+    ara host metrics --without-failed
+    ara host metrics --without-unreachable
+
 ara record list
 ---------------
 
