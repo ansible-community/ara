@@ -85,6 +85,36 @@ ara playbook delete
 
 .. command-output:: ara playbook delete --help
 
+ara playbook metrics
+--------------------
+
+.. command-output:: ara playbook metrics --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Return metrics about more than the last 1000 playbooks
+    ara playbook metrics --limit 10000
+
+    # Return playbook metrics in json or csv
+    ara playbook metrics -f json
+    ara playbook metrics -f csv
+
+    # Return metrics about playbooks matching a (full or partial) path
+    ara playbook metrics --path site.yml
+
+    # Return metrics for playbooks matching a label
+    ara playbook metrics --label "check:False"
+
+    # Return additional metrics without truncating paths
+    ara playbook metrics --long
+
+    # Aggregate metrics by playbook path (default), name, by ansible version or by controller
+    ara playbook metrics --aggregate name
+    ara playbook metrics --aggregate ansible_version
+    ara playbook metrics --aggregate controller
+
 ara playbook prune
 ------------------
 

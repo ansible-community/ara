@@ -373,3 +373,184 @@ class PlaybookPrune(Command):
                 self.deleted += 1
 
         self.log.info("%s playbooks deleted" % self.deleted)
+
+
+class PlaybookMetrics(Lister):
+    """ Provides metrics about playbooks """
+
+    log = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PlaybookMetrics, self).get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            "--aggregate",
+            choices=["name", "path", "ansible_version", "controller"],
+            default="path",
+            help=("Aggregate playbooks by path, name, ansible version or controller. Defaults to path."),
+        )
+        # Playbook search arguments and ordering as per ara.api.filters.PlaybookFilter
+        parser.add_argument(
+            "--label",
+            metavar="<label>",
+            default=None,
+            help=("List playbooks matching the provided label"),
+        )
+        parser.add_argument(
+            "--name",
+            metavar="<name>",
+            default=None,
+            help=("List playbooks matching the provided name (full or partial)"),
+        )
+        parser.add_argument(
+            "--path",
+            metavar="<path>",
+            default=None,
+            help=("List playbooks matching the provided path (full or partial)"),
+        )
+        parser.add_argument(
+            "--status",
+            metavar="<status>",
+            default=None,
+            help=("List playbooks matching a specific status ('completed', 'running', 'failed')"),
+        )
+        parser.add_argument(
+            "--long",
+            action="store_true",
+            default=False,
+            help=("Don't truncate paths and include additional fields: name, plays, files, records")
+        )
+        parser.add_argument(
+            "--order",
+            metavar="<order>",
+            default="-started",
+            help=(
+                "Orders playbooks by a field ('id', 'created', 'updated', 'started', 'ended', 'duration')\n"
+                "Defaults to '-started' descending so the most recent playbook is at the top.\n"
+                "The order can be reversed by omitting the '-': ara playbook list --order=started"
+            ),
+        )
+        parser.add_argument(
+            "--limit",
+            metavar="<limit>",
+            default=os.environ.get("ARA_CLI_LIMIT", 1000),
+            help=("Returns the first <limit> determined by the ordering. Defaults to ARA_CLI_LIMIT or 1000.")
+        )
+        # fmt: on
+        return parser
+
+    def take_action(self, args):
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            verify=False if args.insecure else True,
+            run_sql_migrations=False,
+        )
+        query = {}
+        if args.label is not None:
+            query["label"] = args.label
+
+        if args.name is not None:
+            query["name"] = args.name
+
+        if args.path is not None:
+            query["path"] = args.path
+
+        if args.status is not None:
+            query["status"] = args.status
+
+        query["order"] = args.order
+        query["limit"] = args.limit
+
+        playbooks = client.get("/api/v1/playbooks", **query)
+
+        # TODO: This could probably be made more efficient without needing to iterate a second time
+        # Group playbooks by aggregate
+        aggregate = {}
+        for playbook in playbooks["results"]:
+            item = playbook[args.aggregate]
+            if item not in aggregate:
+                aggregate[item] = []
+            aggregate[item].append(playbook)
+
+        data = {}
+        for item, playbooks in aggregate.items():
+            data[item] = {
+                "count": len(playbooks),
+                "hosts": 0,
+                "plays": 0,
+                "tasks": 0,
+                "results": 0,
+                "files": 0,
+                "records": 0,
+                "expired": 0,
+                "failed": 0,
+                "running": 0,
+                "completed": 0,
+                "unknown": 0,
+                "duration_total": "00:00:00.000000",
+            }
+
+            if args.aggregate == "path" and not args.long:
+                data[item]["aggregate"] = cli_utils.truncatepath(item, 50)
+            else:
+                data[item]["aggregate"] = item
+
+            for playbook in playbooks:
+                for status in ["completed", "expired", "failed", "running", "unknown"]:
+                    if playbook["status"] == status:
+                        data[item][status] += 1
+
+                for obj in ["files", "hosts", "plays", "tasks", "records", "results"]:
+                    data[item][obj] += playbook["items"][obj]
+
+                if playbook["duration"] is not None:
+                    data[item]["duration_total"] = cli_utils.sum_timedelta(
+                        playbook["duration"], data[item]["duration_total"]
+                    )
+
+            data[item]["duration_avg"] = cli_utils.avg_timedelta(data[item]["duration_total"], data[item]["count"])
+
+        # fmt: off
+        if args.long:
+            columns = (
+                "aggregate",
+                "count",
+                "duration_total",
+                "duration_avg",
+                "plays",
+                "tasks",
+                "results",
+                "hosts",
+                "files",
+                "records",
+                "completed",
+                "expired",
+                "failed",
+                "running",
+                "unknown"
+            )
+        else:
+            columns = (
+                "aggregate",
+                "count",
+                "duration_total",
+                "duration_avg",
+                "tasks",
+                "results",
+                "hosts",
+                "completed",
+                "failed",
+                "running"
+            )
+        return (
+            columns, (
+                [data[playbook][column] for column in columns]
+                for playbook in sorted(data.keys())
+            )
+        )
+        # fmt: on
