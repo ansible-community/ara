@@ -139,7 +139,7 @@ or through the environment variable ``ARA_ARGUMENT_LABELS``:
 
 .. code-block:: bash
 
-    export ARA_DEFAULT_LABELS=check,subset,tags
+    export ARA_ARGUMENT_LABELS=check,subset,tags
 
 ara_api: free-form API queries
 ------------------------------
