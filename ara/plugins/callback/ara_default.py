@@ -271,7 +271,7 @@ class CallbackModule(CallbackBase):
             arguments=cli_options,
             status="running",
             path=path,
-            started=datetime.datetime.now().isoformat(),
+            started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 
         # Record the playbook file
@@ -314,7 +314,7 @@ class CallbackModule(CallbackBase):
             status="running",
             uuid=play._uuid,
             playbook=self.playbook["id"],
-            started=datetime.datetime.now().isoformat(),
+            started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 
         return self.play
@@ -352,14 +352,14 @@ class CallbackModule(CallbackBase):
             tags=task.tags,
             lineno=lineno,
             handler=handler,
-            started=datetime.datetime.now().isoformat(),
+            started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 
         return self.task
 
     def v2_runner_on_start(self, host, task):
         # v2_runner_on_start was added in 2.8 so this doesn't get run for Ansible 2.7 and below.
-        self.result_started[host.get_name()] = datetime.datetime.now().isoformat()
+        self.result_started[host.get_name()] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     def v2_runner_on_ok(self, result, **kwargs):
         self.task_threads.submit(self._load_result, result, "ok", **kwargs)
@@ -386,7 +386,7 @@ class CallbackModule(CallbackBase):
                 self.client.patch,
                 "/api/v1/tasks/%s" % self.task["id"],
                 status="completed",
-                ended=datetime.datetime.now().isoformat(),
+                ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
             )
             # Flush threads before moving on to next task to make sure all results are saved
             self.log.debug("waiting for task threads...")
@@ -400,7 +400,7 @@ class CallbackModule(CallbackBase):
                 self.client.patch,
                 "/api/v1/plays/%s" % self.play["id"],
                 status="completed",
-                ended=datetime.datetime.now().isoformat(),
+                ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
             )
             self.play = None
 
@@ -415,7 +415,7 @@ class CallbackModule(CallbackBase):
             self.client.patch,
             "/api/v1/playbooks/%s" % self.playbook["id"],
             status=status,
-            ended=datetime.datetime.now().isoformat(),
+            ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
         self.log.debug("waiting for global threads...")
         self.global_threads.shutdown(wait=True)
@@ -466,7 +466,7 @@ class CallbackModule(CallbackBase):
         database.
         """
         hostname = result._host.get_name()
-        self.result_ended[hostname] = datetime.datetime.now().isoformat()
+        self.result_ended[hostname] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
         # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(hostname)
