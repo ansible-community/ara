@@ -8,6 +8,7 @@
     <div class="pf-c-card__header pf-c-title pf-m-md">
         <h1><strong>Details</strong></h1>
         <ul class="pf-c-list">
+            <li><strong>Play</strong>: {{ result.play.name }}</li>
             <li><strong>Task</strong>: {{ result.task.name }}</a></li>
             <li><strong>Action</strong>: {{ result.task.action }}</li>
             <li><strong>Path</strong>: <a href="../files/{{ result.task.file }}.html#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
