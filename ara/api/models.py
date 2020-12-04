@@ -102,6 +102,7 @@ class Playbook(Duration):
     arguments = models.BinaryField(max_length=(2 ** 32) - 1)
     path = models.CharField(max_length=255)
     labels = models.ManyToManyField(Label)
+    controller = models.CharField(max_length=255, default="localhost")
 
     def __str__(self):
         return "<Playbook %s>" % self.id

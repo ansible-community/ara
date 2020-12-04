@@ -22,7 +22,7 @@ class Index(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         # TODO: Can we retrieve those fields automatically ?
-        fields = ["order", "name", "started_after", "status", "label"]
+        fields = ["order", "controller", "name", "started_after", "status", "label"]
         search_query = False
         for field in fields:
             if field in request.GET:

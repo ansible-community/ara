@@ -43,6 +43,7 @@ class PlaybookFactory(DjangoModelFactory):
     class Meta:
         model = models.Playbook
 
+    controller = "localhost"
     name = "test-playbook"
     ansible_version = "2.4.0"
     status = "running"

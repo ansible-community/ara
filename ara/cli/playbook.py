@@ -32,6 +32,12 @@ class PlaybookList(Lister):
             help=("List playbooks matching the provided label"),
         )
         parser.add_argument(
+            "--controller",
+            metavar="<controller>",
+            default=None,
+            help=("List playbooks that ran from the provided controller (full or partial)"),
+        )
+        parser.add_argument(
             "--name",
             metavar="<name>",
             default=None,
@@ -88,6 +94,9 @@ class PlaybookList(Lister):
         if args.label is not None:
             query["label"] = args.label
 
+        if args.controller is not None:
+            query["controller"] = args.controller
+
         if args.name is not None:
             query["name"] = args.name
 
@@ -118,6 +127,7 @@ class PlaybookList(Lister):
             columns = (
                 "id",
                 "status",
+                "controller",
                 "name",
                 "path",
                 "plays",
@@ -133,6 +143,7 @@ class PlaybookList(Lister):
             columns = (
                 "id",
                 "status",
+                "controller",
                 "path",
                 "tasks",
                 "results",
@@ -191,6 +202,7 @@ class PlaybookShow(ShowOne):
         columns = (
             "id",
             "report",
+            "controller",
             "status",
             "path",
             "started",
@@ -263,6 +275,12 @@ class PlaybookPrune(Command):
             help=("Only delete playbooks matching the provided name (full or partial)"),
         )
         parser.add_argument(
+            "--controller",
+            metavar="<controller>",
+            default=None,
+            help=("Only delete playbooks that ran from the provided controller (full or partial)"),
+        )
+        parser.add_argument(
             "--path",
             metavar="<path>",
             default=None,
@@ -315,6 +333,9 @@ class PlaybookPrune(Command):
         query = {}
         if args.label is not None:
             query["label"] = args.label
+
+        if args.controller is not None:
+            query["controller"] = args.controller
 
         if args.name is not None:
             query["name"] = args.name

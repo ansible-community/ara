@@ -32,11 +32,17 @@ class PlaybookTestCase(APITestCase):
 
     def test_playbook_serializer(self):
         serializer = serializers.PlaybookSerializer(
-            data={"name": "serializer-playbook", "ansible_version": "2.4.0", "path": "/path/playbook.yml"}
+            data={
+                "controller": "serializer",
+                "name": "serializer-playbook",
+                "ansible_version": "2.4.0",
+                "path": "/path/playbook.yml",
+            }
         )
         serializer.is_valid()
         playbook = serializer.save()
         playbook.refresh_from_db()
+        self.assertEqual(playbook.controller, "serializer")
         self.assertEqual(playbook.name, "serializer-playbook")
         self.assertEqual(playbook.ansible_version, "2.4.0")
         self.assertEqual(playbook.status, "unknown")
@@ -124,6 +130,20 @@ class PlaybookTestCase(APITestCase):
         playbook = factories.PlaybookFactory()
         request = self.client.get("/api/v1/playbooks/%s" % playbook.id)
         self.assertEqual(playbook.ansible_version, request.data["ansible_version"])
+
+    def test_get_playbook_by_controller(self):
+        playbook = factories.PlaybookFactory(name="playbook1", controller="controller-one")
+        factories.PlaybookFactory(name="playbook2", controller="controller-two")
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?controller=controller-one")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+        self.assertEqual(playbook.controller, request.data["results"][0]["controller"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?controller=controller")
+        self.assertEqual(len(request.data["results"]), 2)
 
     def test_get_playbook_by_name(self):
         playbook = factories.PlaybookFactory(name="playbook1")

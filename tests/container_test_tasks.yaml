@@ -47,6 +47,7 @@
           ansible_version: "9.0.0.1"
           started: "{{ ansible_date_time.iso8601_micro }}"
           status: running
+          controller: localhost
           labels:
             - "{{ _get_root.json['version'] }}"
             - "{{ item.name }}:{{ item.tag }}"

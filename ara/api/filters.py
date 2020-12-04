@@ -56,6 +56,7 @@ class LabelFilter(BaseFilter):
 
 
 class PlaybookFilter(DateFilter):
+    controller = django_filters.CharFilter(field_name="controller", lookup_expr="icontains")
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     path = django_filters.CharFilter(field_name="path", lookup_expr="icontains")
     status = django_filters.MultipleChoiceFilter(

@@ -8,6 +8,14 @@
         <form novalidate action="/" method="get" class="pf-c-form">
         <div class="pf-c-form__group pf-m-inline">
             <div class="pf-l-flex__item pf-m-flex-1">
+                <label class="pf-c-form__label" for="controller">
+                    <span class="pf-c-form__label-text">Controller</span>
+                </label>
+                <div class="pf-c-form__horizontal-group">
+                    <input class="pf-c-form-control" type="text" id="controller" name="controller" value="{% if search_form.controller.value is not null %}{{ search_form.controller.value }}{% endif %}" />
+                </div>
+            </div>
+            <div class="pf-l-flex__item pf-m-flex-1">
                 <label class="pf-c-form__label" for="name">
                     <span class="pf-c-form__label-text">Name</span>
                 </label>
@@ -102,6 +110,7 @@
                     {% include "partials/sort_by_duration.html" %}
                 </th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Ansible version</th>
+                <th role="columnheader" scope="col">Controller</th>
                 <th role="columnheader" scope="col">Name (or path)</th>
                 <th role="columnheader" scope="col">Labels</th>
                 <th role="columnheader" scope="col" class="pf-m-fit-content">Hosts</th>
@@ -141,6 +150,9 @@
                 </td>
                 <td role="cell" data-label="Ansible version" class="pf-m-fit-content">
                     {{ playbook.ansible_version }}
+                </td>
+                <td role="cell" data-label="Controller" class="pf-m-fit-content">
+                    {{ playbook.controller }}
                 </td>
                 <td role="cell" data-label="Name (or path)" class="pf-m-fit-content">
                     {% if static_generation %}

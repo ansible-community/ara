@@ -21,6 +21,7 @@ import datetime
 import json
 import logging
 import os
+import socket
 from concurrent.futures import ThreadPoolExecutor
 
 from ansible import __version__ as ansible_version
@@ -292,6 +293,7 @@ class CallbackModule(CallbackBase):
             arguments=cli_options,
             status="running",
             path=path,
+            controller=socket.getfqdn(),
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 

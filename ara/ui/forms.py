@@ -21,6 +21,7 @@ from ara.api import models
 
 
 class PlaybookSearchForm(forms.Form):
+    controller = forms.CharField(label="Playbook controller", max_length=255, required=False)
     name = forms.CharField(label="Playbook name", max_length=255, required=False)
     path = forms.CharField(label="Playbook path", max_length=255, required=False)
     status = forms.MultipleChoiceField(
