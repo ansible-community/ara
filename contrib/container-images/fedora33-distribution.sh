@@ -1,10 +1,10 @@
 #!/bin/bash -x
-# Builds an ARA API server container image from Fedora 32 distribution packages.
-build=$(buildah from fedora:32)
+# Builds an ARA API server container image from Fedora 33 distribution packages.
+build=$(buildah from fedora:33)
 
 # Get all updates, install the ARA API server, database backends and gunicorn application server
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
-buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y ara ara-server python3-psycopg2 python3-mysql python3-gunicorn && dnf clean all"
+buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y ara ara-server which python3-psycopg2 python3-mysql python3-gunicorn && dnf clean all"
 
 # Set up the container to execute SQL migrations and run the API server with gunicorn
 buildah config --env ARA_BASE_DIR=/opt/ara "${build}"
