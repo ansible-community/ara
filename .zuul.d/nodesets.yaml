@@ -48,14 +48,3 @@
       - name: ara-api-server
         nodes:
           - fedora-32
-
-# TODO: Remove ara-fedora-31 after bumping ara-collection as well
-- nodeset:
-    name: ara-fedora-31
-    nodes:
-      - name: fedora-31
-        label: fedora-31
-    groups:
-      - name: ara-api-server
-        nodes:
-          - fedora-31
