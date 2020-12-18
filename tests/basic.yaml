@@ -110,6 +110,7 @@
           [ara]
           api_client = {{ ara_api_client | default('offline') }}
           api_server = {{ ara_api_server | default('http://127.0.0.1') }}
+          callback_threads = {{ ara_callback_threads | default(0) }}
           {% if _default_labels is defined %}
           default_labels = {{ _default_labels | join(',') }}
           {% endif %}

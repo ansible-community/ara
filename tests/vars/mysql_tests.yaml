@@ -1,4 +1,5 @@
 ara_tests_cleanup: true
+ara_callback_threads: 4
 ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
 ara_api_secret_key: testing
 ara_api_debug: true

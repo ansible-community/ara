@@ -29,6 +29,7 @@ For example, a customized callback plugin configuration might look like this in 
     api_username = user
     api_password = password
     api_timeout = 15
+    callback_threads = 4
     argument_labels = check,tags,subset
     default_labels = prod,deploy
     ignored_facts = ansible_env,ansible_all_ipv4_addresses
@@ -43,6 +44,7 @@ or as environment variables:
     export ARA_API_USERNAME=user
     export ARA_API_PASSWORD=password
     export ARA_API_TIMEOUT=15
+    export ARA_CALLBACK_THREADS=4
     export ARA_ARGUMENT_LABELS=check,tags,subset
     export ARA_DEFAULT_LABELS=prod,deploy
     export ARA_IGNORED_FACTS=ansible_env,ansible_all_ipv4_addresses
