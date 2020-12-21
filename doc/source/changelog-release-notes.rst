@@ -4,6 +4,74 @@
 Changelog and release notes
 ***************************
 
+1.5.4 (2020-12-18)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.4
+
+.. code-block:: text
+
+    This is the 1.5.4 stable release of ara.
+    
+    Changes since 1.5.3:
+    
+    CLI
+    ---
+    
+    New commands were added to the 'ara' CLI:
+    
+    - ara playbook metrics: provides stats aggregated by name, path, ansible version or controller
+    - ara host metrics: provides task result stats for hosts across playbooks
+    - ara task metrics: provides duration stats aggregated by task name, action/module or path
+    
+    Refer to the documentation for examples and more information on these commands:
+    https://ara.readthedocs.io/en/latest/cli.html
+    
+    Callback plugin
+    ---------------
+    
+    - Threading is now disabled by default to avoid running into sqlite locking contention
+      For details, see: https://github.com/ansible-community/ara/issues/195
+    - The callback didn't provide a timezone for timestamps which could result in a wrong
+      interpretation by the API server. Timestamps are now provided as UTC.
+    
+    Controller hostname
+    -------------------
+    
+    The hostname of the controller that ran the playbook is now recorded by ara.
+    
+    Playbooks can be filtered by controller in the UI as well as the API:
+    
+        /api/v1/playbooks?controller=localhost
+    
+    As well as with the CLI, for example:
+    
+        ara playbook list --controller=localhost
+        ara playbook metrics --controller=localhost
+    
+    Container images
+    ----------------
+    
+    - ARA API server container images are now published to quay.io/recordsansible/ara-api
+      in addition to hub.docker.com/r/recordsansible/ara-api.
+    - Fedora 32 images were replaced by images based on Fedora 33
+    - The 'which' package is now installed as a dependency
+    - Removed a temporary workaround for dynaconf switching from PyYAML to ruamel.yaml
+    
+    UI
+    --
+    
+    - Added missing information about the play when browsing details for a task result
+    
+    Upgrade notes
+    -------------
+    
+    The new controller hostname feature introduces a SQL migration to update the database schema.
+    After upgrading, database migrations will need to be run at least once using 'ara-manage migrate'.
+    
+    Because the hostname was not previously saved and can't be recovered retroactively,
+    playbooks that were recorded before the upgrade will have the controller set to 'localhost'.
+
 1.5.3 (2020-10-23)
 ##################
 
