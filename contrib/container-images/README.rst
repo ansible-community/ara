@@ -27,7 +27,7 @@ You will need to install `buildah <https://github.com/containers/buildah/blob/ma
 
 The different scripts to build container images are available in the git repository:
 
-- fedora33-distribution.sh_: Builds an image from Fedora 33`distribution packages <https://koji.fedoraproject.org/koji/packageinfo?packageID=24394>`_
+- fedora33-distribution.sh_: Builds an image from Fedora 33 `distribution packages <https://koji.fedoraproject.org/koji/packageinfo?packageID=24394>`_
 - fedora33-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on Fedora 33
 - fedora33-source.sh_: Builds an image from `git source <https://github.com/ansible-community/ara>`_ on Fedora 33
 - centos8-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on CentOS 8
