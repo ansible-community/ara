@@ -1,0 +1,38 @@
+{% load pygments_highlights %}
+{% load datetime_formatting %}
+{% load diff_result %}
+
+{% for result in results %}
+{% with index=forloop.counter %}
+<h1><strong>Result #{{ index }}</strong></h1>
+<table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-details">
+    <thead>
+        <tr role="row">
+            <th role="columnheader" scope="col" class="pf-m-width-20">Field</th>
+            <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for field, value in result.items %}
+        <tr role="row">
+            <td role="cell" id="{{ field }}_{{ index }}" data-label="{{ field }}" class="pf-m-width-20">
+                <a href="#{{ field }}_{{ index }}">{{ field }}</a>
+            </td>
+            <td role="cell" data-label="Value" class="pf-m-width-80">
+                {% if field == "diff" %}
+                    {{ value | diff_result | format_data | safe }}
+                {% else %}
+                    {{ value | format_data | safe }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if not forloop.last %}
+<br>
+<hr>
+<br>
+{% endif %}
+{% endwith %}
+{% endfor %}
