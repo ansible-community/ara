@@ -158,6 +158,20 @@ class PlaybookTestCase(APITestCase):
         request = self.client.get("/api/v1/playbooks?name=playbook")
         self.assertEqual(len(request.data["results"]), 2)
 
+    def test_get_playbook_by_ansible_version(self):
+        playbook = factories.PlaybookFactory(name="playbook1", ansible_version="2.9.1")
+        factories.PlaybookFactory(name="playbook2", ansible_version="2.8.2")
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?ansible_version=2.9.1")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?ansible_version=2.9")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
     def test_get_playbook_by_path(self):
         playbook = factories.PlaybookFactory(path="/root/playbook.yml")
         factories.PlaybookFactory(path="/home/playbook.yml")

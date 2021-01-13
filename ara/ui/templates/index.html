@@ -8,6 +8,14 @@
         <form novalidate action="/" method="get" class="pf-c-form">
         <div class="pf-c-form__group pf-m-inline">
             <div class="pf-l-flex__item pf-m-flex-1">
+                <label class="pf-c-form__label" for="ansible_version">
+                    <span class="pf-c-form__label-text">Ansible version</span>
+                </label>
+                <div class="pf-c-form__horizontal-group">
+                    <input class="pf-c-form-control" type="text" id="ansible_version" name="ansible_version" value="{% if search_form.ansible_version.value is not null %}{{ search_form.ansible_version.value }}{% endif %}" />
+                </div>
+            </div>
+            <div class="pf-l-flex__item pf-m-flex-1">
                 <label class="pf-c-form__label" for="controller">
                     <span class="pf-c-form__label-text">Controller</span>
                 </label>

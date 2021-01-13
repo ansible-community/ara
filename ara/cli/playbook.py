@@ -32,6 +32,12 @@ class PlaybookList(Lister):
             help=("List playbooks matching the provided label"),
         )
         parser.add_argument(
+            "--ansible_version",
+            metavar="<ansible_version>",
+            default=None,
+            help=("List playbooks that ran with the specified Ansible version (full or partial)"),
+        )
+        parser.add_argument(
             "--controller",
             metavar="<controller>",
             default=None,
@@ -94,6 +100,9 @@ class PlaybookList(Lister):
         if args.label is not None:
             query["label"] = args.label
 
+        if args.ansible_version is not None:
+            query["ansible_version"] = args.ansible_version
+
         if args.controller is not None:
             query["controller"] = args.controller
 
@@ -128,6 +137,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
+                "ansible_version",
                 "name",
                 "path",
                 "plays",
@@ -144,6 +154,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
+                "ansible_version",
                 "path",
                 "tasks",
                 "results",
@@ -203,12 +214,12 @@ class PlaybookShow(ShowOne):
             "id",
             "report",
             "controller",
+            "ansible_version",
             "status",
             "path",
             "started",
             "ended",
             "duration",
-            "ansible_version",
             "items",
             "labels",
             "arguments",
@@ -275,6 +286,12 @@ class PlaybookPrune(Command):
             help=("Only delete playbooks matching the provided name (full or partial)"),
         )
         parser.add_argument(
+            "--ansible_version",
+            metavar="<ansible_version>",
+            default=None,
+            help=("Only delete playbooks that ran with the specified Ansible version (full or partial)"),
+        )
+        parser.add_argument(
             "--controller",
             metavar="<controller>",
             default=None,
@@ -333,6 +350,9 @@ class PlaybookPrune(Command):
         query = {}
         if args.label is not None:
             query["label"] = args.label
+
+        if args.ansible_version is not None:
+            query["ansible_version"] = args.ansible_version
 
         if args.controller is not None:
             query["controller"] = args.controller
@@ -398,6 +418,12 @@ class PlaybookMetrics(Lister):
             help=("List playbooks matching the provided label"),
         )
         parser.add_argument(
+            "--ansible_version",
+            metavar="<ansible_version>",
+            default=None,
+            help=("List playbooks that ran with the specified Ansible version (full or partial)"),
+        )
+        parser.add_argument(
             "--name",
             metavar="<name>",
             default=None,
@@ -453,6 +479,9 @@ class PlaybookMetrics(Lister):
         query = {}
         if args.label is not None:
             query["label"] = args.label
+
+        if args.ansible_version is not None:
+            query["ansible_version"] = args.ansible_version
 
         if args.name is not None:
             query["name"] = args.name
