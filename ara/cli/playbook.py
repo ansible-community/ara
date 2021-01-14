@@ -430,6 +430,12 @@ class PlaybookMetrics(Lister):
             help=("List playbooks matching the provided name (full or partial)"),
         )
         parser.add_argument(
+            "--controller",
+            metavar="<controller>",
+            default=None,
+            help=("List playbooks that ran from the provided controller (full or partial)"),
+        )
+        parser.add_argument(
             "--path",
             metavar="<path>",
             default=None,
@@ -485,6 +491,9 @@ class PlaybookMetrics(Lister):
 
         if args.name is not None:
             query["name"] = args.name
+
+        if args.controller is not None:
+            query["controller"] = args.controller
 
         if args.path is not None:
             query["path"] = args.path
