@@ -143,7 +143,7 @@
       them to the live demo.
     vars:
       ara_api_client: http
-      ara_api_server: "https://api.demo.recordsansible.org"
+      ara_api_server: "https://demo.recordsansible.org"
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.9

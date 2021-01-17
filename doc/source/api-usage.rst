@@ -50,7 +50,7 @@ specifying an endpoint parameter:
     # Import the client
     from ara.clients.http import AraHttpClient
 
-    endpoint = "https://api.demo.recordsansible.org"
+    endpoint = "https://demo.recordsansible.org"
     # Instanciate the HTTP client with an endpoint where an API server is listening
     client = AraHttpClient(endpoint=endpoint)
 
@@ -73,7 +73,7 @@ Here's a code example to help you get started:
     from ara.clients.http import AraHttpClient
 
     # Instanciate the HTTP client with an endpoint where an API server is listening
-    client = AraHttpClient(endpoint="https://api.demo.recordsansible.org")
+    client = AraHttpClient(endpoint="https://demo.recordsansible.org")
 
     # Get a list of failed playbooks
     # /api/v1/playbooks?status=failed

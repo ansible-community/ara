@@ -23,7 +23,7 @@ You can also see what a detailed view looks like by querying a specific object i
 .. image:: ../source/_static/ui-api-browser-playbook.png
 
 Alternatively, you may also find an up-to-date live demonstration of the API at
-``https://api.demo.recordsansible.org``.
+``https://demo.recordsansible.org``.
 
 Relationship between objects
 ----------------------------

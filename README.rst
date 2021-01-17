@@ -46,15 +46,6 @@ A built-in CLI client for querying and managing playbooks and their recorded dat
 The full list of commands, their arguments as well as examples can be found in
 the `CLI documentation <https://ara.readthedocs.io/en/latest/cli.html#cli-ara-api-client>`_.
 
-ara-web
--------
-
-A project that is a work in progress and would appreciate contributions,
-`ara-web <https://github.com/ansible-community/ara-web>`_ is a stateless
-javascript interface to the API built with react and patternfly.
-
-.. image:: doc/source/_static/ui-ara-web.png
-
 Getting started
 ===============
 
@@ -146,14 +137,9 @@ Read more about how container images are built and how to run them in the `docum
 Live demo
 =========
 
-Deployments of the ARA API server and ara-web are available for demonstration
-and test purposes:
+A live demo for demonstration and test purposes is available at https://demo.recordsansible.org
 
-- https://api.demo.recordsansible.org
-- https://web.demo.recordsansible.org
-
-These live demos are deployed using the ara_api and ara_web Ansible roles from the ara Ansible collection:
-https://github.com/ansible-community/ara-collection
+This demo is deployed with the help of the ara collection: https://github.com/ansible-community/ara-collection
 
 Documentation
 =============

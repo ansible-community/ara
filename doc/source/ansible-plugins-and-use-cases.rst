@@ -25,7 +25,7 @@ For example, a customized callback plugin configuration might look like this in 
 
     [ara]
     api_client = http
-    api_server = https://api.demo.recordsansible.org
+    api_server = https://demo.recordsansible.org
     api_username = user
     api_password = password
     api_timeout = 15
@@ -40,7 +40,7 @@ or as environment variables:
 .. code-block:: bash
 
     export ARA_API_CLIENT=http
-    export ARA_API_SERVER="https://api.demo.recordsansible.org"
+    export ARA_API_SERVER="https://demo.recordsansible.org"
     export ARA_API_USERNAME=user
     export ARA_API_PASSWORD=password
     export ARA_API_TIMEOUT=15

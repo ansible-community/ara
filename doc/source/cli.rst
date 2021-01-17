@@ -39,7 +39,7 @@ Query a running API server for the 10 latest failed playbooks:
 .. code-block:: bash
 
     ara playbook list --client http \
-      --server https://api.demo.recordsansible.org \
+      --server https://demo.recordsansible.org \
       --status failed \
       --limit 10
 
@@ -66,7 +66,7 @@ Show details about a playbook from a running API server and format the result in
 
 .. code-block:: bash
 
-    ara playbook show --client http --server https://api.demo.recordsansible.org 1 -f json
+    ara playbook show --client http --server https://demo.recordsansible.org 1 -f json
 
 Show details about a playbook from a local installation using the default offline
 API client and format the result in yaml:
