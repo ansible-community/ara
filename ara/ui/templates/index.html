@@ -169,7 +169,7 @@
                         {% if playbook.status == "failed" %}
                             <a href="{% url 'ui:playbook' playbook.id %}?status=failed&status=unreachable#results">
                         {% else %}
-                            <a href="{% url 'ui:playbook' playbook.id %}?changed=True#results">
+                            <a href="{% url 'ui:playbook' playbook.id %}">
                         {% endif %}
                     {% endif %}
                     {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
