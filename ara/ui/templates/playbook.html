@@ -144,9 +144,9 @@
         <details id="results" open="true">
             <summary>Task results</summary>
             {% if not static_generation %}
+            <form method="get" action="{% url 'ui:playbook' playbook.id %}#results" class="pf-c-form">
             <div class="pf-l-flex">
                 <div class="pf-l-flex">
-                    <form method="get" action="{% url 'ui:playbook' playbook.id %}#results" class="pf-c-form">
                     <div class="pf-c-form__group pf-m-inline">
                         <div class="pf-l-flex__item pf-m-flex-1" for="{{ search_form.host.id_for_label }}">
                             <label class="pf-c-form__label" for="{{ search_form.host.id_for_label }}">
@@ -219,7 +219,6 @@
                         </div>
                         {% endif %}
                     </div>
-                    </form>
                 </div>
             </div>
             {% include "partials/pagination.html" with data=results %}
@@ -271,6 +270,9 @@
                 {% else %}
                     No task results have been recorded for this playbook yet. It may be in progress or has been interrupted.
                 {% endif %}
+            {% endif %}
+            {% if not static_generation %}
+            </form>
             {% endif %}
         </details>
     </div>

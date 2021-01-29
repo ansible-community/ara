@@ -21,17 +21,10 @@ class Index(generics.ListAPIView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        # TODO: Can we retrieve those fields automatically ?
-        fields = ["order", "controller", "name", "started_after", "status", "label"]
         search_query = False
-        for field in fields:
-            if field in request.GET:
-                search_query = True
-
-        if search_query:
-            search_form = forms.PlaybookSearchForm(request.GET)
-        else:
-            search_form = forms.PlaybookSearchForm()
+        if request.GET:
+            search_query = True
+        search_form = forms.PlaybookSearchForm(request.GET)
 
         query = self.filter_queryset(self.queryset.all().order_by("-id"))
         page = self.paginate_queryset(query)

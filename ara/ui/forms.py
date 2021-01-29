@@ -29,6 +29,8 @@ class PlaybookSearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple, choices=models.Playbook.STATUS, required=False
     )
     label = forms.CharField(label="Playbook label", max_length=255, required=False)
+    started_after = forms.DateField(label="Started after", required=False)
+    order = forms.CharField(label="Order", max_length=255, required=False)
 
 
 class ResultSearchForm(forms.Form):

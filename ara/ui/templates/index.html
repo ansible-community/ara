@@ -3,9 +3,9 @@
 {% load truncatepath %}
 {% block body %}
 {% if not static_generation %}
+<form novalidate action="/" method="get" class="pf-c-form">
 <div class="pf-l-flex">
     <div class="pf-l-flex">
-        <form novalidate action="/" method="get" class="pf-c-form">
         <div class="pf-c-form__group pf-m-inline">
             <div class="pf-l-flex__item pf-m-flex-1">
                 <label class="pf-c-form__label" for="ansible_version">
@@ -89,16 +89,15 @@
             </div>
             {% endif %}
         </div>
-        </form>
     </div>
     <div class="pf-l-flex pf-m-align-right">
         <div class="pf-l-flex__item">
             <h1 class="pf-c-title pf-m-2xl"><i class="fas fa-clock"></i> Filter by date</h1>
             <ul class="pf-c-list pf-m-inline">
-                <li><a href="?started_after={% past_timestamp with minutes=60 %}">Last 60 minutes</a></li>
-                <li><a href="?started_after={% past_timestamp with hours=24 %}">Last 24 hours</a></li>
-                <li><a href="?started_after={% past_timestamp with days=7 %}">Last 7 days</a></li>
-                <li><a href="?started_after={% past_timestamp with days=30 %}">Last 30 days</a></li>
+                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with minutes=60 %}" type="submit">Last 60 minutes</button></li>
+                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with hours=24 %}" type="submit">Last 24 hours</button></li>
+                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with days=7 %}" type="submit">Last 7 days</button></li>
+                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with days=30 %}" type="submit">Last 30 days</button></li>
             </ul>
         </div>
     </div>
@@ -233,6 +232,7 @@
     </table>
 </div>
 {% if not static_generation %}
+</form>
 {% include "partials/pagination.html" %}
 {% endif %}
 {% endblock %}
