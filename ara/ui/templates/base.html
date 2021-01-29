@@ -19,7 +19,11 @@
     <div class="pf-c-page">
         <header role="banner" class="pf-c-page__header">
             <div class="pf-c-page__header-brand">
+                {% if static_generation %}
                 <a class="pf-c-page__header-brand-link" href="{% if page != "index" %}../{% endif %}">
+                {% else %}
+                <a class="pf-c-page__header-brand-link" href="{% url 'ui:index' %}">
+                {% endif %}
                     <img class="pf-c-brand" src="{% if page != "index" %}../{% endif %}static/images/logo.svg" alt="ARA Records Ansible">
                 </a>
             </div>
@@ -31,9 +35,9 @@
                     <ul class="pf-c-nav__horizontal-list">
                         <li class="pf-c-nav__item">
                             {% if page == "index" %}
-                            <a href="" class="pf-c-nav__link pf-m-current" aria-current="page">Playbooks</a>
+                            <a href="{% if not static_generation %}{% url 'ui:index' %}{% endif %}" class="pf-c-nav__link pf-m-current" aria-current="page">Playbooks</a>
                             {% else %}
-                            <a href="../" class="pf-c-nav__link">Playbooks</a>
+                            <a href="{% if not static_generation %}{% url 'ui:index' %}{% else %}../{% endif %}" class="pf-c-nav__link">Playbooks</a>
                             {% endif %}
                         </li>
                         {% include "partials/api_link.html" %}
