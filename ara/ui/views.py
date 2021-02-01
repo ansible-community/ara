@@ -21,9 +21,6 @@ class Index(generics.ListAPIView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        search_query = False
-        if request.GET:
-            search_query = True
         search_form = forms.PlaybookSearchForm(request.GET)
 
         query = self.filter_queryset(self.queryset.all().order_by("-id"))
@@ -42,11 +39,11 @@ class Index(generics.ListAPIView):
 
         return Response(
             {
-                "page": "index",
                 "data": response.data,
                 "search_form": search_form,
-                "search_query": search_query,
                 "current_page_results": current_page_results,
+                "page": "index",
+                "static_generation": False,
             }
         )
 
@@ -107,7 +104,9 @@ class Playbook(generics.RetrieveAPIView):
             "records": records.data,
             "results": paginated_results.data,
             "current_page_results": current_page_results,
-            "search_form": search_form
+            "search_form": search_form,
+            "static_generation": False,
+            "page": "playbook",
         })
         # fmt: on
 
@@ -124,7 +123,7 @@ class Host(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         host = self.get_object()
         serializer = serializers.DetailedHostSerializer(host)
-        return Response({"host": serializer.data})
+        return Response({"host": serializer.data, "static_generation": False, "page": "host"})
 
 
 class File(generics.RetrieveAPIView):
@@ -139,7 +138,7 @@ class File(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         file = self.get_object()
         serializer = serializers.DetailedFileSerializer(file)
-        return Response({"file": serializer.data})
+        return Response({"file": serializer.data, "static_generation": False, "page": "file"})
 
 
 class Result(generics.RetrieveAPIView):
@@ -156,7 +155,7 @@ class Result(generics.RetrieveAPIView):
         codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
         result = self.get_object()
         serializer = serializers.DetailedResultSerializer(result)
-        return Response({"result": serializer.data})
+        return Response({"result": serializer.data, "static_generation": False, "page": "result"})
 
 
 class Record(generics.RetrieveAPIView):
@@ -171,4 +170,4 @@ class Record(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         record = self.get_object()
         serializer = serializers.DetailedRecordSerializer(record)
-        return Response({"record": serializer.data})
+        return Response({"record": serializer.data, "static_generation": False, "page": "result"})

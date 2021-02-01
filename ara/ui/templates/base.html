@@ -1,62 +1,63 @@
-<!DOCTYPE html>
-<html lang="en" class="layout-pf">
-
+{% load static %}
+{% load static_url %}
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/patternfly.min.css">
-    <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/ara.css">
-    {% if file.id or record.id or host.id or result.id %}
-    <link rel="stylesheet" href="{% if page != "index" %}../{% endif %}static/css/pygments.css">
-    {% endif %}
-    <link rel="shortcut icon" href="{% if page != "index" %}../{% endif %}static/images/favicon.ico">
-    {% block head %}
-    {% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="ARA Records Ansible">
+  <meta name="author" content="https://github.com/ansible-community/ara">
+  <title>ARA Records Ansible</title>
+
+  {% static 'images/favicon.ico' as favicon_url %}
+  <link rel="shortcut icon" href="{% static_url favicon_url %}">
+  {% static UI_THEME as ui_theme_url %}
+  <link rel="stylesheet" href="{% static_url ui_theme_url %}">
+  {% with "css/pygments-"|add:UI_THEME_VARIANT|add:".css" as pygments_css %}
+    {% static pygments_css as pygments_css_url %}
+    <link rel="stylesheet" href="{% static_url pygments_css_url %}">
+  {% endwith %}
 </head>
-
 <body>
-    <div class="pf-c-page">
-        <header role="banner" class="pf-c-page__header">
-            <div class="pf-c-page__header-brand">
-                {% if static_generation %}
-                <a class="pf-c-page__header-brand-link" href="{% if page != "index" %}../{% endif %}">
-                {% else %}
-                <a class="pf-c-page__header-brand-link" href="{% url 'ui:index' %}">
-                {% endif %}
-                    <img class="pf-c-brand" src="{% if page != "index" %}../{% endif %}static/images/logo.svg" alt="ARA Records Ansible">
-                </a>
-            </div>
-            <div class="pf-c-page__header-nav">
-                <nav class="pf-c-nav" aria-label="Global">
-                    <button class="pf-c-nav__scroll-button" aria-label="Scroll left">
-                        <i class="fas fa-angle-left" aria-hidden="true"></i>
-                    </button>
-                    <ul class="pf-c-nav__horizontal-list">
-                        <li class="pf-c-nav__item">
-                            {% if page == "index" %}
-                            <a href="{% if not static_generation %}{% url 'ui:index' %}{% endif %}" class="pf-c-nav__link pf-m-current" aria-current="page">Playbooks</a>
-                            {% else %}
-                            <a href="{% if not static_generation %}{% url 'ui:index' %}{% else %}../{% endif %}" class="pf-c-nav__link">Playbooks</a>
-                            {% endif %}
-                        </li>
-                        {% include "partials/api_link.html" %}
-                        <li class="pf-c-nav__item">
-                            <a href="https://ara.readthedocs.io" class="pf-c-nav__link" target="_blank">Docs</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-        <main role="main" class="pf-c-page__main">
-            <section class="pf-c-page__main-section pf-m-light">
-                {% block body %}
-                {% endblock %}
-            </section>
-            <section class="pf-c-page__main-section">
-            </section>
-        </main>
+<header>
+  <!-- Fixed navbar -->
+  {% url 'ui:index' as index_url %}
+  <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="{% static_url index_url %}">
+      {% static 'images/logo.svg' as logo_url %}
+      <img src="{% static_url logo_url %}" height="60" alt="ARA Records Ansible">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item{% if page == 'index' %} active{% endif %}">
+          <a class="nav-link" href="{% static_url index_url %}">Playbooks</a>
+        </li>
+        {% if not static_generation %}
+          <li class="nav-item">
+            {% include "partials/api_link.html" %}
+          </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="https://ara.readthedocs.io" target="_blank">Documentation</a>
+        </li>
+      </ul>
     </div>
+  </nav>
+</header>
+<br/>
+<!-- Begin page content -->
+{% static 'js/jquery-3.5.1.slim.min.js' as jquery_url %}
+{% static 'js/bootstrap.bundle.min.js' as bootstrap_js_url %}
+<script src="{% static_url jquery_url %}"></script>
+<script src="{% static_url bootstrap_js_url %}"></script>
+<main role="main">
+  {% block body %}
+  {% endblock %}
+</main>
 </body>
-
 </html>

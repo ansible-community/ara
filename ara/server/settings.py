@@ -191,6 +191,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "ara.server.context_processors.ui_theme",
             ]
         },
     }
@@ -220,9 +221,13 @@ warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.
 
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"))
-
 MEDIA_URL = settings.get("MEDIA_URL", "/media/")
 MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
+
+# Either bootstrap-darkly or bootstrap-default for now
+UI_THEME = settings.get("UI_THEME", "css/bootstrap-darkly.min.css")
+# Either dark (for bootstrap-darkly) or light for bootstrap-default
+UI_THEME_VARIANT = settings.get("UI_THEME_VARIANT", "dark")
 
 ROOT_URLCONF = "ara.server.urls"
 APPEND_SLASH = False

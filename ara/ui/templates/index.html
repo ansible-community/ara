@@ -1,238 +1,212 @@
 {% extends "base.html" %}
 {% load datetime_formatting %}
 {% load truncatepath %}
+{% load static_url %}
 {% block body %}
-{% if not static_generation %}
-<form novalidate action="/" method="get" class="pf-c-form">
-<div class="pf-l-flex">
-    <div class="pf-l-flex">
-        <div class="pf-c-form__group pf-m-inline">
-            <div class="pf-l-flex__item pf-m-flex-1">
-                <label class="pf-c-form__label" for="ansible_version">
-                    <span class="pf-c-form__label-text">Ansible version</span>
-                </label>
-                <div class="pf-c-form__horizontal-group">
-                    <input class="pf-c-form-control" type="text" id="ansible_version" name="ansible_version" value="{% if search_form.ansible_version.value is not null %}{{ search_form.ansible_version.value }}{% endif %}" />
-                </div>
-            </div>
-            <div class="pf-l-flex__item pf-m-flex-1">
-                <label class="pf-c-form__label" for="controller">
-                    <span class="pf-c-form__label-text">Controller</span>
-                </label>
-                <div class="pf-c-form__horizontal-group">
-                    <input class="pf-c-form-control" type="text" id="controller" name="controller" value="{% if search_form.controller.value is not null %}{{ search_form.controller.value }}{% endif %}" />
-                </div>
-            </div>
-            <div class="pf-l-flex__item pf-m-flex-1">
-                <label class="pf-c-form__label" for="name">
-                    <span class="pf-c-form__label-text">Name</span>
-                </label>
-                <div class="pf-c-form__horizontal-group">
-                    <input class="pf-c-form-control" type="text" id="name" name="name" value="{% if search_form.name.value is not null %}{{ search_form.name.value }}{% endif %}" />
-                </div>
-            </div>
-            <div class="pf-l-flex__item pf-m-flex-1">
-                <label class="pf-c-form__label" for="path">
-                    <span class="pf-c-form__label-text">Path</span>
-                </label>
-                <div class="pf-c-form__horizontal-group">
-                    <input class="pf-c-form-control" type="text" id="path" name="path" value="{% if search_form.path.value is not null %}{{ search_form.path.value }}{% endif %}" />
-                </div>
-            </div>
-            <div class="pf-l-flex__item pf-m-flex-1">
-                <div class="pf-c-form__group">
-                    <label class="pf-c-form__label" for="label">
-                        <span class="pf-c-form__label-text">Label</span>
-                    </label>
-                    <div class="pf-c-form__horizontal-group">
-                        <input class="pf-c-form-control" type="text" id="label" name="label" value="{% if search_form.label.value is not null %}{{ search_form.label.value }}{% endif %}" />
-                    </div>
-                </div>
-            </div>
-            <div class="pf-l-flex__item">
-                <div class="pf-c-form__group">
-                    <label class="pf-c-form__label" for="status">
-                        <span class="pf-c-form__label-text">Status</span>
-                    </label>
-                    <div class="pf-c-form__group pf-m-inline">
-                        <fieldset class="pf-c-form__fieldset" aria-labelledby="select-checkbox-expanded-label">
-                        {% for value, text in search_form.status.field.choices %}
-                        {% if value != "unknown" %}
-                            <label class="pf-c-check pf-c-select__menu-item" for="{{ value }}">
-                                {% if value in search_form.status.data %}
-                                <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" checked />
-                                {% else %}
-                                <input class="pf-c-check__input" type="checkbox" id="{{ value }}" name="status" value="{{ value }}" />
-                                {% endif %}
-                                <span class="pf-c-check__label">{{ value }}</span>
-                            </label>
-                        {% endif %}
-                        {% endfor %}
-                        </fieldset>
-                    </div>
-                </div>
-            </div>
-            <div class="pf-l-flex__item">
-                <div class="pf-c-form__actions">
-                    <button class="pf-c-button pf-m-primary" type="submit"><i class="fas fa-search"></i> Search</button>
-                </div>
-            </div>
-            {% if search_query %}
-            <div class="pf-l-flex__item">
-                <div class="pf-c-form__actions">
-                    <a href="/">
-                        <button class="pf-c-button pf-m-plain pf-m-link" type="button" aria-label="Remove">
-                            <i class="fas fa-times" aria-hidden="true"></i> Clear filters
-                        </button>
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    <div class="pf-l-flex pf-m-align-right">
-        <div class="pf-l-flex__item">
-            <h1 class="pf-c-title pf-m-2xl"><i class="fas fa-clock"></i> Filter by date</h1>
-            <ul class="pf-c-list pf-m-inline">
-                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with minutes=60 %}" type="submit">Last 60 minutes</button></li>
-                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with hours=24 %}" type="submit">Last 24 hours</button></li>
-                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with days=7 %}" type="submit">Last 7 days</button></li>
-                <li><button class="pf-c-button pf-m-link" name="started_after" value="{% past_timestamp with days=30 %}" type="submit">Last 30 days</button></li>
-            </ul>
-        </div>
-    </div>
-</div>
-{% include "partials/pagination.html" %}
-{% endif %}
 
-<div class="pf-l-flex">
-    <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" aria-label="Playbook runs" id="playbooks">
-        <thead>
-            <tr role="row">
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Status</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content pf-c-table__sort">
-                    {% include "partials/sort_by_date.html" %}
-                </th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content pf-c-table__sort">
-                    {% include "partials/sort_by_duration.html" %}
-                </th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Ansible version</th>
-                <th role="columnheader" scope="col">Controller</th>
-                <th role="columnheader" scope="col">Name (or path)</th>
-                <th role="columnheader" scope="col">Labels</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Hosts</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Plays</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Tasks</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Results</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Files</th>
-                <th role="columnheader" scope="col" class="pf-m-fit-content">Records</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody role="rowgroup">
-            {% for playbook in data.results %}
-            <tr role="row" class="pf-m-success">
-                <td role="cell" data-label="Status" class="pf-c-table__icon pf-m-fit-content">
-                    {% if playbook.status == "completed" %}
-                    <div class="pf-c-alert pf-m-success pf-m-inline">
-                    {% elif playbook.status == "failed" %}
-                    <div class="pf-c-alert pf-m-danger pf-m-inline">
-                    {% elif playbook.status == "running" %}
-                    <div class="pf-c-alert pf-m-info pf-m-inline">
-                    {% else %}
-                    <div class="pf-c-alert pf-m-warning pf-m-inline">
-                    {% endif %}
-                        {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+  {% if not static_generation %}
+    <form action="{% url 'ui:index' %}" method="get">
+    <div class="container-fluid">
+    <div class="accordion" id="search_accordion">
+      <div class="card">
+        <div class="card-header" id="search_form">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{% if request.GET %}true{% else %}false{% endif %}" aria-controls="collapse_search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            Search and filter
+          </button>
+        </div>
+        <div id="collapse_search" class="collapse {% if request.GET %}show{% endif %}" aria-labelledby="search_form" data-parent="#search_accordion">
+          <div class="card-body bg-{{ UI_THEME_VARIANT }}">
+            <div class="form-row">
+              <div class="form-group col-md-5">
+                <label for="path" {% if request.GET.path %}style="font-weight:bold;"{% endif %}>Path</label>
+                <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.path.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-2">
+                <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Ansible version</label>
+                <input type="text" class="form-control" id="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{{ search_form.ansible_version.value | default_if_none:'' }}">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="controller" {% if request.GET.controller %}style="font-weight:bold;"{% endif %}>Ansible controller</label>
+                <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-2">
+                <label for="ansible_version" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Label</label>
+                <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-7">
+                <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+                {% for value, text in search_form.status.field.choices %}
+                  {% if value != "unknown" %}
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
+                      <label class="form-check-label" for="{{ value }}">
+                        {% include "partials/playbook_status_icon.html" with status=value %} {{ value }}
+                      </label>
                     </div>
-                </td>
-                <td role="cell" data-label="Date" class="pf-m-fit-content">
-                    <span title="Date at which the playbook started">
-                        {{ playbook.started | format_date }}
-                    </span>
-                </td>
-                <td role="cell" data-label="Duration" class="pf-m-fit-content">
-                    <span title="Duration of the playbook (HH:MM:SS.ms)">
-                        {{ playbook.duration | format_duration }}
-                    </span>
-                </td>
-                <td role="cell" data-label="Ansible version" class="pf-m-fit-content">
-                    {{ playbook.ansible_version }}
-                </td>
-                <td role="cell" data-label="Controller" class="pf-m-fit-content">
-                    {{ playbook.controller }}
-                </td>
-                <td role="cell" data-label="Name (or path)" class="pf-m-fit-content">
-                    {% if static_generation %}
-                        <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html" title="{{ playbook.path }}">
-                    {% else %}
-                        {% if playbook.status == "failed" %}
-                            <a href="{% url 'ui:playbook' playbook.id %}?status=failed&status=unreachable#results">
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-12">
+                <div class="btn-group" role="group" aria-label="Filter by date">
+                  <button type="submit" class="btn btn-primary">
+                    Submit
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with minutes=60 %}">Last 60 minutes
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with hours=24 %}">Last 24 hours
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=7 %}">Last 7 days
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=30 %}">Last 30 days
+                  </button>
+                </div>
+                {% if request.GET %}
+                  <a class="btn btn-outline-danger" href="{% url 'ui:index' %}" role="button">Reset</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+<div class="container-fluid">
+  {% if not static_generation %}
+    {% include "partials/pagination.html" %}
+  {% endif %}
+  <div class="table-responsive">
+    <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbooks">
+      <thead>
+      <tr>
+        <th class="text-center" title="Link to the playbook report">Report</th>
+        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+        <th class="text-center" title="Status of the playbook run">Status</th>
+        <th title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
+        <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+        <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+        <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+        <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+        <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
+        <th class="text-center" title="Host that ran the playbook">Controller</th>
+        <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
+        <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for playbook in data.results %}
+        <tr>
+          <td class="text-center">
+            {% url 'ui:playbook' playbook.id as playbook_url %}
+            <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+              </svg>
+            </a>
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-outline-secondary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal" viewBox="0 0 16 16">
+                <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
+                <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
+              </svg>
+            </button>
+            <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h3 class="modal-title">CLI arguments</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container-fluid">
+                      <div class="row">
+                        {% if playbook.name is not None %}
+                          <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
                         {% else %}
-                            <a href="{% url 'ui:playbook' playbook.id %}">
+                          <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
                         {% endif %}
-                    {% endif %}
-                    {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
-                    </a>
-                </td>
-                <td role="cell" data-label="Labels" class="pf-m-wrap">
-                    <div class="pf-l-flex">
-                    {% for label in playbook.labels %}
-                    {% if not static_generation %}
-                    <a class="pf-c-button pf-m-secondary pf-c-label pf-m-compact" title="Search for this label" href="{% if page != 'index' %}../{% endif %}?label={{ label.name }}">
-                        {{ label.name }}
-                    </a>
-                    {% else %}
-                    <span class="pf-c-badge pf-m-unread">{{ label.name }}</span>
-                    {% endif %}
-                    {% endfor %}
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
+                        </div>
+                      </div>
                     </div>
-                </td>
-                <td role="cell" data-label="Hosts" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }}</a>
-                </td>
-                <td role="cell" data-label="Plays" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#plays">{{ playbook.items.plays }}</a>
-                </td>
-                <td role="cell" data-label="Tasks" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.tasks }}</a>
-                </td>
-                <td role="cell" data-label="Results" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }}</a>
-                </td>
-                <td role="cell" data-label="Files" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#files">{{ playbook.items.files }}</a>
-                </td>
-                <td role="cell" data-label="Records" class="pf-m-fit-content">
-                    <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#records">{{ playbook.items.records }}</a>
-                </td>
-                <td role="cell" data-label="CLI arguments">
-                    <details id="cli-arguments-details">
-                        <summary><a>CLI arguments</a></summary>
-                        <table class="pf-c-table pf-m-compact pf-m-grid-md" role="grid" aria-label="cli-arguments" id="cli-arguments">
-                            <thead>
-                                <tr role="row">
-                                    <th role="columnheader" scope="col">Argument</th>
-                                    <th role="columnheader" scope="col">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody role="rowgroup">
-                                {% for arg, value in playbook.arguments.items %}
-                                <tr role="row">
-                                    <td role="cell" data-label="Argument" class="pf-m-fit-content" style="white-space: nowrap;">{{ arg }}</td>
-                                    <td role="cell" data-label="Value" class="pf-m-fit-content">{{ value }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </details>
-                </td>
-            </tr>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+          </td>
+          <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+          <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+          <td class="text-center">{{ playbook.items.hosts }}</td>
+          <td class="text-center">{{ playbook.items.tasks }}</td>
+          <td class="text-center">{{ playbook.items.results }}</td>
+          <td class="text-center">
+            {% if not static_generation %}
+              <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
+            {% else %}
+              {{ playbook.ansible_version }}
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if not static_generation %}
+              <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
+            {% else %}
+              {{ playbook.controller }}
+            {% endif %}
+          </td>
+          <td title="{{ playbook.path }}">
+            {% if not static_generation %}
+              {% if playbook.name is not None %}
+                <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+              {% else %}
+                <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+              {% endif %}
+            {% else %}
+              {% if playbook.name is not None %}
+                {{ playbook.name }}
+              {% else %}
+                {{ playbook.path | truncatepath:50 }}
+              {% endif %}
+            {% endif %}
+          </td>
+          <td class="col-md-2">
+            {% for label in playbook.labels %}
+              {% if not static_generation %}
+                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-info">{{ label.name }}</a>
+              {% else %}
+                <span class="badge badge-info">{{ label.name }}</span>
+              {% endif %}
             {% endfor %}
-        </tbody>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
     </table>
+  </div>
 </div>
-{% if not static_generation %}
 </form>
-{% include "partials/pagination.html" %}
-{% endif %}
 {% endblock %}
