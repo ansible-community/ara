@@ -1,0 +1,16 @@
+<table class="table table-sm table-bordered table-hover" id="cli_args">
+  <thead>
+      <tr>
+        <th scope="col" class="text-center">Argument</th>
+        <th scope="col" class="text-center">Value</th>
+      </tr>
+  </thead>
+  <tbody>
+      {% for arg, value in arguments.items %}
+      <tr>
+        <td>{{ arg }}</td>
+        <td>{{ value }}</td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>

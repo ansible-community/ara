@@ -20,12 +20,6 @@ details[open] summary {
     margin-bottom: .5em;
 }
 
-tbody tr:hover {
-    background-color:whitesmoke;
-    opacity: 0.9;
-    transition: 0.1s;
-}
-
 .pf-c-form-control {
     width: 175px;
 }
@@ -40,4 +34,11 @@ tbody tr:hover {
 
 #result-details pre {
     white-space: pre-wrap;
+}
+
+.table-plain tbody tr,
+.table-plain tbody tr:hover,
+.table-plain tbody td {
+  background-color:transparent;
+  border:none;
 }

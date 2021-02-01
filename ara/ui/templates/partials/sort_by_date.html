@@ -1,34 +1,27 @@
-{% if not static_generation %}
-    {% if request.GET.order == "-started" %}
-    <button class="pf-c-button pf-m-plain" name="order" value="started" type="submit">
-        <span class="pf-c-table__sort-indicator">
-            <i class="fas fa-long-arrow-alt-down"></i>
-        </span>
-        Date
-    </button>
-    {% elif request.GET.order == "started" %}
-    <button class="pf-c-button pf-m-plain" name="order" value="-started" type="submit">
-        <span class="pf-c-table__sort-indicator">
-            <i class="fas fa-long-arrow-alt-up"></i>
-        </span>
-        Date
-    </button>
-    {% elif not request.GET.order %}
-    {# The default sorting is by date #}
-    <button class="pf-c-button pf-m-plain" name="order" value="started" type="submit">
-        <span class="pf-c-table__sort-indicator">
-            <i class="fas fa-long-arrow-alt-down"></i>
-        </span>
-        Date
-    </button>
-    {% else %}
-    <button class="pf-c-button pf-m-plain" name="order" value="started" type="submit">
-        <span class="pf-c-table__sort-indicator">
-            <i class="fas fa-arrows-alt-v"></i>
-        </span>
-        Date
-    </button>
-    {% endif %}
-{% else %}
 Date
+{% if request.GET.order == "-started" %}
+<button class="btn btn-sm btn-light" type="submit" name="order" value="started">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+  </svg>
+</button>
+{% elif request.GET.order == "started" %}
+<button class="btn btn-sm btn-light" type="submit" name="order" value="-started">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+</svg>
+</button>
+{% elif not request.GET.order %}
+{# The default sorting is by date #}
+<button class="btn btn-sm btn-light" type="submit" name="order" value="started">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+</svg>
+</button>
+{% else %}
+<button class="btn btn-sm btn-light" type="submit" name="order" value="started">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+</svg>
+</button>
 {% endif %}

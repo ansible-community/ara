@@ -1,49 +1,44 @@
-<div class="pf-l-flex">
-    <div class="pf-c-pagination">
-        <div class="pf-c-options-menu">
-            <div class="pf-c-options-menu__toggle pf-m-text pf-m-plain">
-                <span class="pf-c-options-menu__toggle-text">
-                    <strong>{{ current_page_results }}</strong> of <strong>{{ data.count }}</strong>
-                </span>
-            </div>
-        </div>
-        <nav class="pf-c-pagination__nav" aria-label="Pagination">
-            {% if data.first %}
-            <a class="pf-c-button pf-m-plain" type="button" href="{{ data.first }}" aria-label="Go to first page">
-                <i class="fas fa-angle-double-left" aria-hidden="true"></i>
-            </a>
-            {% else %}
-            <button class="pf-c-button pf-m-plain" type="button" disabled aria-label="Go to first page">
-                <i class="fas fa-angle-double-left" aria-hidden="true"></i>
-            </button>
-            {% endif %}
-            {% if data.previous %}
-            <a class="pf-c-button pf-m-plain" type="button" href="{{ data.previous }}" aria-label="Go to previous page">
-                <i class="fas fa-angle-left" aria-hidden="true"></i>
-            </a>
-            {% else %}
-            <button class="pf-c-button pf-m-plain" type="button" disabled aria-label="Go to previous page">
-                <i class="fas fa-angle-left" aria-hidden="true"></i>
-            </button>
-            {% endif %}
-            {% if data.next %}
-            <a class="pf-c-button pf-m-plain" type="button" href="{{ data.next }} "aria-label="Go to next page">
-                <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </a>
-            {% else %}
-            <button class="pf-c-button pf-m-plain" type="button" disabled aria-label="Go to next page">
-                <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </button>
-            {% endif %}
-            {% if data.last %}
-            <a class="pf-c-button pf-m-plain" type="button" href="{{ data.last }}" aria-label="Go to last page">
-                <i class="fas fa-angle-double-right" aria-hidden="true"></i>
-            </a>
-            {% else %}
-            <button class="pf-c-button pf-m-plain" type="button" disabled aria-label="Go to last page">
-                <i class="fas fa-angle-double-right" aria-hidden="true"></i>
-            </button>
-            {% endif %}
-        </nav>
-    </div>
-</div>
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    {% if data.first %}
+    <li class="page-item">
+      <a class="page-link" href="{{ data.first }}" aria-label="Go to first page">First</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Go to first page">First</a>
+    </li>
+    {% endif %}
+    {% if data.previous %}
+    <li class="page-item">
+      <a class="page-link" href="{{ data.previous }}" aria-label="Go to previous page"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Go to previous page"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    {% endif %}
+    <li class="page-item disabled">
+        <a class="page-link"><strong>{{ current_page_results }}</strong> of <strong>{{ data.count }}</strong></a>
+    </li>
+    <li class="page-item disabled">
+    {% if data.next %}
+    <li class="page-item">
+      <a class="page-link" href="{{ data.next }}" aria-label="Go to next page"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Go to next page"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    {% endif %}
+    {% if data.last %}
+    <li class="page-item">
+      <a class="page-link" href="{{ data.last }}" aria-label="Go to last page">Last</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Go to last page">Last</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>

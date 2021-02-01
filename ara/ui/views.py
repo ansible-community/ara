@@ -21,9 +21,6 @@ class Index(generics.ListAPIView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        search_query = False
-        if request.GET:
-            search_query = True
         search_form = forms.PlaybookSearchForm(request.GET)
 
         query = self.filter_queryset(self.queryset.all().order_by("-id"))
@@ -45,7 +42,6 @@ class Index(generics.ListAPIView):
                 "page": "index",
                 "data": response.data,
                 "search_form": search_form,
-                "search_query": search_query,
                 "current_page_results": current_page_results,
             }
         )
