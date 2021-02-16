@@ -1,19 +1,40 @@
 ARA Records Ansible
 ===================
 
-ARA Records Ansible playbooks and makes them easier to understand and troubleshoot.
+ARA Records Ansible and makes it easier to understand and troubleshoot.
+
+It's another recursive acronym.
 
 .. image:: doc/source/_static/ara-with-icon.png
+
+What it does
+============
+
+Simple to install and get started, ara provides reporting by saving detailed and granular results of ``ansible`` and ``ansible-playbook`` commands wherever you run them:
+
+- by hand or from a script
+- from a laptop, a desktop, a container or a server
+- for development, CI or production
+- from a linux distribution or even on OS X (as long as you have ``python >= 3.5``)
+- from tools such as AWX or Tower, Jenkins, GitLab CI, Rundeck, Zuul, Molecule, ansible-pull, ansible-test or ansible-runner
+
+By default, ara's Ansible callback plugin will record data to a local sqlite database without requiring you to run a server or a service:
+
+.. image:: doc/source/_static/ara-quickstart-default.gif
+
+ara can also provide a single pane of glass when recording data from multiple locations by pointing the callback plugin to a running API server:
+
+.. image:: doc/source/_static/ara-quickstart-server.gif
+
+The data is then made available for browsing, searching and querying over the included reporting interface, a CLI client as well as a REST API.
 
 How it works
 ============
 
-ARA Records Ansible playbook execution results to local or remote databases by
-using an Ansible `callback plugin <https://docs.ansible.com/ansible/latest/plugins/callback.html>`_.
+ARA Records Ansible execution results to sqlite, mysql or postgresql databases by
+using an `Ansible callback plugin <https://docs.ansible.com/ansible/latest/plugins/callback.html>`_.
 
-This callback plugin leverages built-in python API clients to send data to a
-REST API server where data and metrics are made available for querying,
-browsing, monitoring or for integration in other tools and interfaces.
+This callback plugin leverages built-in python API clients to send data to a REST API server:
 
 .. image:: doc/source/_static/graphs/recording-workflow.png
 
@@ -61,9 +82,6 @@ See this `issue <https://github.com/ansible-community/ara/issues/99>`_ for more 
 Recording playbooks without an API server
 -----------------------------------------
 
-The default API client, ``offline``, requires API server dependencies to be installed but does not need the API server
-to be running in order to query or send data.
-
 With defaults and using a local sqlite database:
 
 .. code-block:: bash
@@ -86,14 +104,9 @@ With defaults and using a local sqlite database:
 Recording playbooks with an API server
 --------------------------------------
 
-When running Ansible from multiple servers or locations, data can be aggregated by running the API server as a service
-and configuring the ARA Ansible callback plugin to use the ``http`` API client with the API server endpoint.
-
-The API server is a relatively simple django web application written in python that can run with WSGI application
-servers such as gunicorn, uwsgi or mod_wsgi.
-
-Alternatively, the API server can also run from a container image such as the one available on
-`DockerHub <https://hub.docker.com/r/recordsansible/ara-api>`_:
+You can get an API server deployed using the `ara Ansible collection <https://github.com/ansible-community/ara-collection>`_
+or get started quickly using the container images from `DockerHub <https://hub.docker.com/r/recordsansible/ara-api>`_ and
+`quay.io <https://quay.io/repository/recordsansible/ara-api>`_:
 
 .. code-block:: bash
 
@@ -105,12 +118,12 @@ Alternatively, the API server can also run from a container image such as the on
       --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
       docker.io/recordsansible/ara-api:latest
 
-    # or with docker:
+    # or with docker from the image on quay.io:
     docker run --name api-server --detach --tty \
       --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
-      docker.io/recordsansible/ara-api:latest
+      quay.io/recordsansible/ara-api:latest
 
-Once the server is running, Ansible playbook results can be sent to it by configuring the ARA callback plugin:
+Once the server is running, ara's Ansible callback plugin must be installed and configured to send data to it:
 
 .. code-block:: bash
 
@@ -132,14 +145,14 @@ Once the server is running, Ansible playbook results can be sent to it by config
 
 Data will be available on the API server in real time as the playbook progresses and completes.
 
-Read more about how container images are built and how to run them in the `documentation <https://ara.readthedocs.io/en/latest/container-images.html>`_.
+You can read more about how container images are built and how to run them in the `documentation <https://ara.readthedocs.io/en/latest/container-images.html>`_.
 
 Live demo
 =========
 
-A live demo for demonstration and test purposes is available at https://demo.recordsansible.org
+A live demo is deployed with the ara Ansible collection from `Ansible galaxy <https://galaxy.ansible.com/recordsansible/ara>`_.
 
-This demo is deployed with the help of the ara collection: https://github.com/ansible-community/ara-collection
+It is available at https://demo.recordsansible.org.
 
 Documentation
 =============
@@ -175,7 +188,7 @@ Copyright
 
 ::
 
-    Copyright (c) 2020 Red Hat, Inc.
+    Copyright (c) 2021 The ARA Records Ansible authors
 
     ARA Records Ansible is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
