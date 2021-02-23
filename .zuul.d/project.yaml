@@ -5,11 +5,10 @@
       - docs-on-readthedocs
     check:
       jobs:
-        - ara-api-distributed-sqlite:
-            voting: false
-        - ara-api-mysql
-        - ara-api-postgresql
-        - ara-api-fedora-packages:
+        - ara-role-api-distributed-sqlite
+        - ara-role-api-mysql
+        - ara-role-api-postgresql
+        - ara-role-api-fedora-packages:
             voting: false
         - ara-basic-ansible-devel:
             voting: false
@@ -20,8 +19,9 @@
         - ara-tox-py3
     gate:
       jobs:
-        - ara-api-mysql
-        - ara-api-postgresql
+        - ara-role-api-distributed-sqlite
+        - ara-role-api-mysql
+        - ara-role-api-postgresql
         - ara-basic-ansible-2.8
         - ara-basic-ansible-2.7
         - ara-container-images

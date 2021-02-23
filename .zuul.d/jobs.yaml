@@ -46,58 +46,6 @@
     post-run: tests/zuul_post_logs.yaml
 
 - job:
-    name: ara-api-database-backends
-    parent: ara-integration-base
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.9
-    pre-run: tests/zuul_pre_multinode_networking.yaml
-
-- job:
-    name: ara-api-postgresql
-    parent: ara-api-database-backends
-    nodeset: ara-database-server-multinode
-    description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 32 as well as CentOS 8
-      and tests it against a central PostgreSQL server installed on CentOS 8.
-      The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
-      ARA API clients as well as the API itself.
-    run: tests/with_postgresql.yaml
-    post-run: tests/zuul_post_with_postgresql.yaml
-
-- job:
-    name: ara-api-mysql
-    parent: ara-api-database-backends
-    nodeset: ara-database-server-multinode
-    description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 32 as well as CentOS 8
-      and tests it against a central MySQL server installed on CentOS 8.
-      The job exercises the ara_api Ansible role, the ARA Ansible plugins, the
-      ARA API clients as well as the API itself.
-    run: tests/with_mysql.yaml
-    post-run: tests/zuul_post_with_mysql.yaml
-
-- job:
-    name: ara-api-distributed-sqlite
-    parent: ara-api-database-backends
-    nodeset: ara-multinode
-    description: |
-      Deploys the ARA API server on Ubuntu 18.04, Fedora 32 as well as CentOS 8
-      and tests it using the distributed sqlite database backend.
-    run: tests/with_distributed_sqlite.yaml
-
-# TODO: The job should build a package from current source and test that package
-# instead of the package in the stable distribution.
-- job:
-    name: ara-api-fedora-packages
-    parent: ara-integration-base
-    nodeset: ara-fedora-32
-    description: |
-      Deploys the ARA API server on Fedora 32 using distribution packages for
-      ARA and Ansible.
-    run: tests/with_fedora_packages.yaml
-
-- job:
     name: ara-ansible-integration-base
     parent: ara-integration-base
     nodeset: ara-fedora-32
