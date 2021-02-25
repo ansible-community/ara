@@ -1,0 +1,139 @@
+---
+#  Copyright (c) 2019 Red Hat, Inc.
+#
+#  This file is part of ARA Records Ansible.
+#
+#  ARA is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ARA is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+
+- name: Basic ARA tests with Mitogen enabled
+  hosts: all
+  vars:
+    ara_tests_ansible_name: ansible
+    ara_tests_ansible_version: latest
+    ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
+    ara_api_venv_path: "{{ ara_api_root_dir }}/virtualenv"
+    ara_api_secret_key: testing
+    ara_api_debug: true
+    ara_api_log_level: DEBUG
+  tasks:
+    - name: Ensure root directory exists
+      file:
+        path: "{{ ara_api_root_dir }}"
+        state: directory
+
+    - name: Set source to checked out repository if it isn't specified
+      set_fact:
+        ara_api_source: "{{ lookup('pipe', 'git rev-parse --show-toplevel') }}"
+      when: ara_api_source is not defined or ara_api_source is none
+
+    - name: Ensure python3-venv is installed for Ubuntu
+      become: yes
+      package:
+        name: python3-venv
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    # If a version is not explicitly set we want to make sure to
+    # completely omit the version argument to pip, as it will be coming
+    # from the long-form ara_tests_ansible_name variable.  Additionally, if
+    # the version is the special value "latest", then we also want to omit
+    # any version number, but also set the package state to "latest".
+    - name: Set Ansible version for installation
+      set_fact:
+        _install_ansible_version: "{{ ara_tests_ansible_version }}"
+      when: ara_tests_ansible_version not in ("", "latest")
+
+    - name: Set Ansible package state for installation
+      set_fact:
+        _install_ansible_state: latest
+      when: ara_tests_ansible_version == "latest"
+
+    - name: Initialize virtual environment with Ansible
+      pip:
+        name: "{{ ara_tests_ansible_name }}"
+        version: "{{ _install_ansible_version | default(omit, True) }}"
+        state: "{{ _install_ansible_state | default(omit, True) }}"
+        virtualenv: "{{ ara_api_venv_path }}"
+        virtualenv_command: /usr/bin/python3 -m venv
+
+    - name: Install ARA from source in virtual environment
+      pip:
+        name: "{{ ara_api_source }}[server]"
+        state: present
+        virtualenv: "{{ ara_api_venv_path }}"
+        virtualenv_command: /usr/bin/python3 -m venv
+
+    - name: Install mitogen
+      pip:
+        name: mitogen
+        state: present
+        virtualenv: "{{ ara_api_venv_path }}"
+        virtualenv_command: /usr/bin/python3 -m venv
+
+    - name: Get path to mitogen strategy plugin
+      command: |
+        {{ ara_api_venv_path }}/bin/python3 -c "import os,ansible_mitogen; print(os.path.dirname(ansible_mitogen.__file__))"
+      changed_when: false
+      register: mitogen_path
+
+    - name: Set path to mitogen strategy plugin
+      set_fact:
+        mitogen_plugin_path: "{{ mitogen_path.stdout }}/plugins/strategy"
+
+    - name: Get ARA plugins directory
+      command: "{{ ara_api_venv_path }}/bin/python -m ara.setup.plugins"
+      register: ara_setup_plugins
+
+    # These aren't in the same task (i.e, with loop) so we can tell individual test
+    # runs apart easily rather than keeping all the output bundled in a single task.
+    # TODO: Add validation for the tests
+    - environment:
+        ANSIBLE_STRATEGY_PLUGINS: "{{ mitogen_plugin_path }}"
+        ANSIBLE_STRATEGY: mitogen_linear
+        ANSIBLE_CALLBACK_PLUGINS: "{{ ara_setup_plugins.stdout }}/callback"
+        ANSIBLE_ACTION_PLUGINS: "{{ ara_setup_plugins.stdout }}/action"
+        ARA_DEBUG: "{{ ara_api_debug }}"
+        ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
+        ARA_BASE_DIR: "{{ ara_api_root_dir }}"
+        ARA_SECRET_KEY: "{{ ara_api_secret_key }}"
+        ARA_API_CLIENT: "{{ ara_api_client | default('offline') }}"
+        ARA_API_SERVER: "{{ ara_api_server | default('http://127.0.0.1:8000') }}"
+      vars:
+        _ansible_playbook: "{{ ara_api_venv_path }}/bin/ansible-playbook -vvv"
+        _test_root: "{{ ara_api_source }}/tests/integration"
+      block:
+        # smoke.yaml tests setting ara_playbook_name in one of three plays
+        - name: Run smoke.yaml integration test
+          command: "{{ _ansible_playbook }} {{ _test_root }}/smoke.yaml"
+
+        - name: Run hosts.yaml integration test
+          command: "{{ _ansible_playbook }} {{ _test_root }}/hosts.yaml"
+
+        - name: Run import.yaml integration test
+          command: "{{ _ansible_playbook }} {{ _test_root }}/import.yaml"
+
+        # Tests setting ara_playbook_name as an extra var
+        - name: Run failed.yaml integration test
+          command: >
+            {{ _ansible_playbook }} {{ _test_root }}/failed.yaml -e ara_playbook_name="Failed playbook"
+          ignore_errors: yes
+
+        - name: Run incomplete.yaml integration test
+          shell: |
+            {{ _ansible_playbook }} {{ _test_root }}/incomplete.yaml &
+            sleep 5
+            kill $!
+          args:
+            executable: /bin/bash
+          ignore_errors: yes
