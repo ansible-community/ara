@@ -1,5 +1,0 @@
-- name: Install ARA with default settings
-  hosts: all
-  gather_facts: yes
-  roles:
-    - ara_api
