@@ -11,4 +11,20 @@
         {{ file.content | format_yaml | safe }}
     </div>
 </div>
+
+{# TODO: The version of jquery can change depending on the version of DRF #}
+<script src="{% if page != 'index' %}../{% endif %}static/rest_framework/js/jquery-3.4.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Highlight the anchor line in file views
+        var hash = $(location).attr('hash');
+        $(hash).closest('span').addClass('hll');
+        // Refresh the highlighted line when clicking on a new line in file views
+        $('a').click(function(){
+            $("span.hll").removeClass('hll');
+            var hash = $(this).attr('href');
+            $(hash).closest('span').addClass('hll');
+        });
+    });
+</script>
 {% endblock %}
