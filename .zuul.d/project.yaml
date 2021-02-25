@@ -1,35 +1,7 @@
 - project:
-    vars:
-      rtd_webhook_id: '49230'
-    templates:
-      - docs-on-readthedocs
     check:
       jobs:
-        - ara-role-api-distributed-sqlite
-        - ara-role-api-mysql
-        - ara-role-api-postgresql
-        - ara-role-api-fedora-packages:
-            voting: false
-        - ara-basic-ansible-devel:
-            voting: false
-        - ara-basic-ansible-2.8
-        - ara-basic-ansible-2.7
-        - ara-container-images
-        - ara-tox-linters
-        - ara-tox-py3
+        - noop
     gate:
       jobs:
-        - ara-role-api-distributed-sqlite
-        - ara-role-api-mysql
-        - ara-role-api-postgresql
-        - ara-basic-ansible-2.8
-        - ara-basic-ansible-2.7
-        - ara-container-images
-        - ara-tox-linters
-        - ara-tox-py3
-    post:
-      jobs:
-        - ara-upload-git-mirror
-        - ara-demo
-        - ara-container-images-dockerhub
-        - ara-container-images-quayio
+        - noop
