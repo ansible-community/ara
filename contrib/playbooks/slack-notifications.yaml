@@ -1,0 +1,46 @@
+#!/usr/bin/env ansible-playbook
+# Requires:
+#   export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
+#   export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
+# The Slack token and channel are provided through normal Ansible variables.
+
+- name: Send a Slack notification if a new playbook was run recently
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ara_playbook_name: slack notifications
+    ara_playbook_labels:
+      - meta
+      - notifications
+    # https://hooks.slack.com/services/<your/slack/token>
+    token: "your/slack/token"
+    channel: "#infra"
+    format: "%Y-%m-%dT%H:%M:%S"
+    minutes: 60
+  tasks:
+    - name: "Get the time {{ minutes }} minutes ago"
+      command: date +{{ format }} -d "{{ minutes }} minutes ago"
+      changed_when: false
+      register: timestamp
+
+    - name: Find out if there's been playbooks run since that timestamp
+      set_fact:
+        playbooks: "{{ lookup('ara_api', '/api/v1/playbooks?started_after=' + timestamp.stdout) }}"
+
+    - name: Send Slack notifications
+      vars:
+        # The lookup plugin provides the url to the API endpoint
+        _api_base_url: "{{ lookup('ara_api', '/api/') }}"
+        # From which we can deduce the url to the reporting interface
+        _ui_base_url: "{{ _api_base_url.api[0] | regex_replace('/api/v1/', '') }}"
+        # From which we can build the playbook report URL
+        _playbook_url: "{{ _ui_base_url }}/playbooks/{{ item.id }}.html"
+        _results: "{{ item['items']['results'] }}"
+        _hosts: "{{ item['items']['hosts'] }}"
+        _duration: "{{ 'in ' + item.duration if item.duration }}"
+      slack:
+        token: "{{ token }}"
+        channel: "{{ channel }}"
+        msg: |
+          [{{ item.status }}] {{ _playbook_url }} | {{ item.path }}: {{ _results }} results on {{ _hosts }} host(s) {{ _duration }} (Last updated {{ item.updated }})
+      loop: "{{ playbooks.results | selectattr('name', 'equalto', ara_playbook_name) | list }}"
