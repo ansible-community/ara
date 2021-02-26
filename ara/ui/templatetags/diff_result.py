@@ -13,7 +13,7 @@ def diff_format_string(plaintext):
     output = []
     for line in plaintext.splitlines():
         output.append(line)
-    return '\n'.join(output)
+    return "\n".join(output)
 
 
 def render_diff(before="", after="", before_header="before", after_header="after"):
