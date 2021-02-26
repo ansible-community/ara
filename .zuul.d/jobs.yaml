@@ -1,0 +1,82 @@
+---
+- job:
+    name: ara-tox-py3
+    parent: tox
+    nodeset: fedora-latest-1vcpu
+    vars:
+      tox_envlist: py3
+
+- job:
+    name: ara-tox-linters
+    parent: tox
+    nodeset: fedora-latest-1vcpu
+    vars:
+      tox_envlist: linters
+
+- job:
+    name: ara-tox-docs
+    parent: ansible-tox-docs
+
+- job:
+    name: ara-integration-base
+    parent: base
+    files:
+      - ara/*
+      - manage.py
+      - requirements.txt
+      - roles/*
+      - setup.cfg
+      - setup.py
+      - test-requirements.txt
+      - tests/*
+      - tox.ini
+      - .zuul.d/*
+    vars:
+      ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
+      ara_tests_ansible_name: "{{ ansible_user_dir }}/src/github.com/ansible/ansible"
+      ara_tests_ansible_version: null
+      ara_api_secure_logging: false
+    post-run: tests/zuul_post_logs.yaml
+
+- job:
+    name: ara-container-images
+    parent: ara-integration-base
+    nodeset: fedora-latest-1vcpu
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+    run: tests/with_container_images.yaml
+
+- job:
+    name: ara-ansible-integration-base
+    parent: ara-integration-base
+    nodeset: fedora-latest-1vcpu
+    vars:
+      ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
+    run: tests/basic.yaml
+
+- job:
+    name: ara-basic-ansible-devel
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible devel.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: devel
+
+- job:
+    name: ara-basic-ansible-2.9
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.9.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.9
+
+- job:
+    name: ara-basic-ansible-2.8
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.8.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.8
