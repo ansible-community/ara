@@ -9,6 +9,7 @@
             voting: false
         - ara-basic-ansible-2.9
         - ara-basic-ansible-2.8
+        - ara-container-images
     gate:
       jobs:
         - ara-tox-py3
@@ -16,3 +17,4 @@
         - ara-tox-docs
         - ara-basic-ansible-2.9
         - ara-basic-ansible-2.8
+        - ara-container-images

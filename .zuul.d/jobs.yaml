@@ -39,6 +39,14 @@
     post-run: tests/zuul_post_logs.yaml
 
 - job:
+    name: ara-container-images
+    parent: ara-integration-base
+    nodeset: fedora-latest-1vcpu
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+    run: tests/with_container_images.yaml
+
+- job:
     name: ara-ansible-integration-base
     parent: ara-integration-base
     nodeset: fedora-latest-1vcpu
