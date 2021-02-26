@@ -20,7 +20,7 @@
   gather_facts: yes
   vars:
     ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
-    ara_api_source: "{{ ansible_user_dir }}/src/opendev.org/recordsansible/ara"
+    ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
     images:
       # These are in chronological order of release so that we don't end up
       # running SQL migrations backwards during the tests.
