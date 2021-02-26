@@ -8,11 +8,13 @@ from django import template
 
 register = template.Library()
 
+
 def diff_format_string(plaintext):
     output = []
     for line in plaintext.splitlines():
         output.append(line)
     return '\n'.join(output)
+
 
 def render_diff(before="", after="", before_header="before", after_header="after"):
     """
@@ -35,6 +37,7 @@ def render_diff(before="", after="", before_header="before", after_header="after
             tofile=after_header
         )
     # fmt: on
+
 
 @register.filter(name="diff_result")
 def diff_result(diff):
