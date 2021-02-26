@@ -1,0 +1,14 @@
+---
+- job:
+    name: ara-tox-py3
+    parent: tox
+    nodeset: fedora-latest-1vcpu
+    vars:
+      tox_envlist: py3
+
+- job:
+    name: ara-tox-linters
+    parent: tox
+    nodeset: fedora-latest-1vcpu
+    vars:
+      tox_envlist: linters

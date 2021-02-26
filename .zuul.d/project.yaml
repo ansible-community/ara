@@ -1,7 +1,10 @@
+---
 - project:
     check:
       jobs:
-        - noop
+        - ara-tox-py3
+        - ara-tox-linters
     gate:
       jobs:
-        - noop
+        - ara-tox-py3
+        - ara-tox-linters
