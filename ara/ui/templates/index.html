@@ -35,17 +35,17 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-2">
-              <label for="ansible_version">Name</label>
+              <label for="ansible_version" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
               <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{% if search_form.name.value is not null %}{{ search_form.name.value }}{% endif %}">
             </div>
             <div class="form-group col-md-3">
-              <label for="ansible_version">Label</label>
+              <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Label</label>
               <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{% if search_form.label.value is not null %}{{ search_form.label.value }}{% endif %}">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-7">
-              <label for="status">Status: </label>
+              <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
               {% for value, text in search_form.status.field.choices %}
               {% if value != "unknown" %}
               <div class="form-check form-check-inline">
