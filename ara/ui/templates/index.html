@@ -87,7 +87,7 @@
         <th scope="col" class="text-center" title="CLI arguments given to the ansible command">CLI</th>
         <th scope="col" class="text-center" title="Status of the playbook run">Status</th>
         <th scope="col" title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
-        <th scope="col" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+        <th scope="col" class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
         <th scope="col" class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
         <th scope="col" class="text-center" title="Number of tasks run in the playbook">Tasks</th>
         <th scope="col" class="text-center" title="Number of results recorded from the playbook">Results</th>
@@ -144,8 +144,8 @@
           </div>
         </td>
         <td class="text-center">{% include "partials/playbook_status_icon.html" with status=playbook.status %}</td>
-        <td>{{ playbook.started | format_date }}</td>
-        <td>{{ playbook.duration | format_duration }}</td>
+        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
         <td class="text-center">{{ playbook.items.hosts }}</td>
         <td class="text-center">{{ playbook.items.tasks }}</td>
         <td class="text-center">{{ playbook.items.results }}</td>
@@ -158,7 +158,7 @@
           <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
           {% endif %}
         </td>
-        <td>
+        <td class="col-md-2">
           {% for label in playbook.labels %}
           <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-primary">{{ label.name }}</a>
           {% endfor %}
