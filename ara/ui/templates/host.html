@@ -1,33 +1,38 @@
 {% extends "base.html" %}
-{% block body %}
-{% include "partials/playbook_card.html" with playbook=host.playbook %}
 {% load pygments_highlights %}
-
-<div class="pf-c-card" style="margin: 1em 0;">
-    <div class="pf-c-card__header pf-c-title pf-m-md">
-        Host: {{ host.name }}
-    </div>
-    <div class="pf-c-card__body">
-        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="host-details">
-            <thead>
-                <tr role="row">
-                    <th role="columnheader" scope="col" class="pf-m-width-20">Fact</th>
-                    <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for fact, value in host.facts.items %}
-                <tr role="row">
-                    <td role="cell" id="{{ fact }}" data-label="{{ fact }}" class="pf-m-width-20">
-                        <a href="#{{ fact }}">{{ fact }}</a>
-                    </td>
-                    <td role="cell" data-label="Value" class="pf-m-width-80">
-                        {{ value | format_data | safe }}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% block body %}
+<div class="container-fluid">
+{% include "partials/playbook_card.html" with playbook=host.playbook %}
 </div>
+<br />
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2>Host facts for {{ host.name }}</h2>
+    </div>
+    <div class="card-body">
+      <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
+        <thead>
+          <tr>
+            <th style="width:20%;">Fact</th>
+            <th style="width:80%;">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fact, value in host.facts.items %}
+          <tr>
+            <td id="{{ fact }}" data-label="{{ fact }}">
+              <a href="#{{ fact }}">{{ fact }}</a>
+            </td>
+            <td data-label="Value">
+              {{ value | format_data | safe }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<br />
 {% endblock %}
