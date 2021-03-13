@@ -26,26 +26,35 @@
                 <div id="collapse_search" class="collapse {% if request.GET %}show{% endif %}" aria-labelledby="search_form" data-parent="#search_accordion">
                   <div class="card-body bg-light">
                     <div class="form-row">
-                      <div class="form-group col-md-2">
+                      <div class="form-group col-md-1">
                         <label for="host" {% if request.GET.host %}style="font-weight:bold;"{% endif %}>Host ID</label>
                         <input type="text" class="form-control" id="host" name="host" placeholder="ex: 1234" value="{{ search_form.host.value | default_if_none:'' }}">
                       </div>
-                      <div class="form-group col-md-2">
+                      <div class="form-group col-md-1">
                         <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
                         <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
                       </div>
-                      <div class="form-group col-md-6">
+                      <div class="form-group col-md-4">
                         <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                         {% for value, text in search_form.status.field.choices %}
                         {% if value != "unknown" %}
                         <div class="form-check form-check-inline">
-                          <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
+                          <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %} />
                           <label class="form-check-label" for="{{ value }}">
                             {% include "partials/result_status_icon.html" with status=value %}
                           </label>
                         </div>
                         {% endif %}
                         {% endfor %}
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="changed">Changed: </label>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="changed" value="true" name="changed" {% if search_form.changed.value %}checked{% endif %} />
+                          <label class="form-check-label" for="changed">
+                            True
+                          </label>
+                        </div>
                       </div>
                       <div class="form-group col-md-2">
                         <button type="submit" class="btn btn-primary">
@@ -61,47 +70,48 @@
               </div>
             </div>
           </div>
-        {% include "partials/pagination.html" with data=results %}
-        {% if playbook.items.results %}
-        <table class="table table-sm table-hover" id="results">
-          <thead>
-            <tr>
-              <th class="text-center">Details</th>
-              <th class="text-center">Status</th>
-              <th>Host</th>
-              <th>Action</th>
-              <th>Task</th>
-              <th>{% include "partials/sort_by_duration.html" %}</th>
-              <th>{% include "partials/sort_by_date.html" %}</th>
-          </thead>
-          <tbody>
-            {% for result in results.results %}
-            <tr>
-              <td class="text-center">
-                <a role="button" class="btn btn-outline-primary btn-sm" href="{% url 'ui:result' result.id %}">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
-                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
-                  </svg>
-                </a>
-              </td>
-              <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
-              <td>{{ result.host.name }}</td>
-              <td><a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a></td>
-              <td><a href="{% url 'ui:result' result.id %}">{{ result.task.name }}</a></td>
-              <td>{{ result.duration | format_duration }}</td>
-              <td>{{ result.started | format_date }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <p>No results have been recorded for this playbook.</p>
-        <p>It might have been interrupted or is in progress.</p>
-        {% endif %}
+          {% include "partials/pagination.html" with data=results %}
+          {% if playbook.items.results %}
+          <table class="table table-sm table-hover" id="results">
+            <thead>
+              <tr>
+                <th class="text-center">Details</th>
+                <th class="text-center">Status</th>
+                <th>Host</th>
+                <th>Action</th>
+                <th>Task</th>
+                <th>{% include "partials/sort_by_duration.html" %}</th>
+                <th>{% include "partials/sort_by_date.html" %}</th>
+            </thead>
+            <tbody>
+              {% for result in results.results %}
+              <tr>
+                <td class="text-center">
+                  <a role="button" class="btn btn-outline-primary btn-sm" href="{% url 'ui:result' result.id %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                      <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+                    </svg>
+                  </a>
+                </td>
+                <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
+                <td>{{ result.host.name }}</td>
+                <td><a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a></td>
+                <td><a href="{% url 'ui:result' result.id %}">{{ result.task.name }}</a></td>
+                <td>{{ result.duration | format_duration }}</td>
+                <td>{{ result.started | format_date }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p>No results have been recorded for this playbook.</p>
+          <p>It might have been interrupted or is in progress.</p>
+          {% endif %}
+        </div>
       </div>
-    </div>
     </form>
+    </div>
   </div>
 </div>
 <br />
