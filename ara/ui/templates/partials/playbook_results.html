@@ -70,8 +70,8 @@
               </div>
             </div>
           </div>
+          {% if results.count %}
           {% include "partials/pagination.html" with data=results %}
-          {% if playbook.items.results %}
           <table class="table table-sm table-hover" id="results">
             <thead>
               <tr>
@@ -105,8 +105,15 @@
             </tbody>
           </table>
           {% else %}
-          <p>No results have been recorded for this playbook.</p>
-          <p>It might have been interrupted or is in progress.</p>
+            <br />
+            <div class="container-fluid">
+              {% if not request.GET %}
+              <h2>No recorded results found for this playbook.</h2>
+              <h3>It might have been interrupted or is in progress.</h3>
+              {% else %}
+              <h3>No results found matching your query: try <a href="{% url 'ui:playbook' playbook.id %}#results">clearing search filters</a>.</h3>
+              {% endif %}
+            </div>
           {% endif %}
         </div>
       </div>
