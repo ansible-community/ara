@@ -1,53 +1,57 @@
 {% extends "base.html" %}
-{% block body %}
-{% include "partials/playbook_card.html" with playbook=result.playbook %}
 {% load pygments_highlights %}
 {% load datetime_formatting %}
 {% load diff_result %}
-
-<div class="pf-c-card" style="margin: 1em 0;">
-    <div class="pf-c-card__header pf-c-title pf-m-md">
-        <h1><strong>Details</strong></h1>
-        <ul class="pf-c-list">
-            <li><strong>Play</strong>: {{ result.play.name }}</li>
-            <li><strong>Task</strong>: {{ result.task.name }}</a></li>
-            <li><strong>Action</strong>: {{ result.task.action }}</li>
-            <li><strong>Path</strong>: <a href="../files/{{ result.task.file }}.html#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
-            <li><strong>Host</strong>: <a href="../hosts/{{ result.host.id }}.html">{{ result.host.name }}</a></li>
-            <li><strong>Status</strong>: {{ result.status }}</li>
-            <li><strong>Started</strong>: {{ result.started | format_date }}</li>
-            <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>
-            <li><strong>Duration</strong>: {{ result.duration | format_duration }}</li>
-        </ul>
-    </div>
-    <div class="pf-c-card__body">
-        <h1><strong>Result</strong></h1>
-        <table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-details">
-            <thead>
-                <tr role="row">
-                    <th role="columnheader" scope="col" class="pf-m-width-20">Field</th>
-                    <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for field, value in result.content.items %}
-                <tr role="row">
-                    <td role="cell" id="{{ field }}" data-label="{{ field }}" class="pf-m-width-20">
-                        <a href="#{{ field }}">{{ field }}</a>
-                    </td>
-                    <td role="cell" data-label="Value" class="pf-m-width-80">
-                        {% if field == "diff" %}
-                            {{ value | diff_result | format_data | safe }}
-                        {% elif field == "results" %}
-                            {% include "partials/nested_results.html" with results=value %}
-                        {% else %}
-                            {{ value | format_data | safe }}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% block body %}
+<div class="container-fluid">
+{% include "partials/playbook_card.html" with playbook=result.playbook %}
 </div>
+<br />
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2>Task result details</h2>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li><strong>Play</strong>: {{ result.play.name }}</li>
+        <li><strong>Task</strong>: {{ result.task.name }}</a></li>
+        <li><strong>Action</strong>: {{ result.task.action }}</li>
+        <li><strong>Path</strong>: <a href="{% url 'ui:file' result.task.file %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
+        <li><strong>Host</strong>: <a href="{% url 'ui:host' result.host.id %}">{{ result.host.name }}</a></li>
+        <li><strong>Status</strong>: {{ result.status }}</li>
+        <li><strong>Started</strong>: {{ result.started | format_date }}</li>
+        <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>
+        <li><strong>Duration</strong>: {{ result.duration | format_duration }}</li>
+      </ul>
+      <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
+        <thead>
+          <tr>
+            <th style="width:20%;">Field</th>
+            <th style="width:80%;">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field, value in result.content.items %}
+          <tr>
+            <td id="{{ field }}" data-label="{{ field }}">
+                <a href="#{{ field }}">{{ field }}</a>
+            </td>
+            <td data-label="Value">
+                {% if field == "diff" %}
+                    {{ value | diff_result | format_data | safe }}
+                {% elif field == "results" %}
+                    {% include "partials/nested_results.html" with results=value %}
+                {% else %}
+                    {{ value | format_data | safe }}
+                {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
