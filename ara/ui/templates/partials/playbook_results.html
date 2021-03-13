@@ -34,6 +34,8 @@
                         <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
                         <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
                       </div>
+                    </div>
+                    <div class="form-row">
                       <div class="form-group col-md-4">
                         <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                         {% for value, text in search_form.status.field.choices %}
@@ -47,6 +49,8 @@
                         {% endif %}
                         {% endfor %}
                       </div>
+                    </div>
+                    <div class="form-row">
                       <div class="form-group col-md-4">
                         <label for="changed">Changed: </label>
                         <div class="form-check form-check-inline">
@@ -56,6 +60,8 @@
                           </label>
                         </div>
                       </div>
+                    </div>
+                    <div class="form-row">
                       <div class="form-group col-md-2">
                         <button type="submit" class="btn btn-primary">
                           Submit
