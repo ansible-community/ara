@@ -20,27 +20,27 @@
           <div class="form-row">
             <div class="form-group col-md-5">
               <label for="path" {% if request.GET.path %}style="font-weight:bold;"{% endif %}>Path</label>
-              <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{% if search_form.path.value is not null %}{{ search_form.path.value }}{% endif %}">
+              <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.path.value | default_if_none:'' }}">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-2">
               <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Ansible version</label>
-              <input type="text" class="form-control" id="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{% if search_form.ansible_version.value is not null %}{{ search_form.ansible_version.value }}{% endif %}">
+              <input type="text" class="form-control" id="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{{ search_form.ansible_version.value | default_if_none:'' }}">
             </div>
             <div class="form-group col-md-3">
               <label for="controller" {% if request.GET.controller %}style="font-weight:bold;"{% endif %}>Ansible controller</label>
-              <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{% if search_form.controller.value is not null %}{{ search_form.controller.value }}{% endif %}">
+              <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-2">
               <label for="ansible_version" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
-              <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{% if search_form.name.value is not null %}{{ search_form.name.value }}{% endif %}">
+              <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
             </div>
             <div class="form-group col-md-3">
               <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Label</label>
-              <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{% if search_form.label.value is not null %}{{ search_form.label.value }}{% endif %}">
+              <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
             </div>
           </div>
           <div class="form-row">
@@ -106,7 +106,7 @@
               <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
               <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
             </svg>
-          </button>
+          </a>
         </td>
         <td class="text-center">
           <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
@@ -143,7 +143,9 @@
             </div>
           </div>
         </td>
-        <td class="text-center">{% include "partials/playbook_status_icon.html" with status=playbook.status %}</td>
+        <td class="text-center">
+          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+        </td>
         <td class="text-nowrap">{{ playbook.started | format_date }}</td>
         <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
         <td class="text-center">{{ playbook.items.hosts }}</td>

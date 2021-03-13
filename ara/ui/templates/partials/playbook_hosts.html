@@ -1,0 +1,77 @@
+<div class="accordion" id="hosts_accordion">
+  <div class="card">
+    <div class="card-header" id="hosts_card">
+      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_hosts" aria-expanded="true" aria-controls="collapse_hosts">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hdd-rack" viewBox="0 0 16 16">
+          <path d="M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm2 7a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-2.5.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+          <path d="M2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h1v2H2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2h-1V7h1a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm13 2v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm0 7v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm-3-4v2H4V7h8z"/>
+        </svg>
+        Hosts
+      </button>
+    </div>
+    <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts_accordion">
+      <div class="card-body bg-light">
+        {% if playbook.items.hosts %}
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th scope="col" class="text-center" title="Host facts (available if facts were gathered)">Facts</th>
+              <th scope="col" title="Host name">Hostname</th>
+              <th scope="col" title="Results">Results</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for host in hosts %}
+            <tr>
+              <td class="text-center">
+                <a role="button" class="btn btn-outline-primary btn-sm" href="{% url 'ui:host' host.id %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                    <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+                  </svg>
+                </a>
+              </td>
+              <td>
+                <a href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}#results" title="Search results for {{ host.name }}">
+                  {{ host.name }}
+                </a>
+              </td>
+              <td>
+                {% if host.ok %}
+                <a class="badge badge-pill badge-success" style="font-size:0.9em;" href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=ok#results" title="Search ok results for {{ host.name }}">
+                  {{ host.ok }} ok
+                </a>
+                {% endif %}
+                {% if host.changed %}
+                <a class="badge badge-pill badge-warning" style="font-size:0.9em;" href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&changed=True#results" title="Search changed results for {{ host.name }}">
+                  {{ host.changed }} changed
+                </a>
+                {% endif %}
+                {% if host.failed %}
+                <a class="badge badge-pill badge-danger" style="font-size:0.9em;" href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=failed#results" title="Search failed results for {{ host.name }}">
+                  {{ host.failed }} failed
+                </a>
+                {% endif %}
+                {% if host.unreachable %}
+                <a class="badge badge-pill badge-danger" style="font-size:0.9em;" href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=unreachable#results" title="Search unreachable results for {{ host.name }}">
+                  {{ host.unreachable }} unreachable
+                </a>
+                {% endif %}
+                {% if host.skipped %}
+                <a class="badge badge-pill badge-info" style="font-size:0.9em;" href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=skipped#results" title="Search skipped results for {{ host.name }}">
+                  {{ host.skipped }} skipped
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No hosts have been recorded for this playbook.</p>
+        <p>It might have been interrupted or is in progress.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
