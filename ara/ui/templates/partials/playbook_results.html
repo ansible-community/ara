@@ -95,9 +95,9 @@
                   </a>
                 </td>
                 <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
-                <td>{{ result.host.name }}</td>
+                <td><a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a></td>
                 <td><a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a></td>
-                <td><a href="{% url 'ui:result' result.id %}">{{ result.task.name }}</a></td>
+                <td><a href="{% url 'ui:playbook' playbook.id %}?task={{ result.task.id }}#results">{{ result.task.name }}</a></td>
                 <td>{{ result.duration | format_duration }}</td>
                 <td>{{ result.started | format_date }}</td>
               </tr>
