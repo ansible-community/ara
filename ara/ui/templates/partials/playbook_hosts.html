@@ -1,4 +1,4 @@
-<div class="accordion" id="hosts_accordion">
+<div class="accordion" id="hosts">
   <div class="card">
     <div class="card-header" id="hosts_card">
       <button class="btn btn-link" style="font-size:1.4em;" type="button" data-toggle="collapse" data-target="#collapse_hosts" aria-expanded="true" aria-controls="collapse_hosts">
@@ -9,7 +9,7 @@
         Hosts
       </button>
     </div>
-    <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts_accordion">
+    <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts">
       <div class="card-body bg-light">
         {% if playbook.items.hosts %}
         <table class="table table-sm table-hover">

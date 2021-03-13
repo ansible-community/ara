@@ -1,5 +1,5 @@
 {% load truncatepath %}
-<div class="accordion" id="files_accordion">
+<div class="accordion" id="files">
   <div class="card">
     <div class="card-header" id="files_card">
       <button class="btn btn-link" style="font-size:1.4em;" type="button" data-toggle="collapse" data-target="#collapse_files" aria-expanded="false" aria-controls="collapse_files">
@@ -9,7 +9,7 @@
         Files
       </button>
     </div>
-    <div id="collapse_files" class="collapse" aria-labelledby="files_card" data-parent="#files_accordion">
+    <div id="collapse_files" class="collapse" aria-labelledby="files_card" data-parent="#files">
       <div class="card-body bg-light">
         {% if playbook.items.files %}
         <ul>

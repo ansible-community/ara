@@ -1,5 +1,5 @@
 {% load datetime_formatting %}
-<div class="accordion" id="results_accordion">
+<div class="accordion" id="results">
   <div class="card">
     <div class="card-header" id="results_card">
       <button class="btn btn-link" style="font-size:1.4em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
@@ -10,7 +10,7 @@
       </button>
     </div>
     <form method="get" action="{% url 'ui:playbook' playbook.id %}#results">
-    <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results_accordion">
+    <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-light">
           <div class="container-fluid">
             <div class="accordion" id="search_accordion">
