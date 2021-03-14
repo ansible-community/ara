@@ -24,32 +24,34 @@
         <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>
         <li><strong>Duration</strong>: {{ result.duration | format_duration }}</li>
       </ul>
-      <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
-        <thead>
-          <tr>
-            <th style="width:20%;">Field</th>
-            <th style="width:80%;">Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for field, value in result.content.items %}
-          <tr>
-            <td id="{{ field }}" data-label="{{ field }}">
-                <a href="#{{ field }}">{{ field }}</a>
-            </td>
-            <td data-label="Value">
-                {% if field == "diff" %}
-                    {{ value | diff_result | format_data | safe }}
-                {% elif field == "results" %}
-                    {% include "partials/nested_results.html" with results=value %}
-                {% else %}
-                    {{ value | format_data | safe }}
-                {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
+          <thead>
+            <tr>
+              <th style="width:20%;">Field</th>
+              <th style="width:80%;">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for field, value in result.content.items %}
+            <tr>
+              <td id="{{ field }}">
+                  <a href="#{{ field }}">{{ field }}</a>
+              </td>
+              <td>
+                  {% if field == "diff" %}
+                      {{ value | diff_result | format_data | safe }}
+                  {% elif field == "results" %}
+                      {% include "partials/nested_results.html" with results=value %}
+                  {% else %}
+                      {{ value | format_data | safe }}
+                  {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
