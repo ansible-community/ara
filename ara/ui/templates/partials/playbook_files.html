@@ -10,7 +10,7 @@
       </button>
     </div>
     <div id="collapse_files" class="collapse" aria-labelledby="files_card" data-parent="#files">
-      <div class="card-body bg-light">
+      <div class="card-body bg-{{ UI_THEME_VARIANT }}">
         {% if playbook.items.files %}
         <ul>
           {% for file in files %}

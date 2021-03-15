@@ -9,9 +9,10 @@
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
     <title>ARA Records Ansible</title>
-    {# TODO: Use settings.STATIC_THEME for allowing different themes #}
-    <link rel="stylesheet" href="{% static 'css/bootstrap-sketchy.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pygments.css' %}">
+    <link rel="stylesheet" href="{% static UI_THEME %}">
+    {% with "css/pygments-"|add:UI_THEME_VARIANT|add:".css" as pygments_css %}
+    <link rel="stylesheet" href="{% static pygments_css %}">
+    {% endwith %}
   </head>
   <body>
     <header>

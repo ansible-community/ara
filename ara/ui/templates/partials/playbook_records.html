@@ -10,7 +10,7 @@
       </button>
     </div>
     <div id="collapse_records" class="collapse {% if playbook.items.records %}show{% endif %}" aria-labelledby="records_card" data-parent="#records">
-      <div class="card-body bg-light">
+      <div class="card-body bg-{{ UI_THEME_VARIANT }}">
         {% if playbook.items.records %}
         <ul>
           {% for record in records %}
