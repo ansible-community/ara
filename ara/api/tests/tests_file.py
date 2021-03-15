@@ -178,3 +178,8 @@ class FileTestCase(APITestCase):
         # Partial match should match both files
         request = self.client.get("/api/v1/files?path=file.yaml")
         self.assertEqual(2, len(request.data["results"]))
+
+    def test_get_playbook_arguments(self):
+        file = factories.FileFactory()
+        request = self.client.get("/api/v1/files/%s" % file.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])

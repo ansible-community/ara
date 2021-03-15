@@ -185,3 +185,8 @@ class RecordTestCase(APITestCase):
         for field in order_fields:
             request = self.client.get("/api/v1/records?order=-%s" % field)
             self.assertEqual(request.data["results"][0]["id"], second_record.id)
+
+    def test_get_playbook_arguments(self):
+        record = factories.RecordFactory()
+        request = self.client.get("/api/v1/records/%s" % record.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])

@@ -198,3 +198,8 @@ class PlayTestCase(APITestCase):
         # Test multiple status
         request = self.client.get("/api/v1/plays?status=running&status=completed")
         self.assertEqual(2, len(request.data["results"]))
+
+    def test_get_playbook_arguments(self):
+        play = factories.PlayFactory()
+        request = self.client.get("/api/v1/plays/%s" % play.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])
