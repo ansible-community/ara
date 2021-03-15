@@ -220,6 +220,8 @@ warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.
 
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"))
+# TODO: Actually use this in ui/templates/base.html
+STATIC_THEME = settings.get("STATIC_THEME", "css/bootstrap-sketchy.min.css")
 
 MEDIA_URL = settings.get("MEDIA_URL", "/media/")
 MEDIA_ROOT = settings.get("MEDIA_ROOT", os.path.join(BASE_DIR, "www", "media"))
