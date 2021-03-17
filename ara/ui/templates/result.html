@@ -2,6 +2,7 @@
 {% load pygments_highlights %}
 {% load datetime_formatting %}
 {% load diff_result %}
+{% load static_url %}
 {% block body %}
 <div class="container-fluid">
 {% include "partials/playbook_card.html" with playbook=result.playbook %}
@@ -17,8 +18,10 @@
         <li><strong>Play</strong>: {{ result.play.name }}</li>
         <li><strong>Task</strong>: {{ result.task.name }}</a></li>
         <li><strong>Action</strong>: {{ result.task.action }}</li>
-        <li><strong>Path</strong>: <a href="{% url 'ui:file' result.task.file %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
-        <li><strong>Host</strong>: <a href="{% url 'ui:host' result.host.id %}">{{ result.host.name }}</a></li>
+        {% url 'ui:file' result.task.file as file_url %}
+        <li><strong>Path</strong>: <a href="{% static_url file_url %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>
+        {% url 'ui:host' result.host.id as host_url %}
+        <li><strong>Host</strong>: <a href="{% static_url host_url %}">{{ result.host.name }}</a></li>
         <li><strong>Status</strong>: {{ result.status }}</li>
         <li><strong>Started</strong>: {{ result.started | format_date }}</li>
         <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>

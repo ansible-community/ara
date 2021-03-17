@@ -1,4 +1,5 @@
 {% load datetime_formatting %}
+{% load static_url %}
 <div class="accordion" id="results">
   <div class="card">
     <div class="card-header" id="results_card">
@@ -9,9 +10,10 @@
         Task results
       </button>
     </div>
-    <form method="get" action="{% url 'ui:playbook' playbook.id %}#results">
+    {% if not static_generation %}<form method="get" action="{% url 'ui:playbook' playbook.id %}#results">{% endif %}
     <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
+          {% if not static_generation %}
           <div class="container-fluid">
             <div class="accordion" id="search_accordion">
               <div class="card">
@@ -67,7 +69,8 @@
                           Submit
                         </button>
                         {% if request.GET %}
-                          <a class="btn btn-outline-danger" href="{% url 'ui:playbook' playbook.id %}#results" role="button">Reset</a>
+                          {% url 'ui:playbook' playbook.id as playbook_url %}
+                          <a class="btn btn-outline-danger" href="{% static_url playbook_url %}#results" role="button">Reset</a>
                         {% endif %}
                       </div>
                     </div>
@@ -76,8 +79,11 @@
               </div>
             </div>
           </div>
+          {% endif %}
           {% if results.count %}
+          {% if not static_generation %}
           {% include "partials/pagination.html" with data=results %}
+          {% endif %}
           <div class="table-responsive">
             <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="results">
               <thead>
@@ -92,9 +98,11 @@
               </thead>
               <tbody>
                 {% for result in results.results %}
+                {% url 'ui:playbook' playbook.id as playbook_url %}
+                {% url 'ui:result' result.id as result_url %}
                 <tr>
                   <td class="text-center">
-                    <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% url 'ui:result' result.id %}">
+                    <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url result_url %}">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
                         <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
@@ -102,9 +110,28 @@
                     </a>
                   </td>
                   <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
-                  <td><a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a></td>
-                  <td nowrap><a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a></td>
-                  <td><a href="{% url 'ui:playbook' playbook.id %}?task={{ result.task.id }}#results">{{ result.task.name }}</a></td>
+                  <td>
+                    {% if not static_generation %}
+                    <a href="{% static_url playbook_url %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
+                    {% else %}
+                    {{ result.host.name }}
+                    {% endif %}
+                  </td>
+                  <td nowrap>
+                    {% if not static_generation %}
+                    {% url 'ui:file' result.task.file as file_url %}
+                    <a href="{% static_url file_url %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+                    {% else %}
+                    {{ result.task.action }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if not static_generation %}
+                    <a href="{% static_url playbook_url %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
+                    {% else %}
+                    {{ result.task.name }}
+                    {% endif %}
+                  </td>
                   <td>{{ result.duration | format_duration }}</td>
                   <td>{{ result.started | format_date }}</td>
                 </tr>

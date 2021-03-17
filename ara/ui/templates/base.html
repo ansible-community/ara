@@ -1,4 +1,6 @@
 {% load static %}
+{% load static_url %}
+{# Generate URLs ahead of time so we can filter them to take into account static generation links #}
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,20 +8,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="ARA Records Ansible">
     <meta name="author" content="https://github.com/ansible-community/ara">
-    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-
     <title>ARA Records Ansible</title>
-    <link rel="stylesheet" href="{% static UI_THEME %}">
+
+    {% static 'images/favicon.ico' as favicon_url %}
+    <link rel="shortcut icon" href="{% static_url favicon_url %}">
+    {% static UI_THEME as ui_theme_url %}
+    <link rel="stylesheet" href="{% static_url ui_theme_url %}">
     {% with "css/pygments-"|add:UI_THEME_VARIANT|add:".css" as pygments_css %}
-    <link rel="stylesheet" href="{% static pygments_css %}">
+    {% static pygments_css as pygments_css_url %}
+    <link rel="stylesheet" href="{% static_url pygments_css_url %}">
     {% endwith %}
   </head>
   <body>
     <header>
       <!-- Fixed navbar -->
+      {% url 'ui:index' as index_url %}
       <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <a class="navbar-brand" href="{% url 'ui:index' %}">
-          <img src="{% static 'images/logo.svg' %}" height="60" alt="ARA Records Ansible">
+        <a class="navbar-brand" href="{% static_url index_url %}">
+          {% static 'images/logo.svg' as logo_url %}
+          <img src="{% static_url logo_url %}" height="60" alt="ARA Records Ansible">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -27,11 +34,13 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item{% if page == 'index' %} active{% endif %}">
-              <a class="nav-link" href="{% url 'ui:index' %}">Playbooks</a>
+              <a class="nav-link" href="{% static_url index_url %}">Playbooks</a>
             </li>
+            {% if not static_generation %}
             <li class="nav-item">
               {% include "partials/api_link.html" %}
             </li>
+            {% endif %}
           </ul>
           <ul class="navbar-nav">
             <li class="nav-item">
@@ -43,8 +52,10 @@
     </header>
     <br />
     <!-- Begin page content -->
-    <script src="{% static 'js/jquery-3.5.1.slim.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    {% static 'js/jquery-3.5.1.slim.min.js' as jquery_url %}
+    {% static 'js/bootstrap.bundle.min.js' as bootstrap_js_url %}
+    <script src="{% static_url jquery_url %}"></script>
+    <script src="{% static_url bootstrap_js_url %}"></script>
     <main role="main">
         {% block body %}
         {% endblock %}

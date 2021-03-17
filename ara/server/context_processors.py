@@ -5,7 +5,4 @@ from django.conf import settings
 
 
 def ui_theme(request):
-    return {
-        "UI_THEME": settings.UI_THEME,
-        "UI_THEME_VARIANT": settings.UI_THEME_VARIANT
-    }
+    return dict(UI_THEME=settings.UI_THEME, UI_THEME_VARIANT=settings.UI_THEME_VARIANT)

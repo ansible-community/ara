@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load datetime_formatting %}
 {% load truncatepath %}
+{% load static_url %}
 {% block body %}
 
+{% if not static_generation %}
 <form action="{% url 'ui:index' %}" method="get">
 <div class="container-fluid">
   <div class="accordion" id="search_accordion">
@@ -78,8 +80,12 @@
     </div>
   </div>
 </div>
+{% endif %}
+
 <div class="container-fluid">
+  {% if not static_generation %}
   {% include "partials/pagination.html" %}
+  {% endif %}
   <div class="table-responsive">
     <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbooks">
       <thead>
@@ -102,7 +108,8 @@
         {% for playbook in data.results %}
         <tr>
           <td class="text-center">
-            <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% url 'ui:playbook' playbook.id %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
+            {% url 'ui:playbook' playbook.id as playbook_url %}
+            <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
                 <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
@@ -153,18 +160,42 @@
           <td class="text-center">{{ playbook.items.hosts }}</td>
           <td class="text-center">{{ playbook.items.tasks }}</td>
           <td class="text-center">{{ playbook.items.results }}</td>
-          <td class="text-center"><a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a></td>
-          <td class="text-center"><a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a></td>
-          <td title="{{ playbook.path }}">
-            {% if playbook.name is not None %}
-            <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+          <td class="text-center">
+            {% if not static_generation %}
+            <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
             {% else %}
-            <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+            {{ playbook.ansible_version }}
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if not static_generation %}
+            <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
+            {% else %}
+            {{ playbook.controller }}
+            {% endif %}
+          </td>
+          <td title="{{ playbook.path }}">
+            {% if not static_generation %}
+              {% if playbook.name is not None %}
+              <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+              {% else %}
+              <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+              {% endif %}
+            {% else %}
+              {% if playbook.name is not None %}
+              {{ playbook.name }}
+              {% else %}
+              {{ playbook.path | truncatepath:50 }}
+              {% endif %}
             {% endif %}
           </td>
           <td class="col-md-2">
             {% for label in playbook.labels %}
+            {% if not static_generation %}
             <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-info">{{ label.name }}</a>
+            {% else %}
+            <span class="badge badge-info">{{ label.name }}</span>
+            {% endif %}
             {% endfor %}
           </td>
         </tr>
