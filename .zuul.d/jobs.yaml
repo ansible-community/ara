@@ -18,16 +18,6 @@
     parent: ansible-tox-docs
 
 - job:
-    name: ara-release-pypi
-    parent: python-upload-pypi
-    vars:
-      release_python: python3
-    secrets:
-      - name: pypi_info
-        secret: ara_pypi_token
-        pass-to-parent: true
-
-- job:
     name: ara-integration-base
     parent: base
     files:
