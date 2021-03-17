@@ -9,4 +9,5 @@ Via: https://getbootstrap.com/docs/4.6/getting-started/introduction/
 
 Via: https://bootswatch.com/
 
-- ``css/bootstrap-sketchy.min.css``: https://bootswatch.com/4/sketchy/bootstrap.min.css
+- ``css/bootstrap-darkly.min.css``: https://bootswatch.com/4/darkly/bootstrap.min.css
+    - Note: The google font import is unnecessary and removed, see https://github.com/thomaspark/bootswatch/issues/573
