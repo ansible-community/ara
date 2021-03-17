@@ -591,10 +591,6 @@ ARA_UI_THEME
 - **Configuration file variable**: ``UI_THEME``
 - **Type**: ``string``
 - **Default**: ``css/bootstrap-darkly.min.css``
-- **Examples**:
-
-  - ``css/bootstrap-darkly.min.css``
-  - ``css/bootstrap-default.min.css``
 
 Link to a `bootstrap <https://getbootstrap.com>`_-compatible css file relative to the static directory found under
 ``ara/ui/static``.
@@ -602,8 +598,8 @@ Link to a `bootstrap <https://getbootstrap.com>`_-compatible css file relative t
 Although it is possible to add themes manually by inserting files into the static directory, only two themes currently
 ship with ara:
 
-- a dark theme (`bootstrap-darkly <https://bootswatch.com/darkly/>`_)
-- a light theme (the default bootstrap css)
+- a dark theme, ``css/bootstrap-darkly.min.css`` (`bootstrap-darkly <https://bootswatch.com/darkly/>`_)
+- a light theme, ``css/bootstrap-default.min.css`` (the default bootstrap css)
 
 ARA_UI_THEME_VARIANT
 ~~~~~~~~~~~~~~~~~~~~
