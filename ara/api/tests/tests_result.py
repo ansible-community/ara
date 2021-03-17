@@ -284,3 +284,8 @@ class ResultTestCase(APITestCase):
         results = self.client.get("/api/v1/results?changed=false").data["results"]
         self.assertEqual(1, len(results))
         self.assertEqual(results[0]["id"], unchanged_result.id)
+
+    def test_get_playbook_arguments(self):
+        result = factories.ResultFactory()
+        request = self.client.get("/api/v1/results/%s" % result.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])

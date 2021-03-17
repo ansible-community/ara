@@ -182,3 +182,8 @@ class HostTestCase(APITestCase):
         for field in order_fields:
             request = self.client.get("/api/v1/hosts?order=-%s" % field)
             self.assertEqual(request.data["results"][0]["id"], second_host.id)
+
+    def test_get_playbook_arguments(self):
+        host = factories.HostFactory()
+        request = self.client.get("/api/v1/hosts/%s" % host.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])

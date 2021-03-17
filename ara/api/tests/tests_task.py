@@ -261,3 +261,8 @@ class TaskTestCase(APITestCase):
         # Test partial match
         request = self.client.get("/api/v1/tasks?path=main.yml")
         self.assertEqual(len(request.data["results"]), 2)
+
+    def test_get_playbook_arguments(self):
+        task = factories.TaskFactory()
+        request = self.client.get("/api/v1/tasks/%s" % task.id)
+        self.assertIn("inventory", request.data["playbook"]["arguments"])
