@@ -4,21 +4,21 @@
 
 {% for result in results %}
 {% with index=forloop.counter %}
-<h1><strong>Result #{{ index }}</strong></h1>
-<table class="pf-c-table pf-m-grid-md pf-m-compact" role="grid" id="result-details">
+<h1 id="result_{{ index }}"><strong>Result #{{ index }}</strong></h1>
+<table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}">
     <thead>
         <tr role="row">
-            <th role="columnheader" scope="col" class="pf-m-width-20">Field</th>
-            <th role="columnheader" scope="col" class="pf-m-width-80">Value</th>
+            <th>Field</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
         {% for field, value in result.items %}
-        <tr role="row">
-            <td role="cell" id="{{ field }}_{{ index }}" data-label="{{ field }}" class="pf-m-width-20">
+        <tr>
+            <td id="{{ field }}_{{ index }}">
                 <a href="#{{ field }}_{{ index }}">{{ field }}</a>
             </td>
-            <td role="cell" data-label="Value" class="pf-m-width-80">
+            <td>
                 {% if field == "diff" %}
                     {{ value | diff_result | format_data | safe }}
                 {% else %}
