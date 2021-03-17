@@ -584,6 +584,42 @@ ARA_TIME_ZONE
 
 The time zone to store and return results in.
 
+ARA_UI_THEME
+~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_UI_THEME``
+- **Configuration file variable**: ``UI_THEME``
+- **Type**: ``string``
+- **Default**: ``css/bootstrap-darkly.min.css``
+- **Examples**:
+
+  - ``css/bootstrap-darkly.min.css``
+  - ``css/bootstrap-default.min.css``
+
+Link to a `bootstrap <https://getbootstrap.com>`_-compatible css file relative to the static directory found under
+``ara/ui/static``.
+
+Although it is possible to add themes manually by inserting files into the static directory, only two themes currently
+ship with ara:
+
+- a dark theme (`bootstrap-darkly <https://bootswatch.com/darkly/>`_)
+- a light theme (the default bootstrap css)
+
+ARA_UI_THEME_VARIANT
+~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_UI_THEME_VARIANT``
+- **Configuration file variable**: ``UI_THEME_VARIANT``
+- **Type**: ``string``
+- **Default**: ``dark``
+- **Examples**:
+
+  - ``dark``
+  - ``light``
+
+The variant should be set to ``dark`` when using a dark theme and ``light`` when using a light theme to render
+appropriate colors, highlights and accents in the UI.
+
 ARA_WRITE_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
