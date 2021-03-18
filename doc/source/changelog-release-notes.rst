@@ -4,6 +4,40 @@
 Changelog and release notes
 ***************************
 
+1.5.5 (2021-01-29)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.5
+
+.. code-block:: text
+
+    This is the 1.5.5 stable release of ara.
+    
+    Changes since 1.5.4:
+    
+    API
+    ---
+    
+    - Added support for searching playbooks by ansible_version, for example:
+      /api/v1/playbooks?ansible_version=2.10
+    
+    UI
+    --
+    
+    - Added syntax highlighting to task results
+    - Added support for rendering nested results for tasks with loops
+    - Added support for rendering diffs provided by "ansible-playbook --diff"
+    - Added support for searching playbooks by ansible_version
+    - The playbook links in the index no longer filter to changed results
+    - Ordering by date or duration no longer discards existing search arguments
+    - Clicking on the logo or the "playbooks" link now discards existing search arguments
+    
+    CLI
+    ---
+    
+    - Added support for searching playbooks by ansible_version
+    - Added missing argument for --controller to "ara playbook metrics"
+
 1.5.4 (2020-12-18)
 ##################
 
