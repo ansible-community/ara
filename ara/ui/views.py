@@ -21,8 +21,6 @@ class Index(generics.ListAPIView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        search_form = forms.PlaybookSearchForm(request.GET)
-
         query = self.filter_queryset(self.queryset.all().order_by("-id"))
         page = self.paginate_queryset(query)
         if page is not None:
@@ -37,15 +35,22 @@ class Index(generics.ListAPIView):
             max_current = self.paginator.count
         current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
 
-        return Response(
-            {
-                "data": response.data,
-                "search_form": search_form,
-                "current_page_results": current_page_results,
-                "page": "index",
-                "static_generation": False,
-            }
-        )
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.PlaybookSearchForm(request.GET)
+
+        # fmt: off
+        return Response(dict(
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="index",
+            search_form=search_form,
+            static_generation=False
+        ))
+        # fmt: on
 
 
 class Playbook(generics.RetrieveAPIView):
@@ -70,7 +75,6 @@ class Playbook(generics.RetrieveAPIView):
             models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
         )
 
-        search_form = forms.ResultSearchForm(request.GET)
         order = "-started"
         if "order" in request.GET:
             order = request.GET["order"]
@@ -96,18 +100,25 @@ class Playbook(generics.RetrieveAPIView):
             max_current = self.paginator.count
         current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
 
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.ResultSearchForm(request.GET)
+
         # fmt: off
-        return Response({
-            "playbook": playbook.data,
-            "hosts": hosts.data,
-            "files": files.data,
-            "records": records.data,
-            "results": paginated_results.data,
-            "current_page_results": current_page_results,
-            "search_form": search_form,
-            "static_generation": False,
-            "page": "playbook",
-        })
+        return Response(dict(
+            current_page_results=current_page_results,
+            expand_search=expand_search,
+            files=files.data,
+            hosts=hosts.data,
+            page="playbook",
+            playbook=playbook.data,
+            records=records.data,
+            results=paginated_results.data,
+            search_form=search_form,
+            static_generation=False,
+        ))
         # fmt: on
 
 
