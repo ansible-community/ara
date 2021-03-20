@@ -70,8 +70,7 @@
                           Submit
                         </button>
                         {% if request.GET %}
-                          {% url 'ui:playbook' playbook.id as playbook_url %}
-                          <a class="btn btn-outline-danger" href="{% static_url playbook_url %}#results" role="button">Reset</a>
+                          <a class="btn btn-outline-danger" href="{% url 'ui:playbook' playbook.id %}#results" role="button">Reset</a>
                         {% endif %}
                       </div>
                     </div>
@@ -113,7 +112,7 @@
                   <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% static_url playbook_url %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
+                      <a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
                     {% else %}
                       {{ result.host.name }}
                     {% endif %}
@@ -121,14 +120,14 @@
                   <td nowrap>
                     {% if not static_generation %}
                       {% url 'ui:file' result.task.file as file_url %}
-                      <a href="{% static_url file_url %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+                      <a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
                     {% else %}
                       {{ result.task.action }}
                     {% endif %}
                   </td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% static_url playbook_url %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
+                      <a href="{% url 'ui:playbook' playbook.id %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
                     {% else %}
                       {{ result.task.name }}
                     {% endif %}
