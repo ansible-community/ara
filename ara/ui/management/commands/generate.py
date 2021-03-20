@@ -117,8 +117,31 @@ class Command(BaseCommand):
         for host in query.all():
             destination = os.path.join(path, "hosts/%s.html" % host.id)
             serializer = serializers.DetailedHostSerializer(host)
-            data = {"host": serializer.data, "page": "host", **self.DEFAULT_PARAMS}
-            self.render("host.html", destination, **data)
+
+            # fmt: off
+            host_results = serializers.ListResultSerializer(
+                models.Result.objects.filter(host=host.id).all(), many=True
+            )
+            # fmt: on
+
+            # Backfill task data into results
+            for result in host_results.data:
+                task_id = result["task"]
+                result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+
+            # Results are paginated in the dynamic version and the template expects data in a specific format
+            formatted_results = {"count": len(host_results.data), "results": host_results.data}
+
+            self.render(
+                "host.html",
+                destination,
+                current_page_results=None,
+                host=serializer.data,
+                page="host",
+                results=formatted_results,
+                search_form=None,
+                **self.DEFAULT_PARAMS
+            )
 
         # Results
         query = models.Result.objects.all()

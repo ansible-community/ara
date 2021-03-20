@@ -133,8 +133,48 @@ class Host(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         host = self.get_object()
-        serializer = serializers.DetailedHostSerializer(host)
-        return Response({"host": serializer.data, "static_generation": False, "page": "host"})
+        host_serializer = serializers.DetailedHostSerializer(host)
+
+        order = "-started"
+        if "order" in request.GET:
+            order = request.GET["order"]
+        result_queryset = models.Result.objects.filter(host=host_serializer.data["id"]).order_by(order).all()
+        result_filter = filters.ResultFilter(request.GET, queryset=result_queryset)
+
+        page = self.paginate_queryset(result_filter.qs)
+        if page is not None:
+            result_serializer = serializers.ListResultSerializer(page, many=True)
+        else:
+            result_serializer = serializers.ListResultSerializer(result_filter, many=True)
+
+        for result in result_serializer.data:
+            task_id = result["task"]
+            result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+        paginated_results = self.get_paginated_response(result_serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.ResultSearchForm(request.GET)
+
+        # fmt: off
+        return Response(dict(
+            current_page_results=current_page_results,
+            expand_search=expand_search,
+            host=host_serializer.data,
+            page="host",
+            results=paginated_results.data,
+            search_form=search_form,
+            static_generation=False,
+        ))
+        # fmt: on
 
 
 class File(generics.RetrieveAPIView):

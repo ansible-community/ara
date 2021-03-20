@@ -1,41 +1,15 @@
 {% extends "base.html" %}
-{% load pygments_highlights %}
 {% block body %}
   <div class="container-fluid">
     {% include "partials/playbook_card.html" with playbook=host.playbook %}
   </div>
   <br/>
   <div class="container-fluid">
-    <div class="card">
-      <div class="card-header">
-        <h2>Host facts for {{ host.name }}</h2>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}">
-            <thead>
-            <tr>
-              <th style="width:20%;">Fact</th>
-              <th style="width:80%;">Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for fact, value in host.facts.items %}
-              <tr>
-                <td id="{{ fact }}" data-label="{{ fact }}">
-                  <a href="#{{ fact }}">{{ fact }}</a>
-                </td>
-                {# Some facts are VERY LONG uninterrupted single lines (looking at you ansible_ssh_host_key_rsa_public) #}
-                <td data-label="Value" style="max-width:400px;">
-                  {{ value | format_data | safe }}
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    {% include "partials/host_facts.html" %}
+  </div>
+  <br/>
+  <div class="container-fluid">
+    {% include "partials/host_results.html" %}
   </div>
   <br/>
 {% endblock %}
