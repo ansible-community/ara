@@ -1,125 +1,107 @@
 {% load datetime_formatting %}
 {% load truncatepath %}
+{% load static_url %}
 {% if playbook.status == "completed" %}
-<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-success pf-m-inline">
+  <div class="card border-success">
 {% elif playbook.status == "failed" %}
-<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-danger pf-m-inline">
+  <div class="card border-danger">
 {% elif playbook.status == "running" %}
-<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-info pf-m-inline">
+  <div class="card border-info">
 {% else %}
-<div class="pf-c-card pf-m-hoverable pf-c-alert pf-m-warning pf-m-inline">
+  <div class="card border-warning">
 {% endif %}
-    <ul class="pf-c-data-list" role="list">
-        <li class="pf-c-data-list__item">
-            <div class="pf-c-data-list__item-row">
-                <div class="pf-c-data-list__item-control pf-m-fit-content">
-                    {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+<div class="card-header text-center">
+  <h4>{% if playbook.name is not None %}{{ playbook.name }}: {{ playbook.path }}{% else %}{{ playbook.path }}{% endif %}</h4>
+</div>
+<div class="card-body text-info">
+  <div class="table-responsive">
+    <table class="table table-sm {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbook_summary">
+      <thead>
+      <tr>
+        <th class="text-center" title="Link to the playbook report">Report</th>
+        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+        <th class="text-center" title="Status of the playbook run">Status</th>
+        <th title="Date at which the playbook started">Date</th>
+        <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
+        <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+        <th class="text-center" title="Number of plays involved in the playbook">Plays</th>
+        <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+        <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+        <th class="text-center" title="Number of files recorded from the playbook">Files</th>
+        <th class="text-center" title="Number of ara_record keys recorded in the playbook">Records</th>
+        <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
+        <th class="text-center" title="Host that ran the playbook">Controller</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="text-center">
+          {% url 'ui:playbook' playbook.id as playbook_url %}
+          <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+            </svg>
+          </a>
+        </td>
+        <td class="text-center">
+          <button type="button" class="btn btn-outline-secondary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16">
+              <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/>
+            </svg>
+          </button>
+          <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title">CLI arguments</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-                <div class="pf-c-data-list__item-content">
-                    <div class="pf-c-data-list__cell pf-m-fit-content">
-                        <div style="padding-top:1em; white-space:nowrap;">
-                            <span title="Date at which the playbook started">
-                                <i class="fas fa-play-circle" aria-hidden="true"></i> {{ playbook.started | format_date }}
-                            </span><br>
-                            <span title="Date at which the playbook ended">
-                                <i class="fas fa-stop-circle" aria-hidden="true" title="Date at which the playbook ended"></i> {% if playbook.ended %}{{ playbook.ended | format_date }}{% endif %}
-                            </span>
-                        </div>
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    <div class="row">
+                      {% if playbook.name is not None %}
+                        <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
+                      {% else %}
+                        <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
+                      {% endif %}
                     </div>
-                    <div class="pf-c-data-list__cell pf-m-fit-content">
-                        <div style="padding-top:1em; white-space:nowrap;" title="Duration of the playbook">
-                            <i class="fas fa-stopwatch" aria-hidden="true"></i> {{ playbook.duration | format_duration }}
-                        </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
+                      </div>
                     </div>
-                    <div class="pf-c-data-list__cell pf-m-fit-content">
-                        <div style="padding-top:1em; white-space:nowrap;" title="Ansible version">
-                            Ansible {{ playbook.ansible_version }}
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-5">
-                        <div style="padding-top:1em;" title="{{ playbook.path }}">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html">
-                                {% if playbook.name is not None %}{{ playbook.name }}{% else %}{{ playbook.path | truncatepath:50 }}{% endif %}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#hosts">{{ playbook.items.hosts }} hosts</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#plays">{{ playbook.items.plays }} plays</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.tasks }} Tasks</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#results">{{ playbook.items.results }} results</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#files">{{ playbook.items.files }} files</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <div style="padding-top:1em;">
-                            <a href="{% if page != "index" %}../{% endif %}playbooks/{{ playbook.id }}.html#records">{{ playbook.items.records }} records</a>
-                        </div>
-                    </div>
-                    <div class="pf-c-data-list__cell pf-m-flex-1">
-                        <details id="cli-arguments-details">
-                            <summary><a>CLI arguments</a></summary>
-                            <table class="pf-c-table pf-m-compact pf-m-grid-md" role="grid" aria-label="cli-arguments" id="cli-arguments">
-                                <thead>
-                                    <tr role="row">
-                                        <th role="columnheader" scope="col">Argument</th>
-                                        <th role="columnheader" scope="col">Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody role="rowgroup">
-                                    {% for arg, value in playbook.arguments.items %}
-                                    <tr role="row">
-                                        <td role="cell" data-label="Argument" class="pf-m-fit-content" style="white-space: nowrap;">{{ arg }}</td>
-                                        <td role="cell" data-label="Value" class="pf-m-fit-content">{{ value }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </details>
-                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-            {% if playbook.labels %}
-            <div class="pf-c-data-list__item-row">
-                <ul class="pf-c-chip-group pf-m-toolbar">
-                    <li>
-                        <h4 class="pf-c-chip-group__label">Playbook labels</h4>
-                        <ul class="pf-c-chip-group">
-                            {% for label in playbook.labels %}
-                            <li class="pf-c-chip" title="{{ label.name }}">
-                                <span class="pf-c-chip__text">{{ label.name }}</span>
-                                {% if not static_generation %}
-                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" href="{% if page != 'index' %}../{% endif %}?label={{ label.name }}">
-                                {% else %}
-                                {# TODO: Lack of link and icon breaks styling #}
-                                <a class="pf-c-button pf-m-plain" type="button" aria-label="Search for this label" disabled>
-                                {% endif %}
-                                    <i class="fas fa-search" aria-hidden="true"></i>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            {% endif %}
-        </li>
-    </ul>
+          </div>
+        </td>
+        <td class="text-center">
+          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+        </td>
+        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+        <td class="text-center">{{ playbook.items.hosts }}</td>
+        <td class="text-center">{{ playbook.items.plays }}</td>
+        <td class="text-center">{{ playbook.items.tasks }}</td>
+        <td class="text-center">{{ playbook.items.results }}</td>
+        <td class="text-center">{{ playbook.items.files }}</td>
+        <td class="text-center">{{ playbook.items.records }}</td>
+        <td class="text-center">{{ playbook.ansible_version }}</td>
+        <td class="text-center">{{ playbook.controller }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if playbook.labels %}
+  <div class="card-footer text-center" title="Playbook labels">
+    {% for label in playbook.labels %}
+      <span class="badge badge-info" style="font-size:0.9em;">{{ label.name }}</span>
+    {% endfor %}
+  </div>
+{% endif %}
 </div>

@@ -1,0 +1,159 @@
+{% load datetime_formatting %}
+{% load static_url %}
+<div class="accordion" id="results">
+  <div class="card">
+    <div class="card-header" id="results_card">
+      <button class="btn btn-link" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
+          <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
+        </svg>
+        Task results
+      </button>
+    </div>
+    {% if not static_generation %}
+    <form method="get" action="{% url 'ui:playbook' playbook.id %}#results">{% endif %}
+    <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
+      <div class="card-body bg-{{ UI_THEME_VARIANT }}">
+        {% if not static_generation %}
+          <div class="container-fluid">
+            <div class="accordion" id="search_accordion">
+              <div class="card">
+                <div class="card-header" id="search_form">
+                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                    </svg>
+                    Search and filter
+                  </button>
+                </div>
+                <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
+                  <div class="card-body {% if UI_THEME_VARIANT == 'dark' %}bg-secondary{% endif %}">
+                    <div class="form-row">
+                      <div class="form-group col-md-1">
+                        <label for="host" {% if request.GET.host %}style="font-weight:bold;"{% endif %}>Host ID</label>
+                        <input type="text" class="form-control" id="host" name="host" placeholder="ex: 1234" value="{{ search_form.host.value | default_if_none:'' }}">
+                      </div>
+                      <div class="form-group col-md-1">
+                        <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
+                        <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-4">
+                        <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+                        {% for value, text in search_form.status.field.choices %}
+                          {% if value != "unknown" %}
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}/>
+                              <label class="form-check-label" for="{{ value }}">
+                                {% include "partials/result_status_icon.html" with status=value %}
+                              </label>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-4">
+                        <label for="changed" {% if request.GET.changed %}style="font-weight:bold;"{% endif %}>Changed: </label>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="changed" value="true" name="changed" {% if search_form.changed.value %}checked{% endif %}/>
+                          <label class="form-check-label" for="changed">
+                            True
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                          Submit
+                        </button>
+                        {% if request.GET %}
+                          <a class="btn btn-outline-danger" href="{% url 'ui:playbook' playbook.id %}#results" role="button">Reset</a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        {% if results.count %}
+          {% if not static_generation %}
+            {% include "partials/pagination.html" with data=results %}
+          {% endif %}
+          <div class="table-responsive">
+            <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="results">
+              <thead>
+              <tr>
+                <th class="text-center">Details</th>
+                <th class="text-center">Status</th>
+                <th>Host</th>
+                <th>Action</th>
+                <th>Task</th>
+                <th>{% include "partials/sort_by_duration.html" %}</th>
+                <th>{% include "partials/sort_by_date.html" %}</th>
+              </thead>
+              <tbody>
+              {% for result in results.results %}
+                {% url 'ui:playbook' playbook.id as playbook_url %}
+                {% url 'ui:result' result.id as result_url %}
+                <tr>
+                  <td class="text-center">
+                    <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url result_url %}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                        <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+                      </svg>
+                    </a>
+                  </td>
+                  <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
+                  <td>
+                    {% if not static_generation %}
+                      <a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
+                    {% else %}
+                      {{ result.host.name }}
+                    {% endif %}
+                  </td>
+                  <td nowrap>
+                    {% if not static_generation %}
+                      {% url 'ui:file' result.task.file as file_url %}
+                      <a href="{% url 'ui:file' result.task.file %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+                    {% else %}
+                      {{ result.task.action }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if not static_generation %}
+                      <a href="{% url 'ui:playbook' playbook.id %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
+                    {% else %}
+                      {{ result.task.name }}
+                    {% endif %}
+                  </td>
+                  <td>{{ result.duration | format_duration }}</td>
+                  <td>{{ result.started | format_date }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <br/>
+          <div class="container-fluid">
+            {% if not request.GET %}
+              <h2>No recorded results found for this playbook.</h2>
+              <h3>It might have been interrupted or is in progress.</h3>
+            {% else %}
+              <h3>No results found matching your query: try <a href="{% url 'ui:playbook' playbook.id %}#results">clearing search filters</a>.</h3>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
+</div>
+<br/>

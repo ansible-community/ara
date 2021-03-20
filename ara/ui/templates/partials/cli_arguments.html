@@ -1,0 +1,16 @@
+<table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="cli_args">
+  <thead>
+  <tr>
+    <th class="text-center">Argument</th>
+    <th class="text-center">Value</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for arg, value in arguments.items %}
+    <tr>
+      <td>{{ arg }}</td>
+      <td>{{ value }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

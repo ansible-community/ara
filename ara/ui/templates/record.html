@@ -1,14 +1,17 @@
 {% extends "base.html" %}
-{% block body %}
-{% include "partials/playbook_card.html" with playbook=record.playbook %}
 {% load pygments_highlights %}
-
-<div class="pf-c-card" style="margin: 1em 0;">
-    <div class="pf-c-card__header pf-c-title pf-m-md">
-        <strong>{{ record.key }}</strong>
+{% block body %}
+  <div class="container-fluid">
+    {% include "partials/playbook_card.html" with playbook=record.playbook %}
+  </div>
+  <br/>
+  <div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h2>Saved with <code>ara_record</code>: {{ record.key }}</h2>
     </div>
-    <div class="pf-c-card__body">
-        {{ record.value | format_data | safe }}
+    <div class="card-body">
+      {{ record.value | format_data | safe }}
     </div>
-</div>
+  </div>
 {% endblock %}

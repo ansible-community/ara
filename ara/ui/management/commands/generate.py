@@ -2,6 +2,7 @@ import codecs
 import os
 import shutil
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
@@ -10,6 +11,11 @@ from ara.api import models, serializers
 
 class Command(BaseCommand):
     help = "Generates a static tree of the web application"
+    DEFAULT_PARAMS = {
+        "static_generation": True,
+        "UI_THEME": settings.UI_THEME,
+        "UI_THEME_VARIANT": settings.UI_THEME_VARIANT,
+    }
     rendered = 0
 
     @staticmethod
@@ -51,7 +57,7 @@ class Command(BaseCommand):
 
         # Index
         destination = os.path.join(path, "index.html")
-        data = {"data": {"results": serializer.data}, "static_generation": True, "page": "index"}
+        data = {"data": {"results": serializer.data}, "page": "index", **self.DEFAULT_PARAMS}
         self.render("index.html", destination, **data)
 
         # Escape surrogates to prevent UnicodeEncodeError exceptions
@@ -87,7 +93,6 @@ class Command(BaseCommand):
             self.render(
                 "playbook.html",
                 destination,
-                static_generation=True,
                 playbook=playbook.data,
                 hosts=hosts.data,
                 files=files.data,
@@ -95,6 +100,8 @@ class Command(BaseCommand):
                 results=formatted_results,
                 current_page_results=None,
                 search_form=None,
+                page="playbook",
+                **self.DEFAULT_PARAMS
             )
 
         # Files
@@ -102,7 +109,7 @@ class Command(BaseCommand):
         for file in query.all():
             destination = os.path.join(path, "files/%s.html" % file.id)
             serializer = serializers.DetailedFileSerializer(file)
-            data = {"file": serializer.data, "static_generation": True}
+            data = {"file": serializer.data, "page": "file", **self.DEFAULT_PARAMS}
             self.render("file.html", destination, **data)
 
         # Hosts
@@ -110,15 +117,38 @@ class Command(BaseCommand):
         for host in query.all():
             destination = os.path.join(path, "hosts/%s.html" % host.id)
             serializer = serializers.DetailedHostSerializer(host)
-            data = {"host": serializer.data, "static_generation": True}
-            self.render("host.html", destination, **data)
+
+            # fmt: off
+            host_results = serializers.ListResultSerializer(
+                models.Result.objects.filter(host=host.id).all(), many=True
+            )
+            # fmt: on
+
+            # Backfill task data into results
+            for result in host_results.data:
+                task_id = result["task"]
+                result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+
+            # Results are paginated in the dynamic version and the template expects data in a specific format
+            formatted_results = {"count": len(host_results.data), "results": host_results.data}
+
+            self.render(
+                "host.html",
+                destination,
+                current_page_results=None,
+                host=serializer.data,
+                page="host",
+                results=formatted_results,
+                search_form=None,
+                **self.DEFAULT_PARAMS
+            )
 
         # Results
         query = models.Result.objects.all()
         for result in query.all():
             destination = os.path.join(path, "results/%s.html" % result.id)
             serializer = serializers.DetailedResultSerializer(result)
-            data = {"result": serializer.data, "static_generation": True}
+            data = {"result": serializer.data, "page": "result", **self.DEFAULT_PARAMS}
             self.render("result.html", destination, **data)
 
         # Records
@@ -126,7 +156,7 @@ class Command(BaseCommand):
         for record in query.all():
             destination = os.path.join(path, "records/%s.html" % record.id)
             serializer = serializers.DetailedRecordSerializer(record)
-            data = {"record": serializer.data, "static_generation": True}
+            data = {"record": serializer.data, "page": "record", **self.DEFAULT_PARAMS}
             self.render("record.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)

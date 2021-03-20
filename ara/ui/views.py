@@ -21,11 +21,6 @@ class Index(generics.ListAPIView):
     template_name = "index.html"
 
     def get(self, request, *args, **kwargs):
-        search_query = False
-        if request.GET:
-            search_query = True
-        search_form = forms.PlaybookSearchForm(request.GET)
-
         query = self.filter_queryset(self.queryset.all().order_by("-id"))
         page = self.paginate_queryset(query)
         if page is not None:
@@ -40,15 +35,22 @@ class Index(generics.ListAPIView):
             max_current = self.paginator.count
         current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
 
-        return Response(
-            {
-                "page": "index",
-                "data": response.data,
-                "search_form": search_form,
-                "search_query": search_query,
-                "current_page_results": current_page_results,
-            }
-        )
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.PlaybookSearchForm(request.GET)
+
+        # fmt: off
+        return Response(dict(
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="index",
+            search_form=search_form,
+            static_generation=False
+        ))
+        # fmt: on
 
 
 class Playbook(generics.RetrieveAPIView):
@@ -73,7 +75,6 @@ class Playbook(generics.RetrieveAPIView):
             models.Record.objects.filter(playbook=playbook.data["id"]).all(), many=True
         )
 
-        search_form = forms.ResultSearchForm(request.GET)
         order = "-started"
         if "order" in request.GET:
             order = request.GET["order"]
@@ -99,16 +100,25 @@ class Playbook(generics.RetrieveAPIView):
             max_current = self.paginator.count
         current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
 
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.ResultSearchForm(request.GET)
+
         # fmt: off
-        return Response({
-            "playbook": playbook.data,
-            "hosts": hosts.data,
-            "files": files.data,
-            "records": records.data,
-            "results": paginated_results.data,
-            "current_page_results": current_page_results,
-            "search_form": search_form
-        })
+        return Response(dict(
+            current_page_results=current_page_results,
+            expand_search=expand_search,
+            files=files.data,
+            hosts=hosts.data,
+            page="playbook",
+            playbook=playbook.data,
+            records=records.data,
+            results=paginated_results.data,
+            search_form=search_form,
+            static_generation=False,
+        ))
         # fmt: on
 
 
@@ -123,8 +133,48 @@ class Host(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         host = self.get_object()
-        serializer = serializers.DetailedHostSerializer(host)
-        return Response({"host": serializer.data})
+        host_serializer = serializers.DetailedHostSerializer(host)
+
+        order = "-started"
+        if "order" in request.GET:
+            order = request.GET["order"]
+        result_queryset = models.Result.objects.filter(host=host_serializer.data["id"]).order_by(order).all()
+        result_filter = filters.ResultFilter(request.GET, queryset=result_queryset)
+
+        page = self.paginate_queryset(result_filter.qs)
+        if page is not None:
+            result_serializer = serializers.ListResultSerializer(page, many=True)
+        else:
+            result_serializer = serializers.ListResultSerializer(result_filter, many=True)
+
+        for result in result_serializer.data:
+            task_id = result["task"]
+            result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+        paginated_results = self.get_paginated_response(result_serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.ResultSearchForm(request.GET)
+
+        # fmt: off
+        return Response(dict(
+            current_page_results=current_page_results,
+            expand_search=expand_search,
+            host=host_serializer.data,
+            page="host",
+            results=paginated_results.data,
+            search_form=search_form,
+            static_generation=False,
+        ))
+        # fmt: on
 
 
 class File(generics.RetrieveAPIView):
@@ -139,7 +189,7 @@ class File(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         file = self.get_object()
         serializer = serializers.DetailedFileSerializer(file)
-        return Response({"file": serializer.data})
+        return Response({"file": serializer.data, "static_generation": False, "page": "file"})
 
 
 class Result(generics.RetrieveAPIView):
@@ -156,7 +206,7 @@ class Result(generics.RetrieveAPIView):
         codecs.register_error("strict", codecs.lookup_error("surrogateescape"))
         result = self.get_object()
         serializer = serializers.DetailedResultSerializer(result)
-        return Response({"result": serializer.data})
+        return Response({"result": serializer.data, "static_generation": False, "page": "result"})
 
 
 class Record(generics.RetrieveAPIView):
@@ -171,4 +221,4 @@ class Record(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         record = self.get_object()
         serializer = serializers.DetailedRecordSerializer(record)
-        return Response({"record": serializer.data})
+        return Response({"record": serializer.data, "static_generation": False, "page": "result"})
