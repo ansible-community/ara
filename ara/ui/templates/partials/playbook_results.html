@@ -143,8 +143,8 @@
           <br/>
           <div class="container-fluid">
             {% if not request.GET %}
-              <h2>No recorded results found for this playbook.</h2>
-              <h3>It might have been interrupted or is in progress.</h3>
+              <h2>No recorded results found.</h2>
+              <h3>The playbook might have been interrupted or is in progress.</h3>
             {% else %}
               <h3>No results found matching your query: try <a href="{% url 'ui:playbook' playbook.id %}#results">clearing search filters</a>.</h3>
             {% endif %}
