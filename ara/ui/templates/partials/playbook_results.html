@@ -87,14 +87,15 @@
           <div class="table-responsive">
             <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="results">
               <thead>
-              <tr>
-                <th class="text-center">Details</th>
-                <th class="text-center">Status</th>
-                <th>Host</th>
-                <th>Action</th>
-                <th>Task</th>
-                <th>{% include "partials/sort_by_duration.html" %}</th>
-                <th>{% include "partials/sort_by_date.html" %}</th>
+                <tr style="height:50px;">
+                  <th class="text-center align-middle">Details</th>
+                  <th class="text-center align-middle">Status</th>
+                  <th class="align-middle">Host</th>
+                  <th class="align-middle">Action</th>
+                  <th class="align-middle">Task</th>
+                  <th class="align-middle">{% include "partials/sort_by_duration.html" %}</th>
+                  <th class="align-middle">{% include "partials/sort_by_date.html" %}</th>
+                </tr>
               </thead>
               <tbody>
               {% for result in results.results %}
@@ -143,8 +144,8 @@
           <br/>
           <div class="container-fluid">
             {% if not request.GET %}
-              <h2>No recorded results found for this playbook.</h2>
-              <h3>It might have been interrupted or is in progress.</h3>
+              <h2>No recorded results found.</h2>
+              <h3>The playbook might have been interrupted or is in progress.</h3>
             {% else %}
               <h3>No results found matching your query: try <a href="{% url 'ui:playbook' playbook.id %}#results">clearing search filters</a>.</h3>
             {% endif %}
