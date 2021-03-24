@@ -96,18 +96,18 @@
     <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbooks">
       <thead>
         <tr style="height:50px;">
-          <th class="text-center align-middle" title="Status of the playbook run">Status</th>
-          <th class="text-center align-middle" title="Link to the playbook report">Report</th>
-          <th class="align-middle" title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
-          <th class="text-nowrap align-middle" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
-          <th class="text-center align-middle" title="Number of hosts involved in the playbook">Hosts</th>
-          <th class="text-center align-middle" title="Number of tasks run in the playbook">Tasks</th>
-          <th class="text-center align-middle" title="Number of results recorded from the playbook">Results</th>
-          <th class="text-center align-middle" title="Version of Ansible that ran the playbook">Ansible</th>
-          <th class="text-center align-middle" title="Host that ran the playbook">Controller</th>
-          <th class="align-middle" title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
-          <th class="text-center align-middle" title="CLI arguments given to the ansible command">CLI</th>
-          <th class="align-middle" title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
+          <th class="text-center" title="Status of the playbook run">Status</th>
+          <th class="text-center" title="Link to the playbook report">Report</th>
+          <th title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
+          <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+          <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+          <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+          <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+          <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
+          <th class="text-center" title="Host that ran the playbook">Controller</th>
+          <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
+          <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+          <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
         </tr>
       </thead>
       <tbody>
