@@ -39,11 +39,11 @@
             </div>
             <div class="form-row">
               <div class="form-group col-md-2">
-                <label for="ansible_version" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
               <div class="form-group col-md-3">
-                <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Label</label>
+                <label for="label" {% if request.GET.label %}style="font-weight:bold;"{% endif %}>Label</label>
                 <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
               </div>
             </div>
