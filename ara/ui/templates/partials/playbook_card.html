@@ -18,9 +18,8 @@
     <table class="table table-sm {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbook_summary">
       <thead>
       <tr>
-        <th class="text-center" title="Link to the playbook report">Report</th>
-        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
         <th class="text-center" title="Status of the playbook run">Status</th>
+        <th class="text-center" title="Link to the playbook report">Report</th>
         <th title="Date at which the playbook started">Date</th>
         <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
         <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
@@ -31,10 +30,14 @@
         <th class="text-center" title="Number of ara_record keys recorded in the playbook">Records</th>
         <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
         <th class="text-center" title="Host that ran the playbook">Controller</th>
+        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
       </tr>
       </thead>
       <tbody>
       <tr>
+        <td class="text-center">
+          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+        </td>
         <td class="text-center">
           {% url 'ui:playbook' playbook.id as playbook_url %}
           <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
@@ -44,6 +47,16 @@
             </svg>
           </a>
         </td>
+        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+        <td class="text-center">{{ playbook.items.hosts }}</td>
+        <td class="text-center">{{ playbook.items.plays }}</td>
+        <td class="text-center">{{ playbook.items.tasks }}</td>
+        <td class="text-center">{{ playbook.items.results }}</td>
+        <td class="text-center">{{ playbook.items.files }}</td>
+        <td class="text-center">{{ playbook.items.records }}</td>
+        <td class="text-center">{{ playbook.ansible_version }}</td>
+        <td class="text-center">{{ playbook.controller }}</td>
         <td class="text-center">
           <button type="button" class="btn btn-outline-secondary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16">
@@ -79,19 +92,6 @@
             </div>
           </div>
         </td>
-        <td class="text-center">
-          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
-        </td>
-        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
-        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-        <td class="text-center">{{ playbook.items.hosts }}</td>
-        <td class="text-center">{{ playbook.items.plays }}</td>
-        <td class="text-center">{{ playbook.items.tasks }}</td>
-        <td class="text-center">{{ playbook.items.results }}</td>
-        <td class="text-center">{{ playbook.items.files }}</td>
-        <td class="text-center">{{ playbook.items.records }}</td>
-        <td class="text-center">{{ playbook.ansible_version }}</td>
-        <td class="text-center">{{ playbook.controller }}</td>
       </tr>
       </tbody>
     </table>
