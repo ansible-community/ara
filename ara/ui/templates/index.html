@@ -11,10 +11,12 @@
       <div class="card">
         <div class="card-header" id="search_form">
           <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-            </svg>
-            Search and filter
+            <h5>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+              </svg>
+              Search and filter
+            </h5>
           </button>
         </div>
         <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
@@ -37,11 +39,11 @@
             </div>
             <div class="form-row">
               <div class="form-group col-md-2">
-                <label for="ansible_version" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
               <div class="form-group col-md-3">
-                <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Label</label>
+                <label for="label" {% if request.GET.label %}style="font-weight:bold;"{% endif %}>Label</label>
                 <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
               </div>
             </div>
@@ -94,23 +96,26 @@
     <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbooks">
       <thead>
         <tr style="height:50px;">
-          <th class="text-center align-middle" title="Link to the playbook report">Report</th>
-          <th class="text-center align-middle" title="CLI arguments given to the ansible command">CLI</th>
-          <th class="text-center align-middle" title="Status of the playbook run">Status</th>
-          <th class="align-middle" title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
-          <th class="text-nowrap align-middle" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
-          <th class="text-center align-middle" title="Number of hosts involved in the playbook">Hosts</th>
-          <th class="text-center align-middle" title="Number of tasks run in the playbook">Tasks</th>
-          <th class="text-center align-middle" title="Number of results recorded from the playbook">Results</th>
-          <th class="text-center align-middle" title="Version of Ansible that ran the playbook">Ansible</th>
-          <th class="text-center align-middle" title="Host that ran the playbook">Controller</th>
-          <th class="align-middle" title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
-          <th class="align-middle" title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
+          <th class="text-center" title="Status of the playbook run">Status</th>
+          <th class="text-center" title="Link to the playbook report">Report</th>
+          <th title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
+          <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+          <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+          <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+          <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+          <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
+          <th class="text-center" title="Host that ran the playbook">Controller</th>
+          <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
+          <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+          <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
         </tr>
       </thead>
       <tbody>
       {% for playbook in data.results %}
         <tr>
+          <td class="text-center">
+            {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+          </td>
           <td class="text-center">
             {% url 'ui:playbook' playbook.id as playbook_url %}
             <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
@@ -119,6 +124,40 @@
                 <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
               </svg>
             </a>
+          </td>
+          <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+          <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+          <td class="text-center">{{ playbook.items.hosts }}</td>
+          <td class="text-center">{{ playbook.items.tasks }}</td>
+          <td class="text-center">{{ playbook.items.results }}</td>
+          <td class="text-center">
+            {% if not static_generation %}
+              <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
+            {% else %}
+              {{ playbook.ansible_version }}
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if not static_generation %}
+              <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
+            {% else %}
+              {{ playbook.controller }}
+            {% endif %}
+          </td>
+          <td title="{{ playbook.path }}">
+            {% if not static_generation %}
+              {% if playbook.name is not None %}
+                <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+              {% else %}
+                <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+              {% endif %}
+            {% else %}
+              {% if playbook.name is not None %}
+                {{ playbook.name }}
+              {% else %}
+                {{ playbook.path | truncatepath:50 }}
+              {% endif %}
+            {% endif %}
           </td>
           <td class="text-center">
             <button type="button" class="btn btn-outline-secondary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
@@ -156,49 +195,12 @@
               </div>
             </div>
           </td>
-          <td class="text-center">
-            {% include "partials/playbook_status_icon.html" with status=playbook.status %}
-          </td>
-          <td class="text-nowrap">{{ playbook.started | format_date }}</td>
-          <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-          <td class="text-center">{{ playbook.items.hosts }}</td>
-          <td class="text-center">{{ playbook.items.tasks }}</td>
-          <td class="text-center">{{ playbook.items.results }}</td>
-          <td class="text-center">
-            {% if not static_generation %}
-              <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
-            {% else %}
-              {{ playbook.ansible_version }}
-            {% endif %}
-          </td>
-          <td class="text-center">
-            {% if not static_generation %}
-              <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
-            {% else %}
-              {{ playbook.controller }}
-            {% endif %}
-          </td>
-          <td title="{{ playbook.path }}">
-            {% if not static_generation %}
-              {% if playbook.name is not None %}
-                <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
-              {% else %}
-                <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
-              {% endif %}
-            {% else %}
-              {% if playbook.name is not None %}
-                {{ playbook.name }}
-              {% else %}
-                {{ playbook.path | truncatepath:50 }}
-              {% endif %}
-            {% endif %}
-          </td>
           <td class="col-md-2">
             {% for label in playbook.labels %}
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-info">{{ label.name }}</a>
+                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-primary" style="font-size:85%;">{{ label.name }}</a>
               {% else %}
-                <span class="badge badge-info">{{ label.name }}</span>
+                <span class="badge badge-primary" style="font-size:85%;">{{ label.name }}</span>
               {% endif %}
             {% endfor %}
           </td>

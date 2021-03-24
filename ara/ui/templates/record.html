@@ -8,7 +8,7 @@
   <div class="container-fluid">
   <div class="card">
     <div class="card-header">
-      <h2>Saved with <code>ara_record</code>: {{ record.key }}</h2>
+      <h4 title="key saved with ara_record">Record: {{ record.key }}</h4>
     </div>
     <div class="card-body">
       {{ record.value | format_data | safe }}

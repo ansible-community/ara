@@ -11,6 +11,8 @@
 
   {% static 'images/favicon.ico' as favicon_url %}
   <link rel="shortcut icon" href="{% static_url favicon_url %}">
+  {% static 'css/ara.css' as ara_css_url %}
+  <link rel="stylesheet" href="{% static_url ara_css_url %}">
   {% static UI_THEME as ui_theme_url %}
   <link rel="stylesheet" href="{% static_url ui_theme_url %}">
   {% with "css/pygments-"|add:UI_THEME_VARIANT|add:".css" as pygments_css %}

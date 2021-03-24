@@ -3,11 +3,13 @@
 <div class="accordion" id="results">
   <div class="card">
     <div class="card-header" id="results_card">
-      <button class="btn btn-link" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
-          <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
-        </svg>
-        Task results
+      <button class="btn" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
+        <h4>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
+            <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
+          </svg>
+          Task results
+        </h4>
       </button>
     </div>
     {% if not static_generation %}
@@ -20,10 +22,12 @@
               <div class="card">
                 <div class="card-header" id="search_form">
                   <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-                    </svg>
-                    Search and filter
+                    <h5>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                      </svg>
+                      Search and filter
+                    </h5>
                   </button>
                 </div>
                 <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
@@ -88,13 +92,13 @@
             <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="results">
               <thead>
                 <tr style="height:50px;">
-                  <th class="text-center align-middle">Details</th>
-                  <th class="text-center align-middle">Status</th>
-                  <th class="align-middle">Host</th>
-                  <th class="align-middle">Action</th>
-                  <th class="align-middle">Task</th>
-                  <th class="align-middle">{% include "partials/sort_by_duration.html" %}</th>
-                  <th class="align-middle">{% include "partials/sort_by_date.html" %}</th>
+                  <th class="text-center">Details</th>
+                  <th class="text-center">Status</th>
+                  <th>Host</th>
+                  <th>Action</th>
+                  <th>Task</th>
+                  <th>{% include "partials/sort_by_duration.html" %}</th>
+                  <th>{% include "partials/sort_by_date.html" %}</th>
                 </tr>
               </thead>
               <tbody>
