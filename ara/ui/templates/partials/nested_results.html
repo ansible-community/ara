@@ -4,7 +4,7 @@
 
 {% for result in results %}
   {% with index=forloop.counter %}
-    <h1 id="result_{{ index }}"><strong>Result #{{ index }}</strong></h1>
+    <h4 id="result_{{ index }}"><strong>Result #{{ index }}</strong></h4>
     <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}">
       <thead>
       <tr role="row">
