@@ -196,9 +196,9 @@
           <td class="col-md-2">
             {% for label in playbook.labels %}
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-info">{{ label.name }}</a>
+                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-primary" style="font-size:85%;">{{ label.name }}</a>
               {% else %}
-                <span class="badge badge-info">{{ label.name }}</span>
+                <span class="badge badge-primary" style="font-size:85%;">{{ label.name }}</span>
               {% endif %}
             {% endfor %}
           </td>
