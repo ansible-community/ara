@@ -2,7 +2,7 @@
 <div class="accordion" id="hosts">
   <div class="card">
     <div class="card-header" id="hosts_card">
-      <button class="btn" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_hosts" aria-expanded="true" aria-controls="collapse_hosts">
+      <button class="btn" type="button" data-toggle="collapse" data-target="#collapse_hosts" aria-expanded="true" aria-controls="collapse_hosts">
         <h4>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hdd-rack" viewBox="0 0 16 16">
             <path d="M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm2 7a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-2.5.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
@@ -12,7 +12,7 @@
         </h4>
       </button>
     </div>
-    <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts" style="max-height: 300px; overflow-y: auto;">
+    <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts" style="max-height: 275px; overflow-y: auto;">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
         {% if playbook.items.hosts %}
           <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}">

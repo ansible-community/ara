@@ -13,7 +13,7 @@
 <div class="card-header text-center">
   <h4>Playbook: {% if playbook.name is not None %}{{ playbook.name }}: {{ playbook.path }}{% else %}{{ playbook.path }}{% endif %}</h4>
 </div>
-<div class="card-body text-info">
+<div class="card-body text-info" style="max-height:100px;">
   <div class="table-responsive">
     <table class="table table-sm {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}" id="playbook_summary">
       <thead>
