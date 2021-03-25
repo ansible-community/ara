@@ -195,9 +195,9 @@
           <td class="col-md-2">
             {% for label in playbook.labels %}
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="badge badge-primary" style="font-size:85%;">{{ label.name }}</a>
+                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="btn {% if UI_THEME_VARIANT == 'dark' %}btn-outline-success{% else %}btn-outline-primary{% endif %} ara-label">{{ label.name }}</a>
               {% else %}
-                <span class="badge badge-primary" style="font-size:85%;">{{ label.name }}</span>
+                <span class="btn {% if UI_THEME_VARIANT == 'dark' %}btn-outline-success{% else %}btn-outline-primary{% endif %} ara-label">{{ label.name }}</span>
               {% endif %}
             {% endfor %}
           </td>

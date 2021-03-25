@@ -100,7 +100,7 @@
 {% if playbook.labels %}
   <div class="card-footer text-center" title="Playbook labels">
     {% for label in playbook.labels %}
-      <span class="badge badge-primary" style="font-size:85%;">{{ label.name }}</span>
+      <span class="btn {% if UI_THEME_VARIANT == 'dark' %}btn-outline-success{% else %}btn-outline-primary{% endif %} ara-label" style="cursor:default; user-select: text;">{{ label.name }}</span>
     {% endfor %}
   </div>
 {% endif %}
