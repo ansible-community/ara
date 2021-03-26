@@ -17,7 +17,7 @@
     <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
         {% if not static_generation %}
-          <div class="container-fluid">
+          <div>
             <div class="accordion" id="search_accordion">
               <div class="card">
                 <div class="card-header" id="search_form">
@@ -146,7 +146,7 @@
           </div>
         {% else %}
           <br/>
-          <div class="container-fluid">
+          <div>
             {% if not request.GET %}
               <h2>No recorded results found.</h2>
               <h3>The playbook might have been interrupted or is in progress.</h3>

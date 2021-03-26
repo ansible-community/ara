@@ -16,7 +16,7 @@
     <form method="get" action="{% url 'ui:host' host.id %}#results">{% endif %}
     <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
-        <div class="container-fluid">
+        <div>
           <strong>Summary:</strong>
           {% if host.ok %}
           <a class="badge badge-pill badge-success" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
@@ -47,7 +47,7 @@
         </div>
         <br />
         {% if not static_generation %}
-          <div class="container-fluid">
+          <div>
             <div class="accordion" id="search_accordion">
               <div class="card">
                 <div class="card-header" id="search_form">
@@ -166,7 +166,7 @@
           </div>
         {% else %}
           <br/>
-          <div class="container-fluid">
+          <div>
             {% if not request.GET %}
               <h2>No recorded results found for this host.</h2>
               <h3>The playbook might have been interrupted or is in progress.</h3>
