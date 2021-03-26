@@ -52,10 +52,10 @@
                 <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                 {% for value, text in search_form.status.field.choices %}
                   {% if value != "unknown" %}
-                    <div class="form-check form-check-inline">
+                    <div class="form-check form-check-inline {% if value == 'completed' %}text-success{% elif value == 'failed' %}text-danger{% elif value == 'running' %}text-info{% else %}text-warning{% endif %}">
                       <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
                       <label class="form-check-label" for="{{ value }}">
-                        {% include "partials/playbook_status_icon.html" with status=value %} {{ value }}
+                        {% include "partials/status_icon.html" with status=value %} {{ value }}
                       </label>
                     </div>
                   {% endif %}
