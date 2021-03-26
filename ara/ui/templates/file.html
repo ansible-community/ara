@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load pygments_highlights %}
 {% block body %}
-  <div class="container-fluid">
+  <div>
     {% include "partials/playbook_card.html" with playbook=file.playbook %}
   </div>
   <br/>
-  <div class="container-fluid">
+  <div>
   <div class="card">
     <div class="card-header">
       <h4>File: {{ file.path }}</h4>

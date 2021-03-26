@@ -2,11 +2,11 @@
 {% load datetime_formatting %}
 {% load truncatepath %}
 {% block body %}
-  <div class="container-fluid">
+  <div>
     {% include "partials/playbook_card.html" %}
   </div>
   <br/>
-  <div class="container-fluid">
+  <div>
     <div class="row">
       <div class="col-md-6">
         {% include "partials/playbook_hosts.html" %}
@@ -20,7 +20,7 @@
     </div>
   </div>
   <br/>
-  <div class="container-fluid">
+  <div>
     {% include "partials/playbook_results.html" %}
   </div>
 {% endblock %}

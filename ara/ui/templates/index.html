@@ -6,7 +6,6 @@
 
   {% if not static_generation %}
     <form action="{% url 'ui:index' %}" method="get">
-    <div class="container-fluid">
     <div class="accordion" id="search_accordion">
       <div class="card">
         <div class="card-header" id="search_form">
@@ -86,7 +85,7 @@
     </div>
   {% endif %}
 
-<div class="container-fluid">
+<div>
   {% if not static_generation %}
     {% include "partials/pagination.html" %}
   {% endif %}
@@ -174,7 +173,7 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <div class="container-fluid">
+                    <div>
                       <div class="row">
                         {% if playbook.name is not None %}
                           <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>

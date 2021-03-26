@@ -58,8 +58,10 @@
 <script src="{% static_url jquery_url %}"></script>
 <script src="{% static_url bootstrap_js_url %}"></script>
 <main role="main">
-  {% block body %}
-  {% endblock %}
+  <div class="container-fluid">
+    {% block body %}
+    {% endblock %}
+  </div>
 </main>
 </body>
 </html>

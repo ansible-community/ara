@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
-  <div class="container-fluid">
+  <div>
     {% include "partials/playbook_card.html" with playbook=host.playbook %}
   </div>
   <br/>
-  <div class="container-fluid">
+  <div>
     {% include "partials/host_facts.html" %}
   </div>
   <br/>
-  <div class="container-fluid">
+  <div>
     {% include "partials/host_results.html" %}
   </div>
   <br/>
