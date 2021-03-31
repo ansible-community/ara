@@ -3,50 +3,44 @@
 <div class="accordion" id="results">
   <div class="card">
     <div class="card-header" id="results_card">
-      <button class="btn" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
-        <h4>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
-            <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
-          </svg>
-          Task results: {{ host.name }}
-        </h4>
+      <button class="btn btn-lg" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
+          <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
+        </svg>
+        Task results: {{ host.name }}
       </button>
+        {% if host.ok %}
+        <a class="badge badge-pill badge-success" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
+            {{ host.ok }} OK
+        </a>
+        {% endif %}
+        {% if host.changed %}
+        <a class="badge badge-pill badge-warning" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results" title="Search changed results for {{ host.name }}"{% endif %}>
+            {{ host.changed }} CHANGED
+        </a>
+        {% endif %}
+        {% if host.failed %}
+        <a class="badge badge-pill badge-danger" style="font-size:0.9em;"
+            {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed#results" title="Search failed results for {{ host.name }}"{% endif %}>
+            {{ host.failed }} FAILED
+        </a>
+        {% endif %}
+        {% if host.unreachable %}
+        <a class="badge badge-pill badge-danger" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=unreachable#results" title="Search unreachable results for {{ host.name }}"{% endif %}>
+            {{ host.unreachable }} UNREACHABLE
+        </a>
+        {% endif %}
+        {% if host.skipped %}
+        <a class="badge badge-pill badge-info" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results" title="Search skipped results for {{ host.name }}"{% endif %}>
+            {{ host.skipped }} SKIPPED
+        </a>
+        {% endif %}
     </div>
     {% if not static_generation %}
       <form method="get" action="{% url 'ui:host' host.id %}#results">
     {% endif %}
     <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
-        <div>
-          <strong>Summary:</strong>
-          {% if host.ok %}
-          <a class="badge badge-pill badge-success" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
-              {{ host.ok }} OK
-          </a>
-          {% endif %}
-          {% if host.changed %}
-          <a class="badge badge-pill badge-warning" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results" title="Search changed results for {{ host.name }}"{% endif %}>
-              {{ host.changed }} CHANGED
-          </a>
-          {% endif %}
-          {% if host.failed %}
-          <a class="badge badge-pill badge-danger" style="font-size:0.9em;"
-              {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed#results" title="Search failed results for {{ host.name }}"{% endif %}>
-              {{ host.failed }} FAILED
-          </a>
-          {% endif %}
-          {% if host.unreachable %}
-          <a class="badge badge-pill badge-danger" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=unreachable#results" title="Search unreachable results for {{ host.name }}"{% endif %}>
-              {{ host.unreachable }} UNREACHABLE
-          </a>
-          {% endif %}
-          {% if host.skipped %}
-          <a class="badge badge-pill badge-info" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results" title="Search skipped results for {{ host.name }}"{% endif %}>
-              {{ host.skipped }} SKIPPED
-          </a>
-          {% endif %}
-        </div>
-        <br />
         {% if not static_generation %}
           <div class="col-xl-6 offset-xl-3">
             <div class="accordion" id="search_accordion">
