@@ -13,7 +13,8 @@
       </button>
     </div>
     {% if not static_generation %}
-    <form method="get" action="{% url 'ui:host' host.id %}#results">{% endif %}
+      <form method="get" action="{% url 'ui:host' host.id %}#results">
+    {% endif %}
     <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-parent="#results">
       <div class="card-body bg-{{ UI_THEME_VARIANT }}">
         <div>
@@ -47,29 +48,27 @@
         </div>
         <br />
         {% if not static_generation %}
-          <div>
+          <div class="col-xl-6 offset-xl-3">
             <div class="accordion" id="search_accordion">
               <div class="card">
                 <div class="card-header" id="search_form">
-                  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
-                    <h5>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-                      </svg>
-                      Search and filter
-                    </h5>
+                  <button class="btn btn-link btn-lg" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                    </svg>
+                    Search and filter
                   </button>
                 </div>
                 <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
                   <div class="card-body {% if UI_THEME_VARIANT == 'dark' %}bg-secondary{% endif %}">
                     <div class="form-row">
-                      <div class="form-group col-md-1">
+                      <div class="form-group col-xl-4">
                         <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
                         <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-4">
+                      <div class="form-group col-xl-12">
                         <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                         {% for value, text in search_form.status.field.choices %}
                           {% if value != "unknown" %}
@@ -84,7 +83,7 @@
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-4">
+                      <div class="form-group col-xl-12">
                         <label for="changed" {% if request.GET.changed %}style="font-weight:bold;"{% endif %}>Changed: </label>
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="checkbox" id="changed" value="true" name="changed" {% if search_form.changed.value %}checked{% endif %}/>
@@ -95,10 +94,14 @@
                       </div>
                     </div>
                     <div class="form-row">
-                      <div class="form-group col-md-2">
+                      <div class="form-group col-xl-12">
                         <button type="submit" class="btn btn-primary">
                           Submit
                         </button>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-xl-12">
                         {% if request.GET %}
                           <a class="btn btn-outline-danger" href="{% url 'ui:host' host.id %}#results" role="button">Reset</a>
                         {% endif %}

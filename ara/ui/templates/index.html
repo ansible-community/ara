@@ -4,7 +4,8 @@
 {% load static_url %}
 {% block body %}
 
-  {% if not static_generation %}
+{% if not static_generation %}
+  <div class="col-xl-6 offset-xl-3">
     <form action="{% url 'ui:index' %}" method="get">
     <div class="accordion" id="search_accordion">
       <div class="card">
@@ -19,33 +20,33 @@
         <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
           <div class="card-body {% if UI_THEME_VARIANT == 'dark' %}bg-secondary{% endif %}">
             <div class="form-row">
-              <div class="form-group col-md-5">
+              <div class="form-group col-xl-10">
                 <label for="path" {% if request.GET.path %}style="font-weight:bold;"{% endif %}>Path</label>
                 <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.path.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-md-2">
+              <div class="form-group col-xl-5">
                 <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Ansible version</label>
                 <input type="text" class="form-control" id="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{{ search_form.ansible_version.value | default_if_none:'' }}">
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-xl-5">
                 <label for="controller" {% if request.GET.controller %}style="font-weight:bold;"{% endif %}>Ansible controller</label>
                 <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-md-2">
+              <div class="form-group col-xl-5">
                 <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
-              <div class="form-group col-md-3">
+              <div class="form-group col-xl-5">
                 <label for="label" {% if request.GET.label %}style="font-weight:bold;"{% endif %}>Label</label>
                 <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-md-7">
+              <div class="form-group col-xl-12">
                 <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                 {% for value, text in search_form.status.field.choices %}
                   {% if value != "unknown" %}
@@ -60,7 +61,7 @@
               </div>
             </div>
             <div class="form-row">
-              <div class="col-md-12">
+              <div class="col-xl-12">
                 <div class="btn-group" role="group" aria-label="Filter by date">
                   <button type="submit" class="btn btn-primary">
                     Submit
@@ -74,16 +75,22 @@
                   <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=30 %}">Last 30 days
                   </button>
                 </div>
-                {% if request.GET %}
-                  <a class="btn btn-outline-danger" href="{% url 'ui:index' %}" role="button">Reset</a>
-                {% endif %}
               </div>
             </div>
+            {% if request.GET %}
+              <br />
+              <div class="form-row">
+                <div class="col-xl-12">
+                  <a class="btn btn-outline-danger" href="{% url 'ui:index' %}" role="button">Reset</a>
+                </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
     </div>
-  {% endif %}
+  </div>
+{% endif %}
 
 <div>
   {% if not static_generation %}
