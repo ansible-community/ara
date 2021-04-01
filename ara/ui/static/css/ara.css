@@ -23,3 +23,7 @@
     padding: 0.10rem 0.25rem !important;
     margin-bottom: 3px;
 }
+
+.ara-result-status-badge {
+    font-size: 90% !important;
+}

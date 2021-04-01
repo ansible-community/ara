@@ -47,7 +47,7 @@
             </div>
             <div class="form-row">
               <div class="form-group col-xl-12">
-                <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+                <label class="align-middle" for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                 {% for value, text in search_form.status.field.choices %}
                   {% if value != "unknown" %}
                     <div class="form-check form-check-inline {% if value == 'completed' %}text-success{% elif value == 'failed' %}text-danger{% elif value == 'running' %}text-info{% else %}text-warning{% endif %}">
@@ -182,11 +182,13 @@
                   <div class="modal-body">
                     <div>
                       <div class="row">
-                        {% if playbook.name is not None %}
-                          <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
-                        {% else %}
-                          <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
-                        {% endif %}
+                        <div class="col-md-12">
+                          {% if playbook.name is not None %}
+                            <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
+                          {% else %}
+                            <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
+                          {% endif %}
+                        </div>
                       </div>
                       <div class="row">
                         <div class="col-md-12">

@@ -43,7 +43,7 @@
                     </div>
                     <div class="form-row">
                       <div class="form-group col-xl-12">
-                        <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+                        <label class="align-middle" for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
                         {% for value, text in search_form.status.field.choices %}
                           {% if value != "unknown" %}
                             <div class="form-check form-check-inline">
@@ -58,11 +58,13 @@
                     </div>
                     <div class="form-row">
                       <div class="form-group col-xl-12">
-                        <label for="changed" {% if request.GET.changed %}style="font-weight:bold;"{% endif %}>Changed: </label>
+                        <label class="align-middle" for="changed" {% if request.GET.changed %}style="font-weight:bold;"{% endif %}>Changed: </label>
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="checkbox" id="changed" value="true" name="changed" {% if search_form.changed.value %}checked{% endif %}/>
                           <label class="form-check-label" for="changed">
-                            True
+                            <span class="badge badge-pill badge-warning ara-result-status-badge" title="Search changed results">
+                              CHANGED
+                            </span>
                           </label>
                         </div>
                       </div>
@@ -119,7 +121,13 @@
                       </svg>
                     </a>
                   </td>
-                  <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
+                  <td class="text-center">
+                    {% if not static_generation %}
+                      {% include "partials/result_status_icon.html" with status=result.status search_url=playbook_url %}
+                    {% else %}
+                      {% include "partials/result_status_icon.html" with status=result.status %}
+                    {% endif %}
+                  </td>
                   <td>
                     {% if not static_generation %}
                       <a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
