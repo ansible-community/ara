@@ -42,28 +42,27 @@
                 </td>
                 <td>
                   {% if host.ok %}
-                    <a class="badge badge-pill badge-success" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
+                    <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
                       {{ host.ok }} OK
                     </a>
                   {% endif %}
                   {% if host.changed %}
-                    <a class="badge badge-pill badge-warning" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&changed=True#results" title="Search changed results for {{ host.name }}"{% endif %}>
+                    <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&changed=True#results" title="Search changed results for {{ host.name }}"{% endif %}>
                       {{ host.changed }} CHANGED
                     </a>
                   {% endif %}
                   {% if host.failed %}
-                    <a class="badge badge-pill badge-danger" style="font-size:0.9em;"
-                       {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=failed#results" title="Search failed results for {{ host.name }}"{% endif %}>
+                    <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=failed#results" title="Search failed results for {{ host.name }}"{% endif %}>
                       {{ host.failed }} FAILED
                     </a>
                   {% endif %}
                   {% if host.unreachable %}
-                    <a class="badge badge-pill badge-danger" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=unreachable#results" title="Search unreachable results for {{ host.name }}"{% endif %}>
+                    <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=unreachable#results" title="Search unreachable results for {{ host.name }}"{% endif %}>
                       {{ host.unreachable }} UNREACHABLE
                     </a>
                   {% endif %}
                   {% if host.skipped %}
-                    <a class="badge badge-pill badge-info" style="font-size:0.9em;" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=skipped#results" title="Search skipped results for {{ host.name }}"{% endif %}>
+                    <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.id }}&status=skipped#results" title="Search skipped results for {{ host.name }}"{% endif %}>
                       {{ host.skipped }} SKIPPED
                     </a>
                   {% endif %}

@@ -62,7 +62,7 @@
                         <div class="form-check form-check-inline">
                           <input class="form-check-input" type="checkbox" id="changed" value="true" name="changed" {% if search_form.changed.value %}checked{% endif %}/>
                           <label class="form-check-label" for="changed">
-                            <span class="badge badge-pill badge-warning" style="font-size:0.9em;" title="Search changed results">
+                            <span class="badge badge-pill badge-warning ara-result-status-badge" title="Search changed results">
                               CHANGED
                             </span>
                           </label>
@@ -121,7 +121,13 @@
                       </svg>
                     </a>
                   </td>
-                  <td class="text-center">{% include "partials/result_status_icon.html" with status=result.status %}</td>
+                  <td class="text-center">
+                    {% if not static_generation %}
+                      {% include "partials/result_status_icon.html" with status=result.status search_url=playbook_url %}
+                    {% else %}
+                      {% include "partials/result_status_icon.html" with status=result.status %}
+                    {% endif %}
+                  </td>
                   <td>
                     {% if not static_generation %}
                       <a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>

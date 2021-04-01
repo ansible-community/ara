@@ -1,15 +1,15 @@
 {% if status == "ok" %}
-  <span class="badge badge-pill badge-success" style="font-size:0.9em;" title="Task completed successfully">
+  <a class="badge badge-pill badge-success ara-result-status-badge" title="Task completed successfully" {% if search_url %}href="{{ search_url | add:'?status=ok#results' }}"{% endif %}>
 {% elif status == "failed" or status == "unreachable" %}
-  <span class="badge badge-pill badge-danger" style="font-size:0.9em;" title="Task failed">
+  <a class="badge badge-pill badge-danger ara-result-status-badge" title="Task failed" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>
 {% elif status == "ignored" %}
-  <span class="badge badge-pill badge-info" style="font-size:0.9em;" title="Task failed but was ignored">
+  <a class="badge badge-pill badge-info ara-result-status-badge" title="Task failed but was ignored" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>
 {% elif status == "skipped" %}
-  <span class="badge badge-pill badge-info" style="font-size:0.9em;" title="Task was skipped">
+  <a class="badge badge-pill badge-info ara-result-status-badge" title="Task was skipped" {% if search_url %}href="{{ search_url | add:'?status=skipped#results' }}"{% endif %}>
 {% elif status == "changed" %}
-  <span class="badge badge-pill badge-warning" style="font-size:0.9em;" title="Task resulted in a change">
+  <a class="badge badge-pill badge-warning ara-result-status-badge" title="Task resulted in a change" {% if search_url %}href="{{ search_url | add:'?changed=true#results' }}"{% endif %}>
 {% else %}
-  <span class="badge badge-pill badge-warning" style="font-size:0.9em;" title="Task result is unknown">
+  <a class="badge badge-pill badge-warning ara-result-status-badge" title="Task result is unknown" {% if search_url %}href="{{ search_url | add:'?status=unknown#results' }}"{% endif %}>
 {% endif %}
 {{ status | upper }}
-</span>
+</a>
