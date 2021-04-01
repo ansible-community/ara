@@ -17,3 +17,9 @@
 .card-footer {
     padding: 0.3rem 1.0rem !important;
 }
+
+.ara-label {
+    font-size: 90% !important;
+    padding: 0.10rem 0.25rem !important;
+    margin-bottom: 3px;
+}
