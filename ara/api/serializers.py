@@ -168,6 +168,14 @@ class DetailedHostSerializer(serializers.ModelSerializer):
     facts = ara_fields.CompressedObjectField(read_only=True)
 
 
+class DetailedDistinctHostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DistinctHost
+        fields = "__all__"
+
+    latest_host = DetailedHostSerializer(read_only=True)
+
+
 class DetailedResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result
@@ -242,6 +250,15 @@ class ListHostSerializer(serializers.ModelSerializer):
         exclude = ("facts",)
 
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
+
+
+class ListDistinctHostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.DistinctHost
+        fields = "__all__"
+
+    latest_host = ListHostSerializer(read_only=True)
 
 
 class ListResultSerializer(ResultStatusSerializer):
