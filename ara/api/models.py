@@ -240,6 +240,27 @@ class Host(Base):
         return "<Host %s:%s>" % (self.id, self.name)
 
 
+class DistinctHost(models.Model):
+    """
+    Distinct list of hosts with latest `Host` object id related.
+
+    We can not inherit from Base because we won't to use `name` as primary key.
+    """
+
+    class Meta:
+        db_table = "distinct_hosts"
+
+    name = models.CharField(max_length=255, primary_key=True)
+    latest_host = models.ForeignKey(Host, on_delete=models.CASCADE)
+
+    # because we can't inherit from Base (see above) we have to define this here additionally)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "<DistinctHost %s>" % (self.name)
+
+
 class Result(Duration):
     """
     Data about Ansible results.
