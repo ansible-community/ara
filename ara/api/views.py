@@ -104,6 +104,18 @@ class HostViewSet(viewsets.ModelViewSet):
             # create/update/destroy
             return serializers.HostSerializer
 
+    def perform_create(self, serializer):
+        """ create or update DistinctHost object """
+
+        instance = serializer.save()
+        distinct_host = serializers.DistinctHostSerializer(
+             data={"name": instance.name,
+                   "latest_host": instance.id}
+                   )
+        if distinct_host.is_valid():
+            distinct_host.save()
+        # TODO: exception handling if not valid
+
 
 class ResultViewSet(viewsets.ModelViewSet):
     filterset_class = filters.ResultFilter
