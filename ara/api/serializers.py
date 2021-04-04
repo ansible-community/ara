@@ -253,7 +253,6 @@ class ListHostSerializer(serializers.ModelSerializer):
 
 
 class ListDistinctHostSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.DistinctHost
         fields = "__all__"
@@ -349,16 +348,15 @@ class HostSerializer(serializers.ModelSerializer):
 
 
 class DistinctHostSerializer(serializers.ModelSerializer):
-
-    ### We have to define the name filed explicitly here,
-    ### to not have a UniqueValidator on the field.
-    ### We want to have a "update_or_create" facility and in order to do that, we
-    ### must manage the validation during the creation, not before
-    name = serializers.CharField(max_length=255)
-
     class Meta:
         model = models.DistinctHost
         fields = "__all__"
+
+    # We have to define the name filed explicitly here,
+    # to not have a UniqueValidator on the field.
+    # We want to have a "update_or_create" facility and in order to do that, we
+    # must manage the validation during the creation, not before
+    name = serializers.CharField(max_length=255)
 
     def create(self, validated_data):
         """ update or create """
