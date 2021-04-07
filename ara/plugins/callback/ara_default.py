@@ -330,12 +330,15 @@ class CallbackModule(CallbackBase):
         for path in play._loader._FILE_CACHE.keys():
             self._submit_thread("global", self._get_or_create_file, path)
 
+        # Note: ansible-runner suffixes play UUIDs when running in serial so 34cff6f4-9f8e-6137-3461-000000000005 can
+        # end up being 34cff6f4-9f8e-6137-3461-000000000005_2. Remove anything beyond standard 36 character UUIDs.
+        # https://github.com/ansible-community/ara/issues/211
         # Create the play
         self.play = self.client.post(
             "/api/v1/plays",
             name=play.name,
             status="running",
-            uuid=play._uuid,
+            uuid=play._uuid[:36],
             playbook=self.playbook["id"],
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
