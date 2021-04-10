@@ -13,9 +13,9 @@
       </button>
     </div>
     <div id="collapse_hosts" class="collapse show" aria-labelledby="hosts_card" data-parent="#hosts" style="max-height: 275px; overflow-y: auto;">
-      <div class="card-body bg-{{ UI_THEME_VARIANT }}">
+      <div class="card-body">
         {% if playbook.items.hosts %}
-          <table class="table table-sm table-hover {% if UI_THEME_VARIANT == 'dark' %}table-dark{% endif %}">
+          <table class="table table-sm table-hover">
             <thead>
             <tr>
               <th class="text-center" title="Host facts (available if facts were gathered)">Facts</th>
@@ -28,7 +28,7 @@
               <tr>
                 <td class="text-center">
                   {% url 'ui:host' host.id as host_url %}
-                  <a role="button" class="btn btn-outline-primary btn-link btn-sm btn-{{ UI_THEME_VARIANT }}" href="{% static_url host_url %}">
+                  <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
                       <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
