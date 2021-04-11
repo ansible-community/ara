@@ -2,7 +2,6 @@ import codecs
 import os
 import shutil
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
@@ -11,11 +10,7 @@ from ara.api import models, serializers
 
 class Command(BaseCommand):
     help = "Generates a static tree of the web application"
-    DEFAULT_PARAMS = {
-        "static_generation": True,
-        "UI_THEME": settings.UI_THEME,
-        "UI_THEME_VARIANT": settings.UI_THEME_VARIANT,
-    }
+    DEFAULT_PARAMS = dict(static_generation=True)
     rendered = 0
 
     @staticmethod
