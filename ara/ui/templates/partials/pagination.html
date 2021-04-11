@@ -18,8 +18,10 @@
         <a class="page-link" href="#" aria-label="Go to previous page"><span aria-hidden="true">&laquo;</span></a>
       </li>
     {% endif %}
-    <li class="page-item disabled">
-      <a class="page-link"><strong>{{ current_page_results }}</strong> of <strong>{{ data.count }}</strong></a>
+    <li class="disabled">
+      <div>
+        <span class="btn btn-outline-success disabled"><strong>{{ current_page_results }}</strong> of <strong>{{ data.count }}</strong></span>
+      </div>
     </li>
     <li class="page-item disabled">
       {% if data.next %}
