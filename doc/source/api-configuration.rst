@@ -72,10 +72,6 @@ For more details, click on the configuration parameters.
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_TIME_ZONE_                   | Local system timezone                                  | Time zone used when storing and returning results          |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
-| ARA_UI_THEME_                    | ``css/bootstrap-darkly.min.css``                       | Path to a bootstrap css file (relative to static directory)|
-+----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
-| ARA_UI_THEME_VARIANT_            | ``dark``                                               | Whether the theme is ``light`` or ``dark``                 |
-+----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_WRITE_LOGIN_REQUIRED_        | ``False``                                              | Whether authentication is required for writing data        |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 
@@ -583,38 +579,6 @@ ARA_TIME_ZONE
   - ``Europe/Paris``
 
 The time zone to store and return results in.
-
-ARA_UI_THEME
-~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_UI_THEME``
-- **Configuration file variable**: ``UI_THEME``
-- **Type**: ``string``
-- **Default**: ``css/bootstrap-darkly.min.css``
-
-Link to a `bootstrap <https://getbootstrap.com>`_-compatible css file relative to the static directory found under
-``ara/ui/static``.
-
-Although it is possible to add themes manually by inserting files into the static directory, only two themes currently
-ship with ara:
-
-- a dark theme, ``css/bootstrap-darkly.min.css`` (`bootstrap-darkly <https://bootswatch.com/darkly/>`_)
-- a light theme, ``css/bootstrap-default.min.css`` (the default bootstrap css)
-
-ARA_UI_THEME_VARIANT
-~~~~~~~~~~~~~~~~~~~~
-
-- **Environment variable**: ``ARA_UI_THEME_VARIANT``
-- **Configuration file variable**: ``UI_THEME_VARIANT``
-- **Type**: ``string``
-- **Default**: ``dark``
-- **Examples**:
-
-  - ``dark``
-  - ``light``
-
-The variant should be set to ``dark`` when using a dark theme and ``light`` when using a light theme to render
-appropriate colors, highlights and accents in the UI.
 
 ARA_WRITE_LOGIN_REQUIRED
 ~~~~~~~~~~~~~~~~~~~~~~~~
