@@ -69,6 +69,7 @@
  </script>
 </head>
 <body>
+{% include "partials/about_modal.html" %}
 <header>
   <!-- Fixed navbar -->
   {% url 'ui:index' as index_url %}
@@ -107,6 +108,9 @@
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" href="https://ara.readthedocs.io" target="_blank">Documentation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#aboutModal">About</a>
         </li>
       </ul>
     </div>
