@@ -47,7 +47,7 @@ API browser
 Included by the API server with django-rest-framework, the API browser allows
 users to navigate the different API endpoints and query recorded data.
 
-.. image:: doc/source/_static/ui-api-browser.png
+.. image:: doc/source/_static/ui-api-browser.gif
 
 Reporting interface
 -------------------
@@ -55,7 +55,7 @@ Reporting interface
 A simple reporting interface built-in to the API server without any extra
 dependencies.
 
-.. image:: doc/source/_static/ui-playbook-details.png
+.. image:: doc/source/_static/ui-reporting.gif
 
 ara CLI
 -------
