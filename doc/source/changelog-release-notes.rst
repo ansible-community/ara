@@ -4,6 +4,56 @@
 Changelog and release notes
 ***************************
 
+1.5.6 (2021-04-14)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.6
+
+.. code-block:: text
+
+    This is the 1.5.6 stable release of ara.
+    
+    It features a refresh of the playbook reporting interface included with the API server as well as fixes and improvements.
+    
+    Changes since 1.5.5:
+    
+    UI
+    --
+    
+    - Refactored the built-in reporting UI with the bootstrap CSS framework using themes from bootswatch
+    - Added a dark theme in addition to the default light theme (toggle at the top right)
+    - Improved the mobile version of the reporting interface
+    - Improved the playbook and task result tables
+    - Revamped search forms for playbook and playbook results
+    - Revamped hosts table in playbook reports
+    - Added task results to the host details page that includes host facts
+    - Moved ansible-playbook CLI arguments to a modal
+    - Added an "about" modal with the version of ara and links to resources
+    - Moved the link to the documentation to the "about" modal
+    - Clicking on a host or task name in a playbook report will now filter results for that host or task
+    - bugfix: Links to files including a lineno will now highlight that line (https://github.com/ansible-community/ara/issues/154)
+    - bugfix: Fixed broken documentation link to ara_record (https://github.com/ansible-community/ara/issues/219)
+    
+    API
+    ---
+    
+    - Playbook references will now always include CLI arguments, for example:
+      /api/v1/tasks/1 ->
+      {
+        "id": 1,
+        "playbook": {
+          "id": 1,
+          "arguments": {
+            #...
+          }
+        }
+      }
+    
+    Callback plugin
+    ---------------
+    
+    - bugfix: Truncate play UUIDs given back by ansible-runner when running in serial (https://github.com/ansible-community/ara/issues/211)
+
 1.5.5 (2021-01-29)
 ##################
 
