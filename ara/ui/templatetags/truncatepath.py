@@ -40,9 +40,19 @@ def truncatepath(path, count):
     if len(path) < length:
         return path
 
+    if "/" not in path:
+        # Non-paths look better with the end cut off
+        return path[: length - 4] + "..."
+
     dirname, basename = os.path.split(path)
+
+    if len(basename) >= length:
+        # fmt: off
+        return "..." + basename[4 - length:]
+        # fmt: on
+
     while dirname:
-        if len(dirname) + len(basename) < length:
+        if len(dirname) + len(basename) + 4 < length:
             break
         dirlist = dirname.split("/")
         dirlist.pop(0)
