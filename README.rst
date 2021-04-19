@@ -88,6 +88,9 @@ With defaults and using a local sqlite database:
 
     # Install Ansible and ARA (with API server dependencies) for the current user
     python3 -m pip install --user ansible "ara[server]"
+    
+    # Create and configure data base
+    ara-manage migrate
 
     # Configure Ansible to use the ARA callback plugin
     export ANSIBLE_CALLBACK_PLUGINS="$(python3 -m ara.setup.callback_plugins)"
