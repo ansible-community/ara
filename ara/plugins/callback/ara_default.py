@@ -372,8 +372,7 @@ class CallbackModule(CallbackBase):
         task_file = self._get_or_create_file(path)
 
         # Get task
-        self.task = self._get_or_create_task(
-            task, task_file["id"], lineno, handler)
+        self.task = self._get_or_create_task(task, task_file["id"], lineno, handler)
 
         return self.task
 
@@ -491,8 +490,7 @@ class CallbackModule(CallbackBase):
         task_uuid = str(task._uuid)[:36]
         if task_uuid not in self.task_cache:
             if None in (file_id, lineno, handler):
-                raise ValueError(
-                    "file_id, lineno, and handler are required to create a task")
+                raise ValueError("file_id, lineno, and handler are required to create a task")
 
             self.log.debug("Task not in cache, getting or creating: %s" % task)
             self.task_cache[task_uuid] = self.client.post(
@@ -506,8 +504,7 @@ class CallbackModule(CallbackBase):
                 tags=task.tags,
                 lineno=lineno,
                 handler=handler,
-                started=datetime.datetime.now(
-                    datetime.timezone.utc).isoformat(),
+                started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
             )
 
         return self.task_cache[task_uuid]
