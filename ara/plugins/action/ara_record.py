@@ -135,6 +135,9 @@ class ActionModule(ActionBase):
     """ Record persistent data as key/value pairs in ARA """
 
     TRANSFERS_FILES = False
+    # BYPASS_HOST_LOOP functions like a forced "run_once" on a task
+    # We don't need to run this module for every host.
+    BYPASS_HOST_LOOP = True
     VALID_ARGS = frozenset(("playbook_id", "key", "value", "type"))
     VALID_TYPES = ["text", "url", "json", "list", "dict"]
 

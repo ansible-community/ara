@@ -67,6 +67,9 @@ class ActionModule(ActionBase):
     """ Retrieves either a specific playbook from ARA or the one currently running """
 
     TRANSFERS_FILES = False
+    # BYPASS_HOST_LOOP functions like a forced "run_once" on a task
+    # We don't need to run this module for every host.
+    BYPASS_HOST_LOOP = True
     VALID_ARGS = frozenset(("playbook_id"))
 
     def __init__(self, *args, **kwargs):
