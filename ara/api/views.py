@@ -104,15 +104,6 @@ class HostViewSet(viewsets.ModelViewSet):
             # create/update/destroy
             return serializers.HostSerializer
 
-    def perform_create(self, serializer):
-        """ create or update DistinctHost object """
-
-        instance = serializer.save()
-        distinct_host = serializers.DistinctHostSerializer(data={"name": instance.name, "latest_host": instance.id})
-        if distinct_host.is_valid():
-            distinct_host.save()
-        # TODO: exception handling if not valid
-
 
 class DistinctHostViewSet(viewsets.ReadOnlyModelViewSet):
     # Todo: we have to check what for an endpoint we really need in the end
@@ -124,8 +115,8 @@ class DistinctHostViewSet(viewsets.ReadOnlyModelViewSet):
         elif self.action == "retrieve":
             return serializers.DetailedDistinctHostSerializer
         else:
-            # create/update/destroy
-            return serializers.DistinctHostSerializer
+            # we do not have create/update/destroy
+            pass
 
 
 class ResultViewSet(viewsets.ModelViewSet):

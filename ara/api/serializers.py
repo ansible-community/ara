@@ -344,27 +344,8 @@ class HostSerializer(serializers.ModelSerializer):
         host, created = models.Host.objects.get_or_create(
             name=validated_data["name"], playbook=validated_data["playbook"], defaults=validated_data
         )
+        models.DistinctHost.objects.update_or_create(name=validated_data["name"], defaults={"latest_host": host})
         return host
-
-
-class DistinctHostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.DistinctHost
-        fields = "__all__"
-
-    # We have to define the name filed explicitly here,
-    # to not have a UniqueValidator on the field.
-    # We want to have a "update_or_create" facility and in order to do that, we
-    # must manage the validation during the creation, not before
-    name = serializers.CharField(max_length=255)
-
-    def create(self, validated_data):
-        """ update or create """
-
-        distinct_host, created = models.DistinctHost.objects.update_or_create(
-            name=validated_data["name"], defaults=validated_data
-        )
-        return distinct_host
 
 
 class ResultSerializer(serializers.ModelSerializer):
