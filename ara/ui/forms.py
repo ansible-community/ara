@@ -41,3 +41,7 @@ class ResultSearchForm(forms.Form):
     status = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=models.Result.STATUS, required=False
     )
+
+
+class HostSearchForm(forms.Form):
+    name = forms.CharField(label="Host name", max_length=255, required=False)

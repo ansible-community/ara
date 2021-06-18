@@ -53,6 +53,48 @@ class Index(generics.ListAPIView):
         # fmt: on
 
 
+class HostIndex(generics.RetrieveAPIView):
+    """
+    Returns a list of latest record for each host
+    """
+
+    queryset = models.DistinctHost.objects.all()
+    filterset_class = filters.HostFilter
+    renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
+    template_name = "host_index.html"
+
+    def get(self, request, *args, **kwargs):
+        search_form = forms.HostSearchForm(request.GET)
+
+        query = self.filter_queryset(self.queryset.all().order_by("-name"))
+        page = self.paginate_queryset(query)
+        if page is not None:
+            serializer = serializers.ListDistinctHostSerializer(page, many=True)
+        else:
+            serializer = serializers.ListDistinctHostSerializer(query, many=True)
+        response = self.get_paginated_response(serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        return Response(dict(
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="host_index",
+            search_form=search_form,
+            static_generation=False
+        ))
+
+
 class Playbook(generics.RetrieveAPIView):
     """
     Returns a page for a detailed view of a playbook

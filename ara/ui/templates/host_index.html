@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load datetime_formatting %}
+{% load truncatepath %}
+{% load static_url %}
+{% block body %}
+
+{% if not static_generation %}
+  <div class="col-xl-6 offset-xl-3">
+    <form action="{% url 'ui:host_index' %}" method="get">
+    <div class="accordion" id="search_accordion">
+      <div class="card">
+        <div class="card-header" id="search_form">
+          <button class="btn btn-link btn-lg" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            Search and filter
+          </button>
+        </div>
+        <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group col-xl-10">
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <!-- TODO: Search arguments equivalent to CLI --with-changed, --without-changed, etc. -->
+            <div class="form-row">
+              <div class="col-xl-12">
+                <div class="btn-group" role="group" aria-label="Filter by date">
+                  <button type="submit" class="btn btn-primary">
+                    Submit
+                  </button>
+                  <!-- TODO: Hosts don't have a started field (copy-pasta from index.html)-->
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with minutes=60 %}">Last 60 minutes
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with hours=24 %}">Last 24 hours
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=7 %}">Last 7 days
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=30 %}">Last 30 days
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% if request.GET %}
+              <br />
+              <div class="form-row">
+                <div class="col-xl-12">
+                  <a class="btn btn-outline-danger" href="{% url 'ui:host_index' %}" role="button">Reset</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div>
+  {% if not static_generation %}
+    {% include "partials/pagination.html" %}
+  {% endif %}
+  <div class="table-responsive">
+    <table class="table table-sm table-hover" id="hosts">
+      <thead>
+        <tr style="height:50px;">
+          <th class="text-center" title="Link to the host report">Report</th>
+          <th class="text-center" title="Name of the inventory host">Name</th>
+          <th title="Date at which the host was last updated">{% include "partials/sort_by_date.html" %}</th>
+          <th title="Number of task results and their statuses">Task results</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for host in data.results %}
+        <tr>
+          <td class="text-center">
+            {% url 'ui:host' host.latest_host.id as host_url %}
+            <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+            </svg>
+            </a>
+          </td>
+          <td>
+            <a {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}#results" title="Search results for {{ host.latest_host.name }}"{% endif %}>
+            {{ host.latest_host.name }}
+            </a>
+          </td>
+          <td>{{ host.latest_host.updated }}</td>
+          <td>
+            {% if host.latest_host.ok %}
+            <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=ok#results" title="Search ok results for {{ host.latest_host.name }}"{% endif %}>
+                {{ host.latest_host.ok }} OK
+            </a>
+            {% endif %}
+            {% if host.latest_host.changed %}
+            <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?changed=True#results" title="Search changed results for {{ host.latest_host.name }}"{% endif %}>
+                {{ host.latest_host.changed }} CHANGED
+            </a>
+            {% endif %}
+            {% if host.latest_host.failed %}
+            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=failed#results" title="Search failed results for {{ host.latest_host.name }}"{% endif %}>
+                {{ host.latest_host.failed }} FAILED
+            </a>
+            {% endif %}
+            {% if host.latest_host.unreachable %}
+            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=unreachable#results" title="Search unreachable results for {{ host.latest_host.name }}"{% endif %}>
+                {{ host.latest_host.unreachable }} UNREACHABLE
+            </a>
+            {% endif %}
+            {% if host.latest_host.skipped %}
+            <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=skipped#results" title="Search skipped results for {{ host.latest_host.name }}"{% endif %}>
+                {{ host.latest_host.skipped }} SKIPPED
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</form>
+{% endblock %}

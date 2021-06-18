@@ -1,6 +1,10 @@
 {% load rest_framework %}
 
-{% if playbook.id %}
+{% if page == "index" %}
+  <a href="{% url 'playbook-list' %}" class="nav-link" target="_blank">API</a>
+{% elif page == "host_index" %}
+  <a href="{% url 'distincthost-list' %}" class="nav-link" target="_blank">API</a>
+{% elif playbook.id %}
   <a href="{% url 'playbook-detail' pk=playbook.id %}" class="nav-link" target="_blank">API</a>
 {% elif result.id %}
   <a href="{% url 'result-detail' pk=result.id %}" class="nav-link" target="_blank">API</a>
