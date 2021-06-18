@@ -67,7 +67,7 @@ class HostIndex(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         search_form = forms.HostSearchForm(request.GET)
 
-        query = self.filter_queryset(self.queryset.all().order_by("-name"))
+        query = self.filter_queryset(self.queryset.all().order_by("name"))
         page = self.paginate_queryset(query)
         if page is not None:
             serializer = serializers.ListDistinctHostSerializer(page, many=True)
