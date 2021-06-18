@@ -252,14 +252,6 @@ class ListHostSerializer(serializers.ModelSerializer):
     playbook = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-class ListDistinctHostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.DistinctHost
-        fields = "__all__"
-
-    latest_host = ListHostSerializer(read_only=True)
-
-
 class ListResultSerializer(ResultStatusSerializer):
     class Meta:
         model = models.Result

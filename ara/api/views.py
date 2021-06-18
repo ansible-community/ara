@@ -106,17 +106,9 @@ class HostViewSet(viewsets.ModelViewSet):
 
 
 class DistinctHostViewSet(viewsets.ReadOnlyModelViewSet):
-    # Todo: we have to check what for an endpoint we really need in the end
+    # Todo: maybe we need some more filters
     queryset = models.DistinctHost.objects.all()
-
-    def get_serializer_class(self):
-        if self.action == "list":
-            return serializers.ListDistinctHostSerializer
-        elif self.action == "retrieve":
-            return serializers.DetailedDistinctHostSerializer
-        else:
-            # we do not have create/update/destroy
-            pass
+    serializer_class = serializers.DetailedDistinctHostSerializer
 
 
 class ResultViewSet(viewsets.ModelViewSet):
