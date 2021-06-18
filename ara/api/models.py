@@ -244,7 +244,7 @@ class DistinctHost(models.Model):
     """
     Distinct list of hosts with latest `Host` object id related.
 
-    We can not inherit from Base because we won't to use `name` as primary key.
+    We can not inherit from Base because we want to use `name` as primary key.
     """
 
     class Meta:
