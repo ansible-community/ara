@@ -3,6 +3,24 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+def update_latest_hosts(apps, schema_editor):
+    """ Computes the latest host for each host name to update the DistinctHost table """
+    # We can't import the model directly as it may be a newer
+    # version than this migration expects. We use the historical version.
+    db_alias = schema_editor.connection.alias
+    host_model = apps.get_model('api', 'Host')
+    distincthost_model = apps.get_model('api', 'DistinctHost')
+
+    updated = []
+    for host in host_model.objects.all():
+        if host.name in updated:
+            continue
+
+        # TODO: Should we sort by another column ?
+        latest_host = host_model.objects.filter(name=host.name).order_by('-updated')[0]
+        distincthost_model.objects.using(db_alias).create(name=host.name, latest_host=latest_host)
+        updated.append(host.name)
+
 
 class Migration(migrations.Migration):
 
@@ -23,4 +41,5 @@ class Migration(migrations.Migration):
                 'db_table': 'distinct_hosts',
             },
         ),
+        migrations.RunPython(update_latest_hosts)
     ]
