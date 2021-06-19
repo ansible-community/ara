@@ -68,9 +68,10 @@
       <thead>
         <tr style="height:50px;">
           <th class="text-center" title="Link to the host report">Report</th>
-          <th class="text-center" title="Name of the inventory host">Name</th>
-          <th title="Date at which the host was last updated">{% include "partials/sort_by_date.html" %}</th>
-          <th title="Number of task results and their statuses">Task results</th>
+          <th title="Name of the inventory host">Name</th>
+          <th title="Number of task results and their statuses">Last result</th>
+          <th title="Last report">Last report {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+          <th title="Host facts">Host facts</th>
         </tr>
       </thead>
       <tbody>
@@ -90,7 +91,6 @@
             {{ host.latest_host.name }}
             </a>
           </td>
-          <td>{{ host.latest_host.updated }}</td>
           <td>
             {% if host.latest_host.ok %}
             <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=ok#results" title="Search ok results for {{ host.latest_host.name }}"{% endif %}>
@@ -118,6 +118,8 @@
             </a>
             {% endif %}
           </td>
+          <td>{{ host.latest_host.updated }}</td>
+          <td>{% include "partials/host_facts_snippets.html" with host=host.latest_host %}</td>
         </tr>
       {% endfor %}
       </tbody>

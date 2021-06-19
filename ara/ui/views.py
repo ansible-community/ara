@@ -70,9 +70,9 @@ class HostIndex(generics.RetrieveAPIView):
         query = self.filter_queryset(self.queryset.all().order_by("name"))
         page = self.paginate_queryset(query)
         if page is not None:
-            serializer = serializers.ListDistinctHostSerializer(page, many=True)
+            serializer = serializers.DetailedDistinctHostSerializer(page, many=True)
         else:
-            serializer = serializers.ListDistinctHostSerializer(query, many=True)
+            serializer = serializers.DetailedDistinctHostSerializer(query, many=True)
         response = self.get_paginated_response(serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):
