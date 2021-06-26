@@ -149,6 +149,11 @@
                     {% else %}
                       {{ result.task.name }}
                     {% endif %}
+                    {% if result.task.tags %}
+                    <span class="badge badge-pill badge-warning" class="btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% include 'partials/tags_list.html' with tags=result.task.tags %}">
+                      {{ result.task.tags | length }} tags
+                    </span>
+                    {% endif %}
                   </td>
                   <td>{{ result.duration | format_duration }}</td>
                   <td>{{ result.started | format_date }}</td>
@@ -174,3 +179,14 @@
   </div>
 </div>
 <br/>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+<style>
+  /* Prevent tooltip flickering when using hover */
+  .tooltip {
+    pointer-events: none;
+  }
+</style>
