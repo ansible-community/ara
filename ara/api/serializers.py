@@ -173,7 +173,7 @@ class DetailedDistinctHostSerializer(serializers.ModelSerializer):
         model = models.DistinctHost
         fields = "__all__"
 
-    latest_host = DetailedHostSerializer(read_only=True)
+    latest = DetailedHostSerializer(read_only=True)
 
 
 class DetailedResultSerializer(ResultStatusSerializer):
@@ -336,7 +336,7 @@ class HostSerializer(serializers.ModelSerializer):
         host, created = models.Host.objects.get_or_create(
             name=validated_data["name"], playbook=validated_data["playbook"], defaults=validated_data
         )
-        models.DistinctHost.objects.update_or_create(name=validated_data["name"], defaults={"latest_host": host})
+        models.DistinctHost.objects.update_or_create(name=validated_data["name"], defaults={"latest": host})
         return host
 
 

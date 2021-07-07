@@ -251,7 +251,7 @@ class DistinctHost(models.Model):
         db_table = "distinct_hosts"
 
     name = models.CharField(max_length=255, primary_key=True)
-    latest_host = models.ForeignKey(Host, on_delete=models.CASCADE)
+    latest = models.ForeignKey(Host, on_delete=models.CASCADE)
 
     # because we can't inherit from Base (see above) we have to define this here additionally
     created = models.DateTimeField(auto_now_add=True)
