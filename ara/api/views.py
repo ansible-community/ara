@@ -106,8 +106,8 @@ class HostViewSet(viewsets.ModelViewSet):
 
 
 class DistinctHostViewSet(viewsets.ReadOnlyModelViewSet):
-    # Todo: maybe we need some more filters
     queryset = models.DistinctHost.objects.all()
+    filterset_class = filters.DistinctHostFilter
     serializer_class = serializers.DetailedDistinctHostSerializer
 
 
