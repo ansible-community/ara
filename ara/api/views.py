@@ -106,7 +106,7 @@ class HostViewSet(viewsets.ModelViewSet):
             return super().perform_destroy(instance)
 
         # Find the next-latest host that isn't this one
-        next_latest = models.Host.objects.filter(name=instance.name).order_by('-updated')
+        next_latest = models.Host.objects.filter(name=instance.name).order_by("-updated")
 
         if len(next_latest) > 1:
             distinct.latest = next_latest[1]

@@ -2,10 +2,11 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import time
+
 from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
-from ara.api.tests import factories, utils
+from ara.api.tests import factories
 
 
 class DistinctHostTestCase(APITestCase):
