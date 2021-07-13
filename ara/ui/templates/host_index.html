@@ -78,7 +78,7 @@
       {% for host in data.results %}
         <tr>
           <td class="text-center">
-            {% url 'ui:host' host.latest_host.id as host_url %}
+            {% url 'ui:host' host.latest.id as host_url %}
             <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
@@ -87,39 +87,39 @@
             </a>
           </td>
           <td>
-            <a {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}#results" title="Search results for {{ host.latest_host.name }}"{% endif %}>
-            {{ host.latest_host.name }}
+            <a {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}#results" title="Search results for {{ host.latest.name }}"{% endif %}>
+            {{ host.latest.name }}
             </a>
           </td>
           <td>
-            {% if host.latest_host.ok %}
-            <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=ok#results" title="Search ok results for {{ host.latest_host.name }}"{% endif %}>
-                {{ host.latest_host.ok }} OK
+            {% if host.latest.ok %}
+            <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=ok#results" title="Search ok results for {{ host.latest.name }}"{% endif %}>
+                {{ host.latest.ok }} OK
             </a>
             {% endif %}
-            {% if host.latest_host.changed %}
-            <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?changed=True#results" title="Search changed results for {{ host.latest_host.name }}"{% endif %}>
-                {{ host.latest_host.changed }} CHANGED
+            {% if host.latest.changed %}
+            <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?changed=True#results" title="Search changed results for {{ host.latest.name }}"{% endif %}>
+                {{ host.latest.changed }} CHANGED
             </a>
             {% endif %}
-            {% if host.latest_host.failed %}
-            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=failed#results" title="Search failed results for {{ host.latest_host.name }}"{% endif %}>
-                {{ host.latest_host.failed }} FAILED
+            {% if host.latest.failed %}
+            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=failed#results" title="Search failed results for {{ host.latest.name }}"{% endif %}>
+                {{ host.latest.failed }} FAILED
             </a>
             {% endif %}
-            {% if host.latest_host.unreachable %}
-            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=unreachable#results" title="Search unreachable results for {{ host.latest_host.name }}"{% endif %}>
-                {{ host.latest_host.unreachable }} UNREACHABLE
+            {% if host.latest.unreachable %}
+            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=unreachable#results" title="Search unreachable results for {{ host.latest.name }}"{% endif %}>
+                {{ host.latest.unreachable }} UNREACHABLE
             </a>
             {% endif %}
-            {% if host.latest_host.skipped %}
-            <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest_host.id %}?status=skipped#results" title="Search skipped results for {{ host.latest_host.name }}"{% endif %}>
-                {{ host.latest_host.skipped }} SKIPPED
+            {% if host.latest.skipped %}
+            <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=skipped#results" title="Search skipped results for {{ host.latest.name }}"{% endif %}>
+                {{ host.latest.skipped }} SKIPPED
             </a>
             {% endif %}
           </td>
-          <td>{{ host.latest_host.updated }}</td>
-          <td>{% include "partials/host_facts_snippets.html" with host=host.latest_host %}</td>
+          <td>{{ host.latest.updated }}</td>
+          <td>{% include "partials/host_facts_snippets.html" with host=host.latest %}</td>
         </tr>
       {% endfor %}
       </tbody>
