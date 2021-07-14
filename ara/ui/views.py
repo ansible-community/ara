@@ -85,14 +85,16 @@ class HostIndex(generics.RetrieveAPIView):
         search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
         expand_search = True if search_args else False
 
+        # fmt: off
         return Response(dict(
-            current_page_results=current_page_results,
-            data=response.data,
-            expand_search=expand_search,
-            page="host_index",
-            search_form=search_form,
-            static_generation=False
+                current_page_results=current_page_results,
+                data=response.data,
+                expand_search=expand_search,
+                page="host_index",
+                search_form=search_form,
+                static_generation=False,
         ))
+        # fmt: on
 
 
 class Playbook(generics.RetrieveAPIView):

@@ -22,6 +22,7 @@ from django.utils.dateparse import parse_datetime
 
 register = template.Library()
 
+
 @register.filter(name="duration_from_seconds")
 def duration_from_seconds(seconds):
     return str(datetime.timedelta(seconds=seconds))
