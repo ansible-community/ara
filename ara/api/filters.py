@@ -158,6 +158,37 @@ class HostFilter(BaseFilter):
     # fmt: on
 
 
+class DistinctHostFilter(BaseFilter):
+    playbook = django_filters.NumberFilter(field_name="latest__playbook__id", lookup_expr="exact")
+    name = django_filters.CharFilter(field_name="latest__name", lookup_expr="icontains")
+    changed__gt = django_filters.NumberFilter(field_name="latest__changed", lookup_expr="gt")
+    changed__lt = django_filters.NumberFilter(field_name="latest__changed", lookup_expr="lt")
+    failed__gt = django_filters.NumberFilter(field_name="latest__failed", lookup_expr="gt")
+    failed__lt = django_filters.NumberFilter(field_name="latest__failed", lookup_expr="lt")
+    ok__gt = django_filters.NumberFilter(field_name="latest__ok", lookup_expr="gt")
+    ok__lt = django_filters.NumberFilter(field_name="latest__ok", lookup_expr="lt")
+    skipped__gt = django_filters.NumberFilter(field_name="latest__skipped", lookup_expr="gt")
+    skipped__lt = django_filters.NumberFilter(field_name="latest__skipped", lookup_expr="lt")
+    unreachable__gt = django_filters.NumberFilter(field_name="latest__unreachable", lookup_expr="gt")
+    unreachable__lt = django_filters.NumberFilter(field_name="latest__unreachable", lookup_expr="lt")
+
+    # fmt: off
+    order = django_filters.OrderingFilter(
+        fields=(
+            ("id", "id"),
+            ("created", "created"),
+            ("updated", "updated"),
+            ("name", "name"),
+            ("changed", "changed"),
+            ("failed", "failed"),
+            ("ok", "ok"),
+            ("skipped", "skipped"),
+            ("unreachable", "unreachable"),
+        )
+    )
+    # fmt: on
+
+
 class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     task = django_filters.NumberFilter(field_name="task__id", lookup_expr="exact")

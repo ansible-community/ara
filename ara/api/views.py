@@ -95,6 +95,25 @@ class HostViewSet(viewsets.ModelViewSet):
     queryset = models.Host.objects.all()
     filterset_class = filters.HostFilter
 
+    def perform_destroy(self, instance):
+        """
+        Update the DistinctHost table when deleting a host (if necessary)
+        """
+        # check if Host object has a relation to a DistinctHost object
+        try:
+            distinct = models.DistinctHost.objects.get(latest=instance.id)
+        except models.DistinctHost.DoesNotExist:
+            return super().perform_destroy(instance)
+
+        # Find the next-latest host that isn't this one
+        next_latest = models.Host.objects.filter(name=instance.name).order_by("-updated")
+
+        if len(next_latest) > 1:
+            distinct.latest = next_latest[1]
+            distinct.save()
+
+        return super().perform_destroy(instance)
+
     def get_serializer_class(self):
         if self.action == "list":
             return serializers.ListHostSerializer
@@ -103,6 +122,12 @@ class HostViewSet(viewsets.ModelViewSet):
         else:
             # create/update/destroy
             return serializers.HostSerializer
+
+
+class DistinctHostViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.DistinctHost.objects.all()
+    filterset_class = filters.DistinctHostFilter
+    serializer_class = serializers.DetailedDistinctHostSerializer
 
 
 class ResultViewSet(viewsets.ModelViewSet):
