@@ -65,3 +65,8 @@
     - name: Test each container image
       include_tasks: container_test_tasks.yaml
       loop: "{{ images }}"
+      # TODO: This should be able to run without elevating privileges
+      # See: https://github.com/ansible-community/ara/issues/286
+      args:
+        apply:
+          become: yes
