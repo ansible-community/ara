@@ -155,6 +155,13 @@ INSTALLED_APPS = [
     "ara.api",
     "ara.ui",
     "ara.server.apps.AraAdminConfig",
+    # NOTE: django_extensions is not currently meant to be enabled except for the single purpose of generating
+    #       a database graph for the documentation.
+    # See:
+    # - doc/source/_graphs/database_graph_model.sh
+    # - https://django-extensions.readthedocs.io/en/latest/installation_instructions.html
+    # - https://django-extensions.readthedocs.io/en/latest/graph_models.html
+    # "django_extensions",
 ]
 
 EXTERNAL_AUTH_MIDDLEWARE = []

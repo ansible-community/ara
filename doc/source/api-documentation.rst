@@ -49,6 +49,13 @@ Generally speaking, the data is organized in the following fashion::
   they were executed from
 - Records (provided by ``ara_record``) are only associated to a playbook
 
+These relationships are also represented in the database model:
+
+.. image:: ../source/_static/graphs/database-model.png
+
+.. tip::
+    Open the image above in a new tab to see it in full resolution.
+
 Additional fields may only be available in the detailed views. For example:
 
 - Playbooks arguments with ``/api/v1/playbooks/<id>``
