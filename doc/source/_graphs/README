@@ -1,7 +1,8 @@
 graph source files
 ==================
 
-These are exports from the ARA diagrams and graphs made through draw.io.
+- recording-workflow.xml: a diagram export from draw.io.
+  We're keeping it for version control purposes but the documentation uses actual images built from these from the ``doc/source/_static/graphs`` directory.
 
-We're keeping them for version control purposes but the documentation uses
-actual images built from these from the ``doc/source/_static/graphs`` directory.
+- database_graph_model.sh: instructions included in comments to generate a database graph model for the documentation.
+  The rendered graph is available under ``doc/source/_static/graphs``.
