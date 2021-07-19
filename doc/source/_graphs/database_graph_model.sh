@@ -17,4 +17,5 @@ ara-manage graph_models api --pygraphviz \
     --arrow-shape normal \
     --layout dot \
     --verbose-names \
+    --no-inheritance \
     -o database-model.png
