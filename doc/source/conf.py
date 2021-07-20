@@ -23,7 +23,6 @@ import pbr.version
 version_info = pbr.version.VersionInfo('ara')
 
 sys.path.insert(0, os.path.abspath('../..'))
-sys.path.append(os.path.abspath('_extensions'))
 # -- General configuration ----------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -31,8 +30,7 @@ sys.path.append(os.path.abspath('_extensions'))
 extensions = [
     'sphinxcontrib.programoutput',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel',
-    'pygments_lexer'
+    'sphinx.ext.autosectionlabel'
 ]
 autosectionlabel_prefix_document = True
 
