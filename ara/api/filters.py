@@ -103,6 +103,7 @@ class PlayFilter(DateFilter):
 
 class TaskFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    play = django_filters.NumberFilter(field_name="play__id", lookup_expr="exact")
     status = django_filters.MultipleChoiceFilter(
         field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
     )

@@ -145,6 +145,26 @@ class TaskTestCase(APITestCase):
         self.assertEqual(task.name, request.data["results"][1]["name"])
         self.assertEqual("task2", request.data["results"][0]["name"])
 
+    def test_get_tasks_by_play(self):
+        playbook = factories.PlaybookFactory()
+        # Create two plays
+        play = factories.PlayFactory(name="first_play", playbook=playbook)
+        second_play = factories.PlayFactory(name="second_play", playbook=playbook)
+        request = self.client.get("/api/v1/plays")
+        self.assertEqual(2, len(request.data["results"]))
+
+        # Add tasks for the first play and validate
+        task = factories.TaskFactory(name="inside_first", play=play)
+        factories.TaskFactory(name="inside_second", play=play)
+
+        request = self.client.get("/api/v1/tasks?play=%s" % play.id)
+        self.assertEqual(2, len(request.data["results"]))
+        self.assertEqual(task.name, request.data["results"][1]["name"])
+        self.assertEqual("inside_second", request.data["results"][0]["name"])
+
+        request = self.client.get("/api/v1/tasks?play=%s" % second_play.id)
+        self.assertEqual(0, len(request.data["results"]))
+
     def test_get_tasks_by_name(self):
         # Create a playbook and two tasks
         playbook = factories.PlaybookFactory()
