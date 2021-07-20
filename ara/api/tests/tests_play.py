@@ -111,7 +111,7 @@ class PlayTestCase(APITestCase):
         # Create a playbook and two plays
         playbook = factories.PlaybookFactory()
         play = factories.PlayFactory(name="first_play", playbook=playbook)
-        factories.TaskFactory(name="second_play", playbook=playbook)
+        factories.PlayFactory(name="second_play", playbook=playbook)
 
         # Query for the first play name and expect one result
         request = self.client.get("/api/v1/plays?name=%s" % play.name)
