@@ -21,7 +21,13 @@
           {% url 'ui:file' result.task.file as file_url %}
           <li><strong>Path</strong>: <a href="{% static_url file_url %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a></li>
           {% url 'ui:host' result.host.id as host_url %}
-          <li><strong>Host</strong>: <a href="{% static_url host_url %}">{{ result.host.name }}</a></li>
+          <li>
+            <strong>Host</strong>: <a href="{% static_url host_url %}">{{ result.host.name }}</a>
+            {% if result.delegated_to %}
+              {% url 'ui:host' result.delegated_to.id as delegated_host_url %}
+              (<i>task delegated to <a href="{% static_url delegated_host_url %}">{{ result.delegated_to.name }}</a></i>)
+            {% endif %}
+          </li>
           <li><strong>Status</strong>: {{ result.status }}</li>
           <li><strong>Started</strong>: {{ result.started | format_date }}</li>
           <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>

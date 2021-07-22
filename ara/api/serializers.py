@@ -185,6 +185,7 @@ class DetailedResultSerializer(ResultStatusSerializer):
     play = SimplePlaySerializer(read_only=True)
     task = SimpleTaskSerializer(read_only=True)
     host = SimpleHostSerializer(read_only=True)
+    delegated_to = SimpleHostSerializer(read_only=True)
     content = ara_fields.CompressedObjectField(read_only=True)
 
 
@@ -261,6 +262,7 @@ class ListResultSerializer(ResultStatusSerializer):
     play = serializers.PrimaryKeyRelatedField(read_only=True)
     task = serializers.PrimaryKeyRelatedField(read_only=True)
     host = serializers.PrimaryKeyRelatedField(read_only=True)
+    delegated_to = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
 class ListFileSerializer(FileSha1Serializer):
