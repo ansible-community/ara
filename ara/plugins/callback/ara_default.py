@@ -521,6 +521,11 @@ class CallbackModule(CallbackBase):
         # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(hostname)
 
+        # If the task was delegated to another host, retrieve that too
+        delegated_to = None
+        if result._task.delegate_to and result._task.delegate_to != result._host.get_name():
+            delegated_to = self._get_or_create_host(result._task.delegate_to)
+
         # Retrieve the task so we can associate the result to the task id
         task = self._get_or_create_task(result._task)
 
@@ -548,6 +553,7 @@ class CallbackModule(CallbackBase):
             playbook=self.playbook["id"],
             task=task["id"],
             host=host["id"],
+            delegated_to=delegated_to["id"] if delegated_to is not None else None,
             play=task["play"],
             content=results,
             status=status,

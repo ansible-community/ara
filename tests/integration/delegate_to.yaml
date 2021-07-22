@@ -1,0 +1,79 @@
+- name: Create a fake host
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create the host
+      add_host:
+        name: "delegator"
+        ansible_host: "127.0.0.1"
+        ansible_connection: "local"
+
+- name: Run a play with a delegated task
+  hosts: delegator
+  gather_facts: no
+  tasks:
+    - name: Run a normal task
+      command: echo "A normal task"
+      changed_when: false
+
+    - name: Run a task with delegate_to
+      command: echo "A delegated task"
+      changed_when: false
+      delegate_to: localhost
+
+- name: Validate undelegated task
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Get the current playbook to retrieve it's id
+      ara_playbook:
+      register: playbook_query
+
+    - name: Find the undelegated task
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=normal&playbook=' + playbook_id) }}"
+
+    - name: Find the undelegated result
+      vars:
+        task_id: "{{ tasks.results[0].id }}"
+      set_fact:
+        results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
+
+    - name: Validate the result
+      vars:
+        result: "{{ results.results[0] }}"
+      assert:
+        that:
+          - result.host is integer
+          - result.delegated_to is none
+
+- name: Validate delegated task
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Get the current playbook to retrieve it's id
+      ara_playbook:
+      register: playbook_query
+
+    - name: Find the delegated task
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=delegate_to&playbook=' + playbook_id) }}"
+
+    - name: Find the delegated result
+      vars:
+        task_id: "{{ tasks.results[0].id }}"
+      set_fact:
+        results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
+
+    - name: Validate the result
+      vars:
+        result: "{{ results.results[0] }}"
+      assert:
+        that:
+          - result.host != result.delegated_to
+          - result.host is integer and result.delegated_to is integer
+

@@ -130,6 +130,9 @@ class ResultFactory(DjangoModelFactory):
     content = utils.compressed_obj(RESULT_CONTENTS)
     status = "ok"
     host = factory.SubFactory(HostFactory)
+    # delegated_to expects a HostFactory to be assigned but it can also be None
+    # when no delegation is done.
+    delegated_to = None
     task = factory.SubFactory(TaskFactory)
     play = factory.SubFactory(PlayFactory)
     playbook = factory.SubFactory(PlaybookFactory)

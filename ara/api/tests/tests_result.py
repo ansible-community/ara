@@ -37,6 +37,7 @@ class ResultTestCase(APITestCase):
             data={
                 "status": "skipped",
                 "host": host.id,
+                "delegated_to": None,
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -51,6 +52,7 @@ class ResultTestCase(APITestCase):
         self.assertEqual(result.changed, False)
         self.assertEqual(result.ignore_errors, False)
         self.assertEqual(result.host.id, host.id)
+        self.assertEqual(result.delegated_to, None)
         self.assertEqual(result.task.id, task.id)
 
     def test_result_serializer_compress_content(self):
@@ -61,6 +63,7 @@ class ResultTestCase(APITestCase):
                 "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
+                "delegated_to": None,
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -103,6 +106,7 @@ class ResultTestCase(APITestCase):
                 "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
+                "delegated_to": None,
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -111,9 +115,45 @@ class ResultTestCase(APITestCase):
             },
         )
         self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Result.objects.count())
         self.assertEqual(request.data["changed"], True)
         self.assertEqual(request.data["ignore_errors"], False)
+        self.assertEqual(request.data["status"], "ok")
+        self.assertEqual(request.data["host"], host.id)
+        self.assertEqual(request.data["delegated_to"], None)
+        self.assertEqual(request.data["task"], task.id)
+        self.assertEqual(request.data["play"], task.play.id)
+        self.assertEqual(request.data["playbook"], task.playbook.id)
+
+    def test_create_result_with_delegation(self):
+        host = factories.HostFactory(name="original")
+        delegated_host = factories.HostFactory(name="delegated")
+        task = factories.TaskFactory()
+        self.assertEqual(0, models.Result.objects.count())
+        request = self.client.post(
+            "/api/v1/results",
+            {
+                "content": factories.RESULT_CONTENTS,
+                "status": "ok",
+                "host": host.id,
+                "delegated_to": delegated_host.id,
+                "task": task.id,
+                "play": task.play.id,
+                "playbook": task.playbook.id,
+                "changed": True,
+                "ignore_errors": False,
+            },
+        )
+        self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Result.objects.count())
+        self.assertEqual(request.data["changed"], True)
+        self.assertEqual(request.data["ignore_errors"], False)
+        self.assertEqual(request.data["status"], "ok")
+        self.assertEqual(request.data["host"], host.id)
+        self.assertEqual(request.data["delegated_to"], delegated_host.id)
+        self.assertEqual(request.data["task"], task.id)
+        self.assertEqual(request.data["play"], task.play.id)
+        self.assertEqual(request.data["playbook"], task.playbook.id)
 
     def test_partial_update_result(self):
         result = factories.ResultFactory()

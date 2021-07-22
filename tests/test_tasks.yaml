@@ -88,6 +88,9 @@
     - name: Run lookups.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
+   - name: Run delegate_to integration tests
+      command: "ansible-playbook -vvv {{ _test_root }}/delegate_to.yaml"
+
     - name: Run free strategy test
       command: "ansible-playbook -vvv {{ _test_root }}/free_strategy.yaml"
 
