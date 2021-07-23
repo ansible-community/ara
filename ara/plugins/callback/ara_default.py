@@ -205,6 +205,7 @@ class CallbackModule(CallbackBase):
         self.stats = None
         self.file_cache = {}
         self.host_cache = {}
+        self.task_cache = {}
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
@@ -370,19 +371,8 @@ class CallbackModule(CallbackBase):
         # Get task file
         task_file = self._get_or_create_file(path)
 
-        self.task = self.client.post(
-            "/api/v1/tasks",
-            name=task.get_name(),
-            status="running",
-            action=task.action,
-            play=self.play["id"],
-            playbook=self.playbook["id"],
-            file=task_file["id"],
-            tags=task.tags,
-            lineno=lineno,
-            handler=handler,
-            started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        )
+        # Get task
+        self.task = self._get_or_create_task(task, task_file["id"], lineno, handler)
 
         return self.task
 
@@ -495,6 +485,30 @@ class CallbackModule(CallbackBase):
             self.host_cache[host] = self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
         return self.host_cache[host]
 
+    def _get_or_create_task(self, task, file_id=None, lineno=None, handler=None):
+        # Note: The get_or_create is handled through the serializer of the API server.
+        task_uuid = str(task._uuid)[:36]
+        if task_uuid not in self.task_cache:
+            if None in (file_id, lineno, handler):
+                raise ValueError("file_id, lineno, and handler are required to create a task")
+
+            self.log.debug("Task not in cache, getting or creating: %s" % task)
+            self.task_cache[task_uuid] = self.client.post(
+                "/api/v1/tasks",
+                name=task.get_name(),
+                status="running",
+                action=task.action,
+                play=self.play["id"],
+                playbook=self.playbook["id"],
+                file=file_id,
+                tags=task.tags,
+                lineno=lineno,
+                handler=handler,
+                started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            )
+
+        return self.task_cache[task_uuid]
+
     def _load_result(self, result, status, **kwargs):
         """
         This method is called when an individual task instance on a single
@@ -506,6 +520,9 @@ class CallbackModule(CallbackBase):
 
         # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(hostname)
+
+        # Retrieve the task so we can associate the result to the task id
+        task = self._get_or_create_task(result._task)
 
         results = strip_internal_keys(module_response_deepcopy(result._result))
 
@@ -529,19 +546,19 @@ class CallbackModule(CallbackBase):
         self.result = self.client.post(
             "/api/v1/results",
             playbook=self.playbook["id"],
-            task=self.task["id"],
+            task=task["id"],
             host=host["id"],
-            play=self.task["play"],
+            play=task["play"],
             content=results,
             status=status,
-            started=self.result_started[hostname] if hostname in self.result_started else self.task["started"],
+            started=self.result_started[hostname] if hostname in self.result_started else task["started"],
             ended=self.result_ended[hostname],
             changed=result._result.get("changed", False),
             # Note: ignore_errors might be None instead of a boolean
             ignore_errors=kwargs.get("ignore_errors", False) or False,
         )
 
-        if self.task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
+        if task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
 
     def _load_stats(self, stats):
