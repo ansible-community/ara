@@ -1,0 +1,72 @@
+# Copyright (c) 2021 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Requires:
+# export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
+# export ANSIBLE_ACTION_PLUGINS=$(python3 -m ara.setup.action_plugins)
+# export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
+
+- name: Create hosts
+  hosts: localhost
+  gather_facts: no
+  vars:
+    test_host_count: 10
+  tasks:
+    - name: Add a host to the inventory
+      add_host:
+        ansible_connection: local
+        hostname: "host-{{ item }}"
+        groups: test_hosts
+        # Pseudo-random sleep duration to influence how quickly different hosts complete
+        randomized_sleep_duration: "{{ 3 | random }}"
+      with_sequence: start=1 end={{ test_host_count }}
+
+- name: Run tasks with free strategy
+  hosts: test_hosts
+  strategy: free
+  gather_facts: no
+  tasks:
+    - name: First task
+      command: sleep {{ randomized_sleep_duration }}
+    - name: Second task
+      command: sleep {{ randomized_sleep_duration }}
+    - name: Third task
+      command: sleep {{ randomized_sleep_duration }}
+
+- name: Assert playbook properties
+  hosts: localhost
+  gather_facts: no
+  vars:
+    test_host_count: 10
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Search for the free play
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        play_query: "{{ lookup('ara_api', '/api/v1/plays?name=free&playbook=' + playbook_id) }}"
+
+    - name: Search for the free tasks
+      vars:
+        play_id: "{{ play_query.results[0].id }}"
+      set_fact:
+        free_tasks: "{{ lookup('ara_api', '/api/v1/tasks?play=' + play_id) }}"
+
+    - name: Assert the number of tasks
+      assert:
+        that:
+          - free_tasks.count == 3
+
+    - name: Assert the status of the tasks
+      assert:
+        that:
+          - item.status == 'completed'
+          - item.action == 'command'
+          - item.play == play_query.results[0].id
+          - item['items']['results'] == test_host_count
+      loop: "{{ free_tasks.results }}"
+      loop_control:
+        label: "{{ item.name }}"

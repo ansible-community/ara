@@ -88,6 +88,9 @@
     - name: Run lookups.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
+    - name: Run free strategy test
+      command: "ansible-playbook -vvv {{ _test_root }}/free_strategy.yaml"
+
     - name: Run hosts.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"
 

@@ -160,6 +160,9 @@
           when:
             - _installed_ansible_version.stdout is version('2.8', '>=')
 
+        - name: Run free strategy test
+          command: "ansible-playbook -vvv {{ _test_root }}/free_strategy.yaml"
+
         - name: Run hosts.yaml integration test
           command: "ansible-playbook -vvv {{ _test_root }}/hosts.yaml"
 
