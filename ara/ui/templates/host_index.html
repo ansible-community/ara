@@ -67,16 +67,21 @@
     <table class="table table-sm table-hover" id="hosts">
       <thead>
         <tr style="height:50px;">
+          <th class="text-center" title="Status of the playbook">Playbook</th>
           <th class="text-center" title="Link to the host report">Report</th>
-          <th title="Name of the inventory host">Name</th>
-          <th title="Number of task results and their statuses">Last result</th>
-          <th title="Last report">Last report {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+          <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+          <th title="Duration of the last playbook the host was involved in">Playbook duration</th>
+          <th title="Name of the inventory host">Host name</th>
+          <th title="Number of task results and their statuses">Last results</th>
           <th title="Host facts">Host facts</th>
         </tr>
       </thead>
       <tbody>
       {% for host in data.results %}
         <tr>
+          <td class="text-center">
+            {% include "partials/playbook_status_icon.html" with status=host.latest.playbook.status %}
+          </td>
           <td class="text-center">
             {% url 'ui:host' host.latest.id as host_url %}
             <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
@@ -86,6 +91,8 @@
             </svg>
             </a>
           </td>
+          <td class="text-nowrap">{{ host.latest.updated | format_date }}</td>
+          <td class="text-nowrap">{{ host.latest.playbook.duration | format_duration }}</td>
           <td>
             <a {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}#results" title="Search results for {{ host.latest.name }}"{% endif %}>
             {{ host.latest.name }}
@@ -118,7 +125,6 @@
             </a>
             {% endif %}
           </td>
-          <td>{{ host.latest.updated }}</td>
           <td>{% include "partials/host_facts_snippets.html" with host=host.latest %}</td>
         </tr>
       {% endfor %}
