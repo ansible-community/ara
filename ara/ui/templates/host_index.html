@@ -20,26 +20,67 @@
         <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
           <div class="card-body">
             <div class="form-row">
-              <div class="form-group col-xl-10">
+              <div class="form-group col-xl-8">
                 <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
             </div>
-            <!-- TODO: Search arguments equivalent to CLI --with-changed, --without-changed, etc. -->
+            <div class="form-row">
+              <div class="form-group col-xl-5">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="latest" value="false" name="latest" {{ checkbox_status }}>
+                </div>
+                <label class="align-middle" for="latest" {% if request.GET.latest or checkbox_status %}style="font-weight:bold;"{% endif %}>Include all playbook reports</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-12">
+                <label class="align-middle" for="status">Status: </label>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="ok__gt" value="0" name="ok__gt" {% if search_form.ok__gt.data %}checked{% endif %}/>
+                  <label class="form-check-label" for="ok__gt">
+                    {% include "partials/result_status_icon.html" with status='ok' %}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="changed__gt" value="0" name="changed__gt" {% if search_form.changed__gt.data %}checked{% endif %}/>
+                  <label class="form-check-label" for="changed__gt">
+                    {% include "partials/result_status_icon.html" with status='changed' %}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="failed__gt" value="0" name="failed__gt" {% if search_form.failed__gt.data %}checked{% endif %}/>
+                  <label class="form-check-label" for="failed__gt">
+                    {% include "partials/result_status_icon.html" with status='failed' %}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="unreachable__gt" value="0" name="unreachable__gt" {% if search_form.unreachable__gt.data %}checked{% endif %}/>
+                  <label class="form-check-label" for="unreachable__gt">
+                    {% include "partials/result_status_icon.html" with status='unreachable' %}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="skipped__gt" value="0" name="skipped__gt" {% if search_form.skipped__gt.data %}checked{% endif %}/>
+                  <label class="form-check-label" for="skipped__gt">
+                    {% include "partials/result_status_icon.html" with status='skipped' %}
+                  </label>
+                </div>
+              </div>
+            </div>
             <div class="form-row">
               <div class="col-xl-12">
                 <div class="btn-group" role="group" aria-label="Filter by date">
                   <button type="submit" class="btn btn-primary">
                     Submit
                   </button>
-                  <!-- TODO: Hosts don't have a started field (copy-pasta from index.html)-->
-                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with minutes=60 %}">Last 60 minutes
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with minutes=60 %}">Last 60 minutes
                   </button>
-                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with hours=24 %}">Last 24 hours
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with hours=24 %}">Last 24 hours
                   </button>
-                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=7 %}">Last 7 days
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=7 %}">Last 7 days
                   </button>
-                  <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=30 %}">Last 30 days
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=30 %}">Last 30 days
                   </button>
                 </div>
               </div>
@@ -60,6 +101,7 @@
 {% endif %}
 
 <div>
+  {% if data.count %}
   {% if not static_generation %}
     {% include "partials/pagination.html" %}
   {% endif %}
@@ -78,59 +120,26 @@
       </thead>
       <tbody>
       {% for host in data.results %}
-        <tr>
-          <td class="text-center">
-            {% include "partials/playbook_status_icon.html" with status=host.latest.playbook.status %}
-          </td>
-          <td class="text-center">
-            {% url 'ui:host' host.latest.id as host_url %}
-            <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
-                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
-            </svg>
-            </a>
-          </td>
-          <td class="text-nowrap">{{ host.latest.updated | format_date }}</td>
-          <td class="text-nowrap">{{ host.latest.playbook.duration | format_duration }}</td>
-          <td>
-            <a {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}#results" title="Search results for {{ host.latest.name }}"{% endif %}>
-            {{ host.latest.name }}
-            </a>
-          </td>
-          <td>
-            {% if host.latest.ok %}
-            <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=ok#results" title="Search ok results for {{ host.latest.name }}"{% endif %}>
-                {{ host.latest.ok }} OK
-            </a>
-            {% endif %}
-            {% if host.latest.changed %}
-            <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?changed=True#results" title="Search changed results for {{ host.latest.name }}"{% endif %}>
-                {{ host.latest.changed }} CHANGED
-            </a>
-            {% endif %}
-            {% if host.latest.failed %}
-            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=failed#results" title="Search failed results for {{ host.latest.name }}"{% endif %}>
-                {{ host.latest.failed }} FAILED
-            </a>
-            {% endif %}
-            {% if host.latest.unreachable %}
-            <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=unreachable#results" title="Search unreachable results for {{ host.latest.name }}"{% endif %}>
-                {{ host.latest.unreachable }} UNREACHABLE
-            </a>
-            {% endif %}
-            {% if host.latest.skipped %}
-            <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.latest.id %}?status=skipped#results" title="Search skipped results for {{ host.latest.name }}"{% endif %}>
-                {{ host.latest.skipped }} SKIPPED
-            </a>
-            {% endif %}
-          </td>
-          <td>{% include "partials/host_facts_snippets.html" with host=host.latest %}</td>
-        </tr>
+      {% if host.latest %}
+        {% include "partials/host_index_row.html" with host=host.latest %}
+      {% else %}
+        {% include "partials/host_index_row.html" with host=host %}
+      {% endif %}
       {% endfor %}
       </tbody>
     </table>
   </div>
+  {% else %}
+  <br/>
+  <div>
+    {% if not request.GET %}
+      <h2>No recorded results found.</h2>
+      <h3>Record a playbook with the ara callback plugin enabled and try again.</h3>
+    {% else %}
+      <h3>No results found matching your query: try <a href="{% url 'ui:host_index' %}">clearing search filters</a>.</h3>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 </form>
 {% endblock %}

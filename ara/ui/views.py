@@ -58,8 +58,6 @@ class HostIndex(generics.RetrieveAPIView):
     Returns a list of latest record for each host
     """
 
-    queryset = models.DistinctHost.objects.all()
-    filterset_class = filters.HostFilter
     renderer_classes = [TemplateHTMLRenderer]
     pagination_class = LimitOffsetPaginationWithLinks
     template_name = "host_index.html"
@@ -67,13 +65,27 @@ class HostIndex(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         search_form = forms.HostSearchForm(request.GET)
 
-        # Sort by updated by default so we have the most recently updated at the top
-        query = self.filter_queryset(self.queryset.all().order_by("-updated"))
-        page = self.paginate_queryset(query)
-        if page is not None:
-            serializer = serializers.DetailedDistinctHostSerializer(page, many=True)
+        # Default is DistinctHost (by not requiring "?latest=true") but accept false to
+        # return all hosts
+        if "latest" in request.GET and request.GET["latest"] == "false":
+            queryset = models.Host.objects.all()
+            serializer_type = "DetailedHostSerializer"
+            filter_type = "HostFilter"
+            # TODO: Is there a cleaner way ? Doing this logic in the template seemed complicated.
+            checkbox_status = "checked"
         else:
-            serializer = serializers.DetailedDistinctHostSerializer(query, many=True)
+            queryset = models.DistinctHost.objects.all()
+            serializer_type = "DetailedDistinctHostSerializer"
+            filter_type = "DistinctHostFilter"
+            checkbox_status = ""
+
+        # Sort by updated by default so we have the most recently updated at the top
+        query = getattr(filters, filter_type)(request.GET, queryset=queryset)
+        page = self.paginate_queryset(query.qs.all().order_by("-updated"))
+        if page is not None:
+            serializer = getattr(serializers, serializer_type)(page, many=True)
+        else:
+            serializer = getattr(serializers, serializer_type)(query, many=True)
         response = self.get_paginated_response(serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):
@@ -88,6 +100,7 @@ class HostIndex(generics.RetrieveAPIView):
 
         # fmt: off
         return Response(dict(
+                checkbox_status=checkbox_status,
                 current_page_results=current_page_results,
                 data=response.data,
                 expand_search=expand_search,
