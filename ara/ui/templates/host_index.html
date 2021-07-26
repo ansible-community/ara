@@ -113,7 +113,7 @@
           <th class="text-center" title="Link to the host report">Report</th>
           <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
           <th title="Duration of the last playbook the host was involved in">Playbook duration</th>
-          <th title="Name of the inventory host">Host name</th>
+          <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
           <th title="Number of task results and their statuses">Last results</th>
           <th title="Host facts">Host facts</th>
         </tr>

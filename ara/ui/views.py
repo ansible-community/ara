@@ -80,8 +80,12 @@ class HostIndex(generics.RetrieveAPIView):
             checkbox_status = ""
 
         # Sort by updated by default so we have the most recently updated at the top
+        order = "-updated"
+        if "order" in request.GET:
+            order = request.GET["order"]
+
         query = getattr(filters, filter_type)(request.GET, queryset=queryset)
-        page = self.paginate_queryset(query.qs.all().order_by("-updated"))
+        page = self.paginate_queryset(query.qs.all().order_by(order))
         if page is not None:
             serializer = getattr(serializers, serializer_type)(page, many=True)
         else:
