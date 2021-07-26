@@ -121,8 +121,9 @@
       </thead>
       <tbody>
       {% for host in data.results %}
-      {% if host.latest %}
-        {% include "partials/host_index_row.html" with host=host.latest %}
+      {# /latesthosts/ returns the host under a nested host attribute -- /hosts/ returns it directly #}
+      {% if host.host %}
+        {% include "partials/host_index_row.html" with host=host.host %}
       {% else %}
         {% include "partials/host_index_row.html" with host=host %}
       {% endif %}

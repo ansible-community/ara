@@ -159,19 +159,19 @@ class HostFilter(BaseFilter):
     # fmt: on
 
 
-class DistinctHostFilter(BaseFilter):
-    playbook = django_filters.NumberFilter(field_name="latest__playbook__id", lookup_expr="exact")
-    name = django_filters.CharFilter(field_name="latest__name", lookup_expr="icontains")
-    changed__gt = django_filters.NumberFilter(field_name="latest__changed", lookup_expr="gt")
-    changed__lt = django_filters.NumberFilter(field_name="latest__changed", lookup_expr="lt")
-    failed__gt = django_filters.NumberFilter(field_name="latest__failed", lookup_expr="gt")
-    failed__lt = django_filters.NumberFilter(field_name="latest__failed", lookup_expr="lt")
-    ok__gt = django_filters.NumberFilter(field_name="latest__ok", lookup_expr="gt")
-    ok__lt = django_filters.NumberFilter(field_name="latest__ok", lookup_expr="lt")
-    skipped__gt = django_filters.NumberFilter(field_name="latest__skipped", lookup_expr="gt")
-    skipped__lt = django_filters.NumberFilter(field_name="latest__skipped", lookup_expr="lt")
-    unreachable__gt = django_filters.NumberFilter(field_name="latest__unreachable", lookup_expr="gt")
-    unreachable__lt = django_filters.NumberFilter(field_name="latest__unreachable", lookup_expr="lt")
+class LatestHostFilter(BaseFilter):
+    playbook = django_filters.NumberFilter(field_name="host__playbook__id", lookup_expr="exact")
+    name = django_filters.CharFilter(field_name="host__name", lookup_expr="icontains")
+    changed__gt = django_filters.NumberFilter(field_name="host__changed", lookup_expr="gt")
+    changed__lt = django_filters.NumberFilter(field_name="host__changed", lookup_expr="lt")
+    failed__gt = django_filters.NumberFilter(field_name="host__failed", lookup_expr="gt")
+    failed__lt = django_filters.NumberFilter(field_name="host__failed", lookup_expr="lt")
+    ok__gt = django_filters.NumberFilter(field_name="host__ok", lookup_expr="gt")
+    ok__lt = django_filters.NumberFilter(field_name="host__ok", lookup_expr="lt")
+    skipped__gt = django_filters.NumberFilter(field_name="host__skipped", lookup_expr="gt")
+    skipped__lt = django_filters.NumberFilter(field_name="host__skipped", lookup_expr="lt")
+    unreachable__gt = django_filters.NumberFilter(field_name="host__unreachable", lookup_expr="gt")
+    unreachable__lt = django_filters.NumberFilter(field_name="host__unreachable", lookup_expr="lt")
 
     # fmt: off
     order = django_filters.OrderingFilter(

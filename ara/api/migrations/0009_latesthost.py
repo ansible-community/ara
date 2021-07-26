@@ -3,13 +3,13 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-def update_latests(apps, schema_editor):
-    """ Computes the latest host for each host name to update the DistinctHost table """
+def update_latest(apps, schema_editor):
+    """ Computes the latest host for each host name to update the LatestHost table """
     # We can't import the model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     db_alias = schema_editor.connection.alias
     host_model = apps.get_model('api', 'Host')
-    distincthost_model = apps.get_model('api', 'DistinctHost')
+    latesthost_model = apps.get_model('api', 'LatestHost')
 
     updated = []
     for host in host_model.objects.all():
@@ -17,7 +17,7 @@ def update_latests(apps, schema_editor):
             continue
 
         latest = host_model.objects.filter(name=host.name).order_by('-updated')[0]
-        distincthost_model.objects.using(db_alias).create(name=host.name, latest=latest)
+        latesthost_model.objects.using(db_alias).create(name=host.name, host=latest)
         updated.append(host.name)
 
 
@@ -29,16 +29,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='DistinctHost',
+            name='LatestHost',
             fields=[
                 ('name', models.CharField(max_length=255, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('latest', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Host')),
+                ('host', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Host')),
             ],
             options={
-                'db_table': 'distinct_hosts',
+                'db_table': 'latest_hosts',
             },
         ),
-        migrations.RunPython(update_latests)
+        migrations.RunPython(update_latest)
     ]
