@@ -55,7 +55,7 @@ class Index(generics.ListAPIView):
 
 class HostIndex(generics.RetrieveAPIView):
     """
-    Returns a list of latest record for each host
+    Returns the latest playbook result for each host (or all playbook results for every hosts)
     """
 
     renderer_classes = [TemplateHTMLRenderer]
