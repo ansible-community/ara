@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load pygments_highlights %}
+{% load truncatepath %}
+
+{% block title %}| File #{{ file.id }}: {{ file.path | truncatepath:75 }}{% endblock %}
 {% block body %}
   <div>
     {% include "partials/playbook_card.html" with playbook=file.playbook %}

@@ -3,6 +3,8 @@
 {% load datetime_formatting %}
 {% load diff_result %}
 {% load static_url %}
+
+{% block title %}| Result #{{ result.id }}: [{{ result.status }}] {{ result.task.action }} on {{ result.host.name }} for "{{ result.task.name }}"{% endblock %}
 {% block body %}
   <div>
     {% include "partials/playbook_card.html" with playbook=result.playbook %}

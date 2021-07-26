@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load pygments_highlights %}
+
+{% block title %}| Record #{{ record.id }}: {{ record.type }} value for {{ record.key }}{% endblock %}
 {% block body %}
   <div>
     {% include "partials/playbook_card.html" with playbook=record.playbook %}
