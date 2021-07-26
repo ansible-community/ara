@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load datetime_formatting %}
 {% load truncatepath %}
+
+{% block title %}| Playbook #{{ playbook.id }}: {{ playbook.items.tasks }} task{{ playbook.items.tasks | pluralize }} on {{ playbook.items.hosts }} host{{ playbook.items.hosts | pluralize }} for {{ playbook.path | truncatepath:60 }}{% endblock %}
 {% block body %}
   <div>
     {% include "partials/playbook_card.html" %}

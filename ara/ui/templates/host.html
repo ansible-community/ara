@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% load truncatepath %}
+
+{% block title %}| Host #{{ host.id }}: {{ results.count }} results on {{ host.name }} for {{ host.playbook.path | truncatepath:60 }}{% endblock %}
 {% block body %}
   <div>
     {% include "partials/playbook_card.html" with playbook=host.playbook %}
