@@ -65,6 +65,11 @@ class HostIndex(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         search_form = forms.HostSearchForm(request.GET)
 
+        # Sort by updated by default so we have the most recently updated at the top
+        order = "-updated"
+        if "order" in request.GET:
+            order = request.GET["order"]
+
         # Default is LatestHost (by not requiring "?latest=true") but accept false to
         # return all hosts
         if "latest" in request.GET and request.GET["latest"] == "false":
@@ -79,10 +84,11 @@ class HostIndex(generics.RetrieveAPIView):
             filter_type = "LatestHostFilter"
             checkbox_status = ""
 
-        # Sort by updated by default so we have the most recently updated at the top
-        order = "-updated"
-        if "order" in request.GET:
-            order = request.GET["order"]
+            # Ordering on LatestHost should be applied to the nested host object
+            if order.startswith("-"):
+                order = "-host__%s" % order[1:]
+            else:
+                order = "host__%s" % order
 
         query = getattr(filters, filter_type)(request.GET, queryset=queryset)
         page = self.paginate_queryset(query.qs.all().order_by(order))
