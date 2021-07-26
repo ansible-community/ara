@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         print("[ara] Generating static files for %s playbooks at %s..." % (query.count(), path))
 
-        # Index
+        # Playbook index
         destination = os.path.join(path, "index.html")
         data = {"data": {"results": serializer.data}, "page": "index", **self.DEFAULT_PARAMS}
         self.render("index.html", destination, **data)
@@ -153,5 +153,15 @@ class Command(BaseCommand):
             serializer = serializers.DetailedRecordSerializer(record)
             data = {"record": serializer.data, "page": "record", **self.DEFAULT_PARAMS}
             self.render("record.html", destination, **data)
+
+        # Host index
+        # The toggle between latests hosts and all hosts is dynamic with a toggle in the UI
+        # Provide all hosts for the static version, we can consider adding a CLI flag if there is a use case for it
+        query = models.Host.objects.all().order_by("-updated")
+        serializer = serializers.DetailedHostSerializer(query, many=True)
+
+        destination = os.path.join(path, "hosts/index.html")
+        data = {"data": {"results": serializer.data}, "page": "host_index", **self.DEFAULT_PARAMS}
+        self.render("host_index.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)
