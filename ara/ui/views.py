@@ -104,13 +104,13 @@ class HostIndex(generics.RetrieveAPIView):
 
         # fmt: off
         return Response(dict(
-                checkbox_status=checkbox_status,
-                current_page_results=current_page_results,
-                data=response.data,
-                expand_search=expand_search,
-                page="host_index",
-                search_form=search_form,
-                static_generation=False,
+            checkbox_status=checkbox_status,
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="host_index",
+            search_form=search_form,
+            static_generation=False,
         ))
         # fmt: on
 
