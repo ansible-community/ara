@@ -9,15 +9,15 @@ from ara.api import models, serializers
 from ara.api.tests import factories
 
 
-class DistinctHostTestCase(APITestCase):
-    def test_distincthost_factory(self):
-        # TODO: Why doesn't the name propagate to "latest" in factories.DistinctHostFactory(name="testhost") ?
+class LatestHostTestCase(APITestCase):
+    def test_latesthost_factory(self):
+        # TODO: Why doesn't the name propagate to "latest" in factories.LatestHostFactory(name="testhost") ?
         host = factories.HostFactory(name="testhost")
-        latest_host = factories.DistinctHostFactory(name="testhost", latest=host)
+        latest_host = factories.LatestHostFactory(name="testhost", host=host)
         self.assertEqual(host.name, "testhost")
-        self.assertEqual(latest_host.latest.name, "testhost")
+        self.assertEqual(latest_host.host.name, "testhost")
 
-    def test_distincthost_serializer(self):
+    def test_latesthost_serializer(self):
         playbook = factories.PlaybookFactory()
         serializer = serializers.HostSerializer(data={"name": "serializer", "playbook": playbook.id})
         serializer.is_valid()
@@ -27,55 +27,55 @@ class DistinctHostTestCase(APITestCase):
         self.assertEqual(host.name, "serializer")
         self.assertEqual(host.playbook.id, playbook.id)
 
-        request = self.client.get("/api/v1/distincthosts")
+        request = self.client.get("/api/v1/latesthosts")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(request.data["results"][0]["name"], "serializer")
 
-    def test_get_no_distincthosts(self):
-        request = self.client.get("/api/v1/distincthosts")
+    def test_get_no_latesthosts(self):
+        request = self.client.get("/api/v1/latesthosts")
         self.assertEqual(0, len(request.data["results"]))
 
-    def test_get_distincthosts(self):
-        # TODO: Why doesn't the name propagate to "latest" in factories.DistinctHostFactory(name="testhost") ?
+    def test_get_latesthosts(self):
+        # TODO: Why doesn't the name propagate to "latest" in factories.LatestHostFactory(name="testhost") ?
         host = factories.HostFactory(name="gethosts")
-        latest_host = factories.DistinctHostFactory(name="gethosts", latest=host)
-        request = self.client.get("/api/v1/distincthosts")
+        latest_host = factories.LatestHostFactory(name="gethosts", host=host)
+        request = self.client.get("/api/v1/latesthosts")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(latest_host.name, request.data["results"][0]["name"])
-        self.assertEqual(latest_host.name, request.data["results"][0]["latest"]["name"])
+        self.assertEqual(latest_host.name, request.data["results"][0]["host"]["name"])
 
-    def test_create_distincthost(self):
+    def test_create_latesthost(self):
         playbook = factories.PlaybookFactory()
         self.assertEqual(0, models.Host.objects.count())
-        self.assertEqual(0, models.DistinctHost.objects.count())
+        self.assertEqual(0, models.LatestHost.objects.count())
 
         request = self.client.post("/api/v1/hosts", {"name": "create", "playbook": playbook.id})
         self.assertEqual(201, request.status_code)
         self.assertEqual("create", request.data["name"])
         self.assertEqual(1, models.Host.objects.count())
-        self.assertEqual(1, models.DistinctHost.objects.count())
+        self.assertEqual(1, models.LatestHost.objects.count())
 
-        request = self.client.get("/api/v1/distincthosts")
+        request = self.client.get("/api/v1/latesthosts")
         self.assertEqual("create", request.data["results"][0]["name"])
-        self.assertEqual("create", request.data["results"][0]["latest"]["name"])
+        self.assertEqual("create", request.data["results"][0]["host"]["name"])
 
-    def test_delete_distincthost(self):
+    def test_delete_latesthost(self):
         playbook = factories.PlaybookFactory()
         self.assertEqual(0, models.Host.objects.count())
-        self.assertEqual(0, models.DistinctHost.objects.count())
+        self.assertEqual(0, models.LatestHost.objects.count())
 
         request = self.client.post("/api/v1/hosts", {"name": "create", "playbook": playbook.id})
         self.assertEqual(201, request.status_code)
         self.assertEqual("create", request.data["name"])
         self.assertEqual(1, models.Host.objects.count())
-        self.assertEqual(1, models.DistinctHost.objects.count())
+        self.assertEqual(1, models.LatestHost.objects.count())
 
         delete = self.client.delete("/api/v1/hosts/%s" % request.data["id"])
         self.assertEqual(204, delete.status_code)
         self.assertEqual(0, models.Host.objects.count())
-        self.assertEqual(0, models.DistinctHost.objects.count())
+        self.assertEqual(0, models.LatestHost.objects.count())
 
-    def test_delete_and_update_distincthost(self):
+    def test_delete_and_update_latesthost(self):
         # Create two playbooks and two hosts
         first_playbook = factories.PlaybookFactory()
         second_playbook = factories.PlaybookFactory()
@@ -86,16 +86,16 @@ class DistinctHostTestCase(APITestCase):
         second_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": second_playbook.id})
 
         self.assertEqual(2, models.Host.objects.count())
-        self.assertEqual(1, models.DistinctHost.objects.count())
-        self.assertEqual(second_host.data["id"], models.DistinctHost.objects.first().latest.id)
+        self.assertEqual(1, models.LatestHost.objects.count())
+        self.assertEqual(second_host.data["id"], models.LatestHost.objects.first().host.id)
 
-        # Deleting the second host should update the distincthost to point to the first host
+        # Deleting the second host should update the latesthost to point to the first host
         delete = self.client.delete("/api/v1/hosts/%s" % second_host.data["id"])
         self.assertEqual(204, delete.status_code)
         self.assertEqual(1, models.Host.objects.count())
-        self.assertEqual(first_host.data["id"], models.DistinctHost.objects.first().latest.id)
+        self.assertEqual(first_host.data["id"], models.LatestHost.objects.first().host.id)
 
-    def test_delete_without_update_distincthost(self):
+    def test_delete_without_update_latesthost(self):
         # Create two playbooks and two hosts
         first_playbook = factories.PlaybookFactory()
         second_playbook = factories.PlaybookFactory()
@@ -106,11 +106,11 @@ class DistinctHostTestCase(APITestCase):
         second_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": second_playbook.id})
 
         self.assertEqual(2, models.Host.objects.count())
-        self.assertEqual(1, models.DistinctHost.objects.count())
-        self.assertEqual(second_host.data["id"], models.DistinctHost.objects.first().latest.id)
+        self.assertEqual(1, models.LatestHost.objects.count())
+        self.assertEqual(second_host.data["id"], models.LatestHost.objects.first().host.id)
 
-        # Deleting the first host shouldn't result in an update to the distincthost table
+        # Deleting the first host shouldn't result in an update to the latesthost table
         delete = self.client.delete("/api/v1/hosts/%s" % first_host.data["id"])
         self.assertEqual(204, delete.status_code)
         self.assertEqual(1, models.Host.objects.count())
-        self.assertEqual(second_host.data["id"], models.DistinctHost.objects.first().latest.id)
+        self.assertEqual(second_host.data["id"], models.LatestHost.objects.first().host.id)

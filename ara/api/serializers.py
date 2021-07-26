@@ -168,12 +168,12 @@ class DetailedHostSerializer(serializers.ModelSerializer):
     facts = ara_fields.CompressedObjectField(read_only=True)
 
 
-class DetailedDistinctHostSerializer(serializers.ModelSerializer):
+class DetailedLatestHostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.DistinctHost
+        model = models.LatestHost
         fields = "__all__"
 
-    latest = DetailedHostSerializer(read_only=True)
+    host = DetailedHostSerializer(read_only=True)
 
 
 class DetailedResultSerializer(ResultStatusSerializer):
@@ -338,7 +338,7 @@ class HostSerializer(serializers.ModelSerializer):
         host, created = models.Host.objects.get_or_create(
             name=validated_data["name"], playbook=validated_data["playbook"], defaults=validated_data
         )
-        models.DistinctHost.objects.update_or_create(name=validated_data["name"], defaults={"latest": host})
+        models.LatestHost.objects.update_or_create(name=validated_data["name"], defaults={"host": host})
         return host
 
 

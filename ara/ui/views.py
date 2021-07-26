@@ -65,7 +65,7 @@ class HostIndex(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         search_form = forms.HostSearchForm(request.GET)
 
-        # Default is DistinctHost (by not requiring "?latest=true") but accept false to
+        # Default is LatestHost (by not requiring "?latest=true") but accept false to
         # return all hosts
         if "latest" in request.GET and request.GET["latest"] == "false":
             queryset = models.Host.objects.all()
@@ -74,9 +74,9 @@ class HostIndex(generics.RetrieveAPIView):
             # TODO: Is there a cleaner way ? Doing this logic in the template seemed complicated.
             checkbox_status = "checked"
         else:
-            queryset = models.DistinctHost.objects.all()
-            serializer_type = "DetailedDistinctHostSerializer"
-            filter_type = "DistinctHostFilter"
+            queryset = models.LatestHost.objects.all()
+            serializer_type = "DetailedLatestHostSerializer"
+            filter_type = "LatestHostFilter"
             checkbox_status = ""
 
         # Sort by updated by default so we have the most recently updated at the top

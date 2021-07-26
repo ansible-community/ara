@@ -115,12 +115,12 @@ class HostFactory(DjangoModelFactory):
     unreachable = 0
 
 
-class DistinctHostFactory(DjangoModelFactory):
+class LatestHostFactory(DjangoModelFactory):
     class Meta:
-        model = models.DistinctHost
+        model = models.LatestHost
 
     name = "hostname"
-    latest = factory.SubFactory(HostFactory, name=name)
+    host = factory.SubFactory(HostFactory, name=name)
 
 
 class ResultFactory(DjangoModelFactory):
