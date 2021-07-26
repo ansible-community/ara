@@ -1,0 +1,51 @@
+{% load datetime_formatting %}
+{% load static_url %}
+<tr>
+  <td class="text-center">
+    {% include "partials/playbook_status_icon.html" with status=host.playbook.status %}
+  </td>
+  <td class="text-center">
+    {% url 'ui:host' host.id as host_url %}
+    <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+      <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+    </svg>
+    </a>
+  </td>
+  <td class="text-nowrap">{{ host.updated | format_date }}</td>
+  <td class="text-nowrap">{{ host.playbook.duration | format_duration }}</td>
+  <td>
+    <a {% if not static_generation %}href="{% url 'ui:host_index' %}?name={{ host.name }}&latest=false" title="Search results for {{ host.name }}"{% endif %}>
+      {{ host.name }}
+    </a>
+  </td>
+  <td>
+    {% if host.ok %}
+    <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
+      {{ host.ok }} OK
+    </a>
+    {% endif %}
+    {% if host.changed %}
+    <a class="badge badge-pill badge-warning ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results" title="Search changed results for {{ host.name }}"{% endif %}>
+      {{ host.changed }} CHANGED
+    </a>
+    {% endif %}
+    {% if host.failed %}
+    <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed#results" title="Search failed results for {{ host.name }}"{% endif %}>
+      {{ host.failed }} FAILED
+    </a>
+    {% endif %}
+    {% if host.unreachable %}
+    <a class="badge badge-pill badge-danger ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=unreachable#results" title="Search unreachable results for {{ host.name }}"{% endif %}>
+      {{ host.unreachable }} UNREACHABLE
+    </a>
+    {% endif %}
+    {% if host.skipped %}
+    <a class="badge badge-pill badge-info ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results" title="Search skipped results for {{ host.name }}"{% endif %}>
+      {{ host.skipped }} SKIPPED
+    </a>
+    {% endif %}
+  </td>
+  <td>{% include "partials/host_facts_snippets.html" with host=host %}</td>
+</tr>

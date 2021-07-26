@@ -53,6 +53,68 @@ class Index(generics.ListAPIView):
         # fmt: on
 
 
+class HostIndex(generics.RetrieveAPIView):
+    """
+    Returns the latest playbook result for each host (or all playbook results for every hosts)
+    """
+
+    renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
+    template_name = "host_index.html"
+
+    def get(self, request, *args, **kwargs):
+        search_form = forms.HostSearchForm(request.GET)
+
+        # Default is DistinctHost (by not requiring "?latest=true") but accept false to
+        # return all hosts
+        if "latest" in request.GET and request.GET["latest"] == "false":
+            queryset = models.Host.objects.all()
+            serializer_type = "DetailedHostSerializer"
+            filter_type = "HostFilter"
+            # TODO: Is there a cleaner way ? Doing this logic in the template seemed complicated.
+            checkbox_status = "checked"
+        else:
+            queryset = models.DistinctHost.objects.all()
+            serializer_type = "DetailedDistinctHostSerializer"
+            filter_type = "DistinctHostFilter"
+            checkbox_status = ""
+
+        # Sort by updated by default so we have the most recently updated at the top
+        order = "-updated"
+        if "order" in request.GET:
+            order = request.GET["order"]
+
+        query = getattr(filters, filter_type)(request.GET, queryset=queryset)
+        page = self.paginate_queryset(query.qs.all().order_by(order))
+        if page is not None:
+            serializer = getattr(serializers, serializer_type)(page, many=True)
+        else:
+            serializer = getattr(serializers, serializer_type)(query, many=True)
+        response = self.get_paginated_response(serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        # fmt: off
+        return Response(dict(
+            checkbox_status=checkbox_status,
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="host_index",
+            search_form=search_form,
+            static_generation=False,
+        ))
+        # fmt: on
+
+
 class Playbook(generics.RetrieveAPIView):
     """
     Returns a page for a detailed view of a playbook

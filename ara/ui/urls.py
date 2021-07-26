@@ -6,6 +6,7 @@ from ara.ui import views
 app_name = "ui"
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
+    path("hosts", views.HostIndex.as_view(), name="host_index"),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     path("playbooks/<int:pk>.html", views.Playbook.as_view(), name="playbook"),
     path("results/<int:pk>.html", views.Result.as_view(), name="result"),

@@ -1,0 +1,25 @@
+{% load datetime_formatting %}
+
+{% if host.facts.ansible_distribution and host.facts.ansible_distribution_version %}
+<a href="{% url 'ui:host' host.id %}#ansible_distribution" class="btn btn-outline-success ara-label">
+    {{ host.facts.ansible_distribution }} {{ host.facts.ansible_distribution_version }}
+</a>
+{% endif %}
+
+{% if host.facts.ansible_kernel %}
+<a href="{% url 'ui:host' host.id %}#ansible_kernel" class="btn btn-outline-success ara-label">
+    kernel {{ host.facts.ansible_kernel }}
+</a>
+{% endif %}
+
+{% if host.facts.ansible_python_version %}
+<a href="{% url 'ui:host' host.id %}#ansible_python_version" class="btn btn-outline-success ara-label">
+    python {{ host.facts.ansible_python_version }}
+</a>
+{% endif %}
+
+{% if host.facts.ansible_uptime_seconds %}
+<a href="{% url 'ui:host' host.id %}#ansible_uptime_seconds" class="btn btn-outline-success ara-label">
+    Uptime: {{ host.facts.ansible_uptime_seconds | duration_from_seconds }}
+</a>
+{% endif %}

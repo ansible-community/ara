@@ -104,7 +104,7 @@
         <tr style="height:50px;">
           <th class="text-center" title="Status of the playbook run">Status</th>
           <th class="text-center" title="Link to the playbook report">Report</th>
-          <th title="Date at which the playbook started">{% include "partials/sort_by_date.html" %}</th>
+          <th title="Date at which the playbook started">Date {% include "partials/sort_by_date.html" with arg="started" %}</th>
           <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
           <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
           <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>

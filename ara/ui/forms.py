@@ -41,3 +41,13 @@ class ResultSearchForm(forms.Form):
     status = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, choices=models.Result.STATUS, required=False
     )
+
+
+class HostSearchForm(forms.Form):
+    name = forms.CharField(label="Host name", max_length=255, required=False)
+    latest = forms.BooleanField(label="latest", required=False)
+    changed__gt = forms.IntegerField(label="changed", required=False)
+    failed__gt = forms.IntegerField(label="failed", required=False)
+    ok__gt = forms.IntegerField(label="ok", required=False)
+    skipped__gt = forms.IntegerField(label="skipped", required=False)
+    unreachable__gt = forms.IntegerField(label="unreachable", required=False)
