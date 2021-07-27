@@ -3,7 +3,12 @@
 {% if page == "index" %}
   <a href="{% url 'playbook-list' %}" class="nav-link" target="_blank">API</a>
 {% elif page == "host_index" %}
+  {# provided by the view, host-list or latesthost-list #}
+  {% if api_link_url == "host-list" %}
+  <a href="{% url 'host-list' %}" class="nav-link" target="_blank">API</a>
+  {% else %}
   <a href="{% url 'latesthost-list' %}" class="nav-link" target="_blank">API</a>
+  {% endif %}
 {% elif playbook.id %}
   <a href="{% url 'playbook-detail' pk=playbook.id %}" class="nav-link" target="_blank">API</a>
 {% elif result.id %}

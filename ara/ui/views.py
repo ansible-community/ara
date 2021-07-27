@@ -73,11 +73,13 @@ class HostIndex(generics.RetrieveAPIView):
             filter_type = "HostFilter"
             # TODO: Is there a cleaner way ? Doing this logic in the template seemed complicated.
             checkbox_status = "checked"
+            api_link_url = "host-list"
         else:
             queryset = models.LatestHost.objects.all()
             serializer_type = "DetailedLatestHostSerializer"
             filter_type = "LatestHostFilter"
             checkbox_status = ""
+            api_link_url = "latesthost-list"
 
         # Sort by updated by default so we have the most recently updated at the top
         order = "-updated"
@@ -104,6 +106,7 @@ class HostIndex(generics.RetrieveAPIView):
 
         # fmt: off
         return Response(dict(
+            api_link_url=api_link_url,
             checkbox_status=checkbox_status,
             current_page_results=current_page_results,
             data=response.data,
