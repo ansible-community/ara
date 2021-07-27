@@ -159,10 +159,13 @@ class Playbook(generics.RetrieveAPIView):
             serializer = serializers.ListResultSerializer(result_filter, many=True)
 
         for result in serializer.data:
-            task_id = result["task"]
-            result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
-            host_id = result["host"]
-            result["host"] = serializers.SimpleHostSerializer(models.Host.objects.get(pk=host_id)).data
+            task = models.Task.objects.get(pk=result["task"])
+            result["task"] = serializers.SimpleTaskSerializer(task).data
+            host = models.Host.objects.get(pk=result["host"])
+            result["host"] = serializers.SimpleHostSerializer(host).data
+            if result["delegated_to"]:
+                delegated = models.Host.objects.get(pk=result["delegated_to"])
+                result["delegated_to"] = serializers.SimpleHostSerializer(delegated).data
         paginated_results = self.get_paginated_response(serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):
@@ -219,8 +222,11 @@ class Host(generics.RetrieveAPIView):
             result_serializer = serializers.ListResultSerializer(result_filter, many=True)
 
         for result in result_serializer.data:
-            task_id = result["task"]
-            result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
+            task = models.Task.objects.get(pk=result["task"])
+            result["task"] = serializers.SimpleTaskSerializer(task).data
+            if result["delegated_to"]:
+                delegated = models.Host.objects.get(pk=result["delegated_to"])
+                result["delegated_to"] = serializers.SimpleHostSerializer(delegated).data
         paginated_results = self.get_paginated_response(result_serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):
