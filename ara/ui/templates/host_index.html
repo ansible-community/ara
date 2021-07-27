@@ -103,44 +103,44 @@
 
 <div>
   {% if data.results %}
-  {% if not static_generation %}
-    {% include "partials/pagination.html" %}
-  {% endif %}
-  <div class="table-responsive">
-    <table class="table table-sm table-hover" id="hosts">
-      <thead>
-        <tr style="height:50px;">
-          <th class="text-center" title="Status of the playbook">Playbook</th>
-          <th class="text-center" title="Link to the host report">Report</th>
-          <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
-          <th title="Duration of the last playbook the host was involved in">Playbook duration</th>
-          <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
-          <th title="Number of task results and their statuses">Last results</th>
-          <th title="Host facts">Host facts</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for host in data.results %}
-      {# /latesthosts/ returns the host under a nested host attribute -- /hosts/ returns it directly #}
-      {% if host.host %}
-        {% include "partials/host_index_row.html" with host=host.host %}
-      {% else %}
-        {% include "partials/host_index_row.html" with host=host %}
-      {% endif %}
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <br/>
-  <div>
-    {% if not request.GET %}
-      <h2>No recorded results found.</h2>
-      <h3>Record a playbook with the ara callback plugin enabled and try again.</h3>
-    {% else %}
-      <h3>No results found matching your query: try <a href="{% url 'ui:host_index' %}">clearing search filters</a>.</h3>
+    {% if not static_generation %}
+      {% include "partials/pagination.html" %}
     {% endif %}
-  </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover" id="hosts">
+        <thead>
+          <tr style="height:50px;">
+            <th class="text-center" title="Status of the playbook">Playbook</th>
+            <th class="text-center" title="Link to the host report">Report</th>
+            <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+            <th title="Duration of the last playbook the host was involved in">Playbook duration</th>
+            <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
+            <th title="Number of task results and their statuses">Last results</th>
+            <th title="Host facts">Host facts</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for host in data.results %}
+        {# /latesthosts/ returns the host under a nested host attribute -- /hosts/ returns it directly #}
+        {% if host.host %}
+          {% include "partials/host_index_row.html" with host=host.host %}
+        {% else %}
+          {% include "partials/host_index_row.html" with host=host %}
+        {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <br/>
+    <div>
+      {% if not request.GET %}
+        <h2>No recorded results found.</h2>
+        <h3>Record a playbook with the ara callback plugin enabled and try again.</h3>
+      {% else %}
+        <h3>No results found matching your query: try <a href="{% url 'ui:host_index' %}">clearing search filters</a>.</h3>
+      {% endif %}
+    </div>
   {% endif %}
 </div>
 </form>
