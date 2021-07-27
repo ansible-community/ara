@@ -95,128 +95,140 @@
 {% endif %}
 
 <div>
-  {% if not static_generation %}
-    {% include "partials/pagination.html" %}
-  {% endif %}
-  <div class="table-responsive">
-    <table class="table table-sm table-hover" id="playbooks">
-      <thead>
-        <tr style="height:50px;">
-          <th class="text-center" title="Status of the playbook run">Status</th>
-          <th class="text-center" title="Link to the playbook report">Report</th>
-          <th title="Date at which the playbook started">Date {% include "partials/sort_by_date.html" with arg="started" %}</th>
-          <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
-          <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
-          <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
-          <th class="text-center" title="Number of results recorded from the playbook">Results</th>
-          <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
-          <th class="text-center" title="Host that ran the playbook">Controller</th>
-          <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
-          <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
-          <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for playbook in data.results %}
-        <tr>
-          <td class="text-center">
-            {% include "partials/playbook_status_icon.html" with status=playbook.status %}
-          </td>
-          <td class="text-center">
-            {% url 'ui:playbook' playbook.id as playbook_url %}
-            <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
-                <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
-              </svg>
-            </a>
-          </td>
-          <td class="text-nowrap">{{ playbook.started | format_date }}</td>
-          <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-          <td class="text-center">{{ playbook.items.hosts }}</td>
-          <td class="text-center">{{ playbook.items.tasks }}</td>
-          <td class="text-center">{{ playbook.items.results }}</td>
-          <td class="text-center">
-            {% if not static_generation %}
-              <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
-            {% else %}
-              {{ playbook.ansible_version }}
-            {% endif %}
-          </td>
-          <td class="text-center">
-            {% if not static_generation %}
-              <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
-            {% else %}
-              {{ playbook.controller }}
-            {% endif %}
-          </td>
-          <td title="{{ playbook.path }}">
-            {% if not static_generation %}
-              {% if playbook.name is not None %}
-                <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+  {% if data.results %}
+    {% if not static_generation %}
+      {% include "partials/pagination.html" %}
+    {% endif %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover" id="playbooks">
+        <thead>
+          <tr style="height:50px;">
+            <th class="text-center" title="Status of the playbook run">Status</th>
+            <th class="text-center" title="Link to the playbook report">Report</th>
+            <th title="Date at which the playbook started">Date {% include "partials/sort_by_date.html" with arg="started" %}</th>
+            <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+            <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+            <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+            <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+            <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
+            <th class="text-center" title="Host that ran the playbook">Controller</th>
+            <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
+            <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+            <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for playbook in data.results %}
+          <tr>
+            <td class="text-center">
+              {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+            </td>
+            <td class="text-center">
+              {% url 'ui:playbook' playbook.id as playbook_url %}
+              <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                  <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+                </svg>
+              </a>
+            </td>
+            <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+            <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+            <td class="text-center">{{ playbook.items.hosts }}</td>
+            <td class="text-center">{{ playbook.items.tasks }}</td>
+            <td class="text-center">{{ playbook.items.results }}</td>
+            <td class="text-center">
+              {% if not static_generation %}
+                <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
               {% else %}
-                <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+                {{ playbook.ansible_version }}
               {% endif %}
-            {% else %}
-              {% if playbook.name is not None %}
-                {{ playbook.name }}
+            </td>
+            <td class="text-center">
+              {% if not static_generation %}
+                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
               {% else %}
-                {{ playbook.path | truncatepath:50 }}
+                {{ playbook.controller }}
               {% endif %}
-            {% endif %}
-          </td>
-          <td class="text-center">
-            <button type="button" class="btn btn-outline-secondary btn-link btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal" viewBox="0 0 16 16">
-                <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
-                <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
-              </svg>
-            </button>
-            <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h3 class="modal-title">CLI arguments</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <div>
-                      <div class="row">
-                        <div class="col-md-12">
-                          {% if playbook.name is not None %}
-                            <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
-                          {% else %}
-                            <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
-                          {% endif %}
+            </td>
+            <td title="{{ playbook.path }}">
+              {% if not static_generation %}
+                {% if playbook.name is not None %}
+                  <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name }}</a>
+                {% else %}
+                  <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+                {% endif %}
+              {% else %}
+                {% if playbook.name is not None %}
+                  {{ playbook.name }}
+                {% else %}
+                  {{ playbook.path | truncatepath:50 }}
+                {% endif %}
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-outline-secondary btn-link btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal" viewBox="0 0 16 16">
+                  <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
+                  <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
+                </svg>
+              </button>
+              <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title">CLI arguments</h3>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            {% if playbook.name is not None %}
+                              <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
+                            {% else %}
+                              <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
+                            {% endif %}
+                          </div>
                         </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-12">
-                          {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
+                        <div class="row">
+                          <div class="col-md-12">
+                            {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </td>
-          <td class="col-md-2">
-            {% for label in playbook.labels %}
-              {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="btn btn-outline-success ara-label">{{ label.name }}</a>
-              {% else %}
-                <span class="btn btn-outline-success ara-label">{{ label.name }}</span>
-              {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            </td>
+            <td class="col-md-2">
+              {% for label in playbook.labels %}
+                {% if not static_generation %}
+                  <a href="{% url 'ui:index' %}?label={{ label.name }}" class="btn btn-outline-success ara-label">{{ label.name }}</a>
+                {% else %}
+                  <span class="btn btn-outline-success ara-label">{{ label.name }}</span>
+                {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <br/>
+    <div>
+      {% if not request.GET %}
+        <h2>No recorded results found.</h2>
+        <h3>Record a playbook with the ara callback plugin enabled and try again.</h3>
+      {% else %}
+        <h3>No results found matching your query: try <a href="{% url 'ui:index' %}">clearing search filters</a>.</h3>
+      {% endif %}
+    </div>
+  {% endif %}
 </div>
 </form>
 {% endblock %}
