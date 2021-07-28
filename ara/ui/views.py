@@ -92,6 +92,12 @@ class HostIndex(generics.RetrieveAPIView):
             else:
                 order = "host__%s" % order
 
+            if "updated_after" in request.GET:
+                # request.GET is immutable by default, copy it to set host__updated_after instead
+                request.GET = request.GET.copy()
+                request.GET["host__updated_after"] = request.GET["updated_after"]
+                del request.GET["updated_after"]
+
         query = getattr(filters, filter_type)(request.GET, queryset=queryset)
         page = self.paginate_queryset(query.qs.all().order_by(order))
         if page is not None:
