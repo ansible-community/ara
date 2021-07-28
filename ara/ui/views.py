@@ -164,14 +164,15 @@ class Playbook(generics.RetrieveAPIView):
         else:
             serializer = serializers.ListResultSerializer(result_filter, many=True)
 
+        # TODO: We should have a serializer that takes care of this automatically instead of backfilling "manually"
         for result in serializer.data:
             task = models.Task.objects.get(pk=result["task"])
             result["task"] = serializers.SimpleTaskSerializer(task).data
             host = models.Host.objects.get(pk=result["host"])
             result["host"] = serializers.SimpleHostSerializer(host).data
             if result["delegated_to"]:
-                delegated = models.Host.objects.get(pk=result["delegated_to"])
-                result["delegated_to"] = serializers.SimpleHostSerializer(delegated).data
+                delegated_to = [models.Host.objects.get(pk=delegated) for delegated in result["delegated_to"]]
+                result["delegated_to"] = serializers.SimpleHostSerializer(delegated_to, many=True).data
         paginated_results = self.get_paginated_response(serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):
@@ -227,12 +228,13 @@ class Host(generics.RetrieveAPIView):
         else:
             result_serializer = serializers.ListResultSerializer(result_filter, many=True)
 
+        # TODO: We should have a serializer that takes care of this automatically instead of backfilling "manually"
         for result in result_serializer.data:
             task = models.Task.objects.get(pk=result["task"])
             result["task"] = serializers.SimpleTaskSerializer(task).data
             if result["delegated_to"]:
-                delegated = models.Host.objects.get(pk=result["delegated_to"])
-                result["delegated_to"] = serializers.SimpleHostSerializer(delegated).data
+                delegated_to = [models.Host.objects.get(pk=delegated) for delegated in result["delegated_to"]]
+                result["delegated_to"] = serializers.SimpleHostSerializer(delegated_to, many=True).data
         paginated_results = self.get_paginated_response(result_serializer.data)
 
         if self.paginator.count > (self.paginator.offset + self.paginator.limit):

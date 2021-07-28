@@ -130,9 +130,11 @@ class ResultFactory(DjangoModelFactory):
     content = utils.compressed_obj(RESULT_CONTENTS)
     status = "ok"
     host = factory.SubFactory(HostFactory)
-    # delegated_to expects a HostFactory to be assigned but it can also be None
+    # delegated_to expects a HostFactory to be assigned but it can also be []
     # when no delegation is done.
-    delegated_to = None
+    # Though [] can't be declared here:
+    #     TypeError: Direct assignment to the forward side of a many-to-many set is prohibited.
+    # delegated_to = []
     task = factory.SubFactory(TaskFactory)
     play = factory.SubFactory(PlayFactory)
     playbook = factory.SubFactory(PlaybookFactory)

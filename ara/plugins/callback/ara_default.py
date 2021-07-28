@@ -206,6 +206,7 @@ class CallbackModule(CallbackBase):
         self.file_cache = {}
         self.host_cache = {}
         self.task_cache = {}
+        self.delegation_cache = {}
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
@@ -392,6 +393,15 @@ class CallbackModule(CallbackBase):
     def v2_runner_on_skipped(self, result, **kwargs):
         self._submit_thread("task", self._load_result, result, "skipped", **kwargs)
 
+    def v2_runner_item_on_ok(self, result):
+        self._update_delegation_cache(result)
+
+    def v2_runner_item_on_failed(self, result):
+        self._update_delegation_cache(result)
+
+    def v2_runner_item_on_skipped(self, result):
+        self._update_delegation_cache(result)
+
     def v2_playbook_on_stats(self, stats):
         self.log.debug("v2_playbook_on_stats")
         self._end_task()
@@ -509,6 +519,17 @@ class CallbackModule(CallbackBase):
 
         return self.task_cache[task_uuid]
 
+    def _update_delegation_cache(self, result):
+        # If the task is a loop and delegate_to is a variable, result._task.delegate_to can return the variable
+        # instead of it's value when using the v2_runner_on_* hooks.
+        # We're caching the actual host names here from v2_runner_item_on_* hooks.
+        # https://github.com/ansible/ansible/issues/75339
+        if result._task.delegate_to:
+            task_uuid = str(result._task._uuid[:36])
+            if task_uuid not in self.delegation_cache:
+                self.delegation_cache[task_uuid] = []
+            self.delegation_cache[task_uuid].append(result._task.delegate_to)
+
     def _load_result(self, result, status, **kwargs):
         """
         This method is called when an individual task instance on a single
@@ -521,10 +542,17 @@ class CallbackModule(CallbackBase):
         # Retrieve the host so we can associate the result to the host id
         host = self._get_or_create_host(hostname)
 
-        # If the task was delegated to another host, retrieve that too
-        delegated_to = None
-        if result._task.delegate_to and result._task.delegate_to != result._host.get_name():
-            delegated_to = self._get_or_create_host(result._task.delegate_to)
+        # If the task was delegated to another host, retrieve that too.
+        # Since a single task can be delegated to multiple hosts (ex: looping on a host group and using delegate_to)
+        # this must be a list of hosts.
+        delegated_to = []
+        if result._task.delegate_to:
+            task_uuid = str(result._task._uuid[:36])
+            if task_uuid in self.delegation_cache:
+                for delegated in self.delegation_cache[task_uuid]:
+                    delegated_to.append(self._get_or_create_host(delegated))
+            else:
+                delegated_to.append(self._get_or_create_host(result._task.delegate_to))
 
         # Retrieve the task so we can associate the result to the task id
         task = self._get_or_create_task(result._task)
@@ -553,7 +581,7 @@ class CallbackModule(CallbackBase):
             playbook=self.playbook["id"],
             task=task["id"],
             host=host["id"],
-            delegated_to=delegated_to["id"] if delegated_to is not None else None,
+            delegated_to=[h["id"] for h in delegated_to],
             play=task["play"],
             content=results,
             status=status,

@@ -26,8 +26,12 @@
           <li>
             <strong>Host</strong>: <a href="{% static_url host_url %}">{{ result.host.name }}</a>
             {% if result.delegated_to %}
-              {% url 'ui:host' result.delegated_to.id as delegated_host_url %}
-              (<i>task delegated to <a href="{% static_url delegated_host_url %}">{{ result.delegated_to.name }}</a></i>)
+              <i>( task delegated to
+              {% for delegated in result.delegated_to %}
+                {% url 'ui:host' delegated.id as delegated_host_url %}
+                <a href="{% static_url delegated_host_url %}">{{ delegated.name }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+              )</i>
             {% endif %}
           </li>
           <li><strong>Status</strong>: {{ result.status }}</li>

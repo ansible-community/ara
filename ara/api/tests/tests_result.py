@@ -30,14 +30,14 @@ class ResultTestCase(APITestCase):
         result = factories.ResultFactory(status="failed")
         self.assertEqual(result.status, "failed")
 
-    def test_result_serializer(self):
-        host = factories.HostFactory()
+    def test_result_serializer_without_delegation(self):
+        host = factories.HostFactory(name="first")
         task = factories.TaskFactory()
         serializer = serializers.ResultSerializer(
             data={
                 "status": "skipped",
                 "host": host.id,
-                "delegated_to": None,
+                "delegated_to": [],
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -52,7 +52,37 @@ class ResultTestCase(APITestCase):
         self.assertEqual(result.changed, False)
         self.assertEqual(result.ignore_errors, False)
         self.assertEqual(result.host.id, host.id)
-        self.assertEqual(result.delegated_to, None)
+        # FIXME: Why does the serializer return a ManyRelatedManager queryset for delegated_to ?
+        from_queryset = list(result.delegated_to.values())
+        self.assertEqual(from_queryset, [])
+        self.assertEqual(result.task.id, task.id)
+
+    def test_result_serializer_with_delegation(self):
+        host = factories.HostFactory(name="first")
+        anotherhost = factories.HostFactory(name="second")
+        task = factories.TaskFactory()
+        serializer = serializers.ResultSerializer(
+            data={
+                "status": "skipped",
+                "host": host.id,
+                "delegated_to": [anotherhost.id],
+                "task": task.id,
+                "play": task.play.id,
+                "playbook": task.playbook.id,
+                "changed": False,
+                "ignore_errors": False,
+            }
+        )
+        serializer.is_valid()
+        result = serializer.save()
+        result.refresh_from_db()
+        self.assertEqual(result.status, "skipped")
+        self.assertEqual(result.changed, False)
+        self.assertEqual(result.ignore_errors, False)
+        self.assertEqual(result.host.id, host.id)
+        # FIXME: Why does the serializer return a ManyRelatedManager queryset for delegated_to ?
+        self.assertEqual(result.delegated_to.values()[0]["id"], anotherhost.id)
+        self.assertEqual(result.delegated_to.values()[0]["name"], anotherhost.name)
         self.assertEqual(result.task.id, task.id)
 
     def test_result_serializer_compress_content(self):
@@ -63,7 +93,7 @@ class ResultTestCase(APITestCase):
                 "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
-                "delegated_to": None,
+                "delegated_to": [],
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -106,7 +136,7 @@ class ResultTestCase(APITestCase):
                 "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
-                "delegated_to": None,
+                "delegated_to": [],
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -120,7 +150,7 @@ class ResultTestCase(APITestCase):
         self.assertEqual(request.data["ignore_errors"], False)
         self.assertEqual(request.data["status"], "ok")
         self.assertEqual(request.data["host"], host.id)
-        self.assertEqual(request.data["delegated_to"], None)
+        self.assertEqual(request.data["delegated_to"], [])
         self.assertEqual(request.data["task"], task.id)
         self.assertEqual(request.data["play"], task.play.id)
         self.assertEqual(request.data["playbook"], task.playbook.id)
@@ -136,7 +166,7 @@ class ResultTestCase(APITestCase):
                 "content": factories.RESULT_CONTENTS,
                 "status": "ok",
                 "host": host.id,
-                "delegated_to": delegated_host.id,
+                "delegated_to": [delegated_host.id],
                 "task": task.id,
                 "play": task.play.id,
                 "playbook": task.playbook.id,
@@ -150,7 +180,38 @@ class ResultTestCase(APITestCase):
         self.assertEqual(request.data["ignore_errors"], False)
         self.assertEqual(request.data["status"], "ok")
         self.assertEqual(request.data["host"], host.id)
-        self.assertEqual(request.data["delegated_to"], delegated_host.id)
+        self.assertEqual(request.data["delegated_to"], [delegated_host.id])
+        self.assertEqual(request.data["task"], task.id)
+        self.assertEqual(request.data["play"], task.play.id)
+        self.assertEqual(request.data["playbook"], task.playbook.id)
+
+    def test_create_result_with_two_delegations(self):
+        host = factories.HostFactory(name="original")
+        delegated_host = factories.HostFactory(name="delegated")
+        another_host = factories.HostFactory(name="another")
+        task = factories.TaskFactory()
+        self.assertEqual(0, models.Result.objects.count())
+        request = self.client.post(
+            "/api/v1/results",
+            {
+                "content": factories.RESULT_CONTENTS,
+                "status": "ok",
+                "host": host.id,
+                "delegated_to": [delegated_host.id, another_host.id],
+                "task": task.id,
+                "play": task.play.id,
+                "playbook": task.playbook.id,
+                "changed": True,
+                "ignore_errors": False,
+            },
+        )
+        self.assertEqual(201, request.status_code)
+        self.assertEqual(1, models.Result.objects.count())
+        self.assertEqual(request.data["changed"], True)
+        self.assertEqual(request.data["ignore_errors"], False)
+        self.assertEqual(request.data["status"], "ok")
+        self.assertEqual(request.data["host"], host.id)
+        self.assertEqual(request.data["delegated_to"], [delegated_host.id, another_host.id])
         self.assertEqual(request.data["task"], task.id)
         self.assertEqual(request.data["play"], task.play.id)
         self.assertEqual(request.data["playbook"], task.playbook.id)
