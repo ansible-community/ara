@@ -185,7 +185,7 @@ class DetailedResultSerializer(ResultStatusSerializer):
     play = SimplePlaySerializer(read_only=True)
     task = SimpleTaskSerializer(read_only=True)
     host = SimpleHostSerializer(read_only=True)
-    delegated_to = SimpleHostSerializer(read_only=True)
+    delegated_to = SimpleHostSerializer(many=True, read_only=True)
     content = ara_fields.CompressedObjectField(read_only=True)
 
 
@@ -262,7 +262,7 @@ class ListResultSerializer(ResultStatusSerializer):
     play = serializers.PrimaryKeyRelatedField(read_only=True)
     task = serializers.PrimaryKeyRelatedField(read_only=True)
     host = serializers.PrimaryKeyRelatedField(read_only=True)
-    delegated_to = serializers.PrimaryKeyRelatedField(read_only=True)
+    delegated_to = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
 class ListFileSerializer(FileSha1Serializer):
@@ -348,6 +348,7 @@ class ResultSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     content = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
+    delegated_to = serializers.SlugRelatedField(many=True, slug_field="id", queryset=models.Host.objects.all())
 
 
 class FileSerializer(FileSha1Serializer):

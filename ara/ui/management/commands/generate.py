@@ -80,6 +80,9 @@ class Command(BaseCommand):
                 result["task"] = serializers.SimpleTaskSerializer(models.Task.objects.get(pk=task_id)).data
                 host_id = result["host"]
                 result["host"] = serializers.SimpleHostSerializer(models.Host.objects.get(pk=host_id)).data
+                if result["delegated_to"]:
+                    delegated_to = [models.Host.objects.get(pk=delegated) for delegated in result["delegated_to"]]
+                    result["delegated_to"] = serializers.SimpleHostSerializer(delegated_to, many=True).data
 
             # Results are paginated in the dynamic version and the template expects data in a specific format
             formatted_results = {"count": len(results.data), "results": results.data}

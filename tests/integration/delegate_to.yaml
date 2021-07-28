@@ -11,6 +11,9 @@
 - name: Run a play with a delegated task
   hosts: delegator
   gather_facts: no
+  vars:
+    delegated_hosts:
+      - localhost
   tasks:
     - name: Run a normal task
       command: echo "A normal task"
@@ -20,6 +23,14 @@
       command: echo "A delegated task"
       changed_when: false
       delegate_to: localhost
+
+    # Test for particular behavior when running a loop task with delegate_to
+    # https://github.com/ansible/ansible/issues/75339
+    - name: Run a delegated task with a variable
+      command: echo "A delegated task to a variable host"
+      changed_when: false
+      delegate_to: "{{ item }}"
+      loop: "{{ delegated_hosts }}"
 
 - name: Validate undelegated task
   hosts: localhost
@@ -47,9 +58,9 @@
       assert:
         that:
           - result.host is integer
-          - result.delegated_to is none
+          - result.delegated_to == []
 
-- name: Validate delegated task
+- name: Validate delegated tasks
   hosts: localhost
   gather_facts: no
   tasks:
@@ -74,6 +85,40 @@
         result: "{{ results.results[0] }}"
       assert:
         that:
-          - result.host != result.delegated_to
-          - result.host is integer and result.delegated_to is integer
+          - result.delegated_to is not mapping and result.delegated_to is iterable
+          - result.host is integer
+          - result.host != result.delegated_to[0]
 
+    - name: Find the other delegated task
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=variable&playbook=' + playbook_id) }}"
+
+    - name: Find the other delegated result
+      vars:
+        task_id: "{{ tasks.results[0].id }}"
+      set_fact:
+        results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
+
+    - name: Retrieve the hosts related to the other delegated task
+      vars:
+        result: "{{ results.results[0] }}"
+      set_fact:
+        first_host: "{{ lookup('ara_api', '/api/v1/hosts/' + result.host | string) }}"
+        second_host: "{{ lookup('ara_api', '/api/v1/hosts/' + result.delegated_to[0] | string) }}"
+
+    - name: Validate the other delegated result
+      vars:
+        result: "{{ results.results[0] }}"
+        # TODO: Uncertain why "to_json | from json" is necessary here. The lookup returns a dict but trying to
+        # access it yields: 'ansible.utils.unsafe_proxy.AnsibleUnsafeText object' has no attribute 'name'
+        first: "{{ first_host | to_json | from_json }}"
+        second: "{{ second_host | to_json | from_json }}"
+      assert:
+        that:
+          - result.delegated_to is not mapping and result.delegated_to is iterable
+          - result.host != result.delegated_to[0]
+          - result.delegated_to[0] == second.id
+          - first.name == "delegator"
+          - second.name == "localhost"

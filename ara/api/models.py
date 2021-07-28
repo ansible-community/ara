@@ -295,7 +295,7 @@ class Result(Duration):
     # todo use a single Content table
     content = models.BinaryField(max_length=(2 ** 32) - 1)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="results")
-    delegated_to = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="delegated_results", null=True)
+    delegated_to = models.ManyToManyField(Host)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="results")
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="results")
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="results")
