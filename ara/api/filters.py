@@ -159,7 +159,7 @@ class HostFilter(BaseFilter):
     # fmt: on
 
 
-class LatestHostFilter(django_filters.rest_framework.FilterSet):
+class LatestHostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="host__playbook__id", lookup_expr="exact")
     name = django_filters.CharFilter(field_name="host__name", lookup_expr="icontains")
     changed__gt = django_filters.NumberFilter(field_name="host__changed", lookup_expr="gt")
@@ -173,19 +173,12 @@ class LatestHostFilter(django_filters.rest_framework.FilterSet):
     unreachable__gt = django_filters.NumberFilter(field_name="host__unreachable", lookup_expr="gt")
     unreachable__lt = django_filters.NumberFilter(field_name="host__unreachable", lookup_expr="lt")
 
-    # We're not inheriting from BaseFilter in order to pass the query for these fields to the nested host instead
-    created_before = django_filters.IsoDateTimeFilter(field_name="host__created", lookup_expr="lte")
-    created_after = django_filters.IsoDateTimeFilter(field_name="host__created", lookup_expr="gte")
-    updated_before = django_filters.IsoDateTimeFilter(field_name="host__updated", lookup_expr="lte")
-    updated_after = django_filters.IsoDateTimeFilter(field_name="host__updated", lookup_expr="gte")
+    host__created_before = django_filters.IsoDateTimeFilter(field_name="host__created", lookup_expr="lte")
+    host__created_after = django_filters.IsoDateTimeFilter(field_name="host__created", lookup_expr="gte")
+    host__updated_before = django_filters.IsoDateTimeFilter(field_name="host__updated", lookup_expr="lte")
+    host__updated_after = django_filters.IsoDateTimeFilter(field_name="host__updated", lookup_expr="gte")
 
     # fmt: off
-    filter_overrides = {
-        django_models.DateTimeField: {
-            'filter_class': django_filters.IsoDateTimeFilter
-        },
-    }
-
     order = django_filters.OrderingFilter(
         fields=(
             ("id", "id"),
