@@ -546,7 +546,9 @@ class CallbackModule(CallbackBase):
         # Since a single task can be delegated to multiple hosts (ex: looping on a host group and using delegate_to)
         # this must be a list of hosts.
         delegated_to = []
-        if result._task.delegate_to:
+        # The value of result._task.delegate_to doesn't get templated if the task was skipped
+        # https://github.com/ansible/ansible/issues/75339#issuecomment-888724838
+        if result._task.delegate_to and status != "skipped":
             task_uuid = str(result._task._uuid[:36])
             if task_uuid in self.delegation_cache:
                 for delegated in self.delegation_cache[task_uuid]:
