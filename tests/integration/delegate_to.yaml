@@ -145,3 +145,34 @@
               - ("delegator" in first_delegated.name and "delegated_hostgroup" not in first_delegated.name)
               - ("delegator" in second_delegated.name and "delegated_hostgroup" not in second_delegated.name)
               - ("delegator" in third_delegated.name and "delegated_hostgroup" not in third_delegated.name)
+
+    - name: Validate the fourth test task
+      block:
+        - name: Find the fourth test task
+          set_fact:
+            tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test4&playbook=' + playbook_id) }}"
+
+        - name: Find the fourth test task result
+          vars:
+            task_id: "{{ tasks.results[0].id }}"
+          set_fact:
+            results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
+
+        - name: Find the hosts for the fourth test task
+          vars:
+            result: "{{ results.results[0] }}"
+          set_fact:
+            host: "{{ lookup('ara_api', '/api/v1/hosts/' + result.host | string) | to_json | from_json }}"
+            delegated_host: "{{ lookup('ara_api', '/api/v1/hosts/' + result.delegated_to[0] | string) | to_json | from_json }}"
+
+        - name: Validate the result for the fourth test task
+          vars:
+            result: "{{ results.results[0] }}"
+          assert:
+            that:
+              - result.host is integer
+              # The hostgroup has three hosts but the condition is made so only one goes through, the other two are skipped
+              - result.delegated_to | length == 1
+              - result.host not in result.delegated_to
+              - host.name == 'localhost'
+              - delegated_host.name == 'delegator-1'

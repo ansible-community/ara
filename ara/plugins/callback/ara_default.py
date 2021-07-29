@@ -400,7 +400,10 @@ class CallbackModule(CallbackBase):
         self._update_delegation_cache(result)
 
     def v2_runner_item_on_skipped(self, result):
-        self._update_delegation_cache(result)
+        pass
+        # result._task.delegate_to can end up being a variable from this hook, don't save it.
+        # https://github.com/ansible/ansible/issues/75339
+        # self._update_delegation_cache(result)
 
     def v2_playbook_on_stats(self, stats):
         self.log.debug("v2_playbook_on_stats")
