@@ -82,7 +82,7 @@ class LatestHostTestCase(APITestCase):
 
         first_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": first_playbook.id})
         # Slow this down a bit so we have a second host that is more noticeably "latest"
-        time.sleep(0.5)
+        time.sleep(0.2)
         second_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": second_playbook.id})
 
         self.assertEqual(2, models.Host.objects.count())
@@ -102,7 +102,7 @@ class LatestHostTestCase(APITestCase):
 
         first_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": first_playbook.id})
         # Slow this down a bit so we have a second host that is more noticeably "latest"
-        time.sleep(0.5)
+        time.sleep(0.2)
         second_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": second_playbook.id})
 
         self.assertEqual(2, models.Host.objects.count())
@@ -114,3 +114,23 @@ class LatestHostTestCase(APITestCase):
         self.assertEqual(204, delete.status_code)
         self.assertEqual(1, models.Host.objects.count())
         self.assertEqual(second_host.data["id"], models.LatestHost.objects.first().host.id)
+
+    def test_delete_and_update_latesthost_via_playbook(self):
+        # Create two playbooks and two hosts
+        first_playbook = factories.PlaybookFactory()
+        second_playbook = factories.PlaybookFactory()
+
+        first_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": first_playbook.id})
+        # Slow this down a bit so we have a second host that is more noticeably "latest"
+        time.sleep(0.2)
+        second_host = self.client.post("/api/v1/hosts", {"name": "localhost", "playbook": second_playbook.id})
+
+        self.assertEqual(2, models.Host.objects.count())
+        self.assertEqual(1, models.LatestHost.objects.count())
+        self.assertEqual(second_host.data["id"], models.LatestHost.objects.first().host.id)
+
+        # Deleting the second playbook should update the latesthost to point to the first host
+        delete = self.client.delete("/api/v1/playbooks/%s" % second_playbook.id)
+        self.assertEqual(204, delete.status_code)
+        self.assertEqual(1, models.Host.objects.count())
+        self.assertEqual(first_host.data["id"], models.LatestHost.objects.first().host.id)

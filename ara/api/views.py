@@ -52,6 +52,27 @@ class PlaybookViewSet(viewsets.ModelViewSet):
             # create/update/destroy
             return serializers.PlaybookSerializer
 
+    def perform_destroy(self, instance):
+        """
+        Update the LatestHost table when deleting a playbook (if necessary)
+        """
+        # check if Host object has a relation to a LatestHost object
+        for host in instance.hosts.all():
+            try:
+                latest = models.LatestHost.objects.get(host=host.id)
+            except models.LatestHost.DoesNotExist:
+                # No need to delete the host, the cascade will take care of it
+                continue
+
+            # Find the next-latest host that isn't this one
+            next_latest = models.Host.objects.filter(name=host.name).order_by("-updated")
+
+            if len(next_latest) > 1:
+                latest.host = next_latest[1]
+                latest.save()
+
+        return super().perform_destroy(instance)
+
 
 class PlayViewSet(viewsets.ModelViewSet):
     filterset_class = filters.PlayFilter
