@@ -348,7 +348,9 @@ class ResultSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     content = ara_fields.CompressedObjectField(default=ara_fields.EMPTY_DICT)
-    delegated_to = serializers.SlugRelatedField(many=True, slug_field="id", queryset=models.Host.objects.all())
+    delegated_to = serializers.SlugRelatedField(
+        many=True, required=False, slug_field="id", queryset=models.Host.objects.all()
+    )
 
 
 class FileSerializer(FileSha1Serializer):
