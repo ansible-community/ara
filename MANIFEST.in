@@ -1,0 +1,7 @@
+recursive-exclude .github *
+recursive-exclude .zuul.d *
+recursive-exclude contrib *
+recursive-exclude roles *
+exclude .black.toml
+exclude .editorconfig
+exclude tox.ini
