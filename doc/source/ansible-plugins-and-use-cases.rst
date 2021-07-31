@@ -218,6 +218,8 @@ With an argument, it can retrieve data from a specific playbook:
           debug:
             msg: "Playbook {{ query.playbook.status }} in {{ query.playbook.duration }}"
 
+.. _ara_record:
+
 ara_record: arbitrary key/values in playbook reports
 ----------------------------------------------------
 
