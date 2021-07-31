@@ -31,7 +31,9 @@
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="latest" value="false" name="latest" {{ checkbox_status }}>
                 </div>
-                <label class="align-middle" for="latest" {% if request.GET.latest or checkbox_status %}style="font-weight:bold;"{% endif %}>Include all playbook reports</label>
+                <label class="align-middle" for="latest" title="Include every playbook report, not only the latest one for each host" {% if request.GET.latest or checkbox_status %}style="font-weight:bold;"{% endif %}>
+                  Include all playbook reports
+                </label>
               </div>
             </div>
             <div class="form-row">
