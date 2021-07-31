@@ -28,26 +28,29 @@ Alternatively, you may also find an up-to-date live demonstration of the API at
 Relationship between objects
 ----------------------------
 
-The relationship between objects in the API should be straightforward with an
-understanding of how Ansible playbooks are executed.
+Here's a high level overview of how data is generally organized::
 
-Generally speaking, the data is organized in the following fashion::
+    Label   Record (ara_record)              LatestHost
+        \   /                                 /
+      Playbook -> Play -> Task -> Result <- Host
+              \          /          |        |
+               \        /        Content   Facts
+                \ File /
+                   |
+                Content
 
-   labels
-     |
-  Playbook -> Play -> Task -> Result <- Host
-     |                  |       |        |
-    file               file   content   facts
-
-- Every object is associated to a playbook (except *labels* which are applied to playbooks)
-- In a playbook you have plays
-- In plays you have tasks
-- In tasks you have results
-- Results have a relationship to their parent task and the host the task ran on
-
-- Files are only associated to a playbook but tasks have a reference to the file
-  they were executed from
-- Records (provided by ``ara_record``) are only associated to a playbook
+- Every object except labels and LatestHost are associated to a parent playbook
+- Labels are applied on a playbook while a LatestHost references a specific Host
+- Records have a key, a value and a type provided by :ref:`ara_record <ara_record>`
+- In a playbook there are plays
+- In a play there are tasks
+- In a task there are results
+- Results have a relation to their parent task and the host the task ran on
+- Results have content with data returned by Ansible for a task on a host
+- Hosts have stats provided by Ansible and facts (if they have been set or gathered)
+- A LatestHost relation keeps track of the last playbook a host name was involved in
+- Playbooks and Tasks both have a path and a reference to a File
+- A file has content compressed and uniquely stored, hashed by sha1
 
 These relationships are also represented in the database model:
 
@@ -59,7 +62,7 @@ These relationships are also represented in the database model:
 Additional fields may only be available in the detailed views. For example:
 
 - Playbooks arguments with ``/api/v1/playbooks/<id>``
-- Hosts facts with ``/api/v1/hosts/<id>``
+- Hosts facts with ``/api/v1/hosts/<id>`` or ``/api/v1/latesthosts``
 - Results content with ``/api/v1/results/<id>``
 - Files content with ``/api/v1/files/<id>``
 
