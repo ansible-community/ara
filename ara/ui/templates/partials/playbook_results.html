@@ -127,7 +127,7 @@
                     {% else %}
                       {% include "partials/result_status_icon.html" with status=result.status %}
                     {% endif %}
-                    {% if result.task.tags|length == 0 %}
+                    {% if result.task.tags | length == 0 %}
                       <span class="badge badge-pill badge-secondary invisible" class="btn btn-secondary">
                     {% else %}
                       <span class="badge badge-pill badge-secondary" class="btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% include 'partials/tags_list.html' with tags=result.task.tags %}">
