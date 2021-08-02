@@ -4,6 +4,82 @@
 Changelog and release notes
 ***************************
 
+1.5.7 (2021-07-31)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.7
+
+.. code-block:: text
+
+    This is the 1.5.7 stable release of ara.
+    
+    It features a new "hosts" page to browse and search playbook reports by host
+    as well as fixes and improvements.
+    
+    Instructions for upgrading are included in the upgrade notes.
+    
+    Changes since 1.5.6:
+    
+    UI
+    --
+    
+    - Added a new "hosts" page to browse and search reports by host name
+    - Improved page HTML titles to be dynamic based on the context
+    - Added a note highlighting if a task has been delegated to another host
+      (https://github.com/ansible-community/ara/issues/282)
+    - Improved how long file paths or playbook names are truncated and displayed
+    
+    API
+    ---
+    
+    - Added a new read-only API endpoint: /api/v1/latesthosts
+      It provides the latest playbook result for each host name.
+      Under the hood, it implements the machinery for updating the latest host
+      every time a host is created or deleted and includes a SQL migration to
+      initially populate a new database table with the latest hosts.
+    - Added a `delegated_to` field to results in order to record a host id to which
+      a task has been delegated.
+    - Added support for finding results delegated to a specific host:
+      /api/v1/results?delegated_to=<host_id>
+    
+    Callback plugin
+    ---------------
+    
+    - Fixed tasks and results being recorded out of order when using "strategy: free"
+      (https://github.com/ansible-community/ara/issues/260)
+    - Added support for recording 'delegate_to' on tasks
+    
+    Documentation
+    -------------
+    
+    - Removed an unused sphinx lexer to allow recent versions of sphinx>=4
+    - Created a new troubleshooting guide with common issues:
+      https://ara.readthedocs.io/en/latest/troubleshooting.html
+    - Added a database relationship graph to the endpoint documentation:
+      https://ara.readthedocs.io/en/latest/api-documentation.html#relationship-between-objects
+    
+    Upgrade notes
+    -------------
+    
+    It is always recommended to take a backup of your database before upgrading.
+    
+    This release includes two database migrations that must be run:
+    - One for populating the data for the new /api/v1/latesthosts endpoint as well
+      as the new 'hosts' page
+    - One for adding a `delegated_to` field in the results.
+      Note that delegated tasks will only be recorded as such from 1.5.7 on.
+    
+    After upgrading to 1.5.7, database migrations can be run manually with the
+    `ara-manage migrate` command if they are not taken care of automatically by the
+    callback plugin.
+    
+    Known issues
+    ------------
+    
+    ara will not record task delegation for tasks that are skipped or for
+    items in a loop that are skipped because Ansible doesn't provide the
+    necessary information in those cases.
+
 1.5.6 (2021-04-14)
 ##################
 
