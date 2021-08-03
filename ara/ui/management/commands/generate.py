@@ -2,15 +2,19 @@ import codecs
 import os
 import shutil
 
+import pbr.version
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 
 from ara.api import models, serializers
 
+# Otherwise provided by ara.server.context_processors for ara/ui/templates/partials/about_modal.html
+ARA_VERSION = pbr.version.VersionInfo("ara").release_string()
+
 
 class Command(BaseCommand):
     help = "Generates a static tree of the web application"
-    DEFAULT_PARAMS = dict(static_generation=True)
+    DEFAULT_PARAMS = dict(static_generation=True, ARA_VERSION=ARA_VERSION)
     rendered = 0
 
     @staticmethod
