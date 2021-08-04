@@ -15,7 +15,7 @@ ara expire
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara expire --help
 
@@ -81,7 +81,7 @@ ara playbook delete
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara playbook delete --help
 
@@ -132,7 +132,7 @@ automatically.
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara playbook prune --help
 
@@ -195,7 +195,7 @@ ara play delete
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara play delete --help
 
@@ -266,7 +266,7 @@ ara host delete
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara host delete --help
 
@@ -374,7 +374,7 @@ ara result delete
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara result delete --help
 
@@ -427,7 +427,7 @@ ara task delete
 .. note::
 
     This command requires write privileges.
-    You can read more about read and write permissions :ref:`here <api-security:user management>`.
+    You can read more about read and write permissions :ref:`here <api-security:Authentication and user management>`.
 
 .. command-output:: ara task delete --help
 
@@ -513,14 +513,14 @@ ara-manage changepassword
 
 Change the password for a user.
 
-Relevant when working with :ref:`authentication <api-security:user management>`.
+Relevant when working with :ref:`authentication <api-security:Authentication and user management>`.
 
 .. command-output:: ara-manage changepassword --help
 
 ara-manage createsuperuser
 --------------------------
 
-Superusers are relevant when setting up :ref:`authentication <api-security:user management>`.
+Superusers are relevant when setting up :ref:`authentication <api-security:Authentication and user management>`.
 
 .. command-output:: ara-manage createsuperuser --help
 
