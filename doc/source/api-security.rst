@@ -33,10 +33,157 @@ You can provide a custom secret key by supplying the ``ARA_SECRET_KEY``
 environment variable or by specifying the ``SECRET_KEY`` setting in your server
 configuration file.
 
-User management
----------------
+Authentication and user management
+----------------------------------
 
-The API server leverages Django's `user management <https://docs.djangoproject.com/en/2.2/topics/auth/default/>`_
+It is recommended to set up authentication to protect the ara API and reporting
+interface since the data collected by ara can be sensitive or otherwise
+non-public information about your hosts, playbook files or task results.
+
+There are two main ways of managing authentication:
+
+1) Via a server/proxy in front of the API server (recommended, best performance)
+2) Via django's built-in authentication (impacts performance but doesn't require server/proxy in front)
+
+In the first scenario, there could be an nginx reverse proxy or apache2/httpd
+server with mod_proxy authenticating against a .htpasswd file, ldap and other
+authentication mechanisms supported by the servers.
+
+Once authenticated, users and clients have read/write access unless there is a
+specific proxy configuration based on the URL or methods (GET/POST/PATCH/DELETE).
+
+In the second case, there can still be a server/proxy in front but it wouldn't
+manage the authentication. Users are managed in django and authentication is done
+against the database backend for each request, incurring a performance hit when
+validating access and permissions.
+
+This method provides the possibility of a simple "read-only" access by setting
+``READ_LOGIN_REQUIRED: false`` and ``WRITE_LOGIN_REQUIRED: true``.
+
+#1: Authentication via a server/proxy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When authentication is handled by a server or proxy in front of the ara API
+server, the following should be set in ``~/.ara/server/settings.yaml``::
+
+    default:
+      # [...]
+      EXTERNAL_AUTH: true
+      READ_LOGIN_REQUIRED: false
+      WRITE_LOGIN_REQUIRED: false
+      # [...]
+
+:ref:`EXTERNAL_AUTH <api-configuration:ARA_EXTERNAL_AUTH>` is used to accept
+authentication provided by the server in front of the API server.
+
+:ref:`READ_LOGIN_REQUIRED <api-configuration:ARA_READ_LOGIN_REQUIRED>`
+and :ref:`WRITE_LOGIN_REQUIRED <api-configuration:ARA_WRITE_LOGIN_REQUIRED>`
+should both be false as they are only used when django is the one handling the
+authentication.
+
+Once the ara API server has been restarted with the right settings, it is ready
+to accept requests from a server or proxy in front of it.
+
+What follows are some example proxy configurations that have been contributed
+by users.
+
+.htpasswd with nginx or apache2/httpd
+*************************************
+
+1) Set up the right configuration in settings.yaml (see parent)
+2) Install and start nginx or apache2/httpd
+3) Create a .htpasswd file with an encrypted username/password, for example:
+   ``htpasswd -c -m /etc/httpd/.htpasswd username``
+4) Set up a virtual host configuration in nginx or apache2/httpd
+5) Ensure ara and proxy servers have been restarted with new configuration
+6) Complete
+
+For apache2/httpd, you can get started with the following configuration::
+
+    # /etc/httpd/conf.d/ara.conf
+    # or /etc/apache2/sites-{available|enabled}/ara.conf
+    <VirtualHost *:80>
+        ServerName ara.example.org
+        ProxyPass / http://127.0.0.1:8000/
+        ProxyPassReverse / http://127.0.0.1:8000/
+
+        <Location />
+            Deny from all
+            AuthUserFile /etc/httpd/.htpasswd
+            AuthName "Privileged access"
+            AuthType Basic
+            Satisfy Any
+            require valid-user
+        </Location>
+    </VirtualHost>
+
+For nginx, you can get started with the following configuration::
+
+    # /etc/nginx/conf.d/ara.conf
+    # or /etc/nginx/sites-{available|enabled}/ara.conf
+    upstream ara_api {
+        # fail_timeout=0 means we always retry an upstream even if it failed
+        # to return a good HTTP response
+        server 127.0.0.1:8000 fail_timeout=0;
+    }
+
+    server {
+        listen 80 default_server;
+        server_name ara.example.org;
+        auth_basic "Privileged access";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+
+        # Everything, including static files, is served by the backend
+        location ~ {
+            # checks if the file exists, if not found proxy to app
+            try_files $uri @proxy_to_app;
+        }
+
+        location @proxy_to_app {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Host $http_host;
+
+            proxy_redirect off;
+            proxy_pass http://ara_api;
+        }
+    }
+
+ldap with apache2/httpd and mod_ldap
+************************************
+
+1) Set up the right configuration in settings.yaml (see parent)
+2) Install and start apache2/httpd with mod_ldap
+3) Set up a virtual host configuration for apache2/httpd
+4) Ensure ara and proxy servers have been restarted with new configuration
+5) Complete
+
+You can get started with the following configuration::
+
+    # /etc/httpd/conf.d/ara.conf
+    # or /etc/apache2/sites-{available|enabled}/ara.conf
+    <VirtualHost *:80>
+        ServerName ara.example.org
+        ProxyPass / http://127.0.0.1:8000/
+        ProxyPassReverse / http://127.0.0.1:8000/
+
+        <Location />
+            AuthName "Privileged access"
+            AuthType Basic
+            AuthBasicProvider ldap
+            AuthLDAPURL "ldap://openldap/dc=example,dc=org?uid"
+            AuthLDAPBindDN "cn=admin,dc=example,dc=org"
+            AuthLDAPBindPassword "some_password"
+            Require valid-user
+            Allow from all
+            Order allow,deny
+        </Location>
+    </VirtualHost>
+
+#2: Authentication via django
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The API server can leverage Django's built-in `user management <https://docs.djangoproject.com/en/2.2/topics/auth/default/>`_
 but doesn't create any user by default.
 
 .. note::
@@ -81,9 +228,9 @@ And from here, you can manage existing users or create new ones:
 .. image:: _static/admin_panel_users.png
 
 Enabling authentication for read or write access
-------------------------------------------------
+************************************************
 
-Once you have created your users, you can enable authentication against the API
+Once django users have been created, you can enable authentication against the API
 for read (ex: GET) and write (ex: DELETE, POST, PATCH) requests.
 
 This is done with the two following configuration options:
@@ -92,16 +239,6 @@ This is done with the two following configuration options:
 - :ref:`api-configuration:ARA_WRITE_LOGIN_REQUIRED` for write access
 
 These settings are global and are effective for all API endpoints.
-
-Enabling external authentication
-------------------------------------------------
-
-Once you you have enabled authentication against the API, you can enable external
-authentication. This is usefull especially in production environments.
-
-This is done with the following configuration option:
-
-- :ref:`api-configuration:ARA_EXTERNAL_AUTH` for external authentication
 
 Setting up authentication for the Ansible plugins
 -------------------------------------------------
