@@ -145,12 +145,12 @@
                     {% else %}
                       {% include "partials/result_status_icon.html" with status=result.status %}
                     {% endif %}
-                    {% if result.task.tags | length == 0 %}
-                      <span class="badge badge-pill badge-secondary invisible" class="btn btn-secondary">
-                    {% else %}
+                    {% if result.task.tags %}
                       <span class="badge badge-pill badge-secondary" class="btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% include 'partials/tags_list.html' with tags=result.task.tags %}">
+                    {% else %}
+                      <span class="badge badge-pill badge-secondary invisible" class="btn btn-secondary">
                     {% endif %}
-                      {{ result.task.tags | length }} tags
+                      {{ result.task.tags | length }} tag{{ result.task.tags | pluralize }}
                       </span>
                   </td>
                   <td>{{ host.name }}</td>
