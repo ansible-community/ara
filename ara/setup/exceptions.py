@@ -38,3 +38,10 @@ class MissingSettingsException(Exception):
     def __init__(self):
         exc = "The specified settings file does not exist or permissions are insufficient to read it."
         super().__init__(exc)
+
+
+class Psycopg2VersionException(Exception):
+    def __init__(self, version):
+        # https://github.com/ansible-community/ara/issues/320
+        exc = "The version of psycopg2 (%s) must be <2.9 due to an incompatibility with Django 2.2." % version
+        super().__init__(exc)
