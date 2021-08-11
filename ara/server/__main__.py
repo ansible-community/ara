@@ -18,6 +18,7 @@
 
 import os
 import sys
+from distutils.version import LooseVersion
 
 from django.conf import settings
 
@@ -26,6 +27,7 @@ from ara.setup.exceptions import (
     MissingMysqlclientException,
     MissingPsycopgException,
     MissingSettingsException,
+    Psycopg2VersionException,
 )
 
 
@@ -46,6 +48,12 @@ def main():
     if settings.DATABASE_ENGINE == "django.db.backends.postgresql":
         try:
             import psycopg2  # noqa
+
+            # Version of psycopg2 must not exceed 2.9 with django 2.2
+            # https://github.com/ansible-community/ara/issues/320
+            psycopg_version = psycopg2.__version__.split()[0]
+            if LooseVersion(psycopg_version) >= LooseVersion("2.9.0"):
+                raise Psycopg2VersionException(version=psycopg_version)
         except ImportError as e:
             raise MissingPsycopgException from e
 
