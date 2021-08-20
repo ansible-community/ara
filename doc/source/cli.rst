@@ -214,8 +214,11 @@ Examples:
 
 .. code-block:: bash
 
-    # List the latest 25 host results
+    # List the last 25 host reports
     ara host list --limit 25
+
+    # List only the latest playbook report for each host
+    ara host list --latest
 
     # List host records for a specific host name
     ara host list --name localhost
