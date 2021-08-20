@@ -37,6 +37,12 @@ class HostList(Lister):
             default=None,
             help=("List hosts for a specified playbook id"),
         )
+        parser.add_argument(
+            "--latest",
+            action="store_true",
+            default=False,
+            help=("Return only the latest playbook report for each host")
+        )
 
         changed = parser.add_mutually_exclusive_group()
         changed.add_argument(
@@ -143,7 +149,17 @@ class HostList(Lister):
         query["order"] = args.order
         query["limit"] = args.limit
 
-        hosts = client.get("/api/v1/hosts", **query)
+        if args.latest:
+            latest_hosts = client.get("/api/v1/latesthosts", **query)
+            # TODO: It is a bit inconvenient that /api/v1/hosts and /api/v1/latesthosts respond differently.
+            # When using /api/v1/latesthosts, the host is nested under a host key and the playbook is not just an id.
+            # For now reformat results to have the same output as /api/v1/hosts for compatibility.
+            hosts = dict(results=[])
+            for latest in latest_hosts["results"]:
+                latest["host"]["playbook"] = latest["host"]["playbook"]["id"]
+                hosts["results"].append(latest["host"])
+        else:
+            hosts = client.get("/api/v1/hosts", **query)
 
         if args.resolve:
             for host in hosts["results"]:
