@@ -27,15 +27,15 @@ You will need to install `buildah <https://github.com/containers/buildah/blob/ma
 
 The different scripts to build container images are available in the git repository:
 
-- fedora33-distribution.sh_: Builds an image from Fedora 33 `distribution packages <https://koji.fedoraproject.org/koji/packageinfo?packageID=24394>`_
-- fedora33-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on Fedora 33
-- fedora33-source.sh_: Builds an image from `git source <https://github.com/ansible-community/ara>`_ on Fedora 33
-- centos8-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on CentOS 8
+- fedora-distribution.sh_: Builds an image from Fedora 35 `distribution packages <https://koji.fedoraproject.org/koji/packageinfo?packageID=24394>`_
+- fedora-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on Fedora 35
+- fedora-source.sh_: Builds an image from `git source <https://github.com/ansible-community/ara>`_ on Fedora 35
+- centos-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on CentOS 8 Stream
 
-.. _fedora33-distribution.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora33-distribution.sh
-.. _fedora33-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora33-pypi.sh
-.. _fedora33-source.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora33-source.sh
-.. _centos8-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/centos8-pypi.sh
+.. _fedora-distribution.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-distribution.sh
+.. _fedora-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-pypi.sh
+.. _fedora-source.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-source.sh
+.. _centos-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/centos-pypi.sh
 
 The scripts have no arguments other than the ability to specify an optional name
 and tag:
@@ -44,7 +44,7 @@ and tag:
 
     $ git clone https://github.com/ansible-community/ara
     $ cd ara/contrib/container-images
-    $ ./fedora33-source.sh ara-api:latest
+    $ ./fedora-source.sh ara-api:latest
     # [...]
     Getting image source signatures
     Copying blob 59bbb69efd73 skipped: already exists

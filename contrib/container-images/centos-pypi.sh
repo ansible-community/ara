@@ -1,12 +1,12 @@
 #!/bin/bash -x
-# Builds an ARA API server container image using the latest PyPi packages on Fedora 33.
-build=$(buildah from fedora:33)
+# Builds an ARA API server container image using the latest PyPi packages on CentOS 8.
+build=$(buildah from quay.io/centos/centos:stream8)
 
 # Get all updates, install pip, database backends and gunicorn application server
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
 # Note: We use the packaged versions of psycopg2 and mysql python libraries so
 #       we don't need to install development libraries before installing them from PyPi.
-buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-psycopg2 python3-mysql python3-gunicorn && dnf clean all"
+buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y epel-release && dnf install -y which python3-pip python3-gunicorn python3-psycopg2 python3-mysql && dnf clean all"
 
 # Install ara from source with API server extras for dependencies (django & django-rest-framework)
 buildah run "${build}" -- /bin/bash -c "pip3 install ara[server]"

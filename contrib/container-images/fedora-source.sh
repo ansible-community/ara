@@ -1,5 +1,5 @@
 #!/bin/bash -x
-# Builds an ARA API server container image from checked out source on Fedora 33.
+# Builds an ARA API server container image from checked out source on Fedora 35.
 # Figure out source directory relative to the contrib/container-images directory
 SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 SOURCE_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd -P)
@@ -10,7 +10,7 @@ python3 setup.py sdist
 sdist=$(ls dist/ara-*.tar.gz)
 popd
 
-build=$(buildah from fedora:33)
+build=$(buildah from quay.io/fedora/fedora:35)
 
 # Get all updates, install pip, database backends and gunicorn application server
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
