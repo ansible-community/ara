@@ -25,8 +25,9 @@
     ara_api_debug: true
     ara_api_log_level: DEBUG
   tasks:
-    # The name can be "ansible" when installing from pip or the path to an
-    # Ansible git repository on-disk.
+    # The name can be "ansible", "ansible-base" or "ansible-core" in which case
+    # they would be installed from PyPI.
+    # The name can otherwise be the path to a git repository or release tarball.
     # We're handling it here to allow various levels of variable precedence.
     - name: Set default Ansible name if unset
       set_fact:
@@ -79,10 +80,15 @@
         virtualenv: "{{ ara_api_venv_path }}"
         virtualenv_command: /usr/bin/python3 -m venv
 
-    - name: Get effective version of Ansible installed
-      shell: "{{ ara_api_venv_path }}/bin/ansible --version | head -n1 | awk '{print $2}'"
+    # For debug purposes: record minimum introspection of installed ansible, ansible-base and ansible-core versions
+    - name: Record effective version of Ansible installed
+      shell: "{{ ara_api_venv_path }}/bin/pip show {{ item }} | awk '/Version/ {print $2}'"
+      ignore_errors: yes
       changed_when: false
-      register: _installed_ansible_version
+      loop:
+        - ansible
+        - ansible-base
+        - ansible-core
 
     - name: Install ARA from source in virtual environment
       pip:
@@ -92,7 +98,7 @@
         virtualenv_command: /usr/bin/python3 -m venv
 
     - name: Get ARA plugins directory
-      command: "{{ ara_api_venv_path }}/bin/python -m ara.setup.plugins"
+      command: "{{ ara_api_venv_path }}/bin/python3 -m ara.setup.plugins"
       register: ara_setup_plugins
 
     - name: Record Zuul metadata for ARA playbooks

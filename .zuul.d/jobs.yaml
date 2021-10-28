@@ -55,13 +55,40 @@
     run: tests/basic.yaml
 
 - job:
-    name: ara-basic-ansible-devel
+    name: ara-basic-ansible-core-devel
     parent: ara-ansible-integration-base
     description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible devel.
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core devel.
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: devel
+
+- job:
+    name: ara-basic-ansible-core-2.12
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.12.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.12
+
+- job:
+    name: ara-basic-ansible-core-2.11
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.11.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.11
+
+- job:
+    name: ara-basic-ansible-base-2.10
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-base 2.10.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.10
 
 - job:
     name: ara-basic-ansible-2.9
@@ -71,12 +98,3 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.9
-
-- job:
-    name: ara-basic-ansible-2.8
-    parent: ara-ansible-integration-base
-    description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.8.
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.8
