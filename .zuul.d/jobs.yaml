@@ -64,6 +64,16 @@
         override-checkout: devel
 
 - job:
+    name: ara-basic-ansible-5
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 5 (ansible-core 2.12).
+    vars:
+      ara_tests_ansible_name: ansible
+      # TODO: Update once 5.0.0 releases
+      ara_tests_ansible_version: 5.0.0a2
+
+- job:
     name: ara-basic-ansible-core-2.12
     parent: ara-ansible-integration-base
     description: |
