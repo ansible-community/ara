@@ -41,7 +41,7 @@
 - job:
     name: ara-container-images
     parent: ara-integration-base
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-basic-nodeset
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
     run: tests/with_container_images.yaml
@@ -49,7 +49,7 @@
 - job:
     name: ara-ansible-integration-base
     parent: ara-integration-base
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-basic-nodeset
     vars:
       ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
     run: tests/basic.yaml
