@@ -1,6 +1,6 @@
 #!/bin/bash -x
-# Builds an ARA API server container image from Fedora 33 distribution packages.
-build=$(buildah from fedora:33)
+# Builds an ARA API server container image from Fedora 35 distribution packages.
+build=$(buildah from quay.io/fedora/fedora:35)
 
 # Get all updates, install the ARA API server, database backends and gunicorn application server
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
