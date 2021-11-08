@@ -161,6 +161,33 @@ options:
     ini:
       - section: ara
         key: ignored_files
+  localhost_as_hostname:
+    description:
+        - Associates results to the hostname (or fqdn) instead of localhost when the inventory name is localhost
+        - Defaults to false for backwards compatibility, set to true to enable
+        - This can be useful when targetting localhost, using ansible-pull or ansible-playbook -i 'localhost,'
+        - This helps differentiating results between hosts, otherwise everything would be recorded under localhost.
+    type: boolean
+    default: false
+    env:
+      - name: ARA_LOCALHOST_AS_HOSTNAME
+    ini:
+      - section: ara
+        key: localhost_as_hostname
+  localhost_as_hostname_format:
+    description:
+      - The format to use when recording the hostname for localhost
+      - This is used when recording the controller hostname or when ARA_LOCALHOST_TO_HOSTNAME is true
+      - There are different formats to choose from based on the full (or short) configured hostname and fqdn
+      - Defaults to 'fqdn' (i.e, server.example.org) but can be set to 'fqdn_short' (server)
+      - Other options include 'hostname' and 'hostname_short' which may be suitable depending on server configuration
+    default: fqdn
+    env:
+      - name: ARA_LOCALHOST_AS_HOSTNAME_FORMAT
+    ini:
+      - section: ara
+        key: localhost_as_hostname_format
+    choices: ['fqdn', 'fqdn_short', 'hostname', 'hostname_short']
   callback_threads:
     description:
       - The number of threads to use in API client thread pools
@@ -188,6 +215,7 @@ class CallbackModule(CallbackBase):
     def __init__(self):
         super(CallbackModule, self).__init__()
         self.log = logging.getLogger("ara.plugins.callback.default")
+        self.localhost_hostname = None
         # These are configured in self.set_options
         self.client = None
         self.callback_threads = None
@@ -195,6 +223,8 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = []
         self.ignored_arguments = []
         self.ignored_files = []
+        self.localhost_as_hostname = None
+        self.localhost_as_hostname_format = None
 
         self.result = None
         self.result_started = {}
@@ -216,6 +246,8 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
         self.ignored_files = self.get_option("ignored_files")
+        self.localhost_as_hostname = self.get_option("localhost_as_hostname")
+        self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
 
         client = self.get_option("api_client")
         endpoint = self.get_option("api_server")
@@ -250,6 +282,9 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
+
+        # Lookup the hostname for localhost if necessary
+        self.localhost_hostname = self._get_localhost_hostname()
 
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -295,7 +330,7 @@ class CallbackModule(CallbackBase):
             arguments=cli_options,
             status="running",
             path=path,
-            controller=socket.getfqdn(),
+            controller=self.localhost_hostname,
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 
@@ -492,7 +527,12 @@ class CallbackModule(CallbackBase):
         return self.file_cache[path]
 
     def _get_or_create_host(self, host):
-        # Note: The get_or_create is handled through the serializer of the API server.
+        """ Note: The get_or_create is handled through the serializer of the API server. """
+        # We might want to record results against the fqdn instead of localhost
+        # so that we can differentiate between different actual hosts
+        if self.localhost_as_hostname and host in ["localhost", "127.0.0.1"]:
+            host = self.localhost_hostname
+
         if host not in self.host_cache:
             self.log.debug("Host not in cache, getting or creating: %s" % host)
             self.host_cache[host] = self.client.post("/api/v1/hosts", name=host, playbook=self.playbook["id"])
@@ -616,3 +656,22 @@ class CallbackModule(CallbackBase):
                 ok=host_stats["ok"],
                 skipped=host_stats["skipped"],
             )
+
+    def _get_localhost_hostname(self):
+        """ Returns a hostname for localhost in the specified format """
+        hostname = None
+
+        if self.localhost_as_hostname_format.startswith("fqdn"):
+            hostname = socket.getfqdn()
+
+        if self.localhost_as_hostname_format.startswith("hostname"):
+            hostname = socket.gethostname()
+
+        # Shouldn't happen but we never know ¯\_(ツ)_/¯
+        if hostname is None:
+            raise Exception("Unable to resolve a hostname for localhost")
+
+        if self.localhost_as_hostname_format.endswith("_short"):
+            return hostname.split(".")[0]
+
+        return hostname

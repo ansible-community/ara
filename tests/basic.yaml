@@ -161,6 +161,8 @@
           command: "ansible-playbook -vvv {{ _test_root }}/smoke.yaml"
 
         - name: Run lookup integration tests
+          environment:
+            ARA_LOCALHOST_AS_HOSTNAME: "{{ ara_localhost_as_hostname | default(true) }}"
           command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
         - name: Run delegate_to integration tests
