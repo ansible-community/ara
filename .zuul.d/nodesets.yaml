@@ -2,11 +2,11 @@
     name: ara-basic-nodeset
     nodes:
       - name: ara-api-server
-        label: fedora-34-1vcpu
+        label: fedora-35-1vcpu
     # or if testing multiple OS simultaneously:
     # groups:
     #  - name: ara-api-server
     #    nodes:
-    #      - fedora-34-1vcpu
+    #      - fedora-35-1vcpu
     #      - centos-8-stream
     #      - ubuntu-bionic-1vcpu
