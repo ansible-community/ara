@@ -139,8 +139,20 @@
             </td>
             <td class="text-nowrap">{{ playbook.started | format_date }}</td>
             <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-            <td class="text-center">{{ playbook.items.hosts }}</td>
-            <td class="text-center">{{ playbook.items.tasks }}</td>
+            <td class="text-center">
+              {% if not static_generation %}
+                <a href="{% url 'ui:host_index' %}?playbook={{ playbook.id }}" title="Search for hosts in this playbook">{{ playbook.items.hosts }}</a>
+              {% else %}
+                {{ playbook.items.hosts }}
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if not static_generation %}
+              <a href="{% url 'ui:task_index' %}?playbook={{ playbook.id }}" title="Search for tasks in this playbook">{{ playbook.items.tasks }}</a>
+              {% else %}
+                {{ playbook.items.tasks }}
+              {% endif %}
+            </td>
             <td class="text-center">{{ playbook.items.results }}</td>
             <td class="text-center">
               {% if not static_generation %}

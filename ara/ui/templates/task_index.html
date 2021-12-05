@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load datetime_formatting %}
+{% load truncatepath %}
+{% load static_url %}
+
+{% block title %}| Tasks{% if not static_generation %}: {{ current_page_results }} of {{ data.count }}{% endif %}{% endblock %}
+{% block body %}
+{% if not static_generation %}
+  <div class="col-xl-6 offset-xl-3">
+    <form action="{% url 'ui:task_index' %}" method="get">
+    <div class="accordion" id="search_accordion">
+      <div class="card">
+        <div class="card-header" id="search_form">
+          <button class="btn btn-link btn-lg" type="button" data-toggle="collapse" data-target="#collapse_search" aria-expanded="{{ expand_search }}" aria-controls="collapse_search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            Search and filter
+          </button>
+        </div>
+        <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group col-xl-4">
+                <label for="action" {% if request.GET.action %}style="font-weight:bold;"{% endif %}>Task action</label>
+                <input type="text" class="form-control" id="action" name="action" placeholder="ex: template" value="{{ search_form.action.value | default_if_none:'' }}">
+              </div>
+              <div class="form-group col-xl-6">
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Task name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="ex: install apache2" value="{{ search_form.name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-8">
+                <label for="path" {% if request.GET.path %}style="font-weight:bold;" {% endif %}>Task path</label>
+                <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/task.yml (or) task.yml" value="{{ search_form.path.value | default_if_none:'' }}">
+              </div>
+              <div class="form-group col-xl-2">
+                <label for="lineno" {% if request.GET.path %}style="font-weight:bold;" {% endif %}>Line</label>
+                <input type="text" class="form-control" id="lineno" name="lineno" placeholder="ex: 123" value="{{ search_form.lineno.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-2">
+                <label for="playbook" {% if request.GET.playbook %}style="font-weight:bold;"{% endif %}>Playbook</label>
+                <input type="text" class="form-control" id="playbook" name="playbook" placeholder="ex: 123" value="{{ search_form.playbook.value | default_if_none:'' }}">
+              </div>
+              <div class="form-group col-xl-8">
+                <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;" {% endif %}>Playbook name</label>
+                <input type="text" class="form-control" id="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-10">
+                <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;" {% endif %}>Playbook path</label>
+                <input type="text" class="form-control" id="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-xl-12">
+                  <label class="align-middle" for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+                  {% for value, text in search_form.status.field.choices %}
+                    {% if value != "unknown" %}
+                      <div class="form-check form-check-inline {% if value == 'completed' %}text-success{% elif value == 'failed' %}text-danger{% elif value == 'running' %}text-info{% else %}text-warning{% endif %}">
+                        <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
+                        <label class="form-check-label" for="{{ value }}">
+                          {% include "partials/status_icon.html" with status=value %} {{ value }}
+                        </label>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            <div class="form-row">
+              <div class="col-xl-12">
+                <div class="btn-group" role="group" aria-label="Filter by date">
+                  <button type="submit" class="btn btn-primary">
+                    Submit
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with minutes=60 %}">Last 60 minutes
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with hours=24 %}">Last 24 hours
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=7 %}">Last 7 days
+                  </button>
+                  <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=30 %}">Last 30 days
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% if request.GET %}
+              <br />
+              <div class="form-row">
+                <div class="col-xl-12">
+                  <a class="btn btn-outline-danger" href="{% url 'ui:task_index' %}" role="button">Reset</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div>
+  {% if data.results %}
+    {% if not static_generation %}
+      {% include "partials/pagination.html" %}
+    {% endif %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover" id="tasks">
+        <thead>
+          <tr style="height:50px;">
+            <th class="text-center" title="Status of the task">Status</th>
+            <th class="text-center" title="Link to the playbook results for this task">Report</th>
+            <th title="Date at which the host was first recorded">Date {% include "partials/sort_by_date.html" with arg="created" %}</th>
+            <th class="text-nowrap" title="Duration of the task (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
+            <th class="text-center" title="Number of results for this task">Results</th>
+            <th title="Tags">Tags</th>
+            <th title="Action (module) of the task">Action</th>
+            <th title="Name of the task">Task name</th>
+            <th title="Path and line number to the task">Task path</th>
+            <th title="Name or path of this task's playbook">Playbook name (or path)</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for task in data.results %}
+            {% include "partials/task_index_row.html" with task=task %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <br/>
+    <div>
+      {% if not request.GET %}
+        <h2>No recorded tasks found.</h2>
+        <h3>Record a playbook with the ara callback plugin enabled and try again.</h3>
+      {% else %}
+        <h3>No results found matching your query: try <a href="{% url 'ui:task_index' %}">clearing search filters</a>.</h3>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+</form>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+{% endblock %}
