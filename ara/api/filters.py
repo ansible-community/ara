@@ -90,6 +90,8 @@ class PlayFilter(DateFilter):
 
 class TaskFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    playbook_name = django_filters.CharFilter(field_name="playbook__name", lookup_expr="icontains")
+    playbook_path = django_filters.CharFilter(field_name="playbook__path", lookup_expr="icontains")
     play = django_filters.NumberFilter(field_name="play__id", lookup_expr="exact")
     status = django_filters.MultipleChoiceFilter(
         field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
@@ -97,6 +99,7 @@ class TaskFilter(DateFilter):
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     action = django_filters.CharFilter(field_name="action", lookup_expr="iexact")
     path = django_filters.CharFilter(field_name="file__path", lookup_expr="icontains")
+    lineno = django_filters.CharFilter(field_name="lineno", lookup_expr="exact")
     handler = django_filters.BooleanFilter(field_name="handler", lookup_expr="exact")
 
     # fmt: off

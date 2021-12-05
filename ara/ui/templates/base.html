@@ -74,6 +74,7 @@
   <!-- Fixed navbar -->
   {% url 'ui:index' as index_url %}
   {% url 'ui:host_index' as hosts_url %}
+  {% url 'ui:task_index' as tasks_url %}
   <nav class="navbar navbar-expand-md bg-primary navbar-dark">
     <a class="navbar-brand" href="{% static_url index_url %}">
       {% static 'images/logo.svg' as logo_url %}
@@ -89,6 +90,9 @@
         </li>
         <li class="nav-item{% if page == 'host_index' %} active{% endif %}">
           <a class="nav-link" href="{% static_url hosts_url %}">Hosts</a>
+        </li>
+        <li class="nav-item{% if page == 'task_index' %} active{% endif %}">
+          <a class="nav-link" href="{% static_url tasks_url %}">Tasks</a>
         </li>
         {% if not static_generation %}
           <li class="nav-item">

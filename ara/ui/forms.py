@@ -32,6 +32,7 @@ class ResultSearchForm(forms.Form):
 
 class HostSearchForm(forms.Form):
     name = forms.CharField(label="Host name", max_length=255, required=False)
+    playbook = forms.CharField(label="Playbook id", max_length=10, required=False)
     playbook_name = forms.CharField(label="Playbook name", max_length=255, required=False)
     playbook_path = forms.CharField(label="Playbook path", max_length=255, required=False)
     latest = forms.BooleanField(label="latest", required=False)
@@ -40,3 +41,16 @@ class HostSearchForm(forms.Form):
     ok__gt = forms.IntegerField(label="ok", required=False)
     skipped__gt = forms.IntegerField(label="skipped", required=False)
     unreachable__gt = forms.IntegerField(label="unreachable", required=False)
+
+
+class TaskSearchForm(forms.Form):
+    name = forms.CharField(label="Task name", max_length=255, required=False)
+    path = forms.CharField(label="Task path", max_length=255, required=False)
+    lineno = forms.CharField(label="Task line number", max_length=255, required=False)
+    playbook = forms.CharField(label="Playbook id", max_length=10, required=False)
+    playbook_name = forms.CharField(label="Playbook name", max_length=255, required=False)
+    playbook_path = forms.CharField(label="Playbook path", max_length=255, required=False)
+    action = forms.CharField(label="Task action", max_length=255, required=False)
+    status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=models.Task.STATUS, required=False)
+    # TODO: tags aren't currently searchable, they're compressed in-database
+    # Could stop doing that to provide search capability.

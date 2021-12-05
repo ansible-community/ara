@@ -133,6 +133,50 @@ class HostIndex(generics.RetrieveAPIView):
         # fmt: on
 
 
+class TaskIndex(generics.RetrieveAPIView):
+    """
+    Returns recorded tasks across all playbooks
+    """
+
+    renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
+    filterset_class = filters.TaskFilter
+    template_name = "task_index.html"
+    queryset = models.Task.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        query = self.filter_queryset(self.queryset.all().order_by("-id"))
+        page = self.paginate_queryset(query)
+        if page is not None:
+            serializer = serializers.DetailedTaskSerializer(page, many=True)
+        else:
+            serializer = serializers.DetailedTaskSerializer(query, many=True)
+        response = self.get_paginated_response(serializer.data)
+
+        if self.paginator.count > (self.paginator.offset + self.paginator.limit):
+            max_current = self.paginator.offset + self.paginator.limit
+        else:
+            max_current = self.paginator.count
+        current_page_results = "%s-%s" % (self.paginator.offset + 1, max_current)
+
+        # We need to expand the search card if there is a search query, not considering pagination args
+        search_args = [arg for arg in request.GET.keys() if arg not in ["limit", "offset"]]
+        expand_search = True if search_args else False
+
+        search_form = forms.TaskSearchForm(request.GET)
+
+        # fmt: off
+        return Response(dict(
+            current_page_results=current_page_results,
+            data=response.data,
+            expand_search=expand_search,
+            page="task_index",
+            search_form=search_form,
+            static_generation=False
+        ))
+        # fmt: on
+
+
 class Playbook(generics.RetrieveAPIView):
     """
     Returns a page for a detailed view of a playbook
