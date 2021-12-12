@@ -81,6 +81,13 @@
             virtualenv: "{{ ara_api_venv_path }}"
             virtualenv_command: /usr/bin/python3 -m venv
 
+        - name: Install ansible-runner so we can test it
+          pip:
+            name: ansible-runner
+            state: present
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
+
         - name: Install ARA from source in virtual environment
           pip:
             name: "{{ ara_api_source }}[server]"
@@ -100,6 +107,15 @@
             name: "{{ ara_tests_ansible_name }}"
             version: "{{ _install_ansible_version | default(omit, True) }}"
             state: "{{ _install_ansible_state | default(omit, True) }}"
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
+
+        - name: Install ansible-runner so we can test it
+          environment:
+            TMPDIR: /var/tmp
+          pip:
+            name: ansible-runner
+            state: present
             virtualenv: "{{ ara_api_venv_path }}"
             virtualenv_command: /usr/bin/python3 -m venv
 
@@ -216,6 +232,10 @@
           args:
             executable: /bin/bash
           ignore_errors: yes
+
+        # TODO: Enable this once 2.9 and 2.10 go end-of-life, otherwise fails with libselinux binding issue that was fixed in >=2.11
+        #- name: Run a playbook with ansible-runner
+        #  command: "{{ _test_root | dirname }}/with_ansible-runner.py"
 
         - name: Generate static report
           command: ara-manage generate {{ ara_api_root_dir }}/server/static

@@ -1,0 +1,48 @@
+---
+# Copyright (c) 2021 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- name: Run a test playbook with ansible-runner
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ara_playbook_name: ansible-runner test playbook
+    ara_playbook_labels:
+      - ansible-runner
+  pre_tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Dump the playbook id so we can use it with ansible-runner
+      copy:
+        content: "{{ playbook_query.playbook.id }}"
+        dest: "{{ playbook_dir }}/.ara_playbook"
+  tasks:
+    - name: Collect some facts
+      setup:
+        gather_subset:
+          - '!all'
+          - '!any'
+          - date_time
+          - distribution
+          - dns
+          - kernel
+          - python
+
+    - name: Recover data from ARA
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        playbook: "{{ lookup('ara_api', '/api/v1/playbooks/' + playbook_id) }}"
+        tasks: "{{ lookup('ara_api', '/api/v1/tasks?playbook=' + playbook_id) }}"
+        results: "{{ lookup('ara_api', '/api/v1/results?playbook=' + playbook_id) }}"
+
+    - name: Assert playbook properties
+      assert:
+        that:
+          - playbook.name == 'ansible-runner test playbook'
+          - "playbook.labels | selectattr('name', 'search', 'ansible-runner') | list | length == 1"
+          - playbook.ansible_version == ansible_version.full
+          - playbook_dir in playbook.path
+          - "'tests/runner-playbook.yml' in playbook.path"
