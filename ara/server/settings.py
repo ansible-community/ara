@@ -81,6 +81,7 @@ ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
 CORS_ORIGIN_WHITELIST = settings.get("CORS_ORIGIN_WHITELIST", ["http://127.0.0.1:8000", "http://localhost:3000"])
 CORS_ORIGIN_REGEX_WHITELIST = settings.get("CORS_ORIGIN_REGEX_WHITELIST", [])
 CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
+CSRF_TRUSTED_ORIGINS = settings.get("CSRF_TRUSTED_ORIGINS", [])
 
 ADMINS = settings.get("ADMINS", ())
 
