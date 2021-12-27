@@ -30,6 +30,8 @@ For more details, click on the configuration parameters.
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_CORS_ORIGIN_REGEX_WHITELIST_ | ``[]``                                                 | django-cors-headers's CORS_ORIGIN_REGEX_WHITELIST_ setting |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
+| ARA_CSRF_TRUSTED_ORIGINS_        | ``[]``                                                 | Django's CSRF_TRUSTED_ORIGINS_ setting                     |
++----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_DATABASE_CONN_MAX_AGE_       | ``0``                                                  | Django's CONN_MAX_AGE_ database setting                    |
 +----------------------------------+--------------------------------------------------------+------------------------------------------------------------+
 | ARA_DATABASE_ENGINE_             | ``django.db.backends.sqlite3``                         | Django's ENGINE_ database setting                          |
@@ -77,6 +79,7 @@ For more details, click on the configuration parameters.
 
 .. _CORS_ORIGIN_WHITELIST: https://github.com/adamchainz/django-cors-headers#cors_origin_whitelist
 .. _CORS_ORIGIN_REGEX_WHITELIST: https://github.com/adamchainz/django-cors-headers#cors_origin_regex_whitelist
+.. _CSRF_TRUSTED_ORIGINS: https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-trusted-origins
 .. _ALLOWED_HOSTS: https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts
 .. _DEBUG: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-DEBUG
 .. _SECRET_KEY: https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-SECRET_KEY
@@ -194,6 +197,38 @@ each other.
 Especially useful for situations like CI where the deployment domain may not be
 known in advance, this setting is applied in addition to the individual domains
 in the CORS_ORIGIN_WHITELIST.
+
+ARA_CSRF_TRUSTED_ORIGINS
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Environment variable**: ``ARA_CSRF_TRUSTED_ORIGINS``
+- **Configuration file variable**: ``CSRF_TRUSTED_ORIGINS``
+- **Provided by**: `Django's CSRF_TRUSTED_ORIGINS_ setting`_
+- **Type**: ``list``
+- **Default**: ``[]``
+- **Examples**:
+
+  - ``export CSRF_TRUSTED_ORIGINS="['api.ara.example.org', 'web.ara.example.org']"``
+  - In a YAML configuration file::
+
+      dev:
+        CSRF_TRUSTED_ORIGINS:
+          - 127.0.0.1:8000
+          - localhost:3000
+      production:
+        CSRF_TRUSTED_ORIGINS:
+          - api.ara.example.org
+          - web.ara.example.org
+
+A list of hosts which are trusted origins for unsafe requests (e.g. POST).
+For a secure unsafe request, Django’s CSRF protection requires that the
+request have a Referer header that matches the origin present in the Host
+header. This prevents, for example, a POST request from
+subdomain.example.com from succeeding against api.example.com. If you need
+cross-origin unsafe requests over HTTPS, continuing the example, add
+"subdomain.example.com" to this list. The setting also supports subdomains,
+so you could add ".example.com", for example, to allow access from all
+subdomains of example.com.
 
 ARA_DATABASE_CONN_MAX_AGE
 ~~~~~~~~~~~~~~~~~~~~~~~~~
