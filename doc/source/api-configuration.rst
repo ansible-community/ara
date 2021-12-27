@@ -203,7 +203,7 @@ ARA_CSRF_TRUSTED_ORIGINS
 
 - **Environment variable**: ``ARA_CSRF_TRUSTED_ORIGINS``
 - **Configuration file variable**: ``CSRF_TRUSTED_ORIGINS``
-- **Provided by**: `Django's CSRF_TRUSTED_ORIGINS_ setting`_
+- **Provided by**: `Django's CSRF_TRUSTED_ORIGINS_ setting <https://docs.djangoproject.com/en/2.2/ref/settings/#csrf-trusted-origins>`_
 - **Type**: ``list``
 - **Default**: ``[]``
 - **Examples**:
