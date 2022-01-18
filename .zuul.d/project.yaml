@@ -24,3 +24,8 @@
         - ara-basic-ansible-base-2.10
         - ara-basic-ansible-2.9
         - ara-container-images
+    post:
+      jobs:
+        - ara-container-images-dockerhub
+        - ara-container-images-quayio
+
