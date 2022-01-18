@@ -23,22 +23,22 @@
     images:
       # These images are meant to be provided by the "with_container_images.yaml" playbook
       - name: localhost/ara-api
-        tag: fedora33-source-latest
+        tag: fedora35-source-latest
       - name: localhost/ara-api
-        tag: fedora33-pypi-latest
+        tag: fedora35-pypi-latest
       - name: localhost/ara-api
         tag: centos8-pypi-latest
       - name: localhost/ara-api
-        tag: fedora33-distribution-latest
+        tag: fedora35-distribution-latest
   tasks:
     - name: Tag images with buildah
       command: |
         buildah tag {{ item.name }}:{{ item.tag }} {{ destination }}:{{ item.tag }}
       loop: "{{ images }}"
 
-    - name: Tag latest from fedora33-source-latest
+    - name: Tag latest from fedora35-source-latest
       command: |
-        buildah tag {{ destination }}:fedora33-source-latest {{ destination }}:latest
+        buildah tag {{ destination }}:fedora35-source-latest {{ destination }}:latest
 
     - name: Push latest
       command: |

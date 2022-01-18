@@ -47,6 +47,38 @@
     run: tests/with_container_images.yaml
 
 - job:
+    name: ara-container-images-dockerhub
+    parent: ara-integration-base
+    nodeset: fedora-latest-1vcpu
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+      The resulting images are pushed to docker.io/recordsansible/ara-api if successful.
+    pre-run: tests/with_container_images.yaml
+    run: tests/zuul_publish_container_images.yaml
+    vars:
+      destination_repository: docker.io/recordsansible/ara-api
+    secrets:
+      - name: ara_registry_credentials
+        secret: ara_dockerhub_credentials
+        pass-to-parent: true
+
+- job:
+    name: ara-container-images-quayio
+    parent: ara-integration-base
+    nodeset: fedora-latest-1vcpu
+    description: |
+      Builds ARA API container images with buildah and briefly tests them with podman.
+      The resulting images are pushed to quay.io/recordsansible/ara-api if successful.
+    pre-run: tests/with_container_images.yaml
+    run: tests/zuul_publish_container_images.yaml
+    vars:
+      destination_repository: quay.io/recordsansible/ara-api
+    secrets:
+      - name: ara_registry_credentials
+        secret: ara_quayio_credentials
+        pass-to-parent: true
+
+- job:
     name: ara-ansible-integration-base
     parent: ara-integration-base
     nodeset: ara-basic-nodeset
