@@ -18,6 +18,7 @@
 - name: Publish container images
   hosts: all
   gather_facts: yes
+  become: yes
   vars:
     destination: "{{ destination_repository | default('docker.io/recordsansible/ara-api') }}"
     images:
