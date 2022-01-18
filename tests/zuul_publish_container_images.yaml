@@ -28,7 +28,7 @@
       - name: localhost/ara-api
         tag: fedora35-pypi-latest
       - name: localhost/ara-api
-        tag: centos8-pypi-latest
+        tag: centos8-stream-pypi-latest
       - name: localhost/ara-api
         tag: fedora35-distribution-latest
   tasks:
