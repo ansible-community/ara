@@ -94,6 +94,7 @@ class PlaybookList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}
@@ -200,6 +201,7 @@ class PlaybookShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -252,6 +254,7 @@ class PlaybookDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -341,6 +344,7 @@ class PlaybookPrune(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -480,6 +484,7 @@ class PlaybookMetrics(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}

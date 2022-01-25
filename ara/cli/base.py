@@ -51,6 +51,12 @@ def global_arguments(parser):
         default=os.environ.get("ARA_API_INSECURE", False),
         help=("Ignore SSL certificate validation, defaults to ARA_API_INSECURE or False"),
     )
+    parser.add_argument(
+        "--api-cert",
+        metavar="<file>",
+        default=os.environ.get("ARA_API_CERT", None),
+        help=("Client certificate to use for connecting, defaults to ARA_API_PASSWORD or None"),
+    )
     # fmt: on
     return parser
 

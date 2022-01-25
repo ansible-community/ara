@@ -87,6 +87,7 @@ class PlayList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}
@@ -155,6 +156,7 @@ class PlayShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -209,6 +211,7 @@ class PlayDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 

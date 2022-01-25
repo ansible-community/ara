@@ -48,6 +48,7 @@ class HttpClient(object):
         if self.auth is not None:
             self.http.auth = self.auth
         self.http.verify = self.verify
+        self.http.cert = cert
 
     def _request(self, method, url, **payload):
         # Use requests.Session to do the query
