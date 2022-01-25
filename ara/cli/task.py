@@ -93,7 +93,6 @@ class TaskList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
-            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}
@@ -194,7 +193,6 @@ class TaskShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
-            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -247,7 +245,6 @@ class TaskDelete(Command):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
-            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
@@ -335,7 +332,6 @@ class TaskMetrics(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
-            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}

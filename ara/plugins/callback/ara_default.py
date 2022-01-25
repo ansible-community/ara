@@ -108,15 +108,6 @@ options:
     ini:
       - section: ara
         key: api_timeout
-  api_cert:
-    description: Client certificate file to use
-    type: string
-    default: ""
-    env:
-      - name: ARA_API_CERT
-    ini:
-      - section: ara
-        key: api_cert
   argument_labels:
     description: |
         A list of CLI arguments that, if set, will be automatically applied to playbooks as labels.
