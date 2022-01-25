@@ -232,12 +232,14 @@ class CallbackModule(CallbackBase):
         username = self.get_option("api_username")
         password = self.get_option("api_password")
         insecure = self.get_option("api_insecure")
+        cert = self.get_option("api_cert")
         self.client = client_utils.get_client(
             client=client,
             endpoint=endpoint,
             timeout=timeout,
             username=username,
             password=password,
+            cert=cert,
             verify=False if insecure else True,
         )
 

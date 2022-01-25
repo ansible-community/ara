@@ -109,6 +109,7 @@ class ResultList(Lister):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
         query = {}
@@ -220,6 +221,7 @@ class ResultShow(ShowOne):
             username=args.username,
             password=args.password,
             verify=False if args.insecure else True,
+            cert=args.api_cert,
             run_sql_migrations=False,
         )
 
