@@ -2,7 +2,7 @@
     name: ara-basic-nodeset
     nodes:
       - name: ara-api-server
-        label: fedora-35-1vcpu
+        label: ansible-fedora-35-1vcpu
     # or if testing multiple OS simultaneously:
     # groups:
     #  - name: ara-api-server
