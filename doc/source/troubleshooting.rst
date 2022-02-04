@@ -129,5 +129,7 @@ Some general tips in order to minimize the overhead and improve performance:
 1) Run the API server with an application and frontend server (ex: gunicorn with nginx in front)
 2) Use MySQL or PostgreSQL in order to allow callback multi-threading without running into sqlite database locking constraints
 3) When using MySQL or PostgreSQL, enable callback multi-threading by setting ``ARA_API_CLIENT=http`` and ``ARA_CALLBACK_THREADS=4``
-4) Latency is important because it adds up quickly over the course of a playbook. Keep the latency between your Ansible control node, your API server and database server as small as possible.
-5) While not specific to ara, tuning Ansible's `SSH pipelining, forks and other parameters <https://opensource.com/article/19/3/ansible-performance>`_ can yield significant performance improvements.
+4) When using MySQL or PostgreSQL, set :ref:`api-configuration:ARA_DATABASE_CONN_MAX_AGE` to a value >= ``60`` as the default of ``0`` is appropriate for sqlite. It will allow database connections to be re-used until the specified timeout, avoiding the overhead of closing and opening connections for every query.
+5) When :ref:`enabling authentication <api-security:Authentication and user management>`, consider using ``EXTERNAL_AUTH`` instead of the Django built-in user management to avoid a database lookup performance hit on every query.
+6) Latency is important because it adds up quickly over the course of a playbook. Keep the latency between your Ansible control node, your API server and database server as small as possible.
+7) While not specific to ara, tuning Ansible's `SSH pipelining, forks and other parameters <https://opensource.com/article/19/3/ansible-performance>`_ can yield significant performance improvements.
