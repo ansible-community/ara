@@ -25,5 +25,5 @@ class RootTestCase(APITestCase):
         self.assertEqual(set(result.data.keys()), set(["kind", "version", "api"]))
         self.assertEqual(result.data["kind"], "ara")
         self.assertEqual(result.data["version"], pkg_resources.get_distribution("ara").version)
-        self.assertTrue(len(result.data["api"]), 1)
+        self.assertEqual(len(result.data["api"]), 1)
         self.assertTrue(result.data["api"][0].endswith("/api/v1/"))
