@@ -52,9 +52,10 @@ time flake8 "${PROJECT_LIB}"
 ret+=$?
 
 # B303 - Use of insecure MD2, MD4, or MD5 hash function.
+# B324 - Use of weak MD4, MD5, or SHA1 hash for security. Consider usedforsecurity=False
 # We're using sha1 to generate a hash of file contents.
 banner bandit
-time bandit -r "${PROJECT_LIB}" --skip B303
+time bandit -r "${PROJECT_LIB}" --skip B303,B324
 ret+=$?
 
 if [ $ret -gt 0 ]
