@@ -461,27 +461,26 @@ ARA_LOGGING
 - **Default**::
 
     LOGGING:
+        version: 1
         disable_existing_loggers: false
         formatters:
-        normal:
+          normal:
             format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
         handlers:
-        console:
+          console:
             class: logging.StreamHandler
             formatter: normal
             level: INFO
             stream: ext://sys.stdout
         loggers:
-        ara:
+          ara:
             handlers:
-            - console
+              - console
             level: INFO
             propagate: 0
         root:
-        handlers:
-        - console
-        level: INFO
-        version: 1
+          handlers:
+            - console
 
 The python logging configuration for the API server.
 
