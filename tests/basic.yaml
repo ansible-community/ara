@@ -72,13 +72,45 @@
         state: present
       when: ansible_distribution == "Ubuntu"
 
-    - name: Initialize virtual environment with Ansible
-      pip:
-        name: "{{ ara_tests_ansible_name }}"
-        version: "{{ _install_ansible_version | default(omit, True) }}"
-        state: "{{ _install_ansible_state | default(omit, True) }}"
-        virtualenv: "{{ ara_api_venv_path }}"
-        virtualenv_command: /usr/bin/python3 -m venv
+    - block:
+        - name: Initialize virtual environment with Ansible
+          pip:
+            name: "{{ ara_tests_ansible_name }}"
+            version: "{{ _install_ansible_version | default(omit, True) }}"
+            state: "{{ _install_ansible_state | default(omit, True) }}"
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
+
+        - name: Install ARA from source in virtual environment
+          pip:
+            name: "{{ ara_api_source }}[server]"
+            state: present
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
+      rescue:
+        # ex: low RAM node with /tmp as tmpfs
+        - name: Recover from installation failure
+          debug:
+            msg: There may be insufficient storage in /tmp, trying again with /var/tmp
+
+        - name: Initialize virtual environment with Ansible
+          environment:
+            TMPDIR: /var/tmp
+          pip:
+            name: "{{ ara_tests_ansible_name }}"
+            version: "{{ _install_ansible_version | default(omit, True) }}"
+            state: "{{ _install_ansible_state | default(omit, True) }}"
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
+
+        - name: Install ARA from source in virtual environment
+          environment:
+            TMPDIR: /var/tmp
+          pip:
+            name: "{{ ara_api_source }}[server]"
+            state: present
+            virtualenv: "{{ ara_api_venv_path }}"
+            virtualenv_command: /usr/bin/python3 -m venv
 
     # For debug purposes: record minimum introspection of installed ansible, ansible-base and ansible-core versions
     - name: Record effective version of Ansible installed
@@ -89,13 +121,6 @@
         - ansible
         - ansible-base
         - ansible-core
-
-    - name: Install ARA from source in virtual environment
-      pip:
-        name: "{{ ara_api_source }}[server]"
-        state: present
-        virtualenv: "{{ ara_api_venv_path }}"
-        virtualenv_command: /usr/bin/python3 -m venv
 
     - name: Get ARA plugins directory
       command: "{{ ara_api_venv_path }}/bin/python3 -m ara.setup.plugins"
