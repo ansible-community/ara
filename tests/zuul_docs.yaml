@@ -1,0 +1,40 @@
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- name: Build documentation for testing with Zuul
+  hosts: all
+  gather_facts: yes
+  vars:
+    zuul_work_dir: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
+  tasks:
+    - name: Ensure tox is installed
+      become: yes
+      package:
+        name: tox
+        state: present
+
+    - name: Build documentation
+      command: tox -e docs
+      args:
+        chdir: "{{ zuul_work_dir }}"
+
+    # The zuul-output directory is retrieved by the fetch-output role
+    # https://opendev.org/zuul/zuul-jobs/src/branch/master/roles/fetch-output
+    - name: Create log directory
+      file:
+        path: "{{ ansible_user_dir }}/zuul-output/logs"
+        state: directory
+        recurse: yes
+
+    - name: Recover docs build
+      command: cp -rp doc/build/html {{ ansible_user_dir }}/zuul-output/logs/docs
+      args:
+        chdir: "{{ zuul_work_dir }}"
+
+    - name: Link the static report to the Zuul build
+      zuul_return:
+        data:
+          zuul:
+            artifacts:
+               - name: Docs build
+                 url: "docs/index.html"
