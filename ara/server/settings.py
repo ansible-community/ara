@@ -69,7 +69,11 @@ LOGGING = settings.get(
 ).to_dict()
 
 if "root" in LOGGING:
-    print('[ara] "root" key not allowed in "LOGGING" configuration. Removing...')
+    print(
+        "[ara] Server's LOGGING configuration has a 'root' logger which is deprecated after version 1.5.8 "
+        "due to conflicts. Please update your settings.yaml or generate a new one by "
+        "removing it from ara's configuration folder"
+    )
     del LOGGING["root"]
 
 # Django built-in server and npm development server
