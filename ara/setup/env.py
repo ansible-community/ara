@@ -18,7 +18,7 @@
 from __future__ import print_function
 
 import os
-from distutils.sysconfig import get_python_lib
+from sysconfig import get_path
 
 from . import action_plugins, callback_plugins, lookup_plugins
 
@@ -36,7 +36,7 @@ if "VIRTUAL_ENV" in os.environ:
     failure to find ara module.
     """
     # inspired by https://stackoverflow.com/a/122340/99834
-    lib = get_python_lib()
+    lib = get_path("purelib")
     if "PYTHONPATH" in os.environ:
         python_paths = os.environ["PYTHONPATH"].split(os.pathsep)
     else:
