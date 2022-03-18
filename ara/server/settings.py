@@ -48,38 +48,31 @@ BASE_DIR = settings.get("BASE_DIR", BASE_DIR)
 DEBUG = settings.get("DEBUG", False, "@bool")
 
 LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
-# fmt: off
-LOGGING = settings.get("LOGGING", {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "normal": {
-            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s"
-        }
+LOGGING = settings.get(
+    "LOGGING",
+    {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "normal",
+                "level": LOG_LEVEL,
+                "stream": "ext://sys.stdout",
+            }
+        },
+        "loggers": {
+            "ara": {"handlers": ["console"], "level": LOG_LEVEL, "propagate": 0}
+        },
     },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "normal",
-            "level": LOG_LEVEL,
-            "stream": "ext://sys.stdout",
-        }
-    },
-    "loggers": {
-        "ara": {
-            "handlers": ["console"],
-            "level": LOG_LEVEL,
-            "propagate": 0
-        }
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL
-    },
-})
-# fmt: on
+)
 
-print(LOGGING)
+if "root" in LOGGING:
+    print('[ara] "root" key not allowed in "LOGGING" configuration. Removing...')
+    del LOGGING["root"]
 
 # Django built-in server and npm development server
 ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
