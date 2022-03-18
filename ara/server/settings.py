@@ -48,33 +48,33 @@ BASE_DIR = settings.get("BASE_DIR", BASE_DIR)
 DEBUG = settings.get("DEBUG", False, "@bool")
 
 LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
-# fmt: off
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {"normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "normal",
-            "level": LOG_LEVEL,
-            "stream": "ext://sys.stdout",
-        }
+# default logger updated cf issue https://github.com/ansible-community/ara/issues/228
+# and PR https://github.com/ansible-community/ara/pull/367
+LOGGING = settings.get(
+    "LOGGING",
+    {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {"normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "normal",
+                "level": LOG_LEVEL,
+                "stream": "ext://sys.stdout",
+            }
+        },
+        "loggers": {"ara": {"handlers": ["console"], "level": LOG_LEVEL, "propagate": 0}},
     },
-    "loggers": {
-        "ara": {
-            "handlers": ["console"],
-            "level": LOG_LEVEL,
-            "propagate": 0
-        }
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": LOG_LEVEL
-    },
-}
-# fmt: on
+).to_dict()
 
+if "root" in LOGGING:
+    print(
+        "[ara] Server's LOGGING configuration has a 'root' logger which is deprecated after version 1.5.8 "
+        "due to conflicts. Please update your settings.yaml or generate a new one by "
+        "removing it from ara's configuration folder"
+    )
+    del LOGGING["root"]
 
 # Django built-in server and npm development server
 ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
