@@ -53,9 +53,7 @@ LOGGING = settings.get(
     {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {
-            "normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}
-        },
+        "formatters": {"normal": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"}},
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
@@ -64,9 +62,7 @@ LOGGING = settings.get(
                 "stream": "ext://sys.stdout",
             }
         },
-        "loggers": {
-            "ara": {"handlers": ["console"], "level": LOG_LEVEL, "propagate": 0}
-        },
+        "loggers": {"ara": {"handlers": ["console"], "level": LOG_LEVEL, "propagate": 0}},
     },
 )
 
@@ -76,9 +72,7 @@ if "root" in LOGGING:
 
 # Django built-in server and npm development server
 ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
-CORS_ORIGIN_WHITELIST = settings.get(
-    "CORS_ORIGIN_WHITELIST", ["http://127.0.0.1:8000", "http://localhost:3000"]
-)
+CORS_ORIGIN_WHITELIST = settings.get("CORS_ORIGIN_WHITELIST", ["http://127.0.0.1:8000", "http://localhost:3000"])
 CORS_ORIGIN_REGEX_WHITELIST = settings.get("CORS_ORIGIN_REGEX_WHITELIST", [])
 CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
 
@@ -112,9 +106,7 @@ DISTRIBUTED_SQLITE_ROOT = settings.get("DISTRIBUTED_SQLITE_ROOT", "/var/www/logs
 
 if DISTRIBUTED_SQLITE:
     WSGI_APPLICATION = "ara.server.wsgi.distributed_sqlite"
-    DATABASE_ENGINE = settings.get(
-        "DATABASE_ENGINE", "ara.server.db.backends.distributed_sqlite"
-    )
+    DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "ara.server.db.backends.distributed_sqlite")
 else:
     WSGI_APPLICATION = "ara.server.wsgi.application"
     DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
@@ -207,9 +199,7 @@ TEMPLATES = [
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
