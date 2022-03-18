@@ -35,9 +35,9 @@ DEFAULT_SETTINGS = os.path.join(BASE_DIR, "settings.yaml")
 
 settings = LazySettings(
     environments=True,
-    GLOBAL_ENV_FOR_DYNACONF="ARA",
+    ENVVAR_PREFIX_FOR_DYNACONF="ARA",
     ENVVAR_FOR_DYNACONF="ARA_SETTINGS",
-    SETTINGS_MODULE_FOR_DYNACONF=DEFAULT_SETTINGS,
+    SETTINGS_FILE_FOR_DYNACONF=DEFAULT_SETTINGS,
 )
 
 # reread BASE_DIR since it might have gotten changed in the config file.
