@@ -463,23 +463,20 @@ ARA_LOGGING
     LOGGING:
         disable_existing_loggers: false
         formatters:
-        normal:
-            format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
+            normal:
+                format: '%(asctime)s %(levelname)s %(name)s: %(message)s'
         handlers:
-        console:
-            class: logging.StreamHandler
-            formatter: normal
-            level: INFO
-            stream: ext://sys.stdout
+            console:
+                class: logging.StreamHandler
+                formatter: normal
+                level: INFO
+                stream: ext://sys.stdout
         loggers:
-        ara:
-            handlers:
-            - console
-            level: INFO
-            propagate: 0
-        root:
-        handlers:
-        - console
+            ara:
+                handlers:
+                - console
+                level: INFO
+                propagate: 0
         level: INFO
         version: 1
 
