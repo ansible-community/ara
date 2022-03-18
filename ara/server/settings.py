@@ -48,6 +48,8 @@ BASE_DIR = settings.get("BASE_DIR", BASE_DIR)
 DEBUG = settings.get("DEBUG", False, "@bool")
 
 LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
+# default logger updated cf issue https://github.com/ansible-community/ara/issues/228
+# and PR https://github.com/ansible-community/ara/pull/367
 LOGGING = settings.get(
     "LOGGING",
     {
