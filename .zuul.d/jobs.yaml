@@ -15,7 +15,11 @@
 
 - job:
     name: ara-tox-docs
-    parent: ansible-tox-docs
+    parent: base
+    nodeset: fedora-latest-1vcpu
+    files:
+      - doc/*
+    run: tests/zuul_docs.yaml
 
 - job:
     name: ara-integration-base
