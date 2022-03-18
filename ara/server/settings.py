@@ -66,7 +66,7 @@ LOGGING = settings.get(
         },
         "loggers": {"ara": {"handlers": ["console"], "level": LOG_LEVEL, "propagate": 0}},
     },
-)
+).to_dict()
 
 if "root" in LOGGING:
     print('[ara] "root" key not allowed in "LOGGING" configuration. Removing...')
