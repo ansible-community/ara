@@ -413,32 +413,45 @@ class CallbackModule(CallbackBase):
         return self.task
 
     def v2_runner_on_start(self, host, task):
+        self.log.debug("v2_runner_on_start")
         # v2_runner_on_start was added in 2.8 so this doesn't get run for Ansible 2.7 and below.
         self.result_started[host.get_name()] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     def v2_runner_on_ok(self, result, **kwargs):
+        self.log.debug("v2_runner_on_ok")
         self._submit_thread("task", self._load_result, result, "ok", **kwargs)
 
     def v2_runner_on_unreachable(self, result, **kwargs):
+        self.log.debug("v2_runner_on_unreachable")
         self._submit_thread("task", self._load_result, result, "unreachable", **kwargs)
 
     def v2_runner_on_failed(self, result, **kwargs):
+        self.log.debug("v2_runner_on_failed")
         self._submit_thread("task", self._load_result, result, "failed", **kwargs)
 
     def v2_runner_on_skipped(self, result, **kwargs):
+        self.log.debug("v2_runner_on_skipped")
         self._submit_thread("task", self._load_result, result, "skipped", **kwargs)
 
     def v2_runner_item_on_ok(self, result):
+        self.log.debug("v2_runner_item_on_ok")
         self._update_delegation_cache(result)
 
     def v2_runner_item_on_failed(self, result):
+        self.log.debug("v2_runner_item_on_failed")
         self._update_delegation_cache(result)
 
     def v2_runner_item_on_skipped(self, result):
+        self.log.debug("v2_runner_item_on_skipped")
         pass
         # result._task.delegate_to can end up being a variable from this hook, don't save it.
         # https://github.com/ansible/ansible/issues/75339
         # self._update_delegation_cache(result)
+
+    def v2_playbook_on_include(self, included_file):
+        self.log.debug("v2_playbook_on_include")
+        # ara has not used this hook before, maybe we can do something with it in the future.
+        pass
 
     def v2_playbook_on_stats(self, stats):
         self.log.debug("v2_playbook_on_stats")
