@@ -35,3 +35,7 @@
 .custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
   background-color: #ffffff;
 }
+
+.tooltip {
+  pointer-events: none;
+}

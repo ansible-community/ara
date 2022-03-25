@@ -127,6 +127,13 @@
                     {% else %}
                       {% include "partials/result_status_icon.html" with status=result.status %}
                     {% endif %}
+                    {% if result.task.tags %}
+                      <span class="badge badge-pill badge-secondary btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% include 'partials/tags_list.html' with tags=result.task.tags %}">
+                    {% else %}
+                      <span class="badge badge-pill badge-secondary invisible btn btn-secondary">
+                    {% endif %}
+                      {{ result.task.tags | length }} tag{{ result.task.tags | pluralize }}
+                      </span>
                   </td>
                   <td>
                     {% if not static_generation %}
@@ -182,3 +189,8 @@
   </div>
 </div>
 <br/>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
