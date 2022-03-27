@@ -180,13 +180,21 @@ class Task(Duration):
     class Meta:
         db_table = "tasks"
 
-    # A task in ARA can be running (in progress) or completed (regardless of success or failure)
-    # Actual task statuses (such as failed, skipped, etc.) are actually in the Results table.
-    UNKNOWN = "unknown"
-    RUNNING = "running"
+    # Possible statuses for a task
+    # A failed task is expected to have at least one failed result
     COMPLETED = "completed"
     EXPIRED = "expired"
-    STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (EXPIRED, "expired"))
+    FAILED = "failed"
+    RUNNING = "running"
+    UNKNOWN = "unknown"
+
+    STATUS = (
+        (COMPLETED, "completed"),
+        (EXPIRED, "expired"),
+        (FAILED, "failed"),
+        (RUNNING, "running"),
+        (UNKNOWN, "unknown"),
+    )
 
     name = models.TextField(blank=True, null=True)
     action = models.TextField()

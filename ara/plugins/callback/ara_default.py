@@ -266,6 +266,7 @@ class CallbackModule(CallbackBase):
         self.result_started = {}
         self.result_ended = {}
         self.task = None
+        self.task_status = None
         self.play = None
         self.playbook = None
         self.stats = None
@@ -459,6 +460,7 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_task_start(self, task, is_conditional, handler=False):
         self.log.debug("v2_playbook_on_task_start")
         self._end_task()
+        self.task_status = "running"
 
         if self.callback_threads:
             self.task_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -530,12 +532,18 @@ class CallbackModule(CallbackBase):
         self._end_playbook(stats)
 
     def _end_task(self):
+        # Running with the free strategy means results can be received out of order
+        # The result can arrive here as "running" or as "failed".
+        # If we don't have at least a failure, the status is "completed".
+        if self.task_status == "running":
+            self.task_status = "completed"
+
         if self.task is not None:
             self._submit_thread(
                 "task",
                 self.client.patch,
                 "/api/v1/tasks/%s" % self.task["id"],
-                status="completed",
+                status=self.task_status,
                 ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
             )
             if self.callback_threads:
@@ -543,7 +551,9 @@ class CallbackModule(CallbackBase):
                 self.log.debug("waiting for task threads...")
                 self.task_threads.shutdown(wait=True)
                 self.task_threads = None
+
             self.task = None
+            self.task_status = None
 
     def _end_play(self):
         if self.play is not None:
@@ -632,7 +642,7 @@ class CallbackModule(CallbackBase):
             self.task_cache[task_uuid] = self.client.post(
                 "/api/v1/tasks",
                 name=task.get_name(),
-                status="running",
+                status=self.task_status,
                 action=task.action,
                 play=self.play["id"],
                 playbook=self.playbook["id"],
@@ -704,6 +714,8 @@ class CallbackModule(CallbackBase):
                     self.log.debug("Ignoring fact: %s" % fact)
                     results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
 
+        # Note: ignore_errors might be None instead of a boolean
+        ignore_errors = kwargs.get("ignore_errors", False) or False
         self.result = self.client.post(
             "/api/v1/results",
             playbook=self.playbook["id"],
@@ -716,12 +728,16 @@ class CallbackModule(CallbackBase):
             started=self.result_started[hostname] if hostname in self.result_started else task["started"],
             ended=self.result_ended[hostname],
             changed=result._result.get("changed", False),
-            # Note: ignore_errors might be None instead of a boolean
-            ignore_errors=kwargs.get("ignore_errors", False) or False,
+            ignore_errors=ignore_errors,
         )
 
         if task["action"] in ANSIBLE_SETUP_MODULES and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
+
+        # A task is failed if there is at least one failed result (without ignore_errors=True)
+        # It may also be rescued by a following task but *this* task failed.
+        if status in ["failed", "unreachable"] and not ignore_errors:
+            self.task_status = "failed"
 
     def _load_stats(self, stats):
         hosts = sorted(stats.processed.keys())

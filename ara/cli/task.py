@@ -35,7 +35,7 @@ class TaskList(Lister):
             "--status",
             metavar="<status>",
             default=None,
-            help=("List tasks matching a specific status ('completed', 'running' or 'unknown')")
+            help=("List tasks matching a specific status ('completed', 'expired', 'failed', 'running' or 'unknown')")
         )
         parser.add_argument(
             "--name",
@@ -295,7 +295,10 @@ class TaskMetrics(Lister):
             "--status",
             metavar="<status>",
             default=None,
-            help=("Filter for tasks matching a specific status ('completed', 'expired', 'running' or 'unknown')")
+            help=(
+                "Filter for tasks matching a specific status "
+                "('completed', 'expired', 'failed', 'running', or 'unknown')"
+            )
         )
         parser.add_argument(
             "--name",
@@ -319,7 +322,10 @@ class TaskMetrics(Lister):
             "--long",
             action="store_true",
             default=False,
-            help=("Don't truncate paths and include additional status fields: completed, running, expired, unknown")
+            help=(
+                "Don't truncate paths and include additional status fields: "
+                "completed, expired, failed, running & unknown"
+            )
         )
         parser.add_argument(
             "--order",
@@ -392,9 +398,10 @@ class TaskMetrics(Lister):
             data[item] = {
                 "count": len(tasks),
                 "results": 0,
-                "expired": 0,
-                "running": 0,
                 "completed": 0,
+                "expired": 0,
+                "failed": 0,
+                "running": 0,
                 "unknown": 0,
                 "duration_total": 0.0,
             }
@@ -405,7 +412,7 @@ class TaskMetrics(Lister):
                 data[item]["aggregate"] = item
 
             for task in tasks:
-                for status in ["running", "completed", "expired", "unknown"]:
+                for status in ["completed", "expired", "failed", "running", "unknown"]:
                     if task["status"] == status:
                         data[item][status] += 1
 
@@ -429,6 +436,7 @@ class TaskMetrics(Lister):
                 "duration_total",
                 "duration_avg",
                 "completed",
+                "failed",
                 "running",
                 "expired",
                 "unknown",
