@@ -27,12 +27,26 @@
   strategy: free
   gather_facts: no
   tasks:
-    - name: First task
+    - name: First sleep task
       command: sleep {{ randomized_sleep_duration }}
-    - name: Second task
+    - name: Second sleep task
       command: sleep {{ randomized_sleep_duration }}
-    - name: Third task
+    - name: Third sleep task
       command: sleep {{ randomized_sleep_duration }}
+
+    - block:
+        - name: A failed task with ignore_errors
+          command: /usr/bin/false
+          ignore_errors: true
+
+        - name: Generate a task with a failure for the first host
+          fail:
+            msg: This task should succeed on every host but this one
+          when: inventory_hostname == groups['test_hosts'][0]
+      rescue:
+        - name: We can go on, it was for test purposes
+          debug:
+            msg: 👍
 
 - name: Assert playbook properties
   hosts: localhost
@@ -44,30 +58,52 @@
       ara_playbook:
       register: playbook_query
 
-    - name: Search for the free play
-      vars:
+    - name: Save the playbook id so we can re-use it easily
+      set_fact:
         playbook_id: "{{ playbook_query.playbook.id | string }}"
+
+    - name: Search for the free play
       set_fact:
         play_query: "{{ lookup('ara_api', '/api/v1/plays?name=free&playbook=' + playbook_id) }}"
 
-    - name: Search for the free tasks
+    - name: Search for the sleep command tasks
       vars:
         play_id: "{{ play_query.results[0].id }}"
       set_fact:
-        free_tasks: "{{ lookup('ara_api', '/api/v1/tasks?play=' + play_id) }}"
+        sleep_tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=sleep&action=command&play=' + play_id) }}"
 
     - name: Assert the number of tasks
       assert:
         that:
-          - free_tasks.count == 3
+          - sleep_tasks.count == 3
 
-    - name: Assert the status of the tasks
+    - name: Assert the status of the sleep tasks
       assert:
         that:
           - item.status == 'completed'
           - item.action == 'command'
           - item.play == play_query.results[0].id
           - item['items']['results'] == test_host_count
-      loop: "{{ free_tasks.results }}"
+      loop: "{{ sleep_tasks.results }}"
       loop_control:
         label: "{{ item.name }}"
+
+    # failed is a new status for a task, validate that it actually works
+    - name: Find the task with the ignored errors and validate the status
+      vars:
+        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=ignore_errors&playbook=' + playbook_id ) }}"
+      assert:
+        that:
+          - _task['results'][0]['name'] == 'A failed task with ignore_errors'
+          - _task['results'][0]['status'] == 'completed'
+
+    - name: Find the task with the failure and validate the status
+      vars:
+        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=Generate&playbook=' + playbook_id ) }}"
+      assert:
+        that:
+          - _task['results'][0]['name'] == 'Generate a task with a failure for the first host'
+          - _task['results'][0]['status'] == 'failed'
+        fail_msg: "task {{ _task['results'][0]['id'] }} status is {{ _task['results'][0]['status'] }} instead of failed (known issue with free strategy)"
+      # known issue: when using the free strategy, a successful result can flip a failed task back to completed
+      ignore_errors: true

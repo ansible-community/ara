@@ -222,10 +222,11 @@ class TaskTestCase(APITestCase):
         task = factories.TaskFactory(status="running")
         factories.TaskFactory(status="completed")
         factories.TaskFactory(status="unknown")
+        factories.TaskFactory(status="failed")
 
-        # Confirm we have three objects
+        # Confirm we have four tasks
         request = self.client.get("/api/v1/tasks")
-        self.assertEqual(3, len(request.data["results"]))
+        self.assertEqual(4, len(request.data["results"]))
 
         # Test single status
         request = self.client.get("/api/v1/tasks?status=running")

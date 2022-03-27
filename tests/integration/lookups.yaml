@@ -14,9 +14,11 @@
       ara_playbook:
       register: playbook_query
 
-    - name: Recover data from ARA
-      vars:
+    - name: Save the playbook id so we can re-use it easily
+      set_fact:
         playbook_id: "{{ playbook_query.playbook.id | string }}"
+
+    - name: Recover data from ARA
       set_fact:
         playbook: "{{ lookup('ara_api', '/api/v1/playbooks/' + playbook_id) }}"
         tasks: "{{ lookup('ara_api', '/api/v1/tasks?playbook=' + playbook_id) }}"
@@ -59,6 +61,36 @@
           localhost_as_hostname isn't enabled
           The inventory_hostname is localhost but the host is not localhost (???)
       when: not _localhost_as_hostname | bool
+
+    - block:
+        - name: Fail something with ignore_errors
+          command: /usr/bin/false
+          ignore_errors: true
+
+        - name: Generate a failure that will be rescued
+          fail:
+            msg: Message from a failed task
+      rescue:
+        - name: We can go on, it was a failure for test purposes
+          debug:
+            msg: 👍
+
+    # failed is a new status for a task, validate that it actually works
+    - name: Find the task with the ignored errors and validate the status
+      vars:
+        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=ignore_errors&playbook=' + playbook_id ) }}"
+      assert:
+        that:
+          - _task['results'][0]['name'] == 'Fail something with ignore_errors'
+          - _task['results'][0]['status'] == 'completed'
+
+    - name: Find the task with the failure and validate the status
+      vars:
+        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=generate&playbook=' + playbook_id ) }}"
+      assert:
+        that:
+          - _task['results'][0]['name'] == 'Generate a failure that will be rescued'
+          - _task['results'][0]['status'] == 'failed'
 
     #####
     # Examples taken from docs on Ansible plugins and use cases
