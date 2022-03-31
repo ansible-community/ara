@@ -4,6 +4,96 @@
 Changelog and release notes
 ***************************
 
+1.5.8 (2022-03-24)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.5.8
+
+.. code-block:: text
+
+    This is the 1.5.8 stable release of ara.
+    
+    It features new callback and server settings as well as fixes and
+    maintenance.
+    
+    Instructions for upgrading are included in the upgrade notes.
+    
+    Callback plugin
+    ---------------
+    
+    - Improved debug logging to include some hooks that were missing (#374)
+    - Added a localhost_to_hostname toggle in the callback (#336)
+      This adds two configuration parameters to the callback:
+      - ARA_LOCALHOST_AS_HOSTNAME
+      - ARA_LOCALHOST_AS_HOSTNAME_FORMAT
+    
+      These are useful in use cases where playbooks are run against localhost,
+      whether directly (with ansible-playbook) or indirectly (via
+      ansible-pull).
+    
+      When enabled, ara will save results under the hostname (or fqdn) of
+      'localhost' instead of associating every result to localhost.
+      This is meant to make it easier to distinguish results between different
+      hosts even though the playbooks may have all run against 'localhost'.
+    
+    Server
+    ------
+    
+    - Added a setting for CSRF_TRUSTED_ORIGINS (#345)
+    - Fixed logging configuration to avoid conflicting with ansible (#367)
+      See upgrade notes for changes to the server's settings.yaml.
+    
+    UI
+    --
+    
+    - API browser: disable forms to improve performance (#323)
+    - Include the version of ara when generating static reports (#318)
+    - Add a column in task results for displaying the task's tags (#281,#375)
+    
+    CLI
+    ---
+    
+    - Added "--latest" to "ara host list" to show only the latest playbook (#327)
+    
+    Docs
+    ----
+    
+    - Refreshed authentication docs and recommend using EXTERNAL_AUTH
+      with nginx or apache in front (#319)
+    - Add database and authentication tips to troubleshooting (#355)
+    
+    Packaging and dependencies
+    --------------------------
+    
+    - API Server container images have been bumped to fedora35 and centos8-stream
+    - Updated setup.cfg to fix a deprecation warning for python 3.10 (#371)
+    - Fixed distutils.sysconfig deprecation warning on python 3.10 (#369)
+    - Fixed dynaconf deprecation warning when loading settings (#369)
+    - psycopg2 has been pinned to <2.9 due to incompatibility with django 2.2 (#321,#326)
+    - dynaconf has been pinned to <3.0 when using python3.5 (#372)
+      dynaconf>=3.0 supports python>=3.6.
+    
+    Misc
+    ----
+    
+    - General CI maintenance
+    - Updated Zuul to test the latest versions of ansible and ansible-core
+    - Re-enabled container image updates on DockerHub and Quay.io
+    - Added an example script with ansible-runner (#343)
+    
+    Upgrade notes
+    -------------
+    
+    - There have been fixes to logging which requires changes to the
+      server's settings.yaml or LOGGING configuration. (#367)
+      A warning will be printed if the configuration file must be updated
+      and it can be updated manually or by generating a new configuration file.
+    
+    - ara 1.5.8 is the last release that will support python3.5.
+      Python 3.5 reached the end of its life on September 13th, 2020.
+      An upcoming release will update the version of django to the next LTS (2.2 to 3.2)
+      which will bump the requirement to python>=3.6.
+
 1.5.7 (2021-07-31)
 ##################
 
