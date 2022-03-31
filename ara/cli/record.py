@@ -15,7 +15,7 @@ from ara.clients.utils import get_client
 
 
 class RecordList(Lister):
-    """ Returns a list of records based on search queries """
+    """Returns a list of records based on search queries"""
 
     log = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ class RecordList(Lister):
 
 
 class RecordShow(ShowOne):
-    """ Returns a detailed view of a specified record """
+    """Returns a detailed view of a specified record"""
 
     log = logging.getLogger(__name__)
 
@@ -165,7 +165,7 @@ class RecordShow(ShowOne):
 
 
 class RecordDelete(Command):
-    """ Deletes the specified record and associated resources """
+    """Deletes the specified record and associated resources"""
 
     log = logging.getLogger(__name__)
 

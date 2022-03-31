@@ -31,7 +31,7 @@ export ANSIBLE_LOOKUP_PLUGINS=${{ANSIBLE_LOOKUP_PLUGINS:-}}${{ANSIBLE_LOOKUP_PLU
 )
 
 if "VIRTUAL_ENV" in os.environ:
-    """ PYTHONPATH may be exported when 'ara' module is installed in a
+    """PYTHONPATH may be exported when 'ara' module is installed in a
     virtualenv and ansible is installed on system python to avoid ansible
     failure to find ara module.
     """

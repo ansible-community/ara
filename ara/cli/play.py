@@ -15,7 +15,7 @@ from ara.clients.utils import get_client
 
 
 class PlayList(Lister):
-    """ Returns a list of plays based on search queries """
+    """Returns a list of plays based on search queries"""
 
     log = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ class PlayList(Lister):
 
 
 class PlayShow(ShowOne):
-    """ Returns a detailed view of a specified play """
+    """Returns a detailed view of a specified play"""
 
     log = logging.getLogger(__name__)
 
@@ -185,7 +185,7 @@ class PlayShow(ShowOne):
 
 
 class PlayDelete(Command):
-    """ Deletes the specified play and associated resources """
+    """Deletes the specified play and associated resources"""
 
     log = logging.getLogger(__name__)
 

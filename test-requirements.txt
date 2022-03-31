@@ -2,7 +2,7 @@ factory-boy
 bandit>=1.1.0 # Apache-2.0
 coverage
 flake8
-black==19.3b0 # Exact version for prerelease
+black==22.3.0
 isort
 
 # requirements for docs are in doc/requirements.txt

@@ -64,7 +64,7 @@ playbook:
 
 
 class ActionModule(ActionBase):
-    """ Retrieves either a specific playbook from ARA or the one currently running """
+    """Retrieves either a specific playbook from ARA or the one currently running"""
 
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(("playbook_id"))

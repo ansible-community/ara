@@ -31,7 +31,7 @@ def get_host(client, host_id):
 
 
 def parse_timedelta(string, pattern="%H:%M:%S.%f"):
-    """ Parses a timedelta string back into a timedelta object """
+    """Parses a timedelta string back into a timedelta object"""
     parsed = datetime.strptime(string, pattern)
     # fmt: off
     return timedelta(
@@ -54,7 +54,7 @@ def sum_timedelta(first, second):
 
 
 def avg_timedelta(timedelta, count):
-    """ Returns an average timedelta based on the amount of occurrences """
+    """Returns an average timedelta based on the amount of occurrences"""
     timedelta = parse_timedelta(timedelta)
     return str(timedelta / count)
 
