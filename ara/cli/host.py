@@ -15,7 +15,7 @@ from ara.clients.utils import get_client
 
 
 class HostList(Lister):
-    """ Returns a list of hosts based on search queries """
+    """Returns a list of hosts based on search queries"""
 
     log = logging.getLogger(__name__)
 
@@ -182,7 +182,7 @@ class HostList(Lister):
 
 
 class HostShow(ShowOne):
-    """ Returns a detailed view of a specified host """
+    """Returns a detailed view of a specified host"""
 
     log = logging.getLogger(__name__)
 
@@ -258,7 +258,7 @@ class HostShow(ShowOne):
 
 
 class HostDelete(Command):
-    """ Deletes the specified host and associated resources """
+    """Deletes the specified host and associated resources"""
 
     log = logging.getLogger(__name__)
 
@@ -290,7 +290,7 @@ class HostDelete(Command):
 
 
 class HostMetrics(Lister):
-    """ Provides metrics about hosts """
+    """Provides metrics about hosts"""
 
     log = logging.getLogger(__name__)
 

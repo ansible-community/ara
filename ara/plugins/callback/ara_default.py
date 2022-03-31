@@ -540,7 +540,7 @@ class CallbackModule(CallbackBase):
         return self.file_cache[path]
 
     def _get_or_create_host(self, host):
-        """ Note: The get_or_create is handled through the serializer of the API server. """
+        """Note: The get_or_create is handled through the serializer of the API server."""
         # We might want to record results against the fqdn instead of localhost
         # so that we can differentiate between different actual hosts
         if self.localhost_as_hostname and host in ["localhost", "127.0.0.1"]:
@@ -671,7 +671,7 @@ class CallbackModule(CallbackBase):
             )
 
     def _get_localhost_hostname(self):
-        """ Returns a hostname for localhost in the specified format """
+        """Returns a hostname for localhost in the specified format"""
         hostname = None
 
         if self.localhost_as_hostname_format.startswith("fqdn"):

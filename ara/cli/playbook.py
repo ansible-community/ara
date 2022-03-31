@@ -16,7 +16,7 @@ from ara.clients.utils import get_client
 
 
 class PlaybookList(Lister):
-    """ Returns a list of playbooks based on search queries """
+    """Returns a list of playbooks based on search queries"""
 
     log = logging.getLogger(__name__)
 
@@ -172,7 +172,7 @@ class PlaybookList(Lister):
 
 
 class PlaybookShow(ShowOne):
-    """ Returns a detailed view of a specified playbook """
+    """Returns a detailed view of a specified playbook"""
 
     log = logging.getLogger(__name__)
 
@@ -228,7 +228,7 @@ class PlaybookShow(ShowOne):
 
 
 class PlaybookDelete(Command):
-    """ Deletes the specified playbook and associated resources """
+    """Deletes the specified playbook and associated resources"""
 
     log = logging.getLogger(__name__)
 
@@ -260,7 +260,7 @@ class PlaybookDelete(Command):
 
 
 class PlaybookPrune(Command):
-    """ Deletes playbooks beyond a specified age in days """
+    """Deletes playbooks beyond a specified age in days"""
 
     log = logging.getLogger(__name__)
     deleted = 0
@@ -396,7 +396,7 @@ class PlaybookPrune(Command):
 
 
 class PlaybookMetrics(Lister):
-    """ Provides metrics about playbooks """
+    """Provides metrics about playbooks"""
 
     log = logging.getLogger(__name__)
 

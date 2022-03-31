@@ -132,7 +132,7 @@ updated:
 
 
 class ActionModule(ActionBase):
-    """ Record persistent data as key/value pairs in ARA """
+    """Record persistent data as key/value pairs in ARA"""
 
     TRANSFERS_FILES = False
     VALID_ARGS = frozenset(("playbook_id", "key", "value", "type"))

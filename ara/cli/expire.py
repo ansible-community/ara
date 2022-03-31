@@ -14,7 +14,7 @@ from ara.clients.utils import get_client
 
 
 class ExpireObjects(Command):
-    """ Expires objects that have been in the running state for too long """
+    """Expires objects that have been in the running state for too long"""
 
     log = logging.getLogger(__name__)
     expired = 0

@@ -15,7 +15,7 @@ from ara.clients.utils import get_client
 
 
 class TaskList(Lister):
-    """ Returns a list of tasks based on search queries """
+    """Returns a list of tasks based on search queries"""
 
     log = logging.getLogger(__name__)
 
@@ -169,7 +169,7 @@ class TaskList(Lister):
 
 
 class TaskShow(ShowOne):
-    """ Returns a detailed view of a specified task """
+    """Returns a detailed view of a specified task"""
 
     log = logging.getLogger(__name__)
 
@@ -221,7 +221,7 @@ class TaskShow(ShowOne):
 
 
 class TaskDelete(Command):
-    """ Deletes the specified task and associated resources """
+    """Deletes the specified task and associated resources"""
 
     log = logging.getLogger(__name__)
 
@@ -253,7 +253,7 @@ class TaskDelete(Command):
 
 
 class TaskMetrics(Lister):
-    """ Provides metrics about actions in tasks """
+    """Provides metrics about actions in tasks"""
 
     log = logging.getLogger(__name__)
 
