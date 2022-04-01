@@ -547,10 +547,6 @@ class PlaybookMetrics(Lister):
                     data[item][obj] += playbook["items"][obj]
 
                 if playbook["duration"] is not None:
-                    print(f'duration {playbook["duration"]} === duration total:{data[item]["duration_total"]}')
-                    print(
-                        f'duration {type(playbook["duration"])} === duration total:{type(data[item]["duration_total"])}'
-                    )
                     data[item]["duration_total"] = cli_utils.sum_timedelta(
                         playbook["duration"], data[item]["duration_total"]
                     )
