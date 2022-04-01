@@ -99,7 +99,7 @@ class Playbook(Duration):
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
-    arguments = models.BinaryField(max_length=(2**32) - 1)
+    arguments = models.BinaryField(max_length=(2 ** 32) - 1)
     path = models.CharField(max_length=255)
     labels = models.ManyToManyField(Label)
     controller = models.CharField(max_length=255, default="localhost")
@@ -119,7 +119,7 @@ class FileContent(Base):
         db_table = "file_contents"
 
     sha1 = models.CharField(max_length=40, unique=True)
-    contents = models.BinaryField(max_length=(2**32) - 1)
+    contents = models.BinaryField(max_length=(2 ** 32) - 1)
 
     def __str__(self):
         return "<FileContent %s:%s>" % (self.id, self.sha1)
@@ -154,7 +154,7 @@ class Record(Base):
         unique_together = ("key", "playbook")
 
     key = models.CharField(max_length=255)
-    value = models.BinaryField(max_length=(2**32) - 1)
+    value = models.BinaryField(max_length=(2 ** 32) - 1)
     type = models.CharField(max_length=255)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="records")
 
@@ -204,7 +204,7 @@ class Task(Duration):
     name = models.TextField(blank=True, null=True)
     action = models.TextField()
     lineno = models.IntegerField()
-    tags = models.BinaryField(max_length=(2**32) - 1)
+    tags = models.BinaryField(max_length=(2 ** 32) - 1)
     handler = models.BooleanField()
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
 
@@ -226,7 +226,7 @@ class Host(Base):
         unique_together = ("name", "playbook")
 
     name = models.CharField(max_length=255)
-    facts = models.BinaryField(max_length=(2**32) - 1)
+    facts = models.BinaryField(max_length=(2 ** 32) - 1)
 
     changed = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)
@@ -293,7 +293,7 @@ class Result(Duration):
     ignore_errors = models.BooleanField(default=False)
 
     # todo use a single Content table
-    content = models.BinaryField(max_length=(2**32) - 1)
+    content = models.BinaryField(max_length=(2 ** 32) - 1)
     host = models.ForeignKey(Host, on_delete=models.CASCADE, related_name="results")
     delegated_to = models.ManyToManyField(Host)
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="results")
