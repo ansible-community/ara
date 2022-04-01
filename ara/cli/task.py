@@ -1,10 +1,10 @@
 # Copyright (c) 2020 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from datetime import timedelta
 import logging
 import os
 import sys
+from datetime import timedelta
 
 from cliff.command import Command
 from cliff.lister import Lister
