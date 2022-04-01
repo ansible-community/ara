@@ -30,33 +30,30 @@ def get_host(client, host_id):
     return host
 
 
-def parse_timedelta(string, pattern="%H:%M:%S.%f"):
+def parse_timedelta(duration: str, pattern: str = "%H:%M:%S.%f"):
     """Parses a timedelta string back into a timedelta object"""
-    parsed = datetime.strptime(string, pattern)
+    parsed = datetime.strptime(duration, pattern)
     # fmt: off
     return timedelta(
         hours=parsed.hour,
         minutes=parsed.minute,
         seconds=parsed.second,
         microseconds=parsed.microsecond
-    )
+    ).total_seconds()
     # fmt: on
 
 
-def sum_timedelta(first, second):
+def sum_timedelta(duration: str, total: float):
     """
     Returns the sum of two timedeltas as provided by the API, for example:
     00:00:02.031557 + 00:00:04.782581 = ?
     """
-    first = parse_timedelta(first)
-    second = parse_timedelta(second)
-    return str(first + second)
+    return parse_timedelta(duration) + total
 
 
-def avg_timedelta(timedelta, count):
+def avg_timedelta(delta: timedelta, count: int):
     """Returns an average timedelta based on the amount of occurrences"""
-    timedelta = parse_timedelta(timedelta)
-    return str(timedelta / count)
+    return str(delta / count)
 
 
 # Also see: ui.templatetags.truncatepath

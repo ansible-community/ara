@@ -1,6 +1,7 @@
 # Copyright (c) 2020 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from datetime import timedelta
 import logging
 import os
 import sys
@@ -373,7 +374,7 @@ class TaskMetrics(Lister):
                 "running": 0,
                 "completed": 0,
                 "unknown": 0,
-                "duration_total": "00:00:00.000000",
+                "duration_total": 0.0,
             }
 
             if args.aggregate == "path" and not args.long:
@@ -393,7 +394,9 @@ class TaskMetrics(Lister):
                         task["duration"], data[item]["duration_total"]
                     )
 
-            data[item]["duration_avg"] = cli_utils.avg_timedelta(data[item]["duration_total"], data[item]["count"])
+            delta = timedelta(seconds=data[item]["duration_total"])
+            data[item]["duration_total"] = str(delta)
+            data[item]["duration_avg"] = cli_utils.avg_timedelta(delta, data[item]["count"])
 
         # fmt: off
         if args.long:
