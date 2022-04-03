@@ -143,8 +143,8 @@ Examples:
     # Return which playbooks would be deleted by ommitting --confirm
     ara playbook prune
 
-    # Different retention for successful, unsuccessful and expired playbooks
-    ara playbook prune --status ok --days 30 --confirm
+    # Different retention for completed, failed and expired playbooks
+    ara playbook prune --status completed --days 30 --confirm
     ara playbook prune --status failed --days 90 --confirm
     ara playbook prune --status expired --days 3 --confirm
 
