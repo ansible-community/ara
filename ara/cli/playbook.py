@@ -530,7 +530,7 @@ class PlaybookMetrics(Lister):
                 "running": 0,
                 "completed": 0,
                 "unknown": 0,
-                "duration_total": "00:00:00.000000",
+                "duration_total": 0.0,
             }
 
             if args.aggregate == "path" and not args.long:
@@ -551,7 +551,9 @@ class PlaybookMetrics(Lister):
                         playbook["duration"], data[item]["duration_total"]
                     )
 
-            data[item]["duration_avg"] = cli_utils.avg_timedelta(data[item]["duration_total"], data[item]["count"])
+            delta = timedelta(seconds=data[item]["duration_total"])
+            data[item]["duration_total"] = str(delta)
+            data[item]["duration_avg"] = cli_utils.avg_timedelta(delta, data[item]["count"])
 
         # fmt: off
         if args.long:
