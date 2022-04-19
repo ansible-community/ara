@@ -144,6 +144,7 @@
           api_client = {{ ara_api_client | default('offline') }}
           api_server = {{ ara_api_server | default('http://127.0.0.1') }}
           callback_threads = {{ ara_callback_threads | default(0) }}
+          ignored_files = .ansible/tmp,ignored_task_file.yaml
           {% if _default_labels is defined %}
           default_labels = {{ _default_labels | join(',') }}
           {% endif %}
@@ -222,6 +223,11 @@
         # TODO: Enable this once 2.9 and 2.10 go end-of-life, otherwise fails with libselinux binding issue that was fixed in >=2.11
         #- name: Run a playbook with ansible-runner
         #  command: "{{ _test_root | dirname }}/with_ansible-runner.py"
+
+        - name: Run ignored_files tests
+          environment:
+            ANSIBLE_VAULT_PASSWORD_FILE: "{{ _test_root }}/vault_password_file"
+          command: "ansible-playbook -vvv {{ _test_root }}/ignored_files.yaml"
 
         - name: Generate static report
           command: ara-manage generate {{ ara_api_root_dir }}/server/static

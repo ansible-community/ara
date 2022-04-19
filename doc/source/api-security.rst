@@ -16,6 +16,13 @@ By default:
 These default settings can be configured according to the requirements of your
 deployments.
 
+.. note::
+   For production use and to avoid unintentionally leaking passwords, tokens, secrets or
+   otherwise sensitive information that ara might come across and record, it is strongly encouraged to:
+
+   1) :ref:`Enable authentication for the web interface and API <authentication>` (see below)
+   2) :ref:`Configure the callback plugin to ignore sensitive files, host facts and CLI arguments (such as extra vars) <ansible_plugins>`
+
 Setting a custom secret key
 ---------------------------
 
@@ -32,6 +39,8 @@ The default location for the server configuration file is
 You can provide a custom secret key by supplying the ``ARA_SECRET_KEY``
 environment variable or by specifying the ``SECRET_KEY`` setting in your server
 configuration file.
+
+.. _authentication:
 
 Authentication and user management
 ----------------------------------

@@ -1,0 +1,91 @@
+---
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Note: expects the following to be set:
+#   export ARA_IGNORED_FILES=".ansible/tmp,ignored_task_file.yaml"
+#   export ANSIBLE_VAULT_PASSWORD_FILE=./vault_password_file
+#   export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
+#   export ANSIBLE_ACTION_PLUGINS=$(python3 -m ara.setup.action_plugins)
+#   export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
+
+- name: Test ignored_files patterns using vars_files and include_vars
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    # This is encrypted with ansible vault
+    - vars/vault.yaml
+    # This contains secret data both in plain text and from ansible-vault (encrypted string)
+    - vars/verysecret.yaml
+  tasks:
+    # Variable files that are included with include_vars aren't yet recorded by ara
+    - name: Include another variable file with include_vars
+      include_vars:
+        file: testing.yaml
+
+    - name: Include task from another file
+      include_tasks: ignored_task_file.yaml
+
+    # These will be printed in clear text, even if they are coming from an encrypted file or string.
+    # Use "no_log: true" on tasks with potentially sensitive output to prevent ara from recording them from the task results.
+    - name: Print variables from each file
+      debug:
+        msg: "{{ item }}"
+      loop:
+        - "{{ vault_var }}"
+        - "{{ testing_var }}"
+        - "{{ verysecret_var }}"
+        - "{{ verysecret_vault }}"
+
+- name: Assert that the files have not been saved
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Recover files for this playbook
+      vars:
+        _playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        _vault: "{{ lookup('ara_api', '/api/v1/files?path=vault&playbook=' + _playbook_id) }}"
+        _verysecret: "{{ lookup('ara_api', '/api/v1/files?path=verysecret&playbook=' + _playbook_id) }}"
+        _testing: "{{ lookup('ara_api', '/api/v1/files?path=testing&playbook=' + _playbook_id) }}"
+        _ignored_task: "{{ lookup('ara_api', '/api/v1/files?path=ignored_task_file&playbook=' + _playbook_id) }}"
+        _tmpdir: "{{ lookup('ara_api', '/api/v1/files?path=.ansible/tmp&playbook=' + _playbook_id) }}"
+
+    - name: Validate the files that have been saved with ansible-core 2.12
+      when: ansible_version.full is version("2.12.0", ">=")
+      assert:
+        that:
+          # in 2.12, the ansible-vault file is not in the play context and thus not picked up by ara
+          - _vault['count'] == 0
+          # in 2.12, files from ~/.ansible/tmp are in the play context but this path is ignored by default starting with ara 1.6.0
+          - _tmpdir['count'] == 0
+
+    - name: Validate the files that have been saved before ansible-core 2.12
+      when: ansible_version.full is version("2.12.0", "<")
+      assert:
+        that:
+          # before 2.12, the ansible-vault file is in the play context and is recorded by ara (in encrypted form)
+          - _vault['count'] == 1
+          - "'vault.yaml' in _vault['results'][0]['path']"
+          # before 2.12, no files from ~/.ansible/tmp are in the play context)
+          - _tmpdir['count'] == 0
+
+    - name: Validate the remainder of the files
+      vars:
+        # list view doesn't provide file content, get detailed view
+        _id: "{{ _ignored_task['results'][0]['id'] }}"
+        _with_content: "{{ lookup('ara_api', '/api/v1/files/' + _id) }}"
+      assert:
+        that:
+          # Variable files included via include_vars are not currently recorded by ara
+          - _testing['count'] == 0
+          # Playbook, role or task files must be recorded (to maintain relationships between objects) but they must be censored
+          - _ignored_task['count'] == 1
+          - _with_content['content'] == "Not saved by ARA as configured by 'ignored_files'"
+          # Variable files included via vars_files are in the play context and are recorded by ara
+          - _verysecret['count'] == 1
+          - "'vars/verysecret.yaml' in _verysecret['results'][0]['path']"

@@ -33,6 +33,7 @@ For example, a customized callback plugin configuration might look like this in 
     argument_labels = check,tags,subset
     default_labels = prod,deploy
     ignored_facts = ansible_env,ansible_all_ipv4_addresses
+    ignored_files = .ansible/tmp,vault.yaml,vault.yml
     ignored_arguments = extra_vars,vault_password_files
     localhost_as_hostname = true
     localhost_as_hostname_format = fqdn
@@ -50,6 +51,7 @@ or as environment variables:
     export ARA_ARGUMENT_LABELS=check,tags,subset
     export ARA_DEFAULT_LABELS=prod,deploy
     export ARA_IGNORED_FACTS=ansible_env,ansible_all_ipv4_addresses
+    export ARA_IGNORED_FILES=.ansible/tmp,vault.yaml,vault.yml
     export ARA_IGNORED_ARGUMENTS=extra_vars,vault_password_files
     export ARA_LOCALHOST_AS_HOSTNAME=true
     export ARA_LOCALHOST_AS_HOSTNAME_FORMAT=fqdn

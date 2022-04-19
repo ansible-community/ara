@@ -10,7 +10,7 @@ import os
 import socket
 from concurrent.futures import ThreadPoolExecutor
 
-from ansible import __version__ as ansible_version
+from ansible import __version__ as ansible_version, constants as C
 from ansible.parsing.ajson import AnsibleJSONEncoder
 from ansible.plugins.callback import CallbackBase
 from ansible.vars.clean import module_response_deepcopy, strip_internal_keys
@@ -139,9 +139,12 @@ options:
       - section: ara
         key: ignored_arguments
   ignored_files:
-    description: List of patterns that will not be saved by ARA
+    description:
+      - List of file path patterns that will not be saved by ARA
+      - Note that the default pattern ('.ansible/tmp') gets dynamically set to the value of ANSIBLE_LOCAL_TEMP
+      - The configuration for ANSIBLE_LOCAL_TEMP is typically ~/.ansible/tmp unless it is changed.
     type: list
-    default: []
+    default: [".ansible/tmp"]
     env:
       - name: ARA_IGNORED_FILES
     ini:
@@ -234,6 +237,16 @@ class CallbackModule(CallbackBase):
         self.ignored_files = self.get_option("ignored_files")
         self.localhost_as_hostname = self.get_option("localhost_as_hostname")
         self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
+
+        # The intent for the ignored_files default value is to ignore the ansible local tmpdir but the path
+        # can be changed by the user's configuration so retrieve that and use it instead.
+        # https://github.com/ansible-community/ara/issues/385
+        for pattern in self.ignored_files:
+            if pattern == ".ansible/tmp":
+                tmpdir_config = os.path.dirname(C.config.get_config_value("DEFAULT_LOCAL_TMP"))
+                index = self.ignored_files.index(pattern)
+                self.ignored_files[index] = tmpdir_config
+                break
 
         client = self.get_option("api_client")
         endpoint = self.get_option("api_server")
@@ -351,7 +364,17 @@ class CallbackModule(CallbackBase):
 
         # Record all the files involved in the play
         for path in play._loader._FILE_CACHE.keys():
-            self._submit_thread("global", self._get_or_create_file, path)
+            # The cache can be pre-populated with files that aren't relevant to the playbook report
+            # If there are matches that should be ignored here, don't record them at all
+            ignored = False
+            for ignored_file_pattern in self.ignored_files:
+                if ignored_file_pattern in path:
+                    self.log.debug("Ignoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
+                    ignored = True
+                    break
+
+            if not ignored:
+                self._submit_thread("global", self._get_or_create_file, path)
 
         # Note: ansible-runner suffixes play UUIDs when running in serial so 34cff6f4-9f8e-6137-3461-000000000005 can
         # end up being 34cff6f4-9f8e-6137-3461-000000000005_2. Remove anything beyond standard 36 character UUIDs.
@@ -508,7 +531,8 @@ class CallbackModule(CallbackBase):
             self.log.debug("File not in cache, getting or creating: %s" % path)
             for ignored_file_pattern in self.ignored_files:
                 if ignored_file_pattern in path:
-                    self.log.debug("Ignoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
+                    # The file must be created because there will be things referring to it
+                    self.log.debug("Censoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
                     content = "Not saved by ARA as configured by 'ignored_files'"
             if content is None:
                 try:
