@@ -1,20 +1,5 @@
-# -*- coding: utf-8 -*-
-#  Copyright (c) 2018 Red Hat, Inc.
-#
-#  This file is part of ARA Records Ansible.
-#
-#  ARA is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  ARA is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import os
 import sys
@@ -46,8 +31,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ara'
-copyright = u'2018, Red Hat'
-author = 'OpenStack community'
+copyright = u'2022, ARA Records Ansible authors'
+author = 'ARA Records Ansible authors'
 
 # The short X.Y version.
 version = version_info.version_string()
@@ -82,7 +67,7 @@ latex_documents = [
     ('index',
      '%s.tex' % project,
      u'%s Documentation' % project,
-     u'Red Hat', 'manual'),
+     u'ARA Records Ansible authors', 'manual'),
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.

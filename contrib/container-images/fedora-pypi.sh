@@ -1,4 +1,7 @@
 #!/bin/bash -x
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 # Builds an ARA API server container image using the latest PyPi packages on Fedora 35.
 build=$(buildah from quay.io/fedora/fedora:35)
 
