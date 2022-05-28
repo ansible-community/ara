@@ -4,7 +4,7 @@
 
 - name: Test container images
   hosts: all
-  gather_facts: yes
+  gather_facts: true
   vars:
     ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
     ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
@@ -25,7 +25,7 @@
         script: fedora-distribution.sh
   tasks:
     - name: Install git, buildah and podman
-      become: yes
+      become: true
       package:
         name:
           - git
@@ -36,15 +36,14 @@
     # TODO: Troubleshoot permission denied issues when running
     #       ara-manage generate from container
     - when: ansible_os_family == "RedHat"
+      become: true
       block:
         - name: Install python3-libselinux
-          become: yes
           package:
             name: python3-libselinux
             state: present
 
         - name: Set selinux to permissive
-          become: yes
           selinux:
             policy: targeted
             state: permissive
@@ -52,8 +51,3 @@
     - name: Test each container image
       include_tasks: container_test_tasks.yaml
       loop: "{{ images }}"
-      # TODO: This should be able to run without elevating privileges
-      # See: https://github.com/ansible-community/ara/issues/286
-      args:
-        apply:
-          become: yes
