@@ -1,22 +1,5 @@
-#  Copyright (c) 2018 Red Hat, Inc.
-#
-#  This file is part of ARA: Ansible Run Analysis.
-#
-#  ARA is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  ARA is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with ARA.  If not, see <http://www.gnu.org/licenses/>.
-
-# This is an "offline" API client that does not require standing up
-# an API server and does not execute actual HTTP calls.
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 import json
 import logging

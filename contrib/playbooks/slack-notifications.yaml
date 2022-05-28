@@ -1,4 +1,7 @@
 #!/usr/bin/env ansible-playbook
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 # Requires:
 #   export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
 #   export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
