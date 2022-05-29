@@ -55,16 +55,21 @@
         _ignored_task: "{{ lookup('ara_api', '/api/v1/files?path=ignored_task_file&playbook=' + _playbook_id) }}"
         _tmpdir: "{{ lookup('ara_api', '/api/v1/files?path=.ansible/tmp&playbook=' + _playbook_id) }}"
 
-    - name: Validate the files that have been saved with ansible-core 2.12
-      when: ansible_version.full is version("2.12.0", ">=")
+    # Note: conditions are used because the behavior changed between versions (from 2.12.0 until 2.12.5), see:
+    # - https://github.com/ansible/ansible/commit/2c2a204dc66e0822003c9f2ea559bb1b2034b7e4
+    # - https://github.com/ansible-community/ara/pull/386
+    - name: Validate the files that have been saved with ansible-core <=2.12.5
+      when:
+        - ansible_version.full is version("2.12.0", ">=")
+        - ansible_version.full is version("2.12.5", "<=")
       assert:
         that:
-          # in 2.12, the ansible-vault file is not in the play context and thus not picked up by ara
+          # in 2.12.5 and below, the ansible-vault file is not in the play context and thus not picked up by ara
           - _vault['count'] == 0
-          # in 2.12, files from ~/.ansible/tmp are in the play context but this path is ignored by default starting with ara 1.6.0
+          # in 2.12.5 and below, files from ~/.ansible/tmp are in the play context but this path is ignored by default starting with ara 1.6.0
           - _tmpdir['count'] == 0
 
-    - name: Validate the files that have been saved before ansible-core 2.12
+    - name: Validate the files that have been saved before ansible-core <2.12
       when: ansible_version.full is version("2.12.0", "<")
       assert:
         that:
@@ -72,6 +77,15 @@
           - _vault['count'] == 1
           - "'vault.yaml' in _vault['results'][0]['path']"
           # before 2.12, no files from ~/.ansible/tmp are in the play context)
+          - _tmpdir['count'] == 0
+
+    - name: Validate the files that have been saved with ansible-core >=2.12.6
+      when: ansible_version.full is version("2.12.6", ">=")
+      assert:
+        that:
+          # From 2.12.6, the ansible-vault file is in the play context and is recorded by ara (in encrypted form)
+          - _vault['count'] == 1
+          # tmpdir files are ignored by default starting with ara 1.6.0
           - _tmpdir['count'] == 0
 
     - name: Validate the remainder of the files
