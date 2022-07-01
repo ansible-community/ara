@@ -10,6 +10,8 @@ def get_client(
     timeout=30,
     username=None,
     password=None,
+    cert=None,
+    key=None,
     verify=True,
     run_sql_migrations=True,
 ):
@@ -20,6 +22,10 @@ def get_client(
     if username is not None and password is not None:
         auth = HTTPBasicAuth(username, password)
 
+    cert = None
+    if cert is not None and key is not None:
+        cert = (cert, key)
+
     if client == "offline":
         from ara.clients.offline import AraOfflineClient
 
@@ -27,7 +33,7 @@ def get_client(
     elif client == "http":
         from ara.clients.http import AraHttpClient
 
-        return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth, verify=verify)
+        return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth, cert=cert, verify=verify)
     else:
         raise ValueError("Unsupported API client: %s (use 'http' or 'offline')" % client)
 
