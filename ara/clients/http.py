@@ -14,11 +14,12 @@ CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
 
 class HttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, timeout=30, verify=True):
+    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
 
         self.endpoint = endpoint.rstrip("/")
         self.auth = auth
+        self.cert = cert
         self.timeout = int(timeout)
         self.verify = verify
         self.headers = {
@@ -30,6 +31,8 @@ class HttpClient(object):
         self.http.headers.update(self.headers)
         if self.auth is not None:
             self.http.auth = self.auth
+        if self.cert is not None:
+            self.http.cert = self.cert
         self.http.verify = self.verify
 
     def _request(self, method, url, **payload):
@@ -59,13 +62,16 @@ class HttpClient(object):
 
 
 class AraHttpClient(object):
-    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, timeout=30, verify=True):
+    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
         self.endpoint = endpoint
         self.auth = auth
+        self.cert = cert
         self.timeout = int(timeout)
         self.verify = verify
-        self.client = HttpClient(endpoint=self.endpoint, timeout=self.timeout, auth=self.auth, verify=self.verify)
+        self.client = HttpClient(
+            endpoint=self.endpoint, timeout=self.timeout, auth=self.auth, cert=self.cert, verify=self.verify
+        )
         active_client._instance = weakref.ref(self)
 
     def _request(self, method, url, **kwargs):

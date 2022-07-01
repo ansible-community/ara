@@ -76,6 +76,22 @@ options:
     ini:
       - section: ara
         key: api_password
+  api_cert:
+    description: If a client certificate is required, the path to the certificate to use.
+    default: null
+    env:
+      - name: ARA_API_CERT
+    ini:
+      - section: ara
+        key: api_cert
+  api_key:
+    description: If a client certificate is required, the path to the private key to use.
+    default: null
+    env:
+      - name: ARA_API_KEY
+    ini:
+      - section: ara
+        key: api_key
   api_insecure:
     description: Can be enabled to ignore SSL certification of the API server
     type: bool
@@ -253,6 +269,8 @@ class CallbackModule(CallbackBase):
         timeout = self.get_option("api_timeout")
         username = self.get_option("api_username")
         password = self.get_option("api_password")
+        cert = self.get_option("api_cert")
+        key = self.get_option("api_key")
         insecure = self.get_option("api_insecure")
         self.client = client_utils.get_client(
             client=client,
@@ -260,6 +278,8 @@ class CallbackModule(CallbackBase):
             timeout=timeout,
             username=username,
             password=password,
+            cert=cert,
+            key=key,
             verify=False if insecure else True,
         )
 
