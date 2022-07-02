@@ -92,6 +92,14 @@ options:
     ini:
       - section: ara
         key: api_key
+  api_ca:
+    description: The path to a CA bundle.
+    default: null
+    env:
+      - name: ARA_API_CA
+    ini:
+      - section: ara
+        key: api_ca
   api_insecure:
     description: Can be enabled to ignore SSL certification of the API server
     type: bool
@@ -271,7 +279,13 @@ class CallbackModule(CallbackBase):
         password = self.get_option("api_password")
         cert = self.get_option("api_cert")
         key = self.get_option("api_key")
+        ca = self.get_option("api_ca")
         insecure = self.get_option("api_insecure")
+
+        verify = False if insecure else True
+        if ca:
+            verify = ca
+
         self.client = client_utils.get_client(
             client=client,
             endpoint=endpoint,
@@ -280,7 +294,7 @@ class CallbackModule(CallbackBase):
             password=password,
             cert=cert,
             key=key,
-            verify=False if insecure else True,
+            verify=verify,
         )
 
         # TODO: Consider un-hardcoding this and plumbing pool_maxsize to requests.adapters.HTTPAdapter.
