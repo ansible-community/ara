@@ -116,20 +116,22 @@ This error in also manifested in the server's logs as such:
 
 Adding the hostname to your ``settings.yaml`` configuration file and restarting the server should resolve the issue.
 
-Degraded playbook execution performance
----------------------------------------
+Improving playbook recording performance
+----------------------------------------
 
-Recording playbooks with the ara callback plugin introduces a `performance overhead <https://ara.recordsansible.org/blog/2020/11/01/benchmarking-ansible-and-ara-for-fun-and-science/>`_
-because we are now recording playbooks instead of just printing to the console:
+Recording playbooks with ara introduces a `performance overhead <https://ara.recordsansible.org/blog/2020/11/01/benchmarking-ansible-and-ara-for-fun-and-science/>`_
+because instead of just printing to the console there's now an additional Ansible callback plugin, an API server and a database involved:
 
 .. image:: _static/graphs/recording-workflow.png
 
-Some general tips in order to minimize the overhead and improve performance:
+In no particular order, here's high-level advice that have proven to be useful in order to minimize the overhead and improve performance:
 
-1) Run the API server with an application and frontend server (ex: gunicorn with nginx in front)
-2) Use MySQL or PostgreSQL in order to allow callback multi-threading without running into sqlite database locking constraints
-3) When using MySQL or PostgreSQL, enable callback multi-threading by setting ``ARA_API_CLIENT=http`` and ``ARA_CALLBACK_THREADS=4``
-4) When using MySQL or PostgreSQL, set :ref:`api-configuration:ARA_DATABASE_CONN_MAX_AGE` to a value >= ``60`` as the default of ``0`` is appropriate for sqlite. It will allow database connections to be re-used until the specified timeout, avoiding the overhead of closing and opening connections for every query.
-5) When :ref:`enabling authentication <api-security:Authentication and user management>`, consider using ``EXTERNAL_AUTH`` instead of the Django built-in user management to avoid a database lookup performance hit on every query.
-6) Latency is important because it adds up quickly over the course of a playbook. Keep the latency between your Ansible control node, your API server and database server as small as possible.
-7) While not specific to ara, tuning Ansible's `SSH pipelining, forks and other parameters <https://opensource.com/article/19/3/ansible-performance>`_ can yield significant performance improvements.
+- The built-in Django development server provided by the default offline API client and ``ara-manage runserver`` is simple and convenient but it isn't meant to provide the best scalability and performance
+- The API server should be run as a service with a WSGI application server like gunicorn, uwsgi or mod_wsgi with apache2/httpd
+- There should be a frontend, reverse-proxy or load balancer such as apache, nginx, haproxy or traefik in front of the API server in order to handle TLS termination, caching and authentication
+- When :ref:`enabling authentication <api-security:Authentication and user management>`, consider using ``EXTERNAL_AUTH`` instead of the Django built-in user management to avoid a database lookup performance hit on every query
+- While SQLite is good and fast enough at a small scale, it has been reported to run into concurrency and locking issues that can make MySQL or PostgreSQL a better option at a larger scale
+- When using MySQL or PostgreSQL, performance can be significantly improved by enabling callback multi-threading by setting ``ARA_API_CLIENT=http`` and ``ARA_CALLBACK_THREADS=4``
+- When using MySQL or PostgreSQL, set :ref:`api-configuration:ARA_DATABASE_CONN_MAX_AGE` to a value >= ``60`` to allow database connections to be re-used until the specified timeout, avoiding the overhead of closing and opening connections for every query
+- The latency between the Ansible control node, the API server and the database server should be kept as small as possible because it adds up multiplicatively (tasks * hosts) over the course of a playbook
+- While not specific to ara, consider tuning Ansible's `SSH pipelining, forks and other parameters <https://opensource.com/article/19/3/ansible-performance>`_ to yield significant performance improvements
