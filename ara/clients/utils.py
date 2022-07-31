@@ -22,9 +22,11 @@ def get_client(
     if username is not None and password is not None:
         auth = HTTPBasicAuth(username, password)
 
-    cert = None
+    cert_tuple = None
     if cert is not None and key is not None:
-        cert = (cert, key)
+        cert_tuple = (cert, key)
+    elif cert is not None or key is not None:
+        raise ValueError("cert and key must be used together")
 
     if client == "offline":
         from ara.clients.offline import AraOfflineClient
@@ -33,7 +35,7 @@ def get_client(
     elif client == "http":
         from ara.clients.http import AraHttpClient
 
-        return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth, cert=cert, verify=verify)
+        return AraHttpClient(endpoint=endpoint, timeout=timeout, auth=auth, cert=cert_tuple, verify=verify)
     else:
         raise ValueError("Unsupported API client: %s (use 'http' or 'offline')" % client)
 
