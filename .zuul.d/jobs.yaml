@@ -2,21 +2,21 @@
 - job:
     name: ara-tox-py3
     parent: tox
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-fedora-36
     vars:
       tox_envlist: py3
 
 - job:
     name: ara-tox-linters
     parent: tox
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-fedora-36
     vars:
       tox_envlist: linters
 
 - job:
     name: ara-tox-docs
     parent: base
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-fedora-36
     files:
       - doc/*
     run: tests/zuul_docs.yaml
@@ -45,7 +45,7 @@
 - job:
     name: ara-container-images
     parent: ara-integration-base
-    nodeset: ara-basic-nodeset
+    nodeset: ara-fedora-36
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
     run: tests/with_container_images.yaml
@@ -53,7 +53,7 @@
 - job:
     name: ara-container-images-dockerhub
     parent: ara-integration-base
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-fedora-36
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to docker.io/recordsansible/ara-api if successful.
@@ -69,7 +69,7 @@
 - job:
     name: ara-container-images-quayio
     parent: ara-integration-base
-    nodeset: fedora-latest-1vcpu
+    nodeset: ara-fedora-36
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to quay.io/recordsansible/ara-api if successful.
@@ -100,13 +100,13 @@
         override-checkout: devel
 
 - job:
-    name: ara-basic-ansible-5
+    name: ara-basic-ansible-6
     parent: ara-ansible-integration-base
     description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 5 (ansible-core 2.12).
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 6 (ansible-core 2.13).
     vars:
       ara_tests_ansible_name: ansible
-      ara_tests_ansible_version: 5.8.0
+      ara_tests_ansible_version: 6.1.0
 
 - job:
     name: ara-basic-ansible-core-2.13
@@ -134,15 +134,6 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.11
-
-- job:
-    name: ara-basic-ansible-base-2.10
-    parent: ara-ansible-integration-base
-    description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-base 2.10.
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.10
 
 - job:
     name: ara-basic-ansible-2.9
