@@ -68,15 +68,21 @@ class RecordList(Lister):
         return parser
 
     def take_action(self, args):
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
+
         query = {}
         if args.playbook is not None:
             query["playbook"] = args.playbook
@@ -130,13 +136,18 @@ class RecordShow(ShowOne):
         if args.formatter == "table":
             self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
 
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
 
@@ -182,13 +193,18 @@ class RecordDelete(Command):
         return parser
 
     def take_action(self, args):
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
 
