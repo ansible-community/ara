@@ -117,15 +117,21 @@ class HostList(Lister):
         return parser
 
     def take_action(self, args):
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
+
         query = {}
         if args.name is not None:
             query["name"] = args.name
@@ -208,13 +214,18 @@ class HostShow(ShowOne):
         if args.with_facts and args.formatter == "table":
             self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
 
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
 
@@ -275,13 +286,18 @@ class HostDelete(Command):
         return parser
 
     def take_action(self, args):
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
 
@@ -375,15 +391,21 @@ class HostMetrics(Lister):
         return parser
 
     def take_action(self, args):
+        verify = False if args.insecure else True
+        if args.ca:
+            verify = args.ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            verify=False if args.insecure else True,
+            cert=args.cert,
+            key=args.key,
+            verify=verify,
             run_sql_migrations=False,
         )
+
         query = {}
         if args.name is not None:
             query["name"] = args.name
