@@ -191,6 +191,16 @@ options:
         key: callback_threads
 """
 
+# Task modules for which ara should save host facts
+ANSIBLE_SETUP_MODULES = [
+    "setup",
+    "ansible.builtin.setup",
+    "ansible.legacy.setup",
+    "gather_facts",
+    "ansible.builtin.gather_facts",
+    "ansible.legacy.setup",
+]
+
 
 class CallbackModule(CallbackBase):
     """
@@ -660,7 +670,7 @@ class CallbackModule(CallbackBase):
             ignore_errors=kwargs.get("ignore_errors", False) or False,
         )
 
-        if task["action"] in ["setup", "gather_facts"] and "ansible_facts" in results:
+        if task["action"] in ANSIBLE_SETUP_MODULES and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
 
     def _load_stats(self, stats):
