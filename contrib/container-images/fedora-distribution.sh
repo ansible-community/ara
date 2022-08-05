@@ -2,8 +2,8 @@
 # Copyright (c) 2022 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-# Builds an ARA API server container image from Fedora 35 distribution packages.
-build=$(buildah from quay.io/fedora/fedora:35)
+# Builds an ARA API server container image from Fedora 36 distribution packages.
+build=$(buildah from quay.io/fedora/fedora:36)
 
 # Get all updates, install the ARA API server, database backends and gunicorn application server
 # This lets users swap easily from the sqlite default to mysql or postgresql just by tweaking settings.yaml.
