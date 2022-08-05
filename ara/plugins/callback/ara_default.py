@@ -192,14 +192,16 @@ options:
 """
 
 # Task modules for which ara should save host facts
-ANSIBLE_SETUP_MODULES = frozenset([
-    "setup",
-    "ansible.builtin.setup",
-    "ansible.legacy.setup",
-    "gather_facts",
-    "ansible.builtin.gather_facts",
-    "ansible.legacy.setup",
-])
+ANSIBLE_SETUP_MODULES = frozenset(
+    [
+        "setup",
+        "ansible.builtin.setup",
+        "ansible.legacy.setup",
+        "gather_facts",
+        "ansible.builtin.gather_facts",
+        "ansible.legacy.setup",
+    ]
+)
 
 
 class CallbackModule(CallbackBase):
