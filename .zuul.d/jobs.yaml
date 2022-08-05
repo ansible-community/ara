@@ -46,6 +46,18 @@
     name: ara-container-images
     parent: ara-integration-base
     nodeset: ara-fedora-36
+    files:
+      - ara/*
+      - manage.py
+      - requirements.txt
+      - roles/*
+      - setup.cfg
+      - setup.py
+      - test-requirements.txt
+      - tests/*
+      - tox.ini
+      - .zuul.d/*
+      - contrib/container-images/*
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
     run: tests/with_container_images.yaml
