@@ -2,7 +2,7 @@
 # Copyright (c) 2022 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-# Builds an ARA API server container image from checked out source on Fedora 36.
+# Builds an ARA API server container image from checked out source on CentOS Stream 9.
 # Figure out source directory relative to the contrib/container-images directory
 SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
 SOURCE_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd -P)
@@ -13,14 +13,14 @@ python3 setup.py sdist
 sdist=$(ls dist/ara-*.tar.gz)
 popd
 
-build=$(buildah from quay.io/fedora/fedora:36)
+build=$(buildah from quay.io/centos/centos:stream9)
 
 # Ensure everything is up to date and install requirements
-buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-wheel"
+buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-pip-wheel"
 
 # Install development dependencies in a single standalone transaction so we can fully undo it later
 # without leaving dangling uninstalled dependencies
-buildah run "${build}" -- dnf install -y python3-devel gcc postgresql postgresql-devel mysql-devel
+buildah run "${build}" -- dnf install -y python3-devel gcc postgresql postgresql-devel mariadb-connector-c-devel
 
 # Install ara from source with API server extras for dependencies (django & django-rest-framework)
 # including database backend libraries and gunicorn
