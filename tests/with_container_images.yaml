@@ -11,18 +11,21 @@
     images:
       # These are in chronological order of release so that we don't end up
       # running SQL migrations backwards during the tests.
-      - name: localhost/ara-api
-        tag: fedora35-source-latest
+      - tag: fedora36-source-latest
         script: fedora-source.sh
-      - name: localhost/ara-api
-        tag: fedora35-pypi-latest
+        name: localhost/ara-api
+      - tag: centos9-source-latest
+        script: centos-source.sh
+        name: localhost/ara-api
+      - tag: fedora36-pypi-latest
         script: fedora-pypi.sh
-      - name: localhost/ara-api
-        tag: centos8-stream-pypi-latest
+        name: localhost/ara-api
+      - tag: centos8-pypi-latest
         script: centos-pypi.sh
-      - name: localhost/ara-api
-        tag: fedora35-distribution-latest
+        name: localhost/ara-api
+      - tag: fedora36-distribution-latest
         script: fedora-distribution.sh
+        name: localhost/ara-api
   tasks:
     - name: Install git, buildah and podman
       become: true

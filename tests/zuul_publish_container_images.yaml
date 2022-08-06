@@ -9,23 +9,30 @@
     destination: "{{ destination_repository | default('docker.io/recordsansible/ara-api') }}"
     images:
       # These images are meant to be provided by the "with_container_images.yaml" playbook
-      - name: localhost/ara-api
-        tag: fedora35-source-latest
-      - name: localhost/ara-api
-        tag: fedora35-pypi-latest
-      - name: localhost/ara-api
-        tag: centos8-stream-pypi-latest
-      - name: localhost/ara-api
-        tag: fedora35-distribution-latest
+      - tag: fedora36-source-latest
+        script: fedora-source.sh
+        name: localhost/ara-api
+      - tag: centos9-source-latest
+        script: centos-source.sh
+        name: localhost/ara-api
+      - tag: fedora36-pypi-latest
+        script: fedora-pypi.sh
+        name: localhost/ara-api
+      - tag: centos8-pypi-latest
+        script: centos-pypi.sh
+        name: localhost/ara-api
+      - tag: fedora36-distribution-latest
+        script: fedora-distribution.sh
+        name: localhost/ara-api
   tasks:
     - name: Tag images with buildah
       command: |
         buildah tag {{ item.name }}:{{ item.tag }} {{ destination }}:{{ item.tag }}
       loop: "{{ images }}"
 
-    - name: Tag latest from fedora35-pypi-latest
+    - name: Tag latest from fedora36-pypi-latest
       command: |
-        buildah tag {{ destination }}:fedora35-pypi-latest {{ destination }}:latest
+        buildah tag {{ destination }}:fedora36-pypi-latest {{ destination }}:latest
 
     - name: Push latest
       command: |
