@@ -199,7 +199,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 USE_TZ = True
-LOCAL_TIME_ZONE = tzlocal.get_localzone().zone
+LOCAL_TIME_ZONE = tzlocal.get_localzone_name()
 TIME_ZONE = settings.get("TIME_ZONE", LOCAL_TIME_ZONE)
 
 # We do not currently support internationalization and localization, turn these
