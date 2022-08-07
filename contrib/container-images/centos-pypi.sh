@@ -15,6 +15,8 @@ buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y epel-rel
 buildah run "${build}" -- /bin/bash -c "pip3 install ara[server]"
 
 # Set up the container to execute SQL migrations and run the API server with gunicorn
+# Temporarily set $TZ env variable pending release of 1.6.0 with timezone fixes
+buildah config --env TZ=UTC
 buildah config --env ARA_BASE_DIR=/opt/ara "${build}"
 buildah config --cmd "bash -c '/usr/local/bin/ara-manage migrate && /usr/bin/gunicorn-3 --workers=4 --access-logfile - --bind 0.0.0.0:8000 ara.server.wsgi'" "${build}"
 buildah config --port 8000 "${build}"

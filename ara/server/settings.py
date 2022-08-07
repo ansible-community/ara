@@ -199,7 +199,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 USE_TZ = True
+# Under some circumstances tzlocal can't find the local timezone, it will return local or None
+# Default to UTC if this happens.
+# https://github.com/ansible-community/ara/issues/401
 LOCAL_TIME_ZONE = tzlocal.get_localzone_name()
+if LOCAL_TIME_ZONE is None or LOCAL_TIME_ZONE == "local":
+    LOCAL_TIME_ZONE = "UTC"
 TIME_ZONE = settings.get("TIME_ZONE", LOCAL_TIME_ZONE)
 
 # We do not currently support internationalization and localization, turn these
