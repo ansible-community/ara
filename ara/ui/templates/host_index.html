@@ -27,6 +27,18 @@
               </div>
             </div>
             <div class="form-row">
+              <div class="form-group col-xl-8">
+                <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;" {% endif %}>Playbook name</label>
+                <input type="text" class="form-control" id="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-8">
+                <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;" {% endif %}>Playbook path</label>
+                <input type="text" class="form-control" id="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
               <div class="form-group col-xl-5">
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="latest" value="false" name="latest" {{ checkbox_status }}>
@@ -114,7 +126,7 @@
           <tr style="height:50px;">
             <th class="text-center" title="Link to the host report">Report</th>
             <th class="text-center" title="Status of the tasks for this host">Task status</th>
-            <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+            <th title="Date">Date {% include "partials/sort_by_date.html" with arg="updated" %}</th>
             <th title="Duration of the last playbook the host was involved in">Duration</th>
             <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
             <th title="Name (or path) of the playbook">Playbook name (or path)</th>

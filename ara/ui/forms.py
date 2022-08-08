@@ -31,6 +31,8 @@ class ResultSearchForm(forms.Form):
 
 class HostSearchForm(forms.Form):
     name = forms.CharField(label="Host name", max_length=255, required=False)
+    playbook_name = forms.CharField(label="Playbook name", max_length=255, required=False)
+    playbook_path = forms.CharField(label="Playbook path", max_length=255, required=False)
     latest = forms.BooleanField(label="latest", required=False)
     changed__gt = forms.IntegerField(label="changed", required=False)
     failed__gt = forms.IntegerField(label="failed", required=False)
