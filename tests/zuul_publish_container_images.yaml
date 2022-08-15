@@ -25,6 +25,10 @@
         script: fedora-distribution.sh
         name: localhost/ara-api
   tasks:
+    - name: List built container images
+      command: buildah images
+      changed_when: false
+
     - name: Tag images with buildah
       command: |
         buildah tag {{ item.name }}:{{ item.tag }} {{ destination }}:{{ item.tag }}
