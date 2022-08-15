@@ -51,6 +51,12 @@
             policy: targeted
             state: permissive
 
-    - name: Test each container image
-      include_tasks: container_test_tasks.yaml
-      loop: "{{ images }}"
+    - block:
+        - name: Test each container image
+          include_tasks: container_test_tasks.yaml
+          loop: "{{ images }}"
+
+      always:
+        - name: List built container images
+          command: buildah images
+          changed_when: false
