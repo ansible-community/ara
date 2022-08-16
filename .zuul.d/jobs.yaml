@@ -43,7 +43,7 @@
     post-run: tests/zuul_post_logs.yaml
 
 - job:
-    name: ara-container-images
+    name: ara-integration-container-base
     parent: ara-integration-base
     nodeset: ara-fedora-36
     files:
@@ -58,14 +58,17 @@
       - tox.ini
       - .zuul.d/*
       - contrib/container-images/*
+
+- job:
+    name: ara-container-images
+    parent: ara-integration-container-base
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
     run: tests/with_container_images.yaml
 
 - job:
     name: ara-container-images-dockerhub
-    parent: ara-integration-base
-    nodeset: ara-fedora-36
+    parent: ara-integration-container-base
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to docker.io/recordsansible/ara-api if successful.
@@ -80,8 +83,7 @@
 
 - job:
     name: ara-container-images-quayio
-    parent: ara-integration-base
-    nodeset: ara-fedora-36
+    parent: ara-integration-container-base
     description: |
       Builds ARA API container images with buildah and briefly tests them with podman.
       The resulting images are pushed to quay.io/recordsansible/ara-api if successful.
