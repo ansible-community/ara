@@ -4,25 +4,19 @@
 - name: Publish container images
   hosts: all
   gather_facts: yes
-  become: yes
   vars:
     destination: "{{ destination_repository | default('docker.io/recordsansible/ara-api') }}"
     images:
       # These images are meant to be provided by the "with_container_images.yaml" playbook
       - tag: fedora36-source-latest
-        script: fedora-source.sh
         name: localhost/ara-api
       - tag: centos9-source-latest
-        script: centos-source.sh
         name: localhost/ara-api
       - tag: fedora36-pypi-latest
-        script: fedora-pypi.sh
         name: localhost/ara-api
       - tag: centos8-pypi-latest
-        script: centos-pypi.sh
         name: localhost/ara-api
       - tag: fedora36-distribution-latest
-        script: fedora-distribution.sh
         name: localhost/ara-api
   tasks:
     - name: List built container images
