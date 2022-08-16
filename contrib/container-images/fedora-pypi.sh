@@ -17,7 +17,7 @@ buildah run "${build}" -- dnf install -y ${DEV_DEPENDENCIES}
 buildah run "${build}" -- python3 -m pip install "ara[server]" "psycopg2<2.9" mysqlclient gunicorn
 
 # Remove development dependencies and clean up
-buildah run "${build}" -- /bin/bash -c "dnf remove -y ${DEV_DEPENDENCIES} && dnf autoremove -y && dnf clean all"
+buildah run "${build}" -- /bin/bash -c "dnf remove -y ${DEV_DEPENDENCIES} && dnf autoremove -y && dnf clean all && python3 -m pip cache purge"
 
 # Set up the container to execute SQL migrations and run the API server with gunicorn
 buildah config --env ARA_BASE_DIR=/opt/ara "${build}"
