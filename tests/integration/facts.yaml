@@ -1,0 +1,90 @@
+---
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- name: Add test hosts to inventory
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ara_playbook_name: ARA self tests
+    ara_playbook_labels:
+      - facts-tests
+
+  tasks:
+    - name: Add test hosts to inventory
+      add_host:
+        name: "{{ item }}"
+        ansible_host: "127.0.0.1"
+        ansible_connection: "local"
+      loop:
+        - host_gather_facts
+        - host_ansible_builtin_gather_facts
+        - host_ansible_legacy_gather_facts
+        - host_setup
+        - host_ansible_builtin_setup
+        - host_ansible_legacy_setup
+
+- name: gather facts
+  hosts: host_gather_facts, host_ansible_builtin_gather_facts, host_ansible_legacy_gather_facts, host_setup, host_ansible_builtin_setup, host_ansible_legacy_setup
+  gather_facts: no
+  vars:
+    ara_playbook_name: ARA self tests
+    ara_playbook_labels:
+      - facts-tests
+
+  tasks:
+    - name: gather facts with `gather_facts`
+      gather_facts:
+      when: inventory_hostname == "host_gather_facts"
+
+    - name: gather facts with `ansible.builtin.gather_facts`
+      ansible.builtin.gather_facts:
+      when: inventory_hostname == "host_ansible_builtin_gather_facts"
+
+    - name: gather facts with `ansible.legacy.gather_facts`
+      ansible.builtin.gather_facts:
+      when: inventory_hostname == "host_ansible_legacy_gather_facts"
+
+    - name: gather facts with `setup`
+      gather_facts:
+      when: inventory_hostname == "host_setup"
+
+    - name: gather facts with `ansible.builtin.setup`
+      ansible.builtin.gather_facts:
+      when: inventory_hostname == "host_ansible_builtin_setup"
+
+    - name: gather facts with `ansible.legacy.setup`
+      ansible.builtin.gather_facts:
+      when: inventory_hostname == "host_ansible_legacy_setup"
+
+- name: assert that facts are stored in ARA
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ara_playbook_name: ARA self tests
+    ara_playbook_labels:
+      - facts-tests
+
+  tasks:
+    - name: recover data from ARA
+      set_fact:
+        host_gather_facts: "{{ lookup('ara_api', '/api/v1/latesthosts/host_gather_facts') }}"
+        host_ansible_builtin_gather_facts: "{{ lookup('ara_api', '/api/v1/latesthosts/host_ansible_builtin_gather_facts') }}"
+        host_ansible_legacy_gather_facts: "{{ lookup('ara_api', '/api/v1/latesthosts/host_ansible_legacy_gather_facts') }}"
+        host_setup: "{{ lookup('ara_api', '/api/v1/latesthosts/host_setup') }}"
+        host_ansible_builtin_setup: "{{ lookup('ara_api', '/api/v1/latesthosts/host_ansible_builtin_setup') }}"
+        host_ansible_legacy_setup: "{{ lookup('ara_api', '/api/v1/latesthosts/host_ansible_legacy_setup') }}"
+
+    - name: check that facts are stored
+      assert:
+        that:
+          - '{{ item }}["host"]["facts"].keys() | length > 0'
+        success_msg: facts are stored for {{ item }}
+        fail_msg: facts are not stored for {{ item }}
+      loop:
+        - host_gather_facts
+        - host_ansible_builtin_gather_facts
+        - host_ansible_legacy_gather_facts
+        - host_setup
+        - host_ansible_builtin_setup
+        - host_ansible_legacy_setup

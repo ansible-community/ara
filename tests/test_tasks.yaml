@@ -75,7 +75,7 @@
     - name: Run lookups.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
-   - name: Run delegate_to integration tests
+    - name: Run delegate_to integration tests
       command: "ansible-playbook -vvv {{ _test_root }}/delegate_to.yaml"
 
     - name: Run free strategy test
@@ -86,6 +86,9 @@
 
     - name: Run import.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/import.yaml"
+
+    - name: Run facts.yaml integration test
+      command: "ansible-playbook -vvv {{ _test_root }}/facts.yaml"
 
     # Tests setting ara_playbook_name as an extra var
     - name: Run failed.yaml integration test
