@@ -37,7 +37,7 @@ def distributed_sqlite(environ, start_response):
     """
     # This endpoint is read only, do not accept write requests.
     if environ["REQUEST_METHOD"] not in ["GET", "HEAD", "OPTIONS"]:
-        handle_405(start_response)
+        return handle_405(start_response)
 
     script_name = get_script_name(environ)
     path_info = get_path_info(environ)
