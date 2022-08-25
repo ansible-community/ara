@@ -97,15 +97,11 @@ DISTRIBUTED_SQLITE_PREFIX = settings.get("DISTRIBUTED_SQLITE_PREFIX", "ara-repor
 # "/var/www/logs/some/path/ara-report" instead of "/some/path/ara-report".
 DISTRIBUTED_SQLITE_ROOT = settings.get("DISTRIBUTED_SQLITE_ROOT", "/var/www/logs")
 
-if DISTRIBUTED_SQLITE:
-    WSGI_APPLICATION = "ara.server.wsgi.distributed_sqlite"
-    DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "ara.server.db.backends.distributed_sqlite")
-else:
-    WSGI_APPLICATION = "ara.server.wsgi.application"
-    DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
+WSGI_APPLICATION = "ara.server.wsgi.application"
 
 # We're not expecting ARA to use multiple concurrent databases.
 # Make it easier for users to specify the configuration for a single database.
+DATABASE_ENGINE = settings.get("DATABASE_ENGINE", "django.db.backends.sqlite3")
 DATABASE_NAME = settings.get("DATABASE_NAME", os.path.join(BASE_DIR, "ansible.sqlite"))
 DATABASE_USER = settings.get("DATABASE_USER", None)
 DATABASE_PASSWORD = settings.get("DATABASE_PASSWORD", None)
@@ -116,7 +112,7 @@ DATABASE_OPTIONS = settings.get("DATABASE_OPTIONS", {})
 
 DATABASES = {
     "default": {
-        "ENGINE": DATABASE_ENGINE,
+        "ENGINE": "ara.server.db.backends.distributed_sqlite" if DISTRIBUTED_SQLITE else DATABASE_ENGINE,
         "NAME": DATABASE_NAME,
         "USER": DATABASE_USER,
         "PASSWORD": DATABASE_PASSWORD,
