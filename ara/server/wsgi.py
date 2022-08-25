@@ -7,6 +7,7 @@ import os
 from ara.setup.exceptions import MissingDjangoException
 
 try:
+    from django.conf import settings
     from django.core.handlers.wsgi import get_path_info, get_script_name
     from django.core.wsgi import get_wsgi_application
 except ImportError as e:
@@ -17,7 +18,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ara.server.settings")
 logger = logging.getLogger(__name__)
 
 # The default WSGI application
-application = get_wsgi_application()
+default_application = get_wsgi_application()
 
 
 def handle_405(start_response):
@@ -42,8 +43,6 @@ def distributed_sqlite(environ, start_response):
     script_name = get_script_name(environ)
     path_info = get_path_info(environ)
 
-    from django.conf import settings
-
     # The root under which database files are expected
     root = settings.DISTRIBUTED_SQLITE_ROOT
     # The prefix after which everything should be delegated (ex: /ara-report)
@@ -51,7 +50,7 @@ def distributed_sqlite(environ, start_response):
 
     # Static assets should always be served by the regular app
     if path_info.startswith(settings.STATIC_URL):
-        return application(environ, start_response)
+        return default_application(environ, start_response)
 
     if prefix not in path_info:
         logger.warn("Ignoring request: URL does not contain delegated prefix (%s)" % prefix)
@@ -86,6 +85,9 @@ def distributed_sqlite(environ, start_response):
 
     local_storage.db_path = db_file
     try:
-        return application(environ, start_response)
+        return default_application(environ, start_response)
     finally:
         del local_storage.db_path
+
+
+application = distributed_sqlite if settings.DISTRIBUTED_SQLITE else default_application
