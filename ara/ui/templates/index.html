@@ -158,7 +158,7 @@
             </td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?controller={{ playbook.executor }}">{{ playbook.executor }}</a>
+                <a href="{% url 'ui:index' %}?executor={{ playbook.executor }}">{{ playbook.executor }}</a>
               {% else %}
                 {{ playbook.executor }}
               {% endif %}
