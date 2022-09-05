@@ -141,7 +141,7 @@ class PlaybookTestCase(APITestCase):
         request = self.client.get("/api/v1/playbooks?executor=foobar")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
-        self.assertEqual(playbook.username, request.data["results"][0]["executor"])
+        self.assertEqual(playbook.executor, request.data["results"][0]["executor"])
 
         # Test partial match
         request = self.client.get("/api/v1/playbooks?executor=foo")
