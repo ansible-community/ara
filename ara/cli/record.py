@@ -31,8 +31,8 @@ class RecordList(Lister):
             help=("List records for the specified playbook"),
         )
         parser.add_argument(
-            "--key",
-            metavar="<key>",
+            "--recordkey",
+            metavar="<recordkey>",
             default=None,
             help=("List records matching the specified key"),
         )
