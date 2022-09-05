@@ -127,7 +127,7 @@ class PlaybookList(Lister):
             query["status"] = args.status
 
         if args.executor is not None:
-            query["executor"] = args.executedby
+            query["executor"] = args.executor
 
         query["order"] = args.order
         query["limit"] = args.limit
@@ -397,7 +397,7 @@ class PlaybookPrune(Command):
             query["controller"] = args.controller
 
         if args.executor is not None:
-            query["executor"] = args.executedby
+            query["executor"] = args.executor
 
         if args.name is not None:
             query["name"] = args.name
