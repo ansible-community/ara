@@ -38,6 +38,12 @@ class PlaybookList(Lister):
             help=("List playbooks that ran with the specified Ansible version (full or partial)"),
         )
         parser.add_argument(
+            "--executor",
+            metavar="<username>",
+            default=None,
+            help=("List playbooks that were run by the specified user (full or partial)"),
+        )
+        parser.add_argument(
             "--controller",
             metavar="<controller>",
             default=None,
@@ -120,6 +126,9 @@ class PlaybookList(Lister):
         if args.status is not None:
             query["status"] = args.status
 
+        if args.executor is not None:
+            query["executor"] = args.executedby
+
         query["order"] = args.order
         query["limit"] = args.limit
 
@@ -130,6 +139,7 @@ class PlaybookList(Lister):
             playbook["tasks"] = playbook["items"]["tasks"]
             playbook["results"] = playbook["items"]["results"]
             playbook["hosts"] = playbook["items"]["hosts"]
+            playbook["executor"] = playbook["items"]["executor"]
             playbook["files"] = playbook["items"]["files"]
             playbook["records"] = playbook["items"]["records"]
             # Paths can easily take up too much width real estate
@@ -142,6 +152,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
+                "executor",
                 "ansible_version",
                 "name",
                 "path",
@@ -159,6 +170,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
+                "executor",
                 "ansible_version",
                 "path",
                 "tasks",
@@ -224,6 +236,7 @@ class PlaybookShow(ShowOne):
             "id",
             "report",
             "controller",
+            "executor",
             "ansible_version",
             "status",
             "path",
@@ -234,7 +247,7 @@ class PlaybookShow(ShowOne):
             "labels",
             "arguments",
         )
-        return (columns, ([playbook[column] for column in columns]))
+        return columns, ([playbook[column] for column in columns])
 
 
 class PlaybookDelete(Command):
@@ -299,6 +312,12 @@ class PlaybookPrune(Command):
             metavar="<name>",
             default=None,
             help=("Only delete playbooks matching the provided name (full or partial)"),
+        )
+        parser.add_argument(
+            "--executor",
+            metavar="<username>",
+            default=None,
+            help=("Only delete playbooks that were executed by the specified user (full or partial)"),
         )
         parser.add_argument(
             "--ansible_version",
@@ -376,6 +395,9 @@ class PlaybookPrune(Command):
 
         if args.controller is not None:
             query["controller"] = args.controller
+
+        if args.executor is not None:
+            query["executor"] = args.executedby
 
         if args.name is not None:
             query["name"] = args.name

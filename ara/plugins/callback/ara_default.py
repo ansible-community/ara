@@ -7,6 +7,7 @@ import datetime
 import json
 import logging
 import os
+import pwd
 import socket
 from concurrent.futures import ThreadPoolExecutor
 
@@ -331,6 +332,10 @@ class CallbackModule(CallbackBase):
         # Lookup the hostname for localhost if necessary
         self.localhost_hostname = self._get_localhost_hostname()
 
+        # TODO: create a function similar to _get_localhost_hostname with error handling (if needed)
+        # Lookup executing username
+        self.executor = pwd.getpwuid(os.getuid())[0]
+
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
             self.log.debug("Global thread pool initialized with %s thread(s)" % self.callback_threads)
@@ -376,6 +381,7 @@ class CallbackModule(CallbackBase):
             status="running",
             path=path,
             controller=self.localhost_hostname,
+            executor=self.executor,
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 
