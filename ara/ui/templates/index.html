@@ -37,8 +37,8 @@
                 <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
               </div>
               <div class="form-group col-xl-5">
-                <label for="executor" {% if request.GET.executor %}style="font-weight:bold;"{% endif %}>Executing user</label>
-                <input type="text" class="form-control" id="executor" name="executor" placeholder="ex: ara-user" value="{{ search_form.executor.value | default_if_none:'' }}">
+                <label for="usercontext" {% if request.GET.usercontext %}style="font-weight:bold;"{% endif %}>User context</label>
+                <input type="text" class="form-control" id="usercontext" name="usercontext" placeholder="ex: ara-user" value="{{ search_form.usercontext.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
@@ -116,7 +116,7 @@
             <th class="text-center" title="Number of results recorded from the playbook">Results</th>
             <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
             <th class="text-center" title="Host that ran the playbook">Controller</th>
-            <th class="text-center" title="User that ran the playbook">Executing User</th>
+            <th class="text-center" title="User context of playbook run">User context</th>
             <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
             <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
             <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
@@ -151,16 +151,16 @@
             </td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
+                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller  }}</a>
               {% else %}
                 {{ playbook.controller }}
               {% endif %}
             </td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?executor={{ playbook.executor }}">{{ playbook.executor }}</a>
+                <a href="{% url 'ui:index' %}?usercontext={{ playbook.usercontext | default_if_none:'n/a' }}">{{ playbook.usercontext | default_if_none:'n/a' }}</a>
               {% else %}
-                {{ playbook.executor }}
+                {{ playbook.usercontext | default_if_none:'n/a' }}
               {% endif %}
             </td>
             <td title="{{ playbook.path }}">

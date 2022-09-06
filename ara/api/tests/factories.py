@@ -31,7 +31,7 @@ class PlaybookFactory(DjangoModelFactory):
 
     controller = "localhost"
     name = "test-playbook"
-    executor = "ara-user"
+    usercontext = "ara-user"
     ansible_version = "2.4.0"
     status = "running"
     arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)

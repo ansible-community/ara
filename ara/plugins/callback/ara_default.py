@@ -334,7 +334,7 @@ class CallbackModule(CallbackBase):
 
         # TODO: create a function similar to _get_localhost_hostname with error handling (if needed)
         # Lookup executing username
-        self.executor = pwd.getpwuid(os.getuid())[0]
+        self.usercontext = pwd.getpwuid(os.getuid())[0]
 
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -381,7 +381,7 @@ class CallbackModule(CallbackBase):
             status="running",
             path=path,
             controller=self.localhost_hostname,
-            executor=self.executor,
+            usercontext=self.usercontext,
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 

@@ -52,7 +52,7 @@
           started: "{{ ansible_date_time.iso8601_micro }}"
           status: running
           controller: localhost
-          executor: ara-user
+          usercontext: ara-user
           labels:
             - "{{ _get_root.json['version'] }}"
             - "{{ item.name }}:{{ item.tag }}"

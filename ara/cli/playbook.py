@@ -38,10 +38,10 @@ class PlaybookList(Lister):
             help=("List playbooks that ran with the specified Ansible version (full or partial)"),
         )
         parser.add_argument(
-            "--executor",
+            "--usercontext",
             metavar="<username>",
             default=None,
-            help=("List playbooks that were run by the specified user (full or partial)"),
+            help=("List playbooks that were run in the specified user context (full or partial)"),
         )
         parser.add_argument(
             "--controller",
@@ -126,8 +126,8 @@ class PlaybookList(Lister):
         if args.status is not None:
             query["status"] = args.status
 
-        if args.executor is not None:
-            query["executor"] = args.executor
+        if args.usercontext is not None:
+            query["usercontext"] = args.usercontext
 
         query["order"] = args.order
         query["limit"] = args.limit
@@ -139,7 +139,7 @@ class PlaybookList(Lister):
             playbook["tasks"] = playbook["items"]["tasks"]
             playbook["results"] = playbook["items"]["results"]
             playbook["hosts"] = playbook["items"]["hosts"]
-            playbook["executor"] = playbook["items"]["executor"]
+            playbook["usercontext"] = playbook["items"]["usercontext"]
             playbook["files"] = playbook["items"]["files"]
             playbook["records"] = playbook["items"]["records"]
             # Paths can easily take up too much width real estate
@@ -152,7 +152,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
-                "executor",
+                "usercontext",
                 "ansible_version",
                 "name",
                 "path",
@@ -170,7 +170,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
-                "executor",
+                "usercontext",
                 "ansible_version",
                 "path",
                 "tasks",
@@ -236,7 +236,7 @@ class PlaybookShow(ShowOne):
             "id",
             "report",
             "controller",
-            "executor",
+            "usercontext",
             "ansible_version",
             "status",
             "path",
@@ -314,10 +314,10 @@ class PlaybookPrune(Command):
             help=("Only delete playbooks matching the provided name (full or partial)"),
         )
         parser.add_argument(
-            "--executor",
+            "--usercontext",
             metavar="<username>",
             default=None,
-            help=("Only delete playbooks that were executed by the specified user (full or partial)"),
+            help=("Only delete playbooks that were executed in the specified user context (full or partial)"),
         )
         parser.add_argument(
             "--ansible_version",
@@ -396,8 +396,8 @@ class PlaybookPrune(Command):
         if args.controller is not None:
             query["controller"] = args.controller
 
-        if args.executor is not None:
-            query["executor"] = args.executor
+        if args.usercontext is not None:
+            query["usercontext"] = args.usercontext
 
         if args.name is not None:
             query["name"] = args.name
