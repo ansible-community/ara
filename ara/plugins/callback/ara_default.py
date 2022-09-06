@@ -4,10 +4,10 @@
 from __future__ import absolute_import, division, print_function
 
 import datetime
+import getpass
 import json
 import logging
 import os
-import pwd
 import socket
 from concurrent.futures import ThreadPoolExecutor
 
@@ -229,6 +229,16 @@ ANSIBLE_SETUP_MODULES = frozenset(
 )
 
 
+def _get_user_context():
+    """Returns the user who ran the playbook using `getpass` or `None` in rare case of errors"""
+    try:
+        usercontext = getpass.getuser()
+    except Exception:
+        usercontext = None
+
+    return usercontext
+
+
 class CallbackModule(CallbackBase):
     """
     Saves data from an Ansible run into a database
@@ -332,9 +342,7 @@ class CallbackModule(CallbackBase):
         # Lookup the hostname for localhost if necessary
         self.localhost_hostname = self._get_localhost_hostname()
 
-        # TODO: create a function similar to _get_localhost_hostname with error handling (if needed)
-        # Lookup executing username
-        self.usercontext = pwd.getpwuid(os.getuid())[0]
+        self.usercontext = _get_user_context()
 
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)

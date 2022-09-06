@@ -38,7 +38,7 @@
               </div>
               <div class="form-group col-xl-5">
                 <label for="usercontext" {% if request.GET.usercontext %}style="font-weight:bold;"{% endif %}>User context</label>
-                <input type="text" class="form-control" id="usercontext" name="usercontext" placeholder="ex: ara-user" value="{{ search_form.usercontext.value | default_if_none:'' }}">
+                <input type="text" class="form-control" id="usercontext" name="usercontext" placeholder="ex: ara-user" value="{{ search_form.usercontext.value  }}">
               </div>
             </div>
             <div class="form-row">
@@ -157,11 +157,7 @@
               {% endif %}
             </td>
             <td class="text-center">
-              {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?usercontext={{ playbook.usercontext | default_if_none:'n/a' }}">{{ playbook.usercontext | default_if_none:'n/a' }}</a>
-              {% else %}
-                {{ playbook.usercontext | default_if_none:'n/a' }}
-              {% endif %}
+              {{ playbook.usercontext | default_if_none:'n/a' }}
             </td>
             <td title="{{ playbook.path }}">
               {% if not static_generation %}
