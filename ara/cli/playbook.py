@@ -39,9 +39,9 @@ class PlaybookList(Lister):
         )
         parser.add_argument(
             "--usercontext",
-            metavar="<username>",
+            metavar="<usercontext>",
             default=None,
-            help=("List playbooks that were run in the specified user context (full or partial)"),
+            help=("List playbooks that were run in the specified username context (full or partial)"),
         )
         parser.add_argument(
             "--controller",
@@ -139,7 +139,6 @@ class PlaybookList(Lister):
             playbook["tasks"] = playbook["items"]["tasks"]
             playbook["results"] = playbook["items"]["results"]
             playbook["hosts"] = playbook["items"]["hosts"]
-            playbook["usercontext"] = playbook["items"]["usercontext"]
             playbook["files"] = playbook["items"]["files"]
             playbook["records"] = playbook["items"]["records"]
             # Paths can easily take up too much width real estate
@@ -315,9 +314,9 @@ class PlaybookPrune(Command):
         )
         parser.add_argument(
             "--usercontext",
-            metavar="<username>",
+            metavar="<usercontext>",
             default=None,
-            help=("Only delete playbooks that were executed in the specified user context (full or partial)"),
+            help=("Only delete playbooks that were executed in the specified username context (full or partial)"),
         )
         parser.add_argument(
             "--ansible_version",
