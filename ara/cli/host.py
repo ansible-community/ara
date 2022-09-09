@@ -118,16 +118,16 @@ class HostList(Lister):
 
     def take_action(self, args):
         verify = False if args.insecure else True
-        if args.ca:
-            verify = args.ca
+        if args.ssl_ca:
+            verify = args.ssl_ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            cert=args.cert,
-            key=args.key,
+            cert=args.ssl_cert,
+            key=args.ssl_key,
             verify=verify,
             run_sql_migrations=False,
         )
@@ -215,16 +215,16 @@ class HostShow(ShowOne):
             self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
 
         verify = False if args.insecure else True
-        if args.ca:
-            verify = args.ca
+        if args.ssl_ca:
+            verify = args.ssl_ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            cert=args.cert,
-            key=args.key,
+            cert=args.ssl_cert,
+            key=args.ssl_key,
             verify=verify,
             run_sql_migrations=False,
         )
@@ -287,16 +287,16 @@ class HostDelete(Command):
 
     def take_action(self, args):
         verify = False if args.insecure else True
-        if args.ca:
-            verify = args.ca
+        if args.ssl_ca:
+            verify = args.ssl_ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            cert=args.cert,
-            key=args.key,
+            cert=args.ssl_cert,
+            key=args.ssl_key,
             verify=verify,
             run_sql_migrations=False,
         )
@@ -392,16 +392,16 @@ class HostMetrics(Lister):
 
     def take_action(self, args):
         verify = False if args.insecure else True
-        if args.ca:
-            verify = args.ca
+        if args.ssl_ca:
+            verify = args.ssl_ca
         client = get_client(
             client=args.client,
             endpoint=args.server,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
-            cert=args.cert,
-            key=args.key,
+            cert=args.ssl_cert,
+            key=args.ssl_key,
             verify=verify,
             run_sql_migrations=False,
         )

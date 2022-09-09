@@ -46,19 +46,19 @@ def global_arguments(parser):
         help=("API server password for authentication, defaults to ARA_API_PASSWORD or None"),
     )
     parser.add_argument(
-        "--cert",
+        "--ssl-cert",
         metavar="<path/to/certificate>",
         default=os.environ.get("ARA_API_CERT", None),
         help=("If a client certificate is required, the path to the certificate to use"),
     )
     parser.add_argument(
-        "--key",
+        "--ssl-key",
         metavar="<path/to/key>",
         default=os.environ.get("ARA_API_KEY", None),
         help=("If a client certificate is required, the path to the private key to use"),
     )
     parser.add_argument(
-        "--ca",
+        "--ssl-ca",
         metavar="<path/to/cacert>",
         default=os.environ.get("ARA_API_CA", None),
         help=("Path to a certificate authority for trusting the API server certificate"),
