@@ -7,6 +7,7 @@ import weakref
 
 import pbr.version
 import requests
+import urllib3
 
 from ara.clients.utils import active_client
 
@@ -33,6 +34,8 @@ class HttpClient(object):
             self.http.auth = self.auth
         if self.cert is not None:
             self.http.cert = self.cert
+        if not self.verify:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.http.verify = self.verify
 
     def _request(self, method, url, **payload):
