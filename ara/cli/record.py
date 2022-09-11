@@ -20,7 +20,7 @@ class RecordList(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(RecordList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         # Record search arguments and ordering as per ara.api.filters.RecordFilter
@@ -120,7 +120,7 @@ class RecordShow(ShowOne):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(RecordShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -181,7 +181,7 @@ class RecordDelete(Command):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(RecordDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(

@@ -53,10 +53,10 @@ class ActionModule(ActionBase):
     """Retrieves either a specific playbook from ARA or the one currently running"""
 
     TRANSFERS_FILES = False
-    VALID_ARGS = frozenset(("playbook_id"))
+    VALID_ARGS = frozenset("playbook_id")
 
     def __init__(self, *args, **kwargs):
-        super(ActionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.client = client_utils.active_client()
 
     def run(self, tmp=None, task_vars=None):
@@ -65,10 +65,10 @@ class ActionModule(ActionBase):
 
         for arg in self._task.args:
             if arg not in self.VALID_ARGS:
-                result = {"failed": True, "msg": "{0} is not a valid option.".format(arg)}
+                result = {"failed": True, "msg": f"{arg} is not a valid option."}
                 return result
 
-        result = super(ActionModule, self).run(tmp, task_vars)
+        result = super().run(tmp, task_vars)
 
         playbook_id = self._task.args.get("playbook_id", None)
         if playbook_id is None:

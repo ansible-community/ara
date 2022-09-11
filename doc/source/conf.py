@@ -30,8 +30,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'ara'
-copyright = u'2022, ARA Records Ansible authors'
+project = 'ara'
+copyright = '2022, ARA Records Ansible authors'
 author = 'ARA Records Ansible authors'
 
 # The short X.Y version.
@@ -66,8 +66,8 @@ htmlhelp_basename = '%sdoc' % project
 latex_documents = [
     ('index',
      '%s.tex' % project,
-     u'%s Documentation' % project,
-     u'ARA Records Ansible authors', 'manual'),
+     '%s Documentation' % project,
+     'ARA Records Ansible authors', 'manual'),
 ]
 
 # Example configuration for intersphinx: refer to the Python standard library.

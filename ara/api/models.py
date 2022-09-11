@@ -34,7 +34,7 @@ class Duration(Base):
         # Compute duration based on available timestamps
         if self.ended is not None:
             self.duration = self.ended - self.started
-        return super(Duration, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class Label(Base):

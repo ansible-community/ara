@@ -12,7 +12,7 @@ from ara.api import models
 from ara.api.tests import factories
 
 
-class LogCheckerMixin(object):
+class LogCheckerMixin:
     def run_prune_command(self, *args, **opts):
         # the command uses logging instead of prints so we need to use assertLogs
         # to retrieve and test the output

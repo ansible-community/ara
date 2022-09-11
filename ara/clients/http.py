@@ -14,7 +14,7 @@ from ara.clients.utils import active_client
 CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
 
 
-class HttpClient(object):
+class HttpClient:
     def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class HttpClient(object):
         return self._request("delete", url)
 
 
-class AraHttpClient(object):
+class AraHttpClient:
     def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
         self.endpoint = endpoint
@@ -85,12 +85,12 @@ class AraHttpClient(object):
             response = func(url, **kwargs)
 
         if response.status_code >= 500:
-            self.log.error("Failed to {method} on {url}: {content}".format(method=method, url=url, content=kwargs))
+            self.log.error(f"Failed to {method} on {url}: {kwargs}")
 
-        self.log.debug("HTTP {status}: {method} on {url}".format(status=response.status_code, method=method, url=url))
+        self.log.debug(f"HTTP {response.status_code}: {method} on {url}")
 
         if response.status_code not in [200, 201, 204]:
-            self.log.error("Failed to {method} on {url}: {content}".format(method=method, url=url, content=kwargs))
+            self.log.error(f"Failed to {method} on {url}: {kwargs}")
 
         if response.status_code == 204:
             return response

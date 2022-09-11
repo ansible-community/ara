@@ -20,7 +20,7 @@ class HostList(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         # Host search arguments and ordering as per ara.api.filters.HostFilter
@@ -193,7 +193,7 @@ class HostShow(ShowOne):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -274,7 +274,7 @@ class HostDelete(Command):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -311,7 +311,7 @@ class HostMetrics(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(HostMetrics, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         # Host search arguments and ordering as per ara.api.filters.HostFilter

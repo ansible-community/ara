@@ -125,7 +125,7 @@ class ActionModule(ActionBase):
     VALID_TYPES = ["text", "url", "json", "list", "dict"]
 
     def __init__(self, *args, **kwargs):
-        super(ActionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.client = client_utils.active_client()
 
     def create_or_update_key(self, playbook, key, value, type):
@@ -151,10 +151,10 @@ class ActionModule(ActionBase):
 
         for arg in self._task.args:
             if arg not in self.VALID_ARGS:
-                result = {"failed": True, "msg": "{0} is not a valid option.".format(arg)}
+                result = {"failed": True, "msg": f"{arg} is not a valid option."}
                 return result
 
-        result = super(ActionModule, self).run(tmp, task_vars)
+        result = super().run(tmp, task_vars)
 
         playbook_id = self._task.args.get("playbook_id", None)
         key = self._task.args.get("key", None)
@@ -165,12 +165,12 @@ class ActionModule(ActionBase):
         for parameter in required:
             if not self._task.args.get(parameter):
                 result["failed"] = True
-                result["msg"] = "Parameter '{0}' is required".format(parameter)
+                result["msg"] = f"Parameter '{parameter}' is required"
                 return result
 
         if type not in self.VALID_TYPES:
             result["failed"] = True
-            msg = "Type '{0}' is not supported, choose one of: {1}".format(type, ", ".join(self.VALID_TYPES))
+            msg = "Type '{}' is not supported, choose one of: {}".format(type, ", ".join(self.VALID_TYPES))
             result["msg"] = msg
             return result
 
@@ -200,5 +200,5 @@ class ActionModule(ActionBase):
         except Exception as e:
             result["changed"] = False
             result["failed"] = True
-            result["msg"] = "Record failed to be created or updated in ARA: {0}".format(str(e))
+            result["msg"] = f"Record failed to be created or updated in ARA: {str(e)}"
         return result

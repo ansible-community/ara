@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 class RootTestCase(APITestCase):
     def test_root_endpoint(self):
         result = self.client.get("/api/")
-        self.assertEqual(set(result.data.keys()), set(["kind", "version", "api"]))
+        self.assertEqual(set(result.data.keys()), {"kind", "version", "api"})
         self.assertEqual(result.data["kind"], "ara")
         self.assertEqual(result.data["version"], pkg_resources.get_distribution("ara").version)
         self.assertEqual(len(result.data["api"]), 1)

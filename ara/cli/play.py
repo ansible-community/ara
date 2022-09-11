@@ -20,7 +20,7 @@ class PlayList(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlayList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         # Play search arguments and ordering as per ara.api.filters.PlayFilter
@@ -142,7 +142,7 @@ class PlayShow(ShowOne):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlayShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -201,7 +201,7 @@ class PlayDelete(Command):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlayDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(

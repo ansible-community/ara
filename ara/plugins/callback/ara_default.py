@@ -1,7 +1,6 @@
 # Copyright (c) 2022 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
 
 import datetime
 import json
@@ -238,7 +237,7 @@ class CallbackModule(CallbackBase):
     CALLBACK_NAME = "ara_default"
 
     def __init__(self):
-        super(CallbackModule, self).__init__()
+        super().__init__()
         self.log = logging.getLogger("ara.plugins.callback.default")
         self.localhost_hostname = None
         # These are configured in self.set_options
@@ -264,7 +263,7 @@ class CallbackModule(CallbackBase):
         self.delegation_cache = {}
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
-        super(CallbackModule, self).set_options(task_keys=task_keys, var_options=var_options, direct=direct)
+        super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
         self.argument_labels = self.get_option("argument_labels")
         self.default_labels = self.get_option("default_labels")
@@ -340,8 +339,8 @@ class CallbackModule(CallbackBase):
         if playbook._file_name == "__adhoc_playbook__":
             content = cli_options["module_name"]
             if cli_options["module_args"]:
-                content = "{0}: {1}".format(content, cli_options["module_args"])
-            path = "Ad-Hoc: {0}".format(content)
+                content = "{}: {}".format(content, cli_options["module_args"])
+            path = f"Ad-Hoc: {content}"
         else:
             path = os.path.abspath(playbook._file_name)
 
@@ -415,7 +414,7 @@ class CallbackModule(CallbackBase):
             ignored = False
             for ignored_file_pattern in self.ignored_files:
                 if ignored_file_pattern in path:
-                    self.log.debug("Ignoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
+                    self.log.debug(f"Ignoring file {path}, matched pattern: {ignored_file_pattern}")
                     ignored = True
                     break
 
@@ -578,14 +577,14 @@ class CallbackModule(CallbackBase):
             for ignored_file_pattern in self.ignored_files:
                 if ignored_file_pattern in path:
                     # The file must be created because there will be things referring to it
-                    self.log.debug("Censoring file {1}, matched pattern: {0}".format(ignored_file_pattern, path))
+                    self.log.debug(f"Censoring file {path}, matched pattern: {ignored_file_pattern}")
                     content = "Not saved by ARA as configured by 'ignored_files'"
             if content is None:
                 try:
-                    with open(path, "r") as fd:
+                    with open(path) as fd:
                         content = fd.read()
-                except IOError as e:
-                    self.log.error("Unable to open {0} for reading: {1}".format(path, str(e)))
+                except OSError as e:
+                    self.log.error(f"Unable to open {path} for reading: {str(e)}")
                     content = """ARA was not able to read this file successfully.
                             Refer to the logs for more information"""
 
