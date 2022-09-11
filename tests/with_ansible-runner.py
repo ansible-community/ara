@@ -5,11 +5,12 @@
 # Example using ara with ansible-runner
 import json
 import os
+
 import ansible_runner
 
 try:
-    from ara.setup import callback_plugins, action_plugins, lookup_plugins
     from ara.clients.utils import get_client
+    from ara.setup import action_plugins, callback_plugins, lookup_plugins
 except ImportError as e:
     print("ara must be installed first: https://github.com/ansible-community/ara#getting-started")
     raise(e)

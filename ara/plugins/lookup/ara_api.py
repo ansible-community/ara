@@ -6,7 +6,6 @@ from ansible.plugins.lookup import LookupBase
 
 from ara.clients import utils as client_utils
 
-
 DOCUMENTATION = """
     lookup: ara_api
     author: David Moreau-Simard (@dmsimard)
