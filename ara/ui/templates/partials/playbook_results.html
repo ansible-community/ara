@@ -33,12 +33,12 @@
                   <div class="card-body">
                     <div class="form-row">
                       <div class="form-group col-xl-4">
-                        <label for="host" {% if request.GET.host %}style="font-weight:bold;"{% endif %}>Host ID</label>
-                        <input type="text" class="form-control" id="host" name="host" placeholder="ex: 1234" value="{{ search_form.host.value | default_if_none:'' }}">
+                        <label for="host_name" {% if request.GET.host_name %}style="font-weight:bold;"{% endif %}>Host name</label>
+                        <input type="text" class="form-control" id="host_name" name="host_name" placeholder="ex: host1234" value="{{ search_form.host_name.value | default_if_none:'' }}">
                       </div>
                       <div class="form-group col-xl-4">
-                        <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
-                        <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
+                        <label for="task_name" {% if request.GET.task_name %}style="font-weight:bold;"{% endif %}>Task name</label>
+                        <input type="text" class="form-control" id="task_name" name="task_name" placeholder="ex: Install httpd" value="{{ search_form.task_name.value | default_if_none:'' }}">
                       </div>
                     </div>
                     <div class="form-row">
@@ -136,7 +136,7 @@
                   </td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% url 'ui:playbook' playbook.id %}?host={{ result.host.id }}#results">{{ result.host.name }}</a>
+                      <a href="{% url 'ui:playbook' playbook.id %}?host_name={{ result.host.name }}#results">{{ result.host.name }}</a>
                     {% else %}
                       {{ result.host.name }}
                     {% endif %}
@@ -159,7 +159,7 @@
                   </td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% url 'ui:playbook' playbook.id %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
+                      <a href="{% url 'ui:playbook' playbook.id %}?task_name={{ result.task.name }}#results">{{ result.task.name }}</a>
                     {% else %}
                       {{ result.task.name }}
                     {% endif %}

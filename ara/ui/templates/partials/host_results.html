@@ -56,8 +56,8 @@
                   <div class="card-body">
                     <div class="form-row">
                       <div class="form-group col-xl-4">
-                        <label for="task" {% if request.GET.task %}style="font-weight:bold;"{% endif %}>Task ID</label>
-                        <input type="text" class="form-control" id="task" name="task" placeholder="ex: 1234" value="{{ search_form.task.value | default_if_none:'' }}">
+                        <label for="task_name" {% if request.GET.task_name %}style="font-weight:bold;"{% endif %}>Task name</label>
+                        <input type="text" class="form-control" id="task_name" name="task_name" placeholder="ex: Install httpd" value="{{ search_form.task_name.value | default_if_none:'' }}">
                       </div>
                     </div>
                     <div class="form-row">
@@ -173,7 +173,7 @@
                   </td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% static_url playbook_url %}?task={{ result.task.id }}#results">{{ result.task.name }}</a>
+                      <a href="{% static_url playbook_url %}?task_name={{ result.task.name }}#results">{{ result.task.name }}</a>
                     {% else %}
                       {{ result.task.name }}
                     {% endif %}
