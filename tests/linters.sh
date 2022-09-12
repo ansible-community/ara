@@ -6,6 +6,7 @@
 tests=$(dirname $0)
 export PROJECT_ROOT=$(cd `dirname $tests` && pwd -P)
 export PROJECT_LIB="${PROJECT_ROOT}/ara"
+export LINTING_TARGETS=("${PROJECT_LIB}" "${PROJECT_ROOT}/tests" "${PROJECT_ROOT}/doc" "${PROJECT_ROOT}/setup.py" "${PROJECT_ROOT}/manage.py")
 ret=0
 
 function banner() {
@@ -26,22 +27,22 @@ if [ -z "${VIRTUAL_ENV}" ]; then
 fi
 
 banner black
-time black --config ${PROJECT_ROOT}/.black.toml --diff --check "${PROJECT_LIB}"
+time black --config "${PROJECT_ROOT}/.black.toml" --diff --check "${LINTING_TARGETS[@]}"
 ret+=$?
 
 banner isort
-time isort --recursive --check-only --diff "${PROJECT_LIB}"
+time isort --check-only --diff "${LINTING_TARGETS[@]}"
 ret+=$?
 
 banner flake8
-time flake8 "${PROJECT_LIB}"
+time flake8 "${LINTING_TARGETS[@]}"
 ret+=$?
 
 # B303 - Use of insecure MD2, MD4, or MD5 hash function.
 # B324 - Use of weak MD4, MD5, or SHA1 hash for security. Consider usedforsecurity=False
 # We're using sha1 to generate a hash of file contents.
 banner bandit
-time bandit -r "${PROJECT_LIB}" --skip B303,B324
+time bandit -r "${LINTING_TARGETS[@]}" --skip B303,B324
 ret+=$?
 
 if [ $ret -gt 0 ]

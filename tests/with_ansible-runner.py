@@ -5,16 +5,18 @@
 # Example using ara with ansible-runner
 import json
 import os
+
 import ansible_runner
 
 try:
-    from ara.setup import callback_plugins, action_plugins, lookup_plugins
     from ara.clients.utils import get_client
+    from ara.setup import action_plugins, callback_plugins, lookup_plugins
 except ImportError as e:
     print("ara must be installed first: https://github.com/ansible-community/ara#getting-started")
-    raise(e)
+    raise e
 
 PLAYBOOK = os.path.join(os.path.dirname(__file__), "runner-playbook.yml")
+
 
 def main():
     # Configure Ansible to use the ara Ansible plugins
@@ -37,7 +39,7 @@ def main():
     # Run a playbook with ansible
     # This example relies on the playbook creating a ./.ara_playbook file with the playbook id in it.
     # You could run any playbook so long as it provides a mechanism to retrieve the playbook id.
-    r = ansible_runner.run(
+    ansible_runner.run(
         playbook=PLAYBOOK,
     )
     playbook_file = os.path.join(os.path.dirname(__file__), ".ara_playbook")
@@ -63,18 +65,21 @@ def main():
     for result in results["results"]:
         host = client.get("/api/v1/hosts/%s" % result["host"])
 
-        print(template.format(
-            timestamp=result["ended"],
-            host=host["name"],
-            status=result["status"],
-            task=task["name"],
-            task_file=task["path"],
-            lineno=task["lineno"]
-        ))
+        print(
+            template.format(
+                timestamp=result["ended"],
+                host=host["name"],
+                status=result["status"],
+                task=task["name"],
+                task_file=task["path"],
+                lineno=task["lineno"],
+            )
+        )
 
         # Result list doesn't have a detailed view of the result including the content
         detailed_result = client.get("/api/v1/results/%s" % result["id"])
         print(json.dumps(detailed_result["content"], indent=2))
+
 
 if __name__ == "__main__":
     main()
