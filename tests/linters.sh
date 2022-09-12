@@ -30,7 +30,7 @@ time black --config ${PROJECT_ROOT}/.black.toml --diff --check "${PROJECT_LIB}"
 ret+=$?
 
 banner isort
-time isort --recursive --check-only --diff "${PROJECT_LIB}"
+time isort --check-only --diff "${PROJECT_LIB}"
 ret+=$?
 
 banner flake8
