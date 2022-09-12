@@ -21,7 +21,7 @@ class PlaybookList(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlaybookList, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         # Playbook search arguments and ordering as per ara.api.filters.PlaybookFilter
@@ -182,7 +182,7 @@ class PlaybookShow(ShowOne):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlaybookShow, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -243,7 +243,7 @@ class PlaybookDelete(Command):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlaybookDelete, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -281,7 +281,7 @@ class PlaybookPrune(Command):
     deleted = 0
 
     def get_parser(self, prog_name):
-        parser = super(PlaybookPrune, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(
@@ -421,7 +421,7 @@ class PlaybookMetrics(Lister):
     log = logging.getLogger(__name__)
 
     def get_parser(self, prog_name):
-        parser = super(PlaybookMetrics, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(

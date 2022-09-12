@@ -85,7 +85,7 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(201, request.status_code)
         self.assertEqual(1, models.Playbook.objects.count())
         self.assertEqual(request.data["status"], "running")
-        self.assertEqual(sorted([label["name"] for label in request.data["labels"]]), sorted(labels))
+        self.assertEqual(sorted(label["name"] for label in request.data["labels"]), sorted(labels))
 
     def test_partial_update_playbook(self):
         playbook = factories.PlaybookFactory()

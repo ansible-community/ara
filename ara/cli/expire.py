@@ -20,7 +20,7 @@ class ExpireObjects(Command):
     expired = 0
 
     def get_parser(self, prog_name):
-        parser = super(ExpireObjects, self).get_parser(prog_name)
+        parser = super().get_parser(prog_name)
         parser = global_arguments(parser)
         # fmt: off
         parser.add_argument(

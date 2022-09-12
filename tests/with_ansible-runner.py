@@ -43,7 +43,7 @@ def main():
         playbook=PLAYBOOK,
     )
     playbook_file = os.path.join(os.path.dirname(__file__), ".ara_playbook")
-    with open(playbook_file, "r") as f:
+    with open(playbook_file) as f:
         playbook_id = f.read()
 
     # Retrieve an ara API client

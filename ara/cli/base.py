@@ -75,7 +75,7 @@ def global_arguments(parser):
 
 class AraCli(App):
     def __init__(self):
-        super(AraCli, self).__init__(
+        super().__init__(
             description="A CLI client to query ARA API servers",
             version=CLIENT_VERSION,
             command_manager=CommandManager("ara.cli"),
@@ -83,7 +83,7 @@ class AraCli(App):
         )
 
     def build_option_parser(self, description, version):
-        parser = super(AraCli, self).build_option_parser(description, version)
+        parser = super().build_option_parser(description, version)
         return parser
 
     def initialize_app(self, argv):
