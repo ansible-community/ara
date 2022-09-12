@@ -39,6 +39,7 @@
     {% else %}
       {{ host.playbook.name }}
     {% endif %}
+  </td>
   {% else %}
   <td title="Search results for {{ host.playbook.path }}">
     {% if not static_generation %}
@@ -46,7 +47,7 @@
     {% else %}
       {{ host.playbook.path | truncatepath:50 }}
     {% endif %}
-  {% endif %}
   </td>
+  {% endif %}
   <td>{% include "partials/host_facts_snippets.html" with host=host %}</td>
 </tr>

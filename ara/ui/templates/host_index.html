@@ -22,7 +22,7 @@
           <div class="card-body">
             <div class="form-row">
               <div class="form-group col-xl-8">
-                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Host name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
             </div>
