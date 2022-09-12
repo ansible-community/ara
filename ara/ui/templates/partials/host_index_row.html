@@ -11,19 +11,27 @@
     </svg>
     </a>
   </td>
-  <td class="text-center">
+<td class="text-center">
+    {% if host.ok %}
     <a class="badge badge-pill badge-success ara-result-status-badge" title="Search for tasks with status: ok" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results"{% endif %}>
       {{ host.ok }}
     </a>
+    {% endif %}
+    {% if host.changed %}
     <a class="badge badge-pill badge-warning ara-result-status-badge" title="Search for tasks with status: changed" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results"{% endif %}>
       {{ host.changed }}
     </a>
+    {% endif %}
+    {% if host.failed or host.unreachable %}
     <a class="badge badge-pill badge-danger ara-result-status-badge" title="Search for tasks with status: failed and unreachable" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed&status=unreachable#results"{% endif %}>
       {{ host.failed |add:host.unreachable }}
     </a>
+    {% endif %}
+    {% if host.skipped %}
     <a class="badge badge-pill badge-info ara-result-status-badge" title="Search for tasks with status: skipped" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results"{% endif %}>
       {{ host.skipped }}
     </a>
+    {% endif %}
   </td>
   <td class="text-nowrap">{{ host.updated | format_date }}</td>
   <td class="text-nowrap">{{ host.playbook.duration | format_duration }}</td>
