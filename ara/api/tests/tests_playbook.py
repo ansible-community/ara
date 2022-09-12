@@ -21,7 +21,7 @@ class PlaybookTestCase(APITestCase):
             data={
                 "controller": "serializer",
                 "name": "serializer-playbook",
-                "usercontext": "ara-user",
+                "user": "ara-user",
                 "ansible_version": "2.4.0",
                 "path": "/path/playbook.yml",
             }
@@ -31,7 +31,7 @@ class PlaybookTestCase(APITestCase):
         playbook.refresh_from_db()
         self.assertEqual(playbook.controller, "serializer")
         self.assertEqual(playbook.name, "serializer-playbook")
-        self.assertEqual(playbook.usercontext, "ara-user")
+        self.assertEqual(playbook.user, "ara-user")
         self.assertEqual(playbook.ansible_version, "2.4.0")
         self.assertEqual(playbook.status, "unknown")
 
@@ -133,18 +133,18 @@ class PlaybookTestCase(APITestCase):
         request = self.client.get("/api/v1/playbooks?controller=controller")
         self.assertEqual(len(request.data["results"]), 2)
 
-    def test_get_playbook_by_user_context(self):
-        playbook = factories.PlaybookFactory(name="playbook1", usercontext="foobar")
-        factories.PlaybookFactory(name="playbook2", usercontext="foobaz")
+    def test_get_playbook_by_user(self):
+        playbook = factories.PlaybookFactory(name="playbook1", user="foobar")
+        factories.PlaybookFactory(name="playbook2", user="foobaz")
 
         # Test exact match
-        request = self.client.get("/api/v1/playbooks?usercontext=foobar")
+        request = self.client.get("/api/v1/playbooks?user=foobar")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
-        self.assertEqual(playbook.usercontext, request.data["results"][0]["usercontext"])
+        self.assertEqual(playbook.user, request.data["results"][0]["user"])
 
         # Test partial match
-        request = self.client.get("/api/v1/playbooks?usercontext=foo")
+        request = self.client.get("/api/v1/playbooks?user=foo")
         self.assertEqual(len(request.data["results"]), 2)
 
     def test_get_playbook_by_name(self):

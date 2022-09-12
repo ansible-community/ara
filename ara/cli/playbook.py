@@ -38,10 +38,10 @@ class PlaybookList(Lister):
             help=("List playbooks that ran with the specified Ansible version (full or partial)"),
         )
         parser.add_argument(
-            "--usercontext",
-            metavar="<usercontext>",
+            "--user",
+            metavar="<user>",
             default=None,
-            help=("List playbooks that were run in the specified username context (full or partial)"),
+            help=("List playbooks that were run in the specified user context (full or partial)"),
         )
         parser.add_argument(
             "--controller",
@@ -126,8 +126,8 @@ class PlaybookList(Lister):
         if args.status is not None:
             query["status"] = args.status
 
-        if args.usercontext is not None:
-            query["usercontext"] = args.usercontext
+        if args.user is not None:
+            query["user"] = args.user
 
         query["order"] = args.order
         query["limit"] = args.limit
@@ -151,7 +151,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
-                "usercontext",
+                "user",
                 "ansible_version",
                 "name",
                 "path",
@@ -169,7 +169,7 @@ class PlaybookList(Lister):
                 "id",
                 "status",
                 "controller",
-                "usercontext",
+                "user",
                 "ansible_version",
                 "path",
                 "tasks",
@@ -235,7 +235,7 @@ class PlaybookShow(ShowOne):
             "id",
             "report",
             "controller",
-            "usercontext",
+            "user",
             "ansible_version",
             "status",
             "path",
@@ -313,10 +313,10 @@ class PlaybookPrune(Command):
             help=("Only delete playbooks matching the provided name (full or partial)"),
         )
         parser.add_argument(
-            "--usercontext",
-            metavar="<usercontext>",
+            "--user",
+            metavar="<user>",
             default=None,
-            help=("Only delete playbooks that were executed in the specified username context (full or partial)"),
+            help=("Only delete playbooks that were executed in the specified user context (full or partial)"),
         )
         parser.add_argument(
             "--ansible_version",
@@ -395,8 +395,8 @@ class PlaybookPrune(Command):
         if args.controller is not None:
             query["controller"] = args.controller
 
-        if args.usercontext is not None:
-            query["usercontext"] = args.usercontext
+        if args.user is not None:
+            query["user"] = args.user
 
         if args.name is not None:
             query["name"] = args.name

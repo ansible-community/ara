@@ -232,11 +232,11 @@ ANSIBLE_SETUP_MODULES = frozenset(
 def _get_user_context():
     """Returns the user who ran the playbook using `getpass` or `None` in rare case of errors"""
     try:
-        usercontext = getpass.getuser()
+        user = getpass.getuser()
     except Exception:
-        usercontext = None
+        user = None
 
-    return usercontext
+    return user
 
 
 class CallbackModule(CallbackBase):
@@ -342,7 +342,7 @@ class CallbackModule(CallbackBase):
         # Lookup the hostname for localhost if necessary
         self.localhost_hostname = self._get_localhost_hostname()
 
-        self.usercontext = _get_user_context()
+        self.user = _get_user_context()
 
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -389,7 +389,7 @@ class CallbackModule(CallbackBase):
             status="running",
             path=path,
             controller=self.localhost_hostname,
-            usercontext=self.usercontext,
+            user=self.user,
             started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         )
 

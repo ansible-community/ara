@@ -9,7 +9,7 @@ from ara.api import models
 class PlaybookSearchForm(forms.Form):
     ansible_version = forms.CharField(label="Ansible version", max_length=255, required=False)
     controller = forms.CharField(label="Playbook controller", max_length=255, required=False)
-    usercontext = forms.CharField(label="User context", max_length=255, required=False)
+    user = forms.CharField(label="User context", max_length=255, required=False)
     name = forms.CharField(label="Playbook name", max_length=255, required=False)
     path = forms.CharField(label="Playbook path", max_length=255, required=False)
     status = forms.MultipleChoiceField(

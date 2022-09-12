@@ -89,7 +89,7 @@ class Playbook(Duration):
     path = models.CharField(max_length=255)
     labels = models.ManyToManyField(Label)
     controller = models.CharField(max_length=255, default="localhost")
-    usercontext = models.CharField(max_length=255, null=True)
+    user = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return "<Playbook %s>" % self.id

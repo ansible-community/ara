@@ -37,8 +37,8 @@
                 <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
               </div>
               <div class="form-group col-xl-5">
-                <label for="usercontext" {% if request.GET.usercontext %}style="font-weight:bold;"{% endif %}>User context</label>
-                <input type="text" class="form-control" id="usercontext" name="usercontext" placeholder="ex: ara-user" value="{{ search_form.usercontext.value  }}">
+                <label for="user" {% if request.GET.user %}style="font-weight:bold;"{% endif %}>User context</label>
+                <input type="text" class="form-control" id="user" name="user" placeholder="ex: ara-user" value="{{ search_form.user.value  }}">
               </div>
             </div>
             <div class="form-row">
@@ -157,7 +157,7 @@
               {% endif %}
             </td>
             <td class="text-center">
-              {{ playbook.usercontext | default_if_none:'n/a' }}
+              {{ playbook.user | default_if_none:'' }}
             </td>
             <td title="{{ playbook.path }}">
               {% if not static_generation %}
