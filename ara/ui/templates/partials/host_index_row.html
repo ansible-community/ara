@@ -43,7 +43,7 @@
   {% if host.playbook.name is not None %}
   <td title="Search results for {{ host.playbook.name }}">
     {% if not static_generation %}
-      <a href="{% url 'ui:host_index' %}?playbook_name={{ host.playbook.name }}">{{ host.playbook.name }}</a>
+      <a href="{% url 'ui:host_index' %}?playbook_name={{ host.playbook.name }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.name }}</a>
     {% else %}
       {{ host.playbook.name }}
     {% endif %}
@@ -51,7 +51,7 @@
   {% else %}
   <td title="Search results for {{ host.playbook.path }}">
     {% if not static_generation %}
-      <a href="{% url 'ui:host_index' %}?playbook_path={{ host.playbook.path }}">{{ host.playbook.path | truncatepath:50 }}</a>
+      <a href="{% url 'ui:host_index' %}?playbook_path={{ host.playbook.path }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.path | truncatepath:50 }}</a>
     {% else %}
       {{ host.playbook.path | truncatepath:50 }}
     {% endif %}
