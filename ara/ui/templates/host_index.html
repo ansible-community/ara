@@ -22,8 +22,20 @@
           <div class="card-body">
             <div class="form-row">
               <div class="form-group col-xl-8">
-                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Host name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-8">
+                <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;" {% endif %}>Playbook name</label>
+                <input type="text" class="form-control" id="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-xl-8">
+                <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;" {% endif %}>Playbook path</label>
+                <input type="text" class="form-control" id="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
@@ -112,12 +124,12 @@
       <table class="table table-sm table-hover" id="hosts">
         <thead>
           <tr style="height:50px;">
-            <th class="text-center" title="Status of the playbook">Playbook</th>
             <th class="text-center" title="Link to the host report">Report</th>
-            <th title="Last update">Last update {% include "partials/sort_by_date.html" with arg="updated" %}</th>
-            <th title="Duration of the last playbook the host was involved in">Playbook duration</th>
+            <th class="text-center" title="Status of the tasks for this host">Task status</th>
+            <th title="Date">Date {% include "partials/sort_by_date.html" with arg="updated" %}</th>
+            <th title="Duration of the last playbook the host was involved in">Duration</th>
             <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
-            <th title="Number of task results and their statuses">Last results</th>
+            <th title="Name (or path) of the playbook">Playbook name (or path)</th>
             <th title="Host facts">Host facts</th>
           </tr>
         </thead>

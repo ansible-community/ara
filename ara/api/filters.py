@@ -115,6 +115,8 @@ class TaskFilter(DateFilter):
 
 class HostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
+    playbook_name = django_filters.CharFilter(field_name="playbook__name", lookup_expr="icontains")
+    playbook_path = django_filters.CharFilter(field_name="playbook__path", lookup_expr="icontains")
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     # For example: /api/v1/hosts/failed__gt=0 to return hosts with 1 failure or more
@@ -148,6 +150,8 @@ class HostFilter(BaseFilter):
 
 class LatestHostFilter(BaseFilter):
     playbook = django_filters.NumberFilter(field_name="host__playbook__id", lookup_expr="exact")
+    playbook_name = django_filters.CharFilter(field_name="host__playbook__name", lookup_expr="icontains")
+    playbook_path = django_filters.CharFilter(field_name="host__playbook__path", lookup_expr="icontains")
     name = django_filters.CharFilter(field_name="host__name", lookup_expr="icontains")
     changed__gt = django_filters.NumberFilter(field_name="host__changed", lookup_expr="gt")
     changed__lt = django_filters.NumberFilter(field_name="host__changed", lookup_expr="lt")
