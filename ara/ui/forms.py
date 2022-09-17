@@ -21,8 +21,8 @@ class PlaybookSearchForm(forms.Form):
 
 
 class ResultSearchForm(forms.Form):
-    host = forms.CharField(label="Host id", max_length=10, required=False)
-    task = forms.CharField(label="Task id", max_length=10, required=False)
+    host_name = forms.CharField(label="Host name", max_length=255, required=False)
+    task_name = forms.CharField(label="Task name", required=False)
     changed = forms.BooleanField(label="Changed", required=False)
 
     status = forms.MultipleChoiceField(

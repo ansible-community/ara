@@ -189,8 +189,10 @@ class LatestHostFilter(BaseFilter):
 class ResultFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     task = django_filters.NumberFilter(field_name="task__id", lookup_expr="exact")
+    task_name = django_filters.CharFilter(field_name="task__name", lookup_expr="icontains")
     play = django_filters.NumberFilter(field_name="play__id", lookup_expr="exact")
     host = django_filters.NumberFilter(field_name="host__id", lookup_expr="exact")
+    host_name = django_filters.CharFilter(field_name="host__name", lookup_expr="iexact")
     delegated_to = django_filters.NumberFilter(field_name="delegated_to__id", lookup_expr="exact")
     changed = django_filters.BooleanFilter(field_name="changed", lookup_expr="exact")
     status = django_filters.MultipleChoiceFilter(
