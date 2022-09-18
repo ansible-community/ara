@@ -27,7 +27,7 @@ class Command(BaseCommand):
             os.mkdir(path)
 
         # create subdirs
-        dirs = ["playbooks", "files", "hosts", "results", "records"]
+        dirs = ["playbooks", "files", "hosts", "results", "records", "tasks"]
         for dir in dirs:
             if not os.path.exists(os.path.join(path, dir)):
                 os.mkdir(os.path.join(path, dir))
@@ -173,5 +173,13 @@ class Command(BaseCommand):
         destination = os.path.join(path, "hosts/index.html")
         data = {"data": {"results": serializer.data}, "page": "host_index", **self.DEFAULT_PARAMS}
         self.render("host_index.html", destination, **data)
+
+        # Task index
+        query = models.Task.objects.all().order_by("-updated")
+        serializer = serializers.DetailedTaskSerializer(query, many=True)
+
+        destination = os.path.join(path, "tasks/index.html")
+        data = {"data": {"results": serializer.data}, "page": "task_index", **self.DEFAULT_PARAMS}
+        self.render("task_index.html", destination, **data)
 
         print("[ara] %s files generated." % self.rendered)
