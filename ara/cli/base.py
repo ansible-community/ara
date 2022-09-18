@@ -49,19 +49,28 @@ def global_arguments(parser):
         "--ssl-cert",
         metavar="<path/to/certificate>",
         default=os.environ.get("ARA_API_CERT", None),
-        help=("If a client certificate is required, the path to the certificate to use"),
+        help=(
+            "If a client certificate is required, the path to the certificate to use, "
+            "defaults to ARA_API_CERT or None"
+        ),
     )
     parser.add_argument(
         "--ssl-key",
         metavar="<path/to/key>",
         default=os.environ.get("ARA_API_KEY", None),
-        help=("If a client certificate is required, the path to the private key to use"),
+        help=(
+            "If a client certificate is required, the path to the private key to use, "
+            "defaults to ARA_API_KEY or None"
+        ),
     )
     parser.add_argument(
         "--ssl-ca",
         metavar="<path/to/cacert>",
         default=os.environ.get("ARA_API_CA", None),
-        help=("Path to a certificate authority for trusting the API server certificate"),
+        help=(
+            "Path to a certificate authority for trusting the API server certificate, "
+            "defaults to ARA_API_CA or None"
+        ),
     )
     parser.add_argument(
         "--insecure",
