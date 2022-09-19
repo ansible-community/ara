@@ -116,7 +116,7 @@
             <th class="text-center" title="Number of results recorded from the playbook">Results</th>
             <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
             <th class="text-center" title="Host that ran the playbook">Controller</th>
-            <th class="text-center" title="User that ran the playbook">User</th>
+            <th title="User that ran the playbook">User</th>
             <th title="Name (provided by ara_playbook_name) or path to the playbook file">Name (or path)</th>
             <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
             <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
@@ -156,20 +156,24 @@
             <td class="text-center">{{ playbook.items.results }}</td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
+                <a href="{% url 'ui:index' %}?ansible_version={{ playbook.ansible_version }}" title="Search for version {{ playbook.ansible_version }}">{{ playbook.ansible_version }}</a>
               {% else %}
                 {{ playbook.ansible_version }}
               {% endif %}
             </td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}">{{ playbook.controller }}</a>
+                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}" title="Search for controller {{ playbook.controller }}">{{ playbook.controller }}</a>
               {% else %}
                 {{ playbook.controller }}
               {% endif %}
             </td>
-            <td class="text-center">
-              {{ playbook.user | default_if_none:'' }}
+            <td>
+              {% if not static_generation %}
+                <a href="{% url 'ui:index' %}?user={{ playbook.user }}" title="Search for user {{ playbook.user }}">{{ playbook.user | default_if_none:'' }}</a>
+              {% else %}
+                {{ playbook.user | default_if_none:'' }}
+              {% endif %}
             </td>
             <td title="{{ playbook.path }}">
               {% if not static_generation %}
