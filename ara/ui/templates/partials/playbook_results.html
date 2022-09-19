@@ -32,11 +32,11 @@
                 <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
                   <div class="card-body">
                     <div class="form-row">
-                      <div class="form-group col-xl-4">
+                      <div class="form-group col-xl-6">
                         <label for="host_name" {% if request.GET.host_name %}style="font-weight:bold;"{% endif %}>Host name</label>
                         <input type="text" class="form-control" id="host_name" name="host_name" placeholder="ex: host1234" value="{{ search_form.host_name.value | default_if_none:'' }}">
                       </div>
-                      <div class="form-group col-xl-4">
+                      <div class="form-group col-xl-6">
                         <label for="task_name" {% if request.GET.task_name %}style="font-weight:bold;"{% endif %}>Task name</label>
                         <input type="text" class="form-control" id="task_name" name="task_name" placeholder="ex: Install httpd" value="{{ search_form.task_name.value | default_if_none:'' }}">
                       </div>

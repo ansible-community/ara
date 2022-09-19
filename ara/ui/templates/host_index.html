@@ -21,7 +21,7 @@
         <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
           <div class="card-body">
             <div class="form-row">
-              <div class="form-group col-xl-8">
+              <div class="form-group col-xl-12">
                 <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Host name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
@@ -31,13 +31,13 @@
                 <label for="playbook" {% if request.GET.playbook %}style="font-weight:bold;"{% endif %}>Playbook</label>
                 <input type="text" class="form-control" id="playbook" name="playbook" placeholder="ex: 1234" value="{{ search_form.playbook.value | default_if_none:'' }}">
               </div>
-              <div class="form-group col-xl-4">
+              <div class="form-group col-xl-10">
                 <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;" {% endif %}>Playbook name</label>
                 <input type="text" class="form-control" id="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-xl-6">
+              <div class="form-group col-xl-12">
                 <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;" {% endif %}>Playbook path</label>
                 <input type="text" class="form-control" id="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
               </div>

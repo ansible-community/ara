@@ -22,13 +22,13 @@
         <div id="collapse_search" class="{% if expand_search %}show{% endif %} collapse" aria-labelledby="search_form" data-parent="#search_accordion">
           <div class="card-body">
             <div class="form-row">
-              <div class="form-group col-xl-10">
+              <div class="form-group col-xl-12">
                 <label for="path" {% if request.GET.path %}style="font-weight:bold;"{% endif %}>Path</label>
                 <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.path.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-xl-5">
+              <div class="form-group col-xl-3">
                 <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Ansible version</label>
                 <input type="text" class="form-control" id="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{{ search_form.ansible_version.value | default_if_none:'' }}">
               </div>
@@ -36,17 +36,17 @@
                 <label for="controller" {% if request.GET.controller %}style="font-weight:bold;"{% endif %}>Ansible controller</label>
                 <input type="text" class="form-control" id="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
               </div>
-              <div class="form-group col-xl-5">
+              <div class="form-group col-xl-4">
                 <label for="user" {% if request.GET.user %}style="font-weight:bold;"{% endif %}>User</label>
                 <input type="text" class="form-control" id="user" name="user" placeholder="ex: ara-user" value="{{ search_form.user.value | default_if_none:'' }}">
               </div>
             </div>
             <div class="form-row">
-              <div class="form-group col-xl-5">
+              <div class="form-group col-xl-6">
                 <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
               </div>
-              <div class="form-group col-xl-5">
+              <div class="form-group col-xl-6">
                 <label for="label" {% if request.GET.label %}style="font-weight:bold;"{% endif %}>Label</label>
                 <input type="text" class="form-control" id="label" name="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
               </div>
