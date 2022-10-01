@@ -38,10 +38,28 @@ class PlaybookList(Lister):
             help=("List playbooks that ran with the specified Ansible version (full or partial)"),
         )
         parser.add_argument(
+            "--client_version",
+            metavar="<client_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified ara client version (full or partial)"),
+        )
+        parser.add_argument(
+            "--server_version",
+            metavar="<server_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified ara server version (full or partial)"),
+        )
+        parser.add_argument(
+            "--python_version",
+            metavar="<python_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified python version (full or partial)"),
+        )
+        parser.add_argument(
             "--user",
             metavar="<user>",
             default=None,
-            help=("List playbooks that were run in the specified user context (full or partial)"),
+            help=("List playbooks that were run by the specified user (full or partial)"),
         )
         parser.add_argument(
             "--controller",
@@ -114,6 +132,15 @@ class PlaybookList(Lister):
         if args.ansible_version is not None:
             query["ansible_version"] = args.ansible_version
 
+        if args.client_version is not None:
+            query["client_version"] = args.client_version
+
+        if args.server_version is not None:
+            query["server_version"] = args.server_version
+
+        if args.python_version is not None:
+            query["python_version"] = args.python_version
+
         if args.controller is not None:
             query["controller"] = args.controller
 
@@ -153,6 +180,9 @@ class PlaybookList(Lister):
                 "controller",
                 "user",
                 "ansible_version",
+                "client_version",
+                "server_version",
+                "python_version",
                 "name",
                 "path",
                 "plays",
@@ -237,6 +267,9 @@ class PlaybookShow(ShowOne):
             "controller",
             "user",
             "ansible_version",
+            "client_version",
+            "server_version",
+            "python_version",
             "status",
             "path",
             "started",
@@ -316,13 +349,31 @@ class PlaybookPrune(Command):
             "--user",
             metavar="<user>",
             default=None,
-            help=("Only delete playbooks that were executed in the specified user context (full or partial)"),
+            help=("Only delete playbooks that were executed by the specified user (full or partial)"),
         )
         parser.add_argument(
             "--ansible_version",
             metavar="<ansible_version>",
             default=None,
             help=("Only delete playbooks that ran with the specified Ansible version (full or partial)"),
+        )
+        parser.add_argument(
+            "--client_version",
+            metavar="<client_version>",
+            default=None,
+            help=("Only delete playbooks that were recorded with the specified ara client version (full or partial)"),
+        )
+        parser.add_argument(
+            "--server_version",
+            metavar="<server_version>",
+            default=None,
+            help=("Only delete playbooks that were recorded with the specified ara server version (full or partial)"),
+        )
+        parser.add_argument(
+            "--python_version",
+            metavar="<python_version>",
+            default=None,
+            help=("Only delete playbooks that were recorded with the specified python version (full or partial)"),
         )
         parser.add_argument(
             "--controller",
@@ -391,6 +442,15 @@ class PlaybookPrune(Command):
 
         if args.ansible_version is not None:
             query["ansible_version"] = args.ansible_version
+
+        if args.client_version is not None:
+            query["client_version"] = args.client_version
+
+        if args.server_version is not None:
+            query["server_version"] = args.server_version
+
+        if args.python_version is not None:
+            query["python_version"] = args.python_version
 
         if args.controller is not None:
             query["controller"] = args.controller
@@ -465,6 +525,24 @@ class PlaybookMetrics(Lister):
             help=("List playbooks that ran with the specified Ansible version (full or partial)"),
         )
         parser.add_argument(
+            "--client_version",
+            metavar="<client_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified ara client version (full or partial)"),
+        )
+        parser.add_argument(
+            "--server_version",
+            metavar="<server_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified ara server version (full or partial)"),
+        )
+        parser.add_argument(
+            "--python_version",
+            metavar="<python_version>",
+            default=None,
+            help=("List playbooks that were recorded with the specified python version (full or partial)"),
+        )
+        parser.add_argument(
             "--name",
             metavar="<name>",
             default=None,
@@ -535,6 +613,15 @@ class PlaybookMetrics(Lister):
 
         if args.ansible_version is not None:
             query["ansible_version"] = args.ansible_version
+
+        if args.client_version is not None:
+            query["client_version"] = args.client_version
+
+        if args.server_version is not None:
+            query["server_version"] = args.server_version
+
+        if args.python_version is not None:
+            query["python_version"] = args.python_version
 
         if args.name is not None:
             query["name"] = args.name

@@ -43,6 +43,9 @@ class LabelFilter(BaseFilter):
 
 class PlaybookFilter(DateFilter):
     ansible_version = django_filters.CharFilter(field_name="ansible_version", lookup_expr="icontains")
+    client_version = django_filters.CharFilter(field_name="client_version", lookup_expr="icontains")
+    server_version = django_filters.CharFilter(field_name="server_version", lookup_expr="icontains")
+    python_version = django_filters.CharFilter(field_name="python_version", lookup_expr="icontains")
     user = django_filters.CharFilter(field_name="user", lookup_expr="icontains")
     controller = django_filters.CharFilter(field_name="controller", lookup_expr="icontains")
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")

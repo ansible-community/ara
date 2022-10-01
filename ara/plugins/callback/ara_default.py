@@ -9,14 +9,16 @@ import json
 import logging
 import os
 import socket
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
-from ansible import __version__ as ansible_version, constants as C
+from ansible import __version__ as ANSIBLE_VERSION, constants as C
 from ansible.parsing.ajson import AnsibleJSONEncoder
 from ansible.plugins.callback import CallbackBase
 from ansible.vars.clean import module_response_deepcopy, strip_internal_keys
 
 from ara.clients import utils as client_utils
+from ara.setup import ara_version as ARA_VERSION
 
 # Ansible CLI options are now in ansible.context in >= 2.8
 # https://github.com/ansible/ansible/commit/afdbb0d9d5bebb91f632f0d4a1364de5393ba17a
@@ -382,10 +384,15 @@ class CallbackModule(CallbackBase):
                     argument_labels.append("%s:%s" % (label, cli_options[label]))
         self.argument_labels = argument_labels
 
+        # Retrieve version of python we're running with
+        major, minor, micro, release, serial = sys.version_info
+
         # Create the playbook
         self.playbook = self.client.post(
             "/api/v1/playbooks",
-            ansible_version=ansible_version,
+            ansible_version=ANSIBLE_VERSION,
+            client_version=ARA_VERSION,
+            python_version=f"{major}.{minor}.{micro}",
             arguments=cli_options,
             status="running",
             path=path,

@@ -3,6 +3,10 @@
 
 import os
 
+import pbr.version
+
+ara_version = pbr.version.VersionInfo("ara").release_string()
+
 # The path where ARA is installed (parent directory)
 path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 

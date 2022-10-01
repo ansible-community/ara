@@ -5,11 +5,11 @@ import logging
 import os
 import sys
 
-import pbr.version
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
-CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
+from ara.setup import ara_version as ARA_VERSION
+
 log = logging.getLogger(__name__)
 
 
@@ -77,7 +77,7 @@ class AraCli(App):
     def __init__(self):
         super().__init__(
             description="A CLI client to query ARA API servers",
-            version=CLIENT_VERSION,
+            version=ARA_VERSION,
             command_manager=CommandManager("ara.cli"),
             deferred_help=True,
         )

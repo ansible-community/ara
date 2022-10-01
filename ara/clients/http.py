@@ -5,13 +5,11 @@ import json
 import logging
 import weakref
 
-import pbr.version
 import requests
 import urllib3
 
 from ara.clients.utils import active_client
-
-CLIENT_VERSION = pbr.version.VersionInfo("ara").release_string()
+from ara.setup import ara_version
 
 
 class HttpClient:
@@ -24,7 +22,7 @@ class HttpClient:
         self.timeout = int(timeout)
         self.verify = verify
         self.headers = {
-            "User-Agent": "ara-http-client_%s" % CLIENT_VERSION,
+            "User-Agent": "ara-http-client_%s" % ara_version,
             "Accept": "application/json",
             "Content-Type": "application/json",
         }

@@ -8,6 +8,9 @@ from ara.api import models
 
 class PlaybookSearchForm(forms.Form):
     ansible_version = forms.CharField(label="Ansible version", max_length=255, required=False)
+    client_version = forms.CharField(label="ara client version", max_length=255, required=False)
+    server_version = forms.CharField(label="ara server version", max_length=255, required=False)
+    python_version = forms.CharField(label="python version", max_length=255, required=False)
     controller = forms.CharField(label="Playbook controller", max_length=255, required=False)
     user = forms.CharField(label="Playbook user", max_length=255, required=False)
     name = forms.CharField(label="Playbook name", max_length=255, required=False)

@@ -25,6 +25,12 @@
         results: "{{ lookup('ara_api', '/api/v1/results?playbook=' + playbook_id) }}"
         hosts: "{{ lookup('ara_api', '/api/v1/hosts?playbook=' + playbook_id) }}"
 
+    - name: Print versions we're testing with
+      debug:
+        msg: >-
+          Integration test playbook running under ansible-core {{ ansible_version.full }},
+          ara {{ playbook.client_version }} (client) and {{ playbook.server_version }} (server)
+
     - name: Assert playbook properties
       assert:
         that:
