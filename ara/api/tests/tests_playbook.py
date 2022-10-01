@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 
 from ara.api import models, serializers
 from ara.api.tests import factories, utils
+from ara.setup import ara_version as ARA_VERSION
 
 
 class PlaybookTestCase(APITestCase):
@@ -23,6 +24,7 @@ class PlaybookTestCase(APITestCase):
                 "name": "serializer-playbook",
                 "user": "ara-user",
                 "ansible_version": "2.4.0",
+                "client_version": "0.16.7",
                 "path": "/path/playbook.yml",
             }
         )
@@ -33,6 +35,8 @@ class PlaybookTestCase(APITestCase):
         self.assertEqual(playbook.name, "serializer-playbook")
         self.assertEqual(playbook.user, "ara-user")
         self.assertEqual(playbook.ansible_version, "2.4.0")
+        self.assertEqual(playbook.client_version, "0.16.7")
+        self.assertEqual(playbook.server_version, ARA_VERSION)
         self.assertEqual(playbook.status, "unknown")
 
     def test_playbook_serializer_compress_arguments(self):
@@ -171,6 +175,48 @@ class PlaybookTestCase(APITestCase):
 
         # Test partial match
         request = self.client.get("/api/v1/playbooks?ansible_version=2.9")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+    def test_get_playbook_by_client_version(self):
+        playbook = factories.PlaybookFactory(name="playbook1", client_version="0.16.7")
+        factories.PlaybookFactory(name="playbook2", client_version=ARA_VERSION)
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?client_version=0.16.7")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?client_version=0.16")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+    def test_get_playbook_by_server_version(self):
+        playbook = factories.PlaybookFactory(name="playbook1", server_version="7.16.0")
+        factories.PlaybookFactory(name="playbook2", server_version=ARA_VERSION)
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?server_version=7.16.0")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?server_version=7.16")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+    def test_get_playbook_by_python_version(self):
+        playbook = factories.PlaybookFactory(name="playbook1", python_version="3.2.1")
+        factories.PlaybookFactory(name="playbook2", python_version="4.5.6")
+
+        # Test exact match
+        request = self.client.get("/api/v1/playbooks?python_version=3.2.1")
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(playbook.name, request.data["results"][0]["name"])
+
+        # Test partial match
+        request = self.client.get("/api/v1/playbooks?python_version=3.2")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(playbook.name, request.data["results"][0]["name"])
 

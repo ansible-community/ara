@@ -13,6 +13,7 @@ except ImportError:
 
 from ara.api import models
 from ara.api.tests import utils
+from ara.setup import ara_version as ARA_VERSION
 
 logging.getLogger("factory").setLevel(logging.INFO)
 
@@ -33,6 +34,9 @@ class PlaybookFactory(DjangoModelFactory):
     name = "test-playbook"
     user = "ara-user"
     ansible_version = "2.4.0"
+    client_version = "0.16.7"
+    server_version = ARA_VERSION
+    python_version = "3.2.1"
     status = "running"
     arguments = utils.compressed_obj(PLAYBOOK_ARGUMENTS)
     path = "/path/playbook.yml"

@@ -4,6 +4,8 @@
 from django.db import models
 from django.utils import timezone
 
+from ara.setup import ara_version
+
 
 class Base(models.Model):
     """
@@ -84,6 +86,9 @@ class Playbook(Duration):
 
     name = models.CharField(max_length=255, null=True)
     ansible_version = models.CharField(max_length=255)
+    client_version = models.CharField(max_length=255, null=True)
+    python_version = models.CharField(max_length=255, null=True)
+    server_version = models.CharField(max_length=255, default=ara_version)
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     arguments = models.BinaryField(max_length=(2**32) - 1)
     path = models.CharField(max_length=255)

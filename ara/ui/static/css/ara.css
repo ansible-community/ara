@@ -18,6 +18,14 @@
     padding: 0.3rem 1.0rem !important;
 }
 
+.card-border-left {
+    border-left: 1px solid #444;
+}
+
+.card-border-right {
+    border-right: 1px solid #444;
+}
+
 .ara-label {
     font-size: 90% !important;
     padding: 0.10rem 0.25rem !important;
@@ -39,3 +47,4 @@
 .tooltip {
   pointer-events: none;
 }
+

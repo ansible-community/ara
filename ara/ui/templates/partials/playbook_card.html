@@ -20,17 +20,18 @@
       <tr>
         <th class="text-center" title="Status of the playbook run">Status</th>
         <th class="text-center" title="Link to the playbook report">Report</th>
+        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
         <th title="Date at which the playbook started">Date</th>
         <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
+        <th class="text-center" title="Host that ran the playbook">Controller</th>
+        <th class="text-center" title="User that ran the playbook">User</th>
+        <th colspan="3" class="text-center card-border-left card-border-right" title="Versions of software involved in the playbook">Versions</th>
         <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
         <th class="text-center" title="Number of plays involved in the playbook">Plays</th>
         <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
         <th class="text-center" title="Number of results recorded from the playbook">Results</th>
         <th class="text-center" title="Number of files recorded from the playbook">Files</th>
         <th class="text-center" title="Number of ara_record keys recorded in the playbook">Records</th>
-        <th class="text-center" title="Version of Ansible that ran the playbook">Ansible</th>
-        <th class="text-center" title="Host that ran the playbook">Controller</th>
-        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
       </tr>
       </thead>
       <tbody>
@@ -47,16 +48,6 @@
             </svg>
           </a>
         </td>
-        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
-        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-        <td class="text-center">{{ playbook.items.hosts }}</td>
-        <td class="text-center">{{ playbook.items.plays }}</td>
-        <td class="text-center">{{ playbook.items.tasks }}</td>
-        <td class="text-center">{{ playbook.items.results }}</td>
-        <td class="text-center">{{ playbook.items.files }}</td>
-        <td class="text-center">{{ playbook.items.records }}</td>
-        <td class="text-center">{{ playbook.ansible_version }}</td>
-        <td class="text-center">{{ playbook.controller }}</td>
         <td class="text-center">
           <button type="button" class="btn btn-outline-secondary btn-link btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16">
@@ -95,6 +86,19 @@
             </div>
           </div>
         </td>
+        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+        <td class="text-center">{{ playbook.controller }}</td>
+        <td class="text-center">{{ playbook.user }}</td>
+        <td class="text-center card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
+        <td class="text-center" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
+        <td class="text-center card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
+        <td class="text-center">{{ playbook.items.hosts }}</td>
+        <td class="text-center">{{ playbook.items.plays }}</td>
+        <td class="text-center">{{ playbook.items.tasks }}</td>
+        <td class="text-center">{{ playbook.items.results }}</td>
+        <td class="text-center">{{ playbook.items.files }}</td>
+        <td class="text-center">{{ playbook.items.records }}</td>
       </tr>
       </tbody>
     </table>

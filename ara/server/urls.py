@@ -3,11 +3,12 @@
 
 import urllib.parse
 
-import pbr.version
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from ara.setup import ara_version as ARA_VERSION
 
 
 # fmt: off
@@ -15,7 +16,7 @@ class APIIndex(APIView):
     def get(self, request):
         return Response({
             "kind": "ara",
-            "version": pbr.version.VersionInfo("ara").release_string(),
+            "version": ARA_VERSION,
             "api": list(map(lambda x: urllib.parse.urljoin(
                 request.build_absolute_uri(), x),
                 [
