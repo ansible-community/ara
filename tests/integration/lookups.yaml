@@ -103,7 +103,7 @@
     #####
     - name: Get failed results
       set_fact:
-        failed: "{{ lookup('ara_api', '/api/v1/results?status=failed') }}"
+        failed: "{{ lookup('ara_api', '/api/v1/results?status=failed&playbook=' + playbook_id) }}"
 
     - name: Print task data from failed results
       vars:

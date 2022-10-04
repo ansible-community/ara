@@ -22,6 +22,7 @@ class TaskTestCase(APITestCase):
         serializer = serializers.TaskSerializer(
             data={
                 "name": "serializer",
+                "uuid": "5c5f67b9-e63c-6297-80da-000000000009",
                 "action": "test",
                 "lineno": 2,
                 "status": "completed",
@@ -35,6 +36,7 @@ class TaskTestCase(APITestCase):
         task = serializer.save()
         task.refresh_from_db()
         self.assertEqual(task.name, "serializer")
+        self.assertEqual(str(task.uuid), "5c5f67b9-e63c-6297-80da-000000000009")
         self.assertEqual(task.status, "completed")
 
     def test_task_serializer_compress_tags(self):
@@ -43,6 +45,7 @@ class TaskTestCase(APITestCase):
         serializer = serializers.TaskSerializer(
             data={
                 "name": "compress",
+                "uuid": "5c5f67b9-e63c-6297-80da-000000000009",
                 "action": "test",
                 "lineno": 2,
                 "status": "running",
@@ -88,6 +91,7 @@ class TaskTestCase(APITestCase):
             "/api/v1/tasks",
             {
                 "name": "create",
+                "uuid": "5c5f67b9-e63c-6297-80da-000000000009",
                 "action": "test",
                 "lineno": 2,
                 "handler": False,
@@ -161,6 +165,18 @@ class TaskTestCase(APITestCase):
         request = self.client.get("/api/v1/tasks?name=%s" % task.name)
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(task.name, request.data["results"][0]["name"])
+
+    def test_get_tasks_by_uuid(self):
+        # Create a playbook and two tasks
+        playbook = factories.PlaybookFactory()
+        task = factories.TaskFactory(uuid="5c5f67b9-e63c-6297-80da-000000000009", playbook=playbook)
+        # Default gets a different uuid
+        factories.TaskFactory(playbook=playbook)
+
+        # Query for the first task uuid and expect one result
+        request = self.client.get("/api/v1/tasks?uuid=%s" % task.uuid)
+        self.assertEqual(1, len(request.data["results"]))
+        self.assertEqual(task.uuid, request.data["results"][0]["uuid"])
 
     def test_get_task_duration(self):
         started = timezone.now()

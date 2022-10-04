@@ -105,5 +105,3 @@
           - _task['results'][0]['name'] == 'Generate a task with a failure for the first host'
           - _task['results'][0]['status'] == 'failed'
         fail_msg: "task {{ _task['results'][0]['id'] }} status is {{ _task['results'][0]['status'] }} instead of failed (known issue with free strategy)"
-      # known issue: when using the free strategy, a successful result can flip a failed task back to completed
-      ignore_errors: true

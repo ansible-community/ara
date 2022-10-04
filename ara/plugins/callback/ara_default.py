@@ -258,6 +258,13 @@ class CallbackModule(CallbackBase):
         self.client = None
         self.callback_threads = None
 
+        # A global threadpool is used for processing items asynchronously where order is not
+        # important and there are no dependencies on the outcome of a result
+        # Task threadpools are opened at the beginning of a task and shutdown at the end of a task
+        # to process a single task's results faster.
+        self.global_threads = None
+        self.task_threads = None
+
         self.ignored_facts = []
         self.ignored_arguments = []
         self.ignored_files = []
@@ -268,7 +275,6 @@ class CallbackModule(CallbackBase):
         self.result_started = {}
         self.result_ended = {}
         self.task = None
-        self.task_status = None
         self.play = None
         self.playbook = None
         self.stats = None
@@ -408,13 +414,14 @@ class CallbackModule(CallbackBase):
 
     def v2_playbook_on_play_start(self, play):
         self.log.debug("v2_playbook_on_play_start")
-        self._end_task()
         self._end_play()
 
         # Load variables to verify if there is anything relevant for ara
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
-        if "ara_playbook_name" in play_vars:
-            self._submit_thread("global", self._set_playbook_name, play_vars["ara_playbook_name"])
+        if "ara_playbook_name" in play_vars and self.playbook["name"] != play_vars["ara_playbook_name"]:
+            self.playbook = self.client.patch(
+                "/api/v1/playbooks/%s" % self.playbook["id"], name=play_vars["ara_playbook_name"]
+            )
 
         labels = self.default_labels + self.argument_labels
         if "ara_playbook_labels" in play_vars:
@@ -467,7 +474,6 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_task_start(self, task, is_conditional, handler=False):
         self.log.debug("v2_playbook_on_task_start")
         self._end_task()
-        self.task_status = "running"
 
         if self.callback_threads:
             self.task_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -501,10 +507,26 @@ class CallbackModule(CallbackBase):
 
     def v2_runner_on_unreachable(self, result, **kwargs):
         self.log.debug("v2_runner_on_unreachable")
+        # A task is failed if there is at least one failed result (without ignore_errors=True)
+        # It may also be rescued by a following task but *this* task failed.
+        if not kwargs.get("ignore_errors", False):
+            task_uuid = str(result._task._uuid[:36])
+            self.task_cache[task_uuid] = self.client.patch(
+                "/api/v1/tasks/%s" % self.task_cache[task_uuid]["id"], status="failed"
+            )
+            self.task = self.task_cache[task_uuid]
         self._submit_thread("task", self._load_result, result, "unreachable", **kwargs)
 
     def v2_runner_on_failed(self, result, **kwargs):
         self.log.debug("v2_runner_on_failed")
+        # A task is failed if there is at least one failed result (without ignore_errors=True)
+        # It may also be rescued by a following task but *this* task failed.
+        if not kwargs.get("ignore_errors", False):
+            task_uuid = str(result._task._uuid[:36])
+            self.task_cache[task_uuid] = self.client.patch(
+                "/api/v1/tasks/%s" % self.task_cache[task_uuid]["id"], status="failed"
+            )
+            self.task = self.task_cache[task_uuid]
         self._submit_thread("task", self._load_result, result, "failed", **kwargs)
 
     def v2_runner_on_skipped(self, result, **kwargs):
@@ -539,28 +561,27 @@ class CallbackModule(CallbackBase):
         self._end_playbook(stats)
 
     def _end_task(self):
-        # Running with the free strategy means results can be received out of order
-        # The result can arrive here as "running" or as "failed".
-        # If we don't have at least a failure, the status is "completed".
-        if self.task_status == "running":
-            self.task_status = "completed"
+        if self.callback_threads:
+            # Flush threads before moving on to next task to make sure all results are saved
+            self.log.debug("waiting for task threads...")
+            if self.task_threads is not None:
+                self.task_threads.shutdown(wait=True)
+            self.task_threads = None
 
         if self.task is not None:
-            self._submit_thread(
-                "task",
-                self.client.patch,
-                "/api/v1/tasks/%s" % self.task["id"],
-                status=self.task_status,
-                ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            )
-            if self.callback_threads:
-                # Flush threads before moving on to next task to make sure all results are saved
-                self.log.debug("waiting for task threads...")
-                self.task_threads.shutdown(wait=True)
-                self.task_threads = None
+            # If there is one or more failures across results for this task,
+            # the status of the task has already been set to failed
+            task_uuid = self.task["uuid"]
+            if self.task_cache[task_uuid]["status"] == "failed":
+                task_status = "failed"
+            else:
+                task_status = "completed"
 
+            ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            self.task_cache[task_uuid] = self.client.patch(
+                "/api/v1/tasks/%s" % self.task["id"], status=task_status, ended=ended
+            )
             self.task = None
-            self.task_status = None
 
     def _end_play(self):
         if self.play is not None:
@@ -574,27 +595,18 @@ class CallbackModule(CallbackBase):
             self.play = None
 
     def _end_playbook(self, stats):
+        if self.callback_threads:
+            self.log.debug("waiting for global threads before ending playbook...")
+            self.global_threads.shutdown(wait=True)
+
         status = "unknown"
         if len(stats.failures) >= 1 or len(stats.dark) >= 1:
             status = "failed"
         else:
             status = "completed"
 
-        self._submit_thread(
-            "global",
-            self.client.patch,
-            "/api/v1/playbooks/%s" % self.playbook["id"],
-            status=status,
-            ended=datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        )
-
-        if self.callback_threads:
-            self.log.debug("waiting for global threads...")
-            self.global_threads.shutdown(wait=True)
-
-    def _set_playbook_name(self, name):
-        if self.playbook["name"] != name:
-            self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], name=name)
+        ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], status=status, ended=ended)
 
     def _set_playbook_labels(self, labels):
         # Only update labels if our cache doesn't match
@@ -649,7 +661,8 @@ class CallbackModule(CallbackBase):
             self.task_cache[task_uuid] = self.client.post(
                 "/api/v1/tasks",
                 name=task.get_name(),
-                status=self.task_status,
+                uuid=task_uuid,
+                status="running",
                 action=task.action,
                 play=self.play["id"],
                 playbook=self.playbook["id"],
@@ -691,8 +704,8 @@ class CallbackModule(CallbackBase):
         delegated_to = []
         # The value of result._task.delegate_to doesn't get templated if the task was skipped
         # https://github.com/ansible/ansible/issues/75339#issuecomment-888724838
+        task_uuid = str(result._task._uuid[:36])
         if result._task.delegate_to and status != "skipped":
-            task_uuid = str(result._task._uuid[:36])
             if task_uuid in self.delegation_cache:
                 for delegated in self.delegation_cache[task_uuid]:
                     delegated_to.append(self._get_or_create_host(delegated))
@@ -700,7 +713,7 @@ class CallbackModule(CallbackBase):
                 delegated_to.append(self._get_or_create_host(result._task.delegate_to))
 
         # Retrieve the task so we can associate the result to the task id
-        task = self._get_or_create_task(result._task)
+        self.task = self._get_or_create_task(result._task)
 
         results = strip_internal_keys(module_response_deepcopy(result._result))
 
@@ -726,25 +739,20 @@ class CallbackModule(CallbackBase):
         self.result = self.client.post(
             "/api/v1/results",
             playbook=self.playbook["id"],
-            task=task["id"],
+            task=self.task["id"],
             host=host["id"],
             delegated_to=[h["id"] for h in delegated_to],
-            play=task["play"],
+            play=self.task["play"],
             content=results,
             status=status,
-            started=self.result_started[hostname] if hostname in self.result_started else task["started"],
+            started=self.result_started[hostname] if hostname in self.result_started else self.task["started"],
             ended=self.result_ended[hostname],
             changed=result._result.get("changed", False),
             ignore_errors=ignore_errors,
         )
 
-        if task["action"] in ANSIBLE_SETUP_MODULES and "ansible_facts" in results:
+        if self.task["action"] in ANSIBLE_SETUP_MODULES and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
-
-        # A task is failed if there is at least one failed result (without ignore_errors=True)
-        # It may also be rescued by a following task but *this* task failed.
-        if status in ["failed", "unreachable"] and not ignore_errors:
-            self.task_status = "failed"
 
     def _load_stats(self, stats):
         hosts = sorted(stats.processed.keys())

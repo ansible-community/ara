@@ -48,6 +48,7 @@ class HostSearchForm(forms.Form):
 
 class TaskSearchForm(forms.Form):
     name = forms.CharField(label="Task name", max_length=255, required=False)
+    uuid = forms.UUIDField(label="Task uuid", max_length=255, required=False)
     path = forms.CharField(label="Task path", max_length=255, required=False)
     lineno = forms.CharField(label="Task line number", max_length=255, required=False)
     playbook = forms.CharField(label="Playbook id", max_length=10, required=False)

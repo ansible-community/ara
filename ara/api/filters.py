@@ -100,6 +100,7 @@ class TaskFilter(DateFilter):
         field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
     )
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
     action = django_filters.CharFilter(field_name="action", lookup_expr="iexact")
     path = django_filters.CharFilter(field_name="file__path", lookup_expr="icontains")
     lineno = django_filters.CharFilter(field_name="lineno", lookup_expr="exact")
