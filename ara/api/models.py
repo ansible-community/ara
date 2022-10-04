@@ -202,6 +202,7 @@ class Task(Duration):
     )
 
     name = models.TextField(blank=True, null=True)
+    uuid = models.UUIDField(null=True)
     action = models.TextField()
     lineno = models.IntegerField()
     tags = models.BinaryField(max_length=(2**32) - 1)

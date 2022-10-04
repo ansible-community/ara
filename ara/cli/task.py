@@ -44,6 +44,12 @@ class TaskList(Lister):
             help=("List tasks matching the provided name (full or partial)"),
         )
         parser.add_argument(
+            "--uuid",
+            metavar="<uuid>",
+            default=None,
+            help=("List tasks matching the provided uuid (full or partial)"),
+        )
+        parser.add_argument(
             "--path",
             metavar="<path>",
             default=None,
@@ -112,6 +118,9 @@ class TaskList(Lister):
         if args.name is not None:
             query["name"] = args.name
 
+        if args.uuid is not None:
+            query["uuid"] = args.uuid
+
         if args.path is not None:
             query["path"] = args.path
 
@@ -141,6 +150,7 @@ class TaskList(Lister):
         if args.long:
             columns = (
                 "id",
+                "uuid",
                 "status",
                 "results",
                 "action",
@@ -217,6 +227,7 @@ class TaskShow(ShowOne):
         task["report"] = "%s/playbooks/%s.html" % (args.server, task["playbook"]["id"])
         columns = (
             "id",
+            "uuid",
             "report",
             "name",
             "action",
@@ -307,6 +318,12 @@ class TaskMetrics(Lister):
             help=("Filter for tasks matching the provided name (full or partial)"),
         )
         parser.add_argument(
+            "--uuid",
+            metavar="<name>",
+            default=None,
+            help=("Filter for tasks matching the provided uuid (full or partial)"),
+        )
+        parser.add_argument(
             "--path",
             metavar="<path>",
             default=None,
@@ -372,6 +389,9 @@ class TaskMetrics(Lister):
 
         if args.name is not None:
             query["name"] = args.name
+
+        if args.uuid is not None:
+            query["uuid"] = args.uuid
 
         if args.path is not None:
             query["path"] = args.path

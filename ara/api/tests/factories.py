@@ -82,6 +82,7 @@ class TaskFactory(DjangoModelFactory):
         model = models.Task
 
     name = "test task"
+    uuid = "5c5f67b9-e63c-6297-80da-000000000006"
     status = "running"
     action = "setup"
     lineno = 2
