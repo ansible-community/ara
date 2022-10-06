@@ -90,6 +90,9 @@
     - name: Run facts.yaml integration test
       command: "ansible-playbook -vvv {{ _test_root }}/facts.yaml"
 
+    - name: Run long_strings.yaml integration test
+      command: "ansible-playbook -vvv {{ _test_root }}/long_strings.yaml"
+
     # Tests setting ara_playbook_name as an extra var
     - name: Run failed.yaml integration test
       command: >

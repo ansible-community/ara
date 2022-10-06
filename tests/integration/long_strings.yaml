@@ -1,0 +1,69 @@
+---
+# Copyright (c) 2022 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- name: The ara project does not encourage or recommend using exceedingly long play names that contain a large number of long strings because they will get truncated if they are above 255 characters but we still need to test to make sure it works and we can record them anyway
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - vars/long_strings.yaml
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Assert that the playbook name was truncated
+      vars:
+        _playbook_name: "{{ playbook_query.playbook.name }}"
+      assert:
+        that:
+          - ara_playbook_name != _playbook_name
+          - ara_playbook_name | length >= 255
+          - _playbook_name | length == 253
+        success_msg: "Playbook name was truncated to '{{ _playbook_name }}'"
+
+    - name: Get the ongoing play to validate the name
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        play: "{{ lookup('ara_api', '/api/v1/plays?name=exceedingly&playbook=' + playbook_id) }}"
+
+    - name: Assert that the play name was truncated
+      assert:
+        that:
+          - play['results'][0]['name'] | length == 254
+        success_msg: "Play name was truncated to '{{ play['results'][0]['name'] }}'"
+
+    - name: Add a host with a super long hostname
+      add_host:
+        name: "{{ long_hostname }}"
+        groups: super_long_hostname
+        ansible_host: "127.0.0.1"
+        ansible_connection: "local"
+
+
+- name: Run tasks against a super long host name
+  hosts: super_long_hostname
+  gather_facts: no
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Save truncated inventory hostname
+      set_fact:
+        _recorded_hostname: "{{ inventory_hostname | truncate(254, True, '', 0) }}"
+
+    - name: Get the current host to validate the name
+      vars:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+      set_fact:
+        host: "{{ lookup('ara_api', '/api/v1/hosts?name=' + _recorded_hostname + '&playbook=' + playbook_id) }}"
+
+    - name: Assert that the host name was truncated
+      assert:
+        that:
+          - inventory_hostname | length >= 255
+          - host['results'][0]['name'] | length == 254
+          - _recorded_hostname == host['results'][0]['name']
+        success_msg: "Host {{ inventory_hostname }} truncated to {{ host['results'][0]['name'] }}"

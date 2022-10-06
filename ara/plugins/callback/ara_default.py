@@ -282,6 +282,7 @@ class CallbackModule(CallbackBase):
         self.host_cache = {}
         self.task_cache = {}
         self.delegation_cache = {}
+        self.warned_about_host_length = []
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
@@ -418,10 +419,23 @@ class CallbackModule(CallbackBase):
 
         # Load variables to verify if there is anything relevant for ara
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
-        if "ara_playbook_name" in play_vars and self.playbook["name"] != play_vars["ara_playbook_name"]:
+        if "ara_playbook_name" in play_vars and self.playbook["name"] != play_vars["ara_playbook_name"][:254]:
+            # Playbook name may not exceed 255 characters
+            # https://github.com/ansible-community/ara/issues/185
+            # https://github.com/ansible-community/ara/issues/265
+            if len(play_vars["ara_playbook_name"]) >= 255:
+                self.log.warn("Truncating playbook name before recording: it's longer than 255 characters")
+
             self.playbook = self.client.patch(
-                "/api/v1/playbooks/%s" % self.playbook["id"], name=play_vars["ara_playbook_name"]
+                "/api/v1/playbooks/%s" % self.playbook["id"], name=play_vars["ara_playbook_name"][:254]
             )
+
+        # Play name may not exceed 255 characters
+        # https://github.com/ansible-community/ara/issues/185
+        # https://github.com/ansible-community/ara/issues/265
+        if len(play.name) >= 255:
+            self.log.warn("Truncating play name before recording: it's longer than 255 characters")
+            play.name = play.name[:254]
 
         labels = self.default_labels + self.argument_labels
         if "ara_playbook_labels" in play_vars:
@@ -611,9 +625,20 @@ class CallbackModule(CallbackBase):
     def _set_playbook_labels(self, labels):
         # Only update labels if our cache doesn't match
         current_labels = [label["name"] for label in self.playbook["labels"]]
-        if sorted(current_labels) != sorted(labels):
-            self.log.debug("Updating playbook labels to match: %s" % ",".join(labels))
-            self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=labels)
+
+        # Labels may not exceed 255 characters
+        # https://github.com/ansible-community/ara/issues/185
+        # https://github.com/ansible-community/ara/issues/265
+        expected_labels = []
+        for label in labels:
+            if len(label) >= 255:
+                self.log.warn("Truncating label name before recording: it's longer than 255 characters (%s)" % label)
+                label = label[:254]
+            expected_labels.append(label)
+
+        if sorted(current_labels) != sorted(expected_labels):
+            self.log.debug("Updating playbook labels to match: %s" % ",".join(expected_labels))
+            self.playbook = self.client.patch("/api/v1/playbooks/%s" % self.playbook["id"], labels=expected_labels)
 
     def _get_or_create_file(self, path, content=None):
         if path not in self.file_cache:
@@ -644,6 +669,16 @@ class CallbackModule(CallbackBase):
         # so that we can differentiate between different actual hosts
         if self.localhost_as_hostname and host in ["localhost", "127.0.0.1"]:
             host = self.localhost_hostname
+
+        # Ansible inventory hostnames can be longer than 255 characters
+        # Ansible doesn't mind and this is OK in AWX with postgresql but is an issue with mysql in ara
+        # https://github.com/ansible-community/ara/issues/265
+        if len(host) >= 255:
+            # Only warn about this once so we don't print a warning on every task
+            if host not in self.warned_about_host_length:
+                self.log.warn("Truncating hostname before recording: it's longer than 255 characters (%s)" % host)
+                self.warned_about_host_length.append(host)
+            host = host[:254]
 
         if host not in self.host_cache:
             self.log.debug("Host not in cache, getting or creating: %s" % host)

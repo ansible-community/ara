@@ -54,7 +54,7 @@ class Label(Base):
     class Meta:
         db_table = "labels"
 
-    name = models.CharField(max_length=512, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return "<Label %s: %s>" % (self.id, self.name)
@@ -170,7 +170,7 @@ class Play(Duration):
     EXPIRED = "expired"
     STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (EXPIRED, "expired"))
 
-    name = models.CharField(max_length=512, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
     uuid = models.UUIDField()
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
