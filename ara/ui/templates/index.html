@@ -4,7 +4,7 @@
 {% load static_url %}
 
 
-{% block title %}| Playbook reports{% if not static_generation %}: {{ current_page_results }} of {{ data.count }}{% endif %}{% endblock %}
+{% block title %}| Playbooks{% if not static_generation %}: {{ current_page_results }} of {{ data.count }}{% endif %}{% endblock %}
 {% block body %}
 {% if not static_generation %}
   <div class="col-xl-6 offset-xl-3">
