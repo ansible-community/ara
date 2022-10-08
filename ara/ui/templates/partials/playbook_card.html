@@ -18,9 +18,9 @@
     <table class="table table-sm" id="playbook_summary">
       <thead>
       <tr>
-        <th class="text-center" title="Status of the playbook run">Status</th>
-        <th class="text-center" title="Link to the playbook report">Report</th>
-        <th class="text-center" title="CLI arguments given to the ansible command">CLI</th>
+        <th class="report-column" title="Link to the playbook report">Report</th>
+        <th class="short-status-column" title="Status of the playbook run">Status</th>
+        <th class="cli-column" title="CLI arguments given to the ansible command">CLI</th>
         <th title="Date at which the playbook started">Date</th>
         <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
         <th class="text-center" title="Host that ran the playbook">Controller</th>
@@ -36,10 +36,7 @@
       </thead>
       <tbody>
       <tr>
-        <td class="text-center">
-          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
-        </td>
-        <td class="text-center">
+        <td class="report-column">
           {% url 'ui:playbook' playbook.id as playbook_url %}
           <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
@@ -48,7 +45,10 @@
             </svg>
           </a>
         </td>
-        <td class="text-center">
+        <td class="short-status-column">
+          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+        </td>
+        <td class="cli-column">
           <button type="button" class="btn btn-outline-secondary btn-link btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16">
               <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/>

@@ -112,16 +112,16 @@
       <table class="table table-sm table-hover" id="tasks">
         <thead>
           <tr style="height:50px;">
-            <th class="text-center" title="Status of the task">Status</th>
-            <th class="text-center" title="Link to the playbook results for this task">Report</th>
-            <th title="Date at which the host was first recorded">Date {% include "partials/sort_by_date.html" with arg="created" %}</th>
-            <th class="text-nowrap" title="Duration of the task (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
-            <th class="text-center" title="Number of results for this task">Results</th>
-            <th title="Tags">Tags</th>
+            <th class="report-column" title="Link to the playbook results for this task">Report</th>
+            <th class="short-status-column" title="Status of the task">Status</th>
+            <th class="single-pill-column" title="Number of results for this task">Results</th>
+            <th class="date-column" title="Date at which the host was first recorded">Date {% include "partials/sort_by_date.html" with arg="created" %}</th>
+            <th class="duration-column" title="Duration of the task (HH:MM:SS.ms)">{% include "partials/sort_by_duration.html" %}</th>
             <th title="Action (module) of the task">Action</th>
             <th title="Name of the task">Task name</th>
             <th title="Path and line number to the task">Task path</th>
             <th title="Name or path of this task's playbook">Playbook name (or path)</th>
+            <th class="single-pill-column" title="Tags">Tags</th>
           </tr>
         </thead>
         <tbody>

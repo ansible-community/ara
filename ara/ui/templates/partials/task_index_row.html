@@ -2,10 +2,7 @@
 {% load truncatepath %}
 {% load static_url %}
 <tr>
-  <td class="text-center">
-    {% include "partials/task_status_icon.html" with status=task.status %}
-  </td>
-  <td class="text-center">
+  <td class="report-column">
     {% url 'ui:playbook' task.playbook.id as playbook_url %}
     <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url playbook_url %}?task={{ task.id }}#results">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
@@ -14,14 +11,12 @@
       </svg>
     </a>
   </td>
-  <td class="text-nowrap">{{ task.started | format_date }}</td>
-  <td class="text-nowrap">{{ task.duration | format_duration }}</td>
-  <td class="text-center">{{ task.items.results }}</td>
-  <td class="text-center">
-    <span class="badge badge-pill badge-secondary" class="btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% if task.tags %}{% include 'partials/tags_list.html' with tags=task.tags %}{% endif %}">
-      {{ task.tags | length }}
-    </span>
+  <td class="short-status-column">
+    {% include "partials/task_status_icon.html" with status=task.status %}
   </td>
+  <td class="single-pill-column">{{ task.items.results }}</td>
+  <td class="date-column">{{ task.started | format_date }}</td>
+  <td class="duration-column">{{ task.duration | format_duration }}</td>
   <td>
     <a {% if not static_generation %}href="{% url 'ui:task_index' %}?action={{ task.action }}" title="Search tasks for {{ task.action }}"{% endif %}>
       {{ task.action }}
@@ -58,4 +53,9 @@
     {% endif %}
   </td>
   {% endif %}
+  <td class="single-pill-column">
+    <span class="badge badge-pill badge-secondary" class="btn btn-secondary" data-toggle="tooltip"  data-placement="right" data-html="true" title="{% if task.tags %}{% include 'partials/tags_list.html' with tags=task.tags %}{% endif %}">
+      {{ task.tags | length }}
+    </span>
+  </td>
 </tr>

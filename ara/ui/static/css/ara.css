@@ -37,14 +37,56 @@
 }
 
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #b4bcc2;
+    background-color: #b4bcc2;
 }
 
 .custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
-  background-color: #ffffff;
+    background-color: #ffffff;
 }
 
 .tooltip {
-  pointer-events: none;
+    pointer-events: none;
 }
 
+.report-column {
+    width: 60px;
+    text-align: center;
+}
+
+.short-status-column {
+    width: 60px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.medium-status-column {
+    width: 100px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.long-status-column {
+    width: 160px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cli-column {
+    width: 60px;
+    text-align: center;
+}
+
+.date-column {
+    width: 200px;
+    white-space: nowrap;
+}
+
+.duration-column {
+    width: 100px;
+    white-space: nowrap;
+}
+
+.single-pill-column {
+    width: 25px;
+    text-align: center;
+}

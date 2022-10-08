@@ -128,10 +128,10 @@
       <table class="table table-sm table-hover" id="hosts">
         <thead>
           <tr style="height:50px;">
-            <th class="text-center" title="Link to the host report">Report</th>
-            <th class="text-center" title="Status of the tasks for this host">Task status</th>
-            <th title="Date this host was recorded">Date {% include "partials/sort_by_date.html" with arg="created" %}</th>
-            <th title="Duration of the playbook the host was involved in">Playbook duration</th>
+            <th class="report-column" title="Link to the host report">Report</th>
+            <th class="long-status-column" title="Status of the tasks for this host">Status</th>
+            <th class="date-column" title="Date this host was recorded">Date {% include "partials/sort_by_date.html" with arg="created" %}</th>
+            <th class="duration-column" title="Duration of the playbook the host was involved in">Duration</th>
             <th title="Name of the inventory host">Host name {% include "partials/sort_by_name.html" %}</th>
             <th title="Name (or path) of the playbook">Playbook name (or path)</th>
             <th title="Host facts">Host facts</th>
