@@ -138,6 +138,18 @@ options:
     ini:
       - section: ara
         key: argument_labels
+  callback_threads:
+    description:
+      - The number of threads to use in API client thread pools (maximum 4)
+      - When set to 0, no threading will be used (default) which is appropriate for usage with sqlite
+      - Using threads is recommended when the server is using MySQL or PostgreSQL
+    type: integer
+    default: 0
+    env:
+      - name: ARA_CALLBACK_THREADS
+    ini:
+      - section: ara
+        key: callback_threads
   default_labels:
     description: A list of default labels that will be applied to playbooks
     type: list
@@ -204,18 +216,28 @@ options:
       - section: ara
         key: localhost_as_hostname_format
     choices: ['fqdn', 'fqdn_short', 'hostname', 'hostname_short']
-  callback_threads:
+  record_controller:
     description:
-      - The number of threads to use in API client thread pools
-      - When set to 0, no threading will be used (default) which is appropriate for usage with sqlite
-      - Using threads is recommended when the server is using MySQL or PostgreSQL
-    type: integer
-    default: 0
+      - Whether ara should record the controller hostname on which the playbook ran
+      - Defaults to true but may be optionally set to false for privacy or other use cases
+    type: boolean
+    default: true
     env:
-      - name: ARA_CALLBACK_THREADS
+      - name: ARA_RECORD_CONTROLLER
     ini:
       - section: ara
-        key: callback_threads
+        key: record_controller
+  record_user:
+    description:
+      - Whether ara should record the user that ran a playbook
+      - Defaults to true but may be optionally set to false for privacy or other use cases
+    type: boolean
+    default: true
+    env:
+      - name: ARA_RECORD_USER
+    ini:
+      - section: ara
+        key: record_user
 """
 
 # Task modules for which ara should save host facts
@@ -229,16 +251,6 @@ ANSIBLE_SETUP_MODULES = frozenset(
         "ansible.legacy.setup",
     ]
 )
-
-
-def _get_user_context():
-    """Returns the user who ran the playbook using `getpass` or `None` in rare case of errors"""
-    try:
-        user = getpass.getuser()
-    except Exception:
-        user = None
-
-    return user
 
 
 class CallbackModule(CallbackBase):
@@ -294,6 +306,8 @@ class CallbackModule(CallbackBase):
         self.ignored_files = self.get_option("ignored_files")
         self.localhost_as_hostname = self.get_option("localhost_as_hostname")
         self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
+        self.record_controller = self.get_option("record_controller")
+        self.record_user = self.get_option("record_user")
 
         # The intent for the ignored_files default value is to ignore the ansible local tmpdir but the path
         # can be changed by the user's configuration so retrieve that and use it instead.
@@ -352,7 +366,7 @@ class CallbackModule(CallbackBase):
         # Lookup the hostname for localhost if necessary
         self.localhost_hostname = self._get_localhost_hostname()
 
-        self.user = _get_user_context()
+        self.user = self._get_user()
 
         if self.callback_threads:
             self.global_threads = ThreadPoolExecutor(max_workers=self.callback_threads)
@@ -809,6 +823,8 @@ class CallbackModule(CallbackBase):
     def _get_localhost_hostname(self):
         """Returns a hostname for localhost in the specified format"""
         hostname = None
+        if not self.record_controller:
+            return hostname
 
         if self.localhost_as_hostname_format.startswith("fqdn"):
             hostname = socket.getfqdn()
@@ -818,9 +834,24 @@ class CallbackModule(CallbackBase):
 
         # Shouldn't happen but we never know ¯\_(ツ)_/¯
         if hostname is None:
-            raise Exception("Unable to resolve a hostname for localhost")
+            self.log.warning("Unable to resolve a hostname for controller on localhost")
+            return hostname
 
         if self.localhost_as_hostname_format.endswith("_short"):
             return hostname.split(".")[0]
 
         return hostname
+
+    def _get_user(self):
+        """Returns the user who ran the playbook using `getpass` or `None` in rare case of errors"""
+        user = None
+        if not self.record_user:
+            return user
+
+        try:
+            user = getpass.getuser()
+        except Exception:
+            self.log.warning("Unable to retrieve the user that is running the playbook")
+            pass
+
+        return user
