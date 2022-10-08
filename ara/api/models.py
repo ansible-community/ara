@@ -93,7 +93,7 @@ class Playbook(Duration):
     arguments = models.BinaryField(max_length=(2**32) - 1)
     path = models.CharField(max_length=255)
     labels = models.ManyToManyField(Label)
-    controller = models.CharField(max_length=255, default="localhost")
+    controller = models.CharField(max_length=255, null=True, default="localhost")
     user = models.CharField(max_length=255, null=True)
 
     def __str__(self):

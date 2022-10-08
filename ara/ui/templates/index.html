@@ -203,7 +203,7 @@
               {% if not static_generation %}
                 <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}" title="Search for controller {{ playbook.controller }}">{{ playbook.controller | default_if_none:'' }}</a>
               {% else %}
-                {{ playbook.controller }}
+                {{ playbook.controller | default_if_none:'' }}
               {% endif %}
             </td>
             <td>
