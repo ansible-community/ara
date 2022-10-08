@@ -48,8 +48,8 @@ def distributed_sqlite(environ, start_response):
     # The prefix after which everything should be delegated (ex: /ara-report)
     prefix = settings.DISTRIBUTED_SQLITE_PREFIX
 
-    # Static assets should always be served by the regular app
-    if path_info.startswith(settings.STATIC_URL):
+    # Static assets and healthcheck should always be served by the regular app
+    if path_info.startswith(settings.STATIC_URL) or path_info == "/healthcheck/":
         return default_application(environ, start_response)
 
     if prefix not in path_info:
