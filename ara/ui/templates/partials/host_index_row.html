@@ -3,7 +3,7 @@
 {% load truncatepath %}
 <tr>
   {% url 'ui:host' host.id as host_url %}
-  <td class="text-center">
+  <td class="report-column">
     <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url host_url %}">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
       <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
@@ -11,7 +11,7 @@
     </svg>
     </a>
   </td>
-<td class="text-center">
+  <td class="long-status-column">
     {% if host.ok %}
     <a class="badge badge-pill badge-success ara-result-status-badge" title="Search for tasks with status: ok" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results"{% endif %}>
       {{ host.ok }}
@@ -33,8 +33,8 @@
     </a>
     {% endif %}
   </td>
-  <td class="text-nowrap">{{ host.updated | format_date }}</td>
-  <td class="text-nowrap">{{ host.playbook.duration | format_duration }}</td>
+  <td class="date-column">{{ host.updated | format_date }}</td>
+  <td class="duration-column">{{ host.playbook.duration | format_duration }}</td>
   <td>
     <a {% if not static_generation %}href="{% url 'ui:host_index' %}?name={{ host.name }}&latest=false" title="Search results for {{ host.name }}"{% endif %}>
       {{ host.name }}
