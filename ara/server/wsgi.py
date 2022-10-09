@@ -52,6 +52,12 @@ def distributed_sqlite(environ, start_response):
     if path_info.startswith(settings.STATIC_URL) or path_info == "/healthcheck/":
         return default_application(environ, start_response)
 
+    # The root of the application should be served by the regular app to show
+    # a distributed database index
+    if path_info == "" or path_info == "/":
+        environ["PATH_INFO"] = "/distributed"
+        return default_application(environ, start_response)
+
     if prefix not in path_info:
         logger.warn("Ignoring request: URL does not contain delegated prefix (%s)" % prefix)
         return handle_404(start_response)

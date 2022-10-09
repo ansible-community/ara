@@ -85,6 +85,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
+        {% if not distributed %}
         <li class="nav-item{% if page == 'index' %} active{% endif %}">
           <a class="nav-link" href="{% static_url index_url %}">Playbooks</a>
         </li>
@@ -98,6 +99,7 @@
           <li class="nav-item">
             {% include "partials/api_link.html" %}
           </li>
+        {% endif %}
         {% endif %}
       </ul>
       <form class="form-inline">
