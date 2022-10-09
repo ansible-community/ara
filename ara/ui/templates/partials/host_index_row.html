@@ -37,15 +37,15 @@
   <td class="duration-column">{{ host.playbook.duration | format_duration }}</td>
   <td>
     <a {% if not static_generation %}href="{% url 'ui:host_index' %}?name={{ host.name }}&latest=false" title="Search results for {{ host.name }}"{% endif %}>
-      {{ host.name }}
+      {{ host.name | truncatechars:50 }}
     </a>
   </td>
   {% if host.playbook.name is not None %}
   <td title="Search results for {{ host.playbook.name }}">
     {% if not static_generation %}
-      <a href="{% url 'ui:host_index' %}?playbook_name={{ host.playbook.name }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.name }}</a>
+      <a href="{% url 'ui:host_index' %}?playbook_name={{ host.playbook.name }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.name | truncatechars:50 }}</a>
     {% else %}
-      {{ host.playbook.name }}
+      {{ host.playbook.name | truncatechars:50 }}
     {% endif %}
   </td>
   {% else %}
