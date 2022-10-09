@@ -136,9 +136,9 @@
                   </td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% url 'ui:playbook' playbook.id %}?host_name={{ result.host.name }}#results">{{ result.host.name }}</a>
+                      <a href="{% url 'ui:playbook' playbook.id %}?host_name={{ result.host.name }}#results">{{ result.host.name | truncatechars:50 }}</a>
                     {% else %}
-                      {{ result.host.name }}
+                      {{ result.host.name | truncatechars:50 }}
                     {% endif %}
                     {% if result.delegated_to %}
                       <span title="task delegated to {% for delegated in result.delegated_to %}{{ delegated.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">

@@ -44,9 +44,9 @@
   {% if task.playbook.name is not None %}
   <td title="Search results for {{ task.playbook.name }}">
     {% if not static_generation %}
-      <a href="{% url 'ui:task_index' %}?playbook_name={{ task.playbook.name }}">{{ task.playbook.name }}</a>
+      <a href="{% url 'ui:task_index' %}?playbook_name={{ task.playbook.name }}">{{ task.playbook.name | truncatechars:25 }}</a>
     {% else %}
-      {{ task.playbook.name }}
+      {{ task.playbook.name | truncatechars:25 }}
     {% endif %}
   </td>
   {% else %}

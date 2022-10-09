@@ -3,11 +3,11 @@
 <div class="accordion" id="results">
   <div class="card">
     <div class="card-header" id="results_card">
-      <button class="btn btn-lg" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
+      <button class="btn btn-lg" style="font-size:1.2em;" type="button" data-toggle="collapse" data-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results" title="Task results for {{ host.name }}">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
           <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
         </svg>
-        Task results: {{ host.name }}
+        Task results: {{ host.name | truncatechars:100 }}
       </button>
         {% if host.ok %}
         <a class="badge badge-pill badge-success ara-result-status-badge" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results" title="Search ok results for {{ host.name }}"{% endif %}>
@@ -153,7 +153,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    {{ host.name }}
+                    {{ host.name | truncatechars:50 }}
                     {% if result.delegated_to %}
                       <span title="task delegated to {% for delegated in result.delegated_to %}{{ delegated.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">

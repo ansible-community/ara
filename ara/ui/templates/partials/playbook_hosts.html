@@ -37,7 +37,7 @@
                 </td>
                 <td>
                   <a {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host={{ host.name }}#results" title="Search results for {{ host.name }}"{% endif %}>
-                    {{ host.name }}
+                    {{ host.name | truncatechars:50 }}
                   </a>
                 </td>
                 <td>
