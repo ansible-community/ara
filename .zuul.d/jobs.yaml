@@ -120,7 +120,16 @@
       Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 6 (ansible-core 2.13).
     vars:
       ara_tests_ansible_name: ansible
-      ara_tests_ansible_version: 6.1.0
+      ara_tests_ansible_version: 6.4.0
+
+- job:
+    name: ara-basic-ansible-core-2.14
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.14.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.14
 
 - job:
     name: ara-basic-ansible-core-2.13

@@ -8,6 +8,7 @@
         - ara-basic-ansible-core-devel:
             voting: false
         - ara-basic-ansible-6
+        - ara-basic-ansible-core-2.14
         - ara-basic-ansible-core-2.13
         - ara-basic-ansible-core-2.12
         - ara-basic-ansible-core-2.11
@@ -19,6 +20,7 @@
         - ara-tox-linters
         - ara-tox-docs
         - ara-basic-ansible-6
+        - ara-basic-ansible-core-2.14
         - ara-basic-ansible-core-2.13
         - ara-basic-ansible-core-2.12
         - ara-basic-ansible-core-2.11
@@ -28,4 +30,3 @@
       jobs:
         - ara-container-images-dockerhub
         - ara-container-images-quayio
-
