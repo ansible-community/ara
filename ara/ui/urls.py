@@ -9,6 +9,7 @@ from ara.ui import views
 app_name = "ui"
 urlpatterns = [
     path("", views.Index.as_view(), name="index"),
+    path("distributed", views.Distributed.as_view(), name="distributed"),
     path("hosts", views.HostIndex.as_view(), name="host_index"),
     path("tasks", views.TaskIndex.as_view(), name="task_index"),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),

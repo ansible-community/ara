@@ -3,6 +3,7 @@
 
 import codecs
 
+from django.conf import settings
 from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from rest_framework.response import Response
 from ara.api import filters, models, serializers
 from ara.ui import forms
 from ara.ui.pagination import LimitOffsetPaginationWithLinks
+from ara.ui.utils import find_distributed_databases
 
 
 class Index(generics.ListAPIView):
@@ -354,3 +356,30 @@ class Record(generics.RetrieveAPIView):
         record = self.get_object()
         serializer = serializers.DetailedRecordSerializer(record)
         return Response({"record": serializer.data, "static_generation": False, "page": "result"})
+
+
+class Distributed(generics.ListAPIView):
+    """
+    When using the distributed sqlite backend, playbook reports are recorded in individual
+    sqlite databases on the same filesystem where the server is running from.
+    We do not (yet ?) have the means to aggregate every database into a single (huge?) database
+    or a way to query all of them dynamically or simultaneously.
+    In the meantime, the most useful thing we can do for now is to try to provide a list of databases but we don't
+    know where they are so we must look for them.
+    """
+
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = "distributed_index.html"
+
+    def get(self, request, *args, **kwargs):
+        databases = find_distributed_databases(settings.DISTRIBUTED_SQLITE_ROOT)
+
+        return Response(
+            dict(
+                page="distributed_index",
+                static_generation=False,
+                distributed=True,
+                distributed_sqlite_root=settings.DISTRIBUTED_SQLITE_ROOT,
+                databases=databases,
+            )
+        )
