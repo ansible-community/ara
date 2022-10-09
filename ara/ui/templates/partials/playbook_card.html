@@ -88,8 +88,8 @@
         </td>
         <td class="text-nowrap">{{ playbook.started | format_date }}</td>
         <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-        <td class="text-center">{{ playbook.controller }}</td>
-        <td class="text-center">{{ playbook.user }}</td>
+        <td class="text-center">{{ playbook.controller | default_if_none:"n/a" }}</td>
+        <td class="text-center">{{ playbook.user | default_if_none:"n/a" }}</td>
         <td class="text-center card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
         <td class="text-center" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
         <td class="text-center card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
