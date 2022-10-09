@@ -10,8 +10,21 @@
 {% else %}
   <div class="card border-warning">
 {% endif %}
-<div class="card-header text-center">
-  <h4>Playbook: {% if playbook.name is not None %}{{ playbook.name }}: {{ playbook.path }}{% else %}{{ playbook.path }}{% endif %}</h4>
+<div class="card-header">
+  <div class="table-responsive">
+    <table class="table table-sm text-nowrap">
+      <tbody>
+        <tr>
+          <td class="text-left" title="Playbook id">
+            <h4>Playbook #{{ playbook.id }}</h4>
+          </td>
+          <td class="text-right" title="{% if playbook.name is not None %}{{ playbook.name }}: {{ playbook.path }}{% else %}{{ playbook.path }}{% endif %}">
+            <h4>{% if playbook.name is not None %}{{ playbook.name | truncatechars:75 }}: {{ playbook.path | truncatepath:125 }}{% else %}{{ playbook.path | truncatepath:200 }}{% endif %}</h4>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 <div class="card-body text-info" style="max-height:100px;">
   <div class="table-responsive">
@@ -90,9 +103,9 @@
         <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
         <td class="text-center">{{ playbook.controller | default_if_none:"n/a" }}</td>
         <td class="text-center">{{ playbook.user | default_if_none:"n/a" }}</td>
-        <td class="text-center card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
-        <td class="text-center" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
-        <td class="text-center card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
+        <td class="text-center text-nowrap card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
+        <td class="text-center text-nowrap" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
+        <td class="text-center text-nowrap card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
         <td class="text-center">{{ playbook.items.hosts }}</td>
         <td class="text-center">{{ playbook.items.plays }}</td>
         <td class="text-center">{{ playbook.items.tasks }}</td>

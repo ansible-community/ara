@@ -12,6 +12,7 @@
 
 .card-header {
     padding: 0.3rem 1.0rem !important;
+    height: 50px;
 }
 
 .card-footer {
