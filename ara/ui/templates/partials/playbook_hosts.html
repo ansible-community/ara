@@ -58,7 +58,7 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a {% if not static_generation %}href="{% url 'ui:playbook' playbook.id %}?host_name={{ host.name }}#results" title="Search results for {{ host.name }}"{% endif %}>
+                  <a {% if not static_generation %}href="{% url 'ui:host' host.id %}#host_facts_card" title="Show facts for {{ host.name }}"{% endif %}>
                     {{ host.name | truncatechars:75 }}
                   </a>
                 </td>

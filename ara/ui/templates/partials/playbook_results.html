@@ -133,7 +133,7 @@
                   <td class="duration-column">{{ result.duration | format_duration }}</td>
                   <td>
                     {% if not static_generation %}
-                      <a href="{% url 'ui:playbook' playbook.id %}?host_name={{ result.host.name }}#results">{{ result.host.name | truncatechars:50 }}</a>
+                      <a href="{% url 'ui:host' result.host.id %}#results">{{ result.host.name | truncatechars:50 }}</a>
                     {% else %}
                       {{ result.host.name | truncatechars:50 }}
                     {% endif %}
