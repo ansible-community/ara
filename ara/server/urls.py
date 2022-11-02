@@ -3,8 +3,10 @@
 
 import urllib.parse
 
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -33,3 +35,10 @@ urlpatterns = [
     path("healthcheck/", include("health_check.urls")),
 ]
 # fmt: on
+
+if settings.BASE_PATH and not settings.DISTRIBUTED_SQLITE:
+    prefix = settings.BASE_PATH.lstrip("/")
+    urlpatterns = [
+        path(prefix, RedirectView.as_view(url=prefix + "/")),
+        path(prefix + "/", include(urlpatterns)),
+    ]

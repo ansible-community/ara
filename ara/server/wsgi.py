@@ -41,20 +41,26 @@ def distributed_sqlite(environ, start_response):
         return handle_405(start_response)
 
     script_name = get_script_name(environ)
-    path_info = get_path_info(environ)
+    original_path_info = get_path_info(environ)
 
+    prefix_len = len(settings.BASE_PATH)
+    if len(original_path_info) < prefix_len:
+        return handle_404(start_response)
+
+    path_info = original_path_info[prefix_len:]
     # The root under which database files are expected
     root = settings.DISTRIBUTED_SQLITE_ROOT
     # The prefix after which everything should be delegated (ex: /ara-report)
     prefix = settings.DISTRIBUTED_SQLITE_PREFIX
 
     # Static assets and healthcheck should always be served by the regular app
-    if path_info.startswith(settings.STATIC_URL) or path_info == "/healthcheck/":
+    if original_path_info.startswith(settings.STATIC_URL) or path_info == "/healthcheck/":
         return default_application(environ, start_response)
 
     # The root of the application should be served by the regular app to show
     # a distributed database index
     if path_info == "" or path_info == "/":
+        environ["SCRIPT_NAME"] = settings.BASE_PATH
         environ["PATH_INFO"] = "/distributed"
         return default_application(environ, start_response)
 
@@ -82,7 +88,7 @@ def distributed_sqlite(environ, start_response):
         return handle_404(start_response)
 
     # Tell Django about the new URLs it should be using
-    environ["SCRIPT_NAME"] = script_name + fs_path
+    environ["SCRIPT_NAME"] = settings.BASE_PATH + script_name + fs_path
     environ["PATH_INFO"] = path_info[len(fs_path) :]  # noqa: E203
 
     # Store the path of the database in a thread so the distributed_sqlite
