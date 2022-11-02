@@ -29,6 +29,10 @@ settings = LazySettings(
 # reread BASE_DIR since it might have gotten changed in the config file.
 BASE_DIR = settings.get("BASE_DIR", BASE_DIR)
 
+# Deploy ARA on a subpath, useful when behind a reverse proxy
+# NOTE: This also modifies stuff like STATIC_URL
+BASE_PATH = settings.get("BASE_PATH", "/")
+
 # Django doesn't set up logging until it's too late to use it in settings.py.
 # Set it up from the configuration so we can use it.
 DEBUG = settings.get("DEBUG", False, "@bool")
@@ -254,6 +258,7 @@ if not os.path.isdir(BASE_DIR):
 if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
     SETTINGS = dict(
         BASE_DIR=BASE_DIR,
+        BASE_PATH=BASE_PATH,
         ALLOWED_HOSTS=ALLOWED_HOSTS.to_list(),
         CORS_ORIGIN_WHITELIST=CORS_ORIGIN_WHITELIST.to_list(),
         CORS_ORIGIN_REGEX_WHITELIST=CORS_ORIGIN_REGEX_WHITELIST.to_list(),
@@ -296,3 +301,8 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         print("[ara] Writing default settings to %s" % DEFAULT_SETTINGS)
         settings_file.write(comment.lstrip())
         yaml.dump({"default": SETTINGS}, settings_file, default_flow_style=False)
+
+if BASE_PATH:
+    BASE_PATH = BASE_PATH.rstrip("/")
+    if STATIC_URL.startswith("/") and not STATIC_URL.startswith("//"):
+        STATIC_URL = BASE_PATH + STATIC_URL
