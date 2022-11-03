@@ -15,7 +15,7 @@ buildah run "${build}" -- dnf install -y ${DEV_DEPENDENCIES}
 
 # Install ara from PyPI with API server extras for dependencies (django & django-rest-framework)
 # including database backend libraries and gunicorn
-buildah run "${build}" -- python3 -m pip install "ara[server]" "psycopg2<2.9" mysqlclient gunicorn
+buildah run "${build}" -- python3 -m pip install "ara[server,postgresql,mysql]" gunicorn
 
 # Remove development dependencies and clean up
 buildah run "${build}" -- /bin/bash -c "dnf remove -y ${DEV_DEPENDENCIES} && dnf autoremove -y && dnf clean all && python3 -m pip cache purge"
