@@ -238,6 +238,17 @@ options:
     ini:
       - section: ara
         key: record_user
+  record_task_content:
+    description:
+      - Whether ara should record the content of a task
+      - Defaults to true, set to false for privacy or other use cases
+    type: boolean
+    default: true
+    env:
+      - name: ARA_RECORD_TASK_CONTENT
+    ini:
+      - section: ara
+        key: record_task_content
 """
 
 # Task modules for which ara should save host facts
@@ -308,6 +319,7 @@ class CallbackModule(CallbackBase):
         self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
         self.record_controller = self.get_option("record_controller")
         self.record_user = self.get_option("record_user")
+        self.record_task_content = self.get_option("record_task_content")
 
         # The intent for the ignored_files default value is to ignore the ansible local tmpdir but the path
         # can be changed by the user's configuration so retrieve that and use it instead.
@@ -764,17 +776,21 @@ class CallbackModule(CallbackBase):
         # Retrieve the task so we can associate the result to the task id
         self.task = self._get_or_create_task(result._task)
 
-        results = strip_internal_keys(module_response_deepcopy(result._result))
+        if self.record_task_content:
+            results = strip_internal_keys(module_response_deepcopy(result._result))
 
-        # Round-trip through JSON to sort keys and convert Ansible types
-        # to standard types
-        try:
-            jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=True)
-        except TypeError:
-            # Python 3 can't sort non-homogenous keys.
-            # https://bugs.python.org/issue25457
-            jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=False)
-        results = json.loads(jsonified)
+            # Round-trip through JSON to sort keys and convert Ansible types
+            # to standard types
+            try:
+                jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=True)
+            except TypeError:
+                # Python 3 can't sort non-homogenous keys.
+                # https://bugs.python.org/issue25457
+                jsonified = json.dumps(results, cls=AnsibleJSONEncoder, ensure_ascii=False, sort_keys=False)
+
+            results = json.loads(jsonified)
+        else:
+            results = {}
 
         # Sanitize facts
         if "ansible_facts" in results:
