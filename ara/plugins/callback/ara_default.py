@@ -432,7 +432,10 @@ class AraWorker:
             self._submit_thread("global", self._set_playbook_labels, labels)
 
         # Record all the files involved in the play
-        for path in play._loader._FILE_CACHE.keys():
+        #   make a list of the keys and iterate that for thread safety
+        #   avoiding `RuntimeError: dictionary changed size during iteration`
+        play_files = list(play._loader._FILE_CACHE.keys())
+        for path in play_files:
             # The cache can be pre-populated with files that aren't relevant to the playbook report
             # If there are matches that should be ignored here, don't record them at all
             ignored = False
