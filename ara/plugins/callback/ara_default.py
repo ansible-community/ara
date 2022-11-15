@@ -855,14 +855,6 @@ class CallbackModule(CallbackBase):
         self.worker = AraWorker(queue=self.queue)
         self.worker_thread = threading.Thread(target=self.worker.run)
 
-    def __del__(self):
-        """
-        Give the thread as long as possible to complete its work.
-        """
-        self.queue.join()
-        if self.worker_thread.is_alive():
-            self.worker_thread.join()
-
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
