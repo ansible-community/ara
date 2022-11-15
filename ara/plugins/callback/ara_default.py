@@ -853,7 +853,7 @@ class CallbackModule(CallbackBase):
         self.queue = Queue()
         # started at the end of set_options()
         self.worker = AraWorker(queue=self.queue)
-        self.worker_thread = threading.Thread(target=self.worker.run)
+        self.worker_thread = threading.Thread(target=self.worker.run, daemon=True)
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
