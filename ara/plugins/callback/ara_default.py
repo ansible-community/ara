@@ -855,6 +855,18 @@ class CallbackModule(CallbackBase):
         self.worker = AraWorker(queue=self.queue)
         self.worker_thread = threading.Thread(target=self.worker.run, daemon=True)
 
+    def __del__(self):
+        outstanding = self.queue.qsize()
+        if outstanding > 0:
+            self._display.display("ARA: Waiting for all requests to finish (about %d)..." % outstanding)
+        self.queue.join()
+        if self.worker_thread.is_alive():
+            if self.worker.global_threads:
+                self.worker.global_threads.shutdown()
+            if self.worker.task_threads:
+                self.worker.task_threads.shutdown()
+        self._display.display("ARA: Done!")
+
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
 
