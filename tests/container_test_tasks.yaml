@@ -9,12 +9,19 @@
     recurse: yes
 
 - name: "Build {{ item.name }}:{{ item.tag }} with {{ item.script }}"
-  command: "{{ ara_api_source }}/contrib/container-images/{{ item.script }} {{ item.name }}:{{ item.tag }}"
+  vars:
+    # Assuming running from checked out source
+    # This is done here instead of the play vars because Zuul uses this var and passes it to the playbook as an inventory var
+    # which has less precedence than play vars.
+    # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
+    _default_source: "{{ playbook_dir | dirname }}"
+  command: "{{ ara_api_source | default(_default_source) }}/contrib/container-images/{{ item.script }} {{ item.name }}:{{ item.tag }}"
 
 - name: "Start {{ item.name }}:{{ item.tag }} with podman"
   command: |
     podman run --name api-server --detach --tty \
-    --volume {{ ara_api_root_dir }}/server:/opt/ara:z -p 8000:8000 \
+    --volume {{ ara_api_root_dir }}/server:/opt/ara \
+    -p 8000:8000 \
     -e ARA_LOG_LEVEL=DEBUG -e ARA_DEBUG=true \
     {{ item.name }}:{{ item.tag }}
 
