@@ -4,6 +4,163 @@
 Changelog and release notes
 ***************************
 
+1.6.0 (2022-12-01)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.6.0
+
+.. code-block:: text
+
+    This is the 1.6.0 stable release of ara.
+    
+    It features a new "tasks" page to browse and search for tasks across playbook runs
+    as well as many updates, fixes and improvements.
+    
+    Instructions for upgrading are included in the upgrade notes.
+    
+    Changes since 1.5.8:
+    
+    UI
+    --
+    
+    - Added a new "Tasks" page similar to the existing pages for Playbooks and Hosts.
+      It provides a browseable and searchable overview of tasks across playbook runs.
+    - Refreshed the host index page:
+      - Added a column as well as search arguments for playbook name (or path)
+      - Replaced the playbook status by a concise summary of task status for the host
+    
+    - Updated the playbook summary card to include the playbook id, the version of ara as
+      well as the version of python.
+    - Re-ordered and resized columns in tables to optimize width and improve consistency
+    - Resized and aligned fields in search forms to use the full width available
+    - Improved how task tags are displayed
+    - Updated HTML page titles to be consistent across pages
+    - Replaced fields for searching by task ID and host ID by task name and host name
+    - Truncate name fields to prevent exceedinly large names to distort entire tables
+    - Corrected card header font sizes in the host report page
+    
+    callback plugin
+    ---------------
+    
+    - Added support for recording the user who ran the playbook
+    - Added support for recording the version of ara as well as the version of
+      python used when running the playbook
+    - Added options ARA_RECORD_USER and ARA_RECORD_CONTROLLER that can be
+      set to false to avoid recording the user and controller hostname
+    - Added support for specifying a SSL key, certificate and certificate
+      authority for authenticating with a remote ara API server using
+      ARA_API_KEY, ARA_API_CERT and ARA_API_CA respectively.
+    - Fixed host fact recording to ensure it works when using FQCN-style tasks
+      (ex: setup & ansible.builtin.setup)
+    - Increased reliability and accuracy when recording results that can arrive
+      out of order when using multi-threading or the free strategy by using the
+      task uuid provided by Ansible
+    - Truncate playbook, play, host and label names in circumstances where their
+      length exceeds 255 characters
+    - Ignore and don't record files in ~/.ansible/tmp by default
+    
+    API Server
+    ----------
+    
+    - Bumped django requirement from 2.2 LTS to 3.2 LTS and removed the pin
+      on the version of psycopg2 accordingly
+    - Added a new configuration option, ARA_BASE_PATH, to let the server
+      listen on an alternate path. It will continue to default to "/" but it
+      could, for example, be set to "/ara/".
+    - Lifted requirement on tzlocal, improve timezone detection and mitigate
+      when the timezone can't be found by defaulting to UTC
+    
+    - Several new database model and API fields:
+      - Added client_version and server_version fields to playbooks, meant to
+        represent the version of the ara callback and server used in recording
+        the playbook
+      - Added python_version field to playbooks to save the version of python
+        used by Ansible and the callback plugin when recording a playbook
+      - Added a new "failed" status for tasks that is used by the callback plugin
+        when there is at least one failed result for a given task
+      - Added a new "uuid" field for tasks which is the uuid provided by Ansible
+        for a task. It is used by the callback plugin to increase the reliability
+        and accuracy when recording results even if they arrive out of order.
+    
+    - Several fixes and improvements for the distributed sqlite database backend:
+      - Added a new index page for listing and linking to available databases.
+        This is a work in progress that is intended to be improved in the future.
+      - Return a HTTP 405 error when trying to write to read-only endpoints
+      - Fixed the /healthcheck/ endpoint to make sure it is routed properly
+      - Improved database engine settings and WSGI application configuration
+        The WSGI application should now always be "ara.server.wsgi" instead of
+        needing to specify "ara.server.wsgi.distributed_sqlite"
+    
+    API client
+    ----------
+    
+    - Added support for specifying a SSL key, certificate and certificate
+      authority for authenticating with a remote ara API server
+    - Remove InsecureRequestWarning for insecure requests when SSL verification
+      is not enabled.
+    
+    CLI
+    ---
+    
+    - Fixed wrong parsing of durations longer than 24 hours
+    - Added support for searching playbooks by user
+    - Added support for specifying a SSL key, certificate and certificate
+      authority for authenticating with a remote ara API server using
+      ARA_API_KEY, ARA_API_CERT and ARA_API_CA respectively.
+    
+    Docs
+    ----
+    
+    - Refreshed and improved the README, reformatted it from rst to markdown
+    - Added a CONTRIBUTING.md file and refreshed contribution documentation
+    - Explicitly call out and recommend setting up authentication for production
+      use in order to prevent leaking sensitive information
+    - Improved troubleshooting documentation and tips to improve playbook recording
+      performance
+    
+    Tests and miscellaneous
+    -----------------------
+    
+    - Bumped the black linter to the latest version and reformatted bits
+      of code accordingly
+    - Updated isort to version 5 and reformatted bits of code accordingly
+    - Reformatted bits of code using pyupgrade in consideration of dropping
+      support for python3.5
+    - Updated versions of ansible(-core) we run integration tests with to include
+      2.9, 2.11, 2.12, 2.13, 2.14 and 6.4.0.
+      Although 2.9 is EOL, we will keep it for a while longer.
+    
+    container-images (contrib)
+    --------------------------
+    
+    - The 'latest' tag of container images are now tagged from the latest
+      PyPI release instead of the latest git source
+    - Container images have been updated to the latest distribution images:
+      CentOS 8 to CentOS 9 and Fedora 35 to Fedora 36
+    - Add a centos-source.sh script so we can test from source in addition
+      to PyPI
+    - Install everything from PyPI (except ara when from source) in order
+      to avoid mixing distribution packages with PyPI packages
+    
+    Upgrade notes
+    -------------
+    
+    - ara 1.5.8 was the last version to support python3.5.
+      Starting with ara 1.6.0, python3.6 or later is required.
+    
+    - ara 1.6.0 includes several database migrations and it is highly recommended
+      to take a backup of the server database before updating.
+      Database migrations are run automatically in many circumstances and can be run
+      manually using "ara-manage migrate".
+    
+    - There are a few backwards incompatible changes introduced in ara 1.6.0 which
+      makes it important to run the same version of ara everywhere to avoid running
+      into problems if the version of the callback plugin and server do not match.
+    
+    - There is a database migration which grows the maximum length of the name fields
+      for plays and labels which was later reverted due to potential issues when using
+      the MySQL database backend.
+
 1.5.8 (2022-03-24)
 ##################
 
