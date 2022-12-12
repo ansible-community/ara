@@ -314,7 +314,7 @@ class CallbackModule(CallbackBase):
         # https://github.com/ansible-community/ara/issues/385
         for pattern in self.ignored_files:
             if pattern == ".ansible/tmp":
-                tmpdir_config = os.path.dirname(C.config.get_config_value("DEFAULT_LOCAL_TMP"))
+                tmpdir_config = os.path.dirname(C.DEFAULT_LOCAL_TMP)
                 index = self.ignored_files.index(pattern)
                 self.ignored_files[index] = tmpdir_config
                 break
