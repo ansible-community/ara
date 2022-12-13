@@ -4,6 +4,27 @@
 Changelog and release notes
 ***************************
 
+1.6.1 (2022-12-12)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.6.1
+
+.. code-block:: text
+
+    This is the 1.6.1 stable release of ara.
+    
+    This is a minor release with two changes:
+    
+    - callback: Changed how ANSIBLE_TMP is found to work around a behavior
+      change in ansible-core 2.14 that ended up creating a directory named
+      {{ ANSIBLE_HOME ~ "
+      For more information: https://github.com/ansible-community/ara/issues/469
+    
+    - Added a mysql extra to the python packaging for installing the
+      mysqlclient library. This is in addition to the existing server and
+      postgresql extra. They are used like this:
+      pip install ara[server,mysql,postgresql]
+
 1.6.0 (2022-12-01)
 ##################
 
