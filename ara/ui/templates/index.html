@@ -201,9 +201,9 @@
             </td>
             <td class="text-center">
               {% if not static_generation %}
-                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}" title="Search for controller {{ playbook.controller }}">{{ playbook.controller | default_if_none:'' }}</a>
+                <a href="{% url 'ui:index' %}?controller={{ playbook.controller }}" title="Search for controller {{ playbook.controller }}">{{ playbook.controller | default_if_none:'' | truncatechars:50 }}</a>
               {% else %}
-                {{ playbook.controller | default_if_none:'' }}
+                {{ playbook.controller | default_if_none:'' | truncatechars:50 }}
               {% endif %}
             </td>
             <td>
