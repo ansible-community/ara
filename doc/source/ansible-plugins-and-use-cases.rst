@@ -251,7 +251,7 @@ It can be used to attach data or metadata to playbook reports so they are availa
 
         - name: Print recorded data
           debug:
-            msg: "{{ version.playbook_id }} - {{ version.key }}: {{ version.value }}
+            msg: "{{ version.playbook_id }} - {{ version.key }}: {{ version.value }}"
 
 It is possible to declare a type which can be used to render the data appropriately later:
 
