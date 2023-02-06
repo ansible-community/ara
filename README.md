@@ -135,7 +135,8 @@ Changelog and release notes are available within the repository's [git tags](htt
 - Matrix: Bridged from IRC via [#ara:libera.chat](https://matrix.to/#/#ara:libera.chat)
 - Slack: Bridged from IRC via [https://arecordsansible.slack.com](https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLTU2NTU3YjMwYzRlYmRkZTVjZTFiOWIxNjE5NGRhMDQ3ZTgzZmQyZTY2NzY5YmZmNDA5ZWY4YTY1Y2Y1ODBmNzc>)
 - Website and blog: https://ara.recordsansible.org
-- Twitter: https://twitter.com/recordsansible
+- ~~Twitter: https://twitter.com/recordsansible~~
+- Mastodon: https://fosstodon.org/@ara
 
 ## Contributing
 
