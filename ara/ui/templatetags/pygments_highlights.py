@@ -6,7 +6,7 @@ import json
 from django import template
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import JsonLexer, YamlLexer
+from pygments.lexers import DiffLexer, JsonLexer, YamlLexer
 from pygments.lexers.special import TextLexer
 
 register = template.Library()
@@ -38,7 +38,10 @@ def format_data(data):
             data = json.dumps(json.loads(data), indent=4, sort_keys=True)
             lexer = JsonLexer()
         except (ValueError, TypeError):
-            lexer = TextLexer()
+            if data.startswith("---"):
+                lexer = DiffLexer()
+            else:
+                lexer = TextLexer()
     elif isinstance(data, dict) or isinstance(data, list):
         data = json.dumps(data, indent=4, sort_keys=True)
         lexer = JsonLexer()
