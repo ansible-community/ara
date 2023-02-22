@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import time
+from datetime import datetime, timedelta
 
 from prometheus_client import Gauge, start_http_server
 
@@ -7,9 +8,9 @@ from ara.clients.http import AraHttpClient
 
 
 class AraPlaybookCollector(object):
-    def __init__(self, endpoint, limit=500):
-        self.client = AraHttpClient(endpoint=endpoint)
-        self.limit = limit
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
+        self.client = AraHttpClient(endpoint=self.endpoint)
         self.metrics = {
             "total": Gauge("ara_playbooks_total", "Total number of playbooks recorded by ara"),
             "range": Gauge("ara_playbooks_range", "Limit metric collection to the N most recent playbooks"),
@@ -33,19 +34,31 @@ class AraPlaybookCollector(object):
             ),
         }
 
-    def collect_metrics(self):
-        # TODO: Reset gauges until we figure out how to not increment every time it runs
-        for metric in self.metrics:
-            try:
-                self.metrics[metric]._metrics.clear()
-            except AttributeError:
-                pass
+    def collect_metrics(self, created_after=None, limit=1000):
+        log("collecting playbook metrics")
+        self.metrics["range"].set(limit)
 
-        playbooks = self.client.get(f"/api/v1/playbooks?limit={self.limit}")
-        self.metrics["total"].set(playbooks["count"])
-        self.metrics["range"].set(self.limit)
+        if created_after is None:
+            query = self.client.get(f"/api/v1/playbooks?order=-id&limit={limit}")
+        else:
+            query = self.client.get(f"/api/v1/playbooks?order=-id&limit={limit}&created_after={created_after}")
+        playbooks = query["results"]
 
-        for playbook in playbooks["results"]:
+        # Iterate through multiple pages of results if necessary
+        while query["next"]:
+            # For example:
+            # "next": "https://demo.recordsansible.org/api/v1/playbooks?limit=1000&offset=2000",
+            uri = query["next"].replace(self.endpoint, "")
+            query = self.client.get(uri)
+            playbooks.extend(query["results"])
+
+        # Save the most recent timestamp so we only scrape beyond it next time
+        if playbooks:
+            created_after = increment_timestamp(playbooks[0]["created"])
+            log(f"parsing metrics for {len(playbooks)} playbooks")
+
+        for playbook in playbooks:
+            self.metrics["total"].inc()
             self.metrics["playbooks"].labels(
                 path=playbook["path"],
                 status=playbook["status"],
@@ -61,13 +74,14 @@ class AraPlaybookCollector(object):
                 records=playbook["items"]["records"],
             ).inc()
 
-        return self.metrics
+        log("finished updating playbook metrics")
+        return (self.metrics, created_after)
 
 
 class AraTaskCollector(object):
-    def __init__(self, endpoint, limit=500):
-        self.client = AraHttpClient(endpoint=endpoint)
-        self.limit = limit
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
+        self.client = AraHttpClient(endpoint=self.endpoint)
         self.metrics = {
             "total": Gauge("ara_tasks_total", "Total number of tasks recorded by ara"),
             "range": Gauge("ara_tasks_range", "Limit metric collection to the N most recent tasks"),
@@ -78,19 +92,31 @@ class AraTaskCollector(object):
             ),
         }
 
-    def collect_metrics(self):
-        # TODO: Reset gauges until we figure out how to not increment every time it runs
-        for metric in self.metrics:
-            try:
-                self.metrics[metric]._metrics.clear()
-            except AttributeError:
-                pass
+    def collect_metrics(self, created_after=None, limit=2500):
+        log("collecting task metrics")
+        self.metrics["range"].set(limit)
 
-        tasks = self.client.get(f"/api/v1/tasks?limit={self.limit}")
-        self.metrics["total"].set(tasks["count"])
-        self.metrics["range"].set(self.limit)
+        if created_after is None:
+            query = self.client.get(f"/api/v1/tasks?order=-id&limit={limit}")
+        else:
+            query = self.client.get(f"/api/v1/tasks?order=-id&limit={limit}&created_after={created_after}")
+        tasks = query["results"]
 
-        for task in tasks["results"]:
+        # Iterate through multiple pages of results if necessary
+        while query["next"]:
+            # For example:
+            # "next": "https://demo.recordsansible.org/api/v1/tasks?limit=1000&offset=2000",
+            uri = query["next"].replace(self.endpoint, "")
+            query = self.client.get(uri)
+            tasks.extend(query["results"])
+
+        # Save the most recent timestamp so we only scrape beyond it next time
+        if tasks:
+            created_after = increment_timestamp(tasks[0]["created"])
+            log(f"parsing metrics for {len(tasks)} tasks")
+
+        for task in tasks:
+            self.metrics["total"].inc()
             self.metrics["tasks"].labels(
                 path=task["path"],
                 lineno=task["lineno"],
@@ -100,13 +126,14 @@ class AraTaskCollector(object):
                 results=task["items"]["results"],
             ).inc()
 
-        return self.metrics
+        log("finished updating task metrics")
+        return (self.metrics, created_after)
 
 
 class AraHostCollector(object):
-    def __init__(self, endpoint, limit=500):
-        self.client = AraHttpClient(endpoint=endpoint)
-        self.limit = limit
+    def __init__(self, endpoint):
+        self.endpoint = endpoint
+        self.client = AraHttpClient(endpoint=self.endpoint)
         self.metrics = {
             "total": Gauge("ara_hosts_total", "Total number of hosts recorded by ara"),
             "range": Gauge("ara_hosts_range", "Limit metric collection to the N most recent hosts"),
@@ -117,19 +144,31 @@ class AraHostCollector(object):
             ),
         }
 
-    def collect_metrics(self):
-        # TODO: Reset gauges until we figure out how to not increment every time it runs
-        for metric in self.metrics:
-            try:
-                self.metrics[metric]._metrics.clear()
-            except AttributeError:
-                pass
+    def collect_metrics(self, created_after=None, limit=2500):
+        log("collecting host metrics")
+        self.metrics["range"].set(limit)
 
-        hosts = self.client.get(f"/api/v1/hosts?limit={self.limit}")
-        self.metrics["total"].set(hosts["count"])
-        self.metrics["range"].set(self.limit)
+        if created_after is None:
+            query = self.client.get(f"/api/v1/hosts?order=-id&limit={limit}")
+        else:
+            query = self.client.get(f"/api/v1/hosts?order=-id&limit={limit}&created_after={created_after}")
+        hosts = query["results"]
 
-        for host in hosts["results"]:
+        # Iterate through multiple pages of results if necessary
+        while query["next"]:
+            # For example:
+            # "next": "https://demo.recordsansible.org/api/v1/hosts?limit=1000&offset=2000",
+            uri = query["next"].replace(self.endpoint, "")
+            query = self.client.get(uri)
+            hosts.extend(query["results"])
+
+        # Save the most recent timestamp so we only scrape beyond it next time
+        if hosts:
+            created_after = increment_timestamp(hosts[0]["created"])
+            log(f"parsing metrics for {len(hosts)} hosts")
+
+        for host in hosts:
+            self.metrics["total"].inc()
             self.metrics["hosts"].labels(
                 name=host["name"],
                 changed=host["changed"],
@@ -139,19 +178,37 @@ class AraHostCollector(object):
                 unreachable=host["unreachable"],
             ).inc()
 
-        return self.metrics
+        log("finished updating host metrics")
+        return (self.metrics, created_after)
+
+
+def increment_timestamp(timestamp, pattern="%Y-%m-%dT%H:%M:%S.%fZ"):
+    """
+    API timestamps have this python isoformat: 2022-12-08T05:45:38.465607Z
+    We want to increment timestamps by one microsecond so we can search for things created after them.
+    """
+    return (datetime.strptime(timestamp, pattern) + timedelta(microseconds=1)).isoformat()
+
+
+# TODO: Better logging
+def log(msg):
+    timestamp = datetime.now().isoformat()
+    print(f"{timestamp}: {msg}")
 
 
 if __name__ == "__main__":
     # Start HTTP server for Prometheus scraping
     start_http_server(8000)
+    log("ara Prometheus exporter listening on http://0.0.0.0:8000/metrics")
+
     # TODO: Add argparse for API client, endpoint, authentication, limit and poll frequency
     playbooks = AraPlaybookCollector(endpoint="https://demo.recordsansible.org")
     tasks = AraTaskCollector(endpoint="https://demo.recordsansible.org")
     hosts = AraHostCollector(endpoint="https://demo.recordsansible.org")
 
+    latest = dict(playbook=None, task=None, host=None)
     while True:
-        playbooks.collect_metrics()
-        tasks.collect_metrics()
-        hosts.collect_metrics()
-        time.sleep(60)
+        playbook_metrics, latest["playbook"] = playbooks.collect_metrics(latest["playbook"])
+        task_metrics, latest["task"] = tasks.collect_metrics(latest["task"])
+        host_metrics, latest["host"] = hosts.collect_metrics(latest["host"])
+        time.sleep(30)
