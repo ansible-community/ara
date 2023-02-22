@@ -1,16 +1,30 @@
-#!/usr/bin/env python3
+# Copyright (c) 2023 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+import logging
+import os
+import sys
 import time
 from datetime import datetime, timedelta
 
-from prometheus_client import Gauge, start_http_server
+from cliff.command import Command
 
-from ara.clients.http import AraHttpClient
+import ara.cli.utils as cli_utils
+from ara.cli.base import global_arguments
+from ara.clients.utils import get_client
+
+try:
+    from prometheus_client import Gauge, start_http_server
+    HAS_PROMETHEUS_CLIENT = True
+except ImportError:
+    HAS_PROMETHEUS_CLIENT = False
+
 
 
 class AraPlaybookCollector(object):
-    def __init__(self, endpoint):
-        self.endpoint = endpoint
-        self.client = AraHttpClient(endpoint=self.endpoint)
+    def __init__(self, client, log):
+        self.client = client
+        self.log = log
         self.metrics = {
             "total": Gauge("ara_playbooks_total", "Total number of playbooks recorded by ara"),
             "range": Gauge("ara_playbooks_range", "Limit metric collection to the N most recent playbooks"),
@@ -35,7 +49,7 @@ class AraPlaybookCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=1000):
-        log("collecting playbook metrics")
+        self.log.info("collecting playbook metrics")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -48,14 +62,14 @@ class AraPlaybookCollector(object):
         while query["next"]:
             # For example:
             # "next": "https://demo.recordsansible.org/api/v1/playbooks?limit=1000&offset=2000",
-            uri = query["next"].replace(self.endpoint, "")
+            uri = query["next"].replace(self.client.endpoint, "")
             query = self.client.get(uri)
             playbooks.extend(query["results"])
 
         # Save the most recent timestamp so we only scrape beyond it next time
         if playbooks:
-            created_after = increment_timestamp(playbooks[0]["created"])
-            log(f"parsing metrics for {len(playbooks)} playbooks")
+            created_after = cli_utils.increment_timestamp(playbooks[0]["created"])
+            self.log.info(f"parsing metrics for {len(playbooks)} playbooks")
 
         for playbook in playbooks:
             self.metrics["total"].inc()
@@ -74,14 +88,14 @@ class AraPlaybookCollector(object):
                 records=playbook["items"]["records"],
             ).inc()
 
-        log("finished updating playbook metrics")
+        self.log.info("finished updating playbook metrics")
         return (self.metrics, created_after)
 
 
 class AraTaskCollector(object):
-    def __init__(self, endpoint):
-        self.endpoint = endpoint
-        self.client = AraHttpClient(endpoint=self.endpoint)
+    def __init__(self, client, log):
+        self.client = client
+        self.log = log
         self.metrics = {
             "total": Gauge("ara_tasks_total", "Total number of tasks recorded by ara"),
             "range": Gauge("ara_tasks_range", "Limit metric collection to the N most recent tasks"),
@@ -93,7 +107,7 @@ class AraTaskCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=2500):
-        log("collecting task metrics")
+        self.log.info("collecting task metrics")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -106,14 +120,14 @@ class AraTaskCollector(object):
         while query["next"]:
             # For example:
             # "next": "https://demo.recordsansible.org/api/v1/tasks?limit=1000&offset=2000",
-            uri = query["next"].replace(self.endpoint, "")
+            uri = query["next"].replace(self.client.endpoint, "")
             query = self.client.get(uri)
             tasks.extend(query["results"])
 
         # Save the most recent timestamp so we only scrape beyond it next time
         if tasks:
-            created_after = increment_timestamp(tasks[0]["created"])
-            log(f"parsing metrics for {len(tasks)} tasks")
+            created_after = cli_utils.increment_timestamp(tasks[0]["created"])
+            self.log.info(f"parsing metrics for {len(tasks)} tasks")
 
         for task in tasks:
             self.metrics["total"].inc()
@@ -126,14 +140,14 @@ class AraTaskCollector(object):
                 results=task["items"]["results"],
             ).inc()
 
-        log("finished updating task metrics")
+        self.log.info("finished updating task metrics")
         return (self.metrics, created_after)
 
 
 class AraHostCollector(object):
-    def __init__(self, endpoint):
-        self.endpoint = endpoint
-        self.client = AraHttpClient(endpoint=self.endpoint)
+    def __init__(self, client, log):
+        self.client = client
+        self.log = log
         self.metrics = {
             "total": Gauge("ara_hosts_total", "Total number of hosts recorded by ara"),
             "range": Gauge("ara_hosts_range", "Limit metric collection to the N most recent hosts"),
@@ -145,7 +159,7 @@ class AraHostCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=2500):
-        log("collecting host metrics")
+        self.log.info("collecting host metrics")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -158,14 +172,14 @@ class AraHostCollector(object):
         while query["next"]:
             # For example:
             # "next": "https://demo.recordsansible.org/api/v1/hosts?limit=1000&offset=2000",
-            uri = query["next"].replace(self.endpoint, "")
+            uri = query["next"].replace(self.client.endpoint, "")
             query = self.client.get(uri)
             hosts.extend(query["results"])
 
         # Save the most recent timestamp so we only scrape beyond it next time
         if hosts:
-            created_after = increment_timestamp(hosts[0]["created"])
-            log(f"parsing metrics for {len(hosts)} hosts")
+            created_after = cli_utils.increment_timestamp(hosts[0]["created"])
+            self.log.info(f"parsing metrics for {len(hosts)} hosts")
 
         for host in hosts:
             self.metrics["total"].inc()
@@ -178,37 +192,82 @@ class AraHostCollector(object):
                 unreachable=host["unreachable"],
             ).inc()
 
-        log("finished updating host metrics")
+        self.log.info("finished updating host metrics")
         return (self.metrics, created_after)
 
 
-def increment_timestamp(timestamp, pattern="%Y-%m-%dT%H:%M:%S.%fZ"):
-    """
-    API timestamps have this python isoformat: 2022-12-08T05:45:38.465607Z
-    We want to increment timestamps by one microsecond so we can search for things created after them.
-    """
-    return (datetime.strptime(timestamp, pattern) + timedelta(microseconds=1)).isoformat()
+class PrometheusExporter(Command):
+    """Exposes a prometheus exporter to provide metrics from an instance of ara"""
 
+    log = logging.getLogger(__name__)
 
-# TODO: Better logging
-def log(msg):
-    timestamp = datetime.now().isoformat()
-    print(f"{timestamp}: {msg}")
+    def get_parser(self, prog_name):
+        parser = super().get_parser(prog_name)
+        parser = global_arguments(parser)
+        # fmt: off
+        parser.add_argument(
+            '--playbook-limit',
+            help='Max number of playbooks to request at once (default: 1000)',
+            default=1000,
+            type=int
+        )
+        parser.add_argument(
+            '--task-limit',
+            help='Max number of tasks to request at once (default: 2500)',
+            default=2500,
+            type=int
+        )
+        parser.add_argument(
+            '--host-limit',
+            help='Max number of hosts to request at once (default: 2500)',
+            default=2500,
+            type=int
+        )
+        parser.add_argument(
+            '--poll-frequency',
+            help='Seconds to wait until querying ara for new metrics (default: 60)',
+            default=60,
+            type=int
+        )
+        parser.add_argument(
+            '--prometheus-port',
+            help='Port on which the prometheus exporter will listen (default: 8001)',
+            default=8001,
+            type=int
+        )
+        # TODO: --max-days
+        return parser
 
+    def take_action(self, args):
+        if not HAS_PROMETHEUS_CLIENT:
+            self.log.error("The prometheus_client python package must be installed to run this command")
+            sys.exit(2)
 
-if __name__ == "__main__":
-    # Start HTTP server for Prometheus scraping
-    start_http_server(8000)
-    log("ara Prometheus exporter listening on http://0.0.0.0:8000/metrics")
+        verify = False if args.insecure else True
+        if args.ssl_ca:
+            verify = args.ssl_ca
+        client = get_client(
+            client=args.client,
+            endpoint=args.server,
+            timeout=args.timeout,
+            username=args.username,
+            password=args.password,
+            cert=args.ssl_cert,
+            key=args.ssl_key,
+            verify=verify,
+            run_sql_migrations=False,
+        )
 
-    # TODO: Add argparse for API client, endpoint, authentication, limit and poll frequency
-    playbooks = AraPlaybookCollector(endpoint="https://demo.recordsansible.org")
-    tasks = AraTaskCollector(endpoint="https://demo.recordsansible.org")
-    hosts = AraHostCollector(endpoint="https://demo.recordsansible.org")
+        playbooks = AraPlaybookCollector(client=client, log=self.log)
+        tasks = AraTaskCollector(client=client, log=self.log)
+        hosts = AraHostCollector(client=client, log=self.log)
 
-    latest = dict(playbook=None, task=None, host=None)
-    while True:
-        playbook_metrics, latest["playbook"] = playbooks.collect_metrics(latest["playbook"])
-        task_metrics, latest["task"] = tasks.collect_metrics(latest["task"])
-        host_metrics, latest["host"] = hosts.collect_metrics(latest["host"])
-        time.sleep(30)
+        start_http_server(args.prometheus_port)
+        self.log.info(f"ara Prometheus exporter listening on http://0.0.0.0:{args.prometheus_port}/metrics")
+
+        latest = dict(playbook=None, task=None, host=None)
+        while True:
+            playbook_metrics, latest["playbook"] = playbooks.collect_metrics(latest["playbook"], limit=args.playbook_limit)
+            task_metrics, latest["task"] = tasks.collect_metrics(latest["task"], limit=args.task_limit)
+            host_metrics, latest["host"] = hosts.collect_metrics(latest["host"], limit=args.host_limit)
+            time.sleep(args.poll_frequency)

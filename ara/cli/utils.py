@@ -56,6 +56,14 @@ def avg_timedelta(delta: timedelta, count: int):
     return str(delta / count)
 
 
+def increment_timestamp(timestamp, pattern="%Y-%m-%dT%H:%M:%S.%fZ"):
+    """
+    API timestamps have this python isoformat: 2022-12-08T05:45:38.465607Z
+    We want to increment timestamps by one microsecond so we can search for things created after them.
+    """
+    return (datetime.strptime(timestamp, pattern) + timedelta(microseconds=1)).isoformat()
+
+
 # Also see: ui.templatetags.truncatepath
 def truncatepath(path, count):
     """
