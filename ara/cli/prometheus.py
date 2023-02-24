@@ -20,7 +20,6 @@ except ImportError:
     HAS_PROMETHEUS_CLIENT = False
 
 
-
 class AraPlaybookCollector(object):
     def __init__(self, client, log):
         self.client = client
@@ -28,6 +27,7 @@ class AraPlaybookCollector(object):
         self.metrics = {
             "total": Gauge("ara_playbooks_total", "Total number of playbooks recorded by ara"),
             "range": Gauge("ara_playbooks_range", "Limit metric collection to the N most recent playbooks"),
+
             "playbooks": Gauge(
                 "ara_playbooks",
                 "Ansible playbooks recorded by ara",
@@ -49,7 +49,7 @@ class AraPlaybookCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=1000):
-        self.log.info("collecting playbook metrics")
+        self.log.info("collecting playbook metrics...")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -69,7 +69,7 @@ class AraPlaybookCollector(object):
         # Save the most recent timestamp so we only scrape beyond it next time
         if playbooks:
             created_after = cli_utils.increment_timestamp(playbooks[0]["created"])
-            self.log.info(f"parsing metrics for {len(playbooks)} playbooks")
+            self.log.info(f"parsing metrics for {len(playbooks)} playbooks...")
 
         for playbook in playbooks:
             self.metrics["total"].inc()
@@ -88,7 +88,7 @@ class AraPlaybookCollector(object):
                 records=playbook["items"]["records"],
             ).inc()
 
-        self.log.info("finished updating playbook metrics")
+        self.log.info("finished updating playbook metrics.")
         return (self.metrics, created_after)
 
 
@@ -107,7 +107,7 @@ class AraTaskCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=2500):
-        self.log.info("collecting task metrics")
+        self.log.info("collecting task metrics...")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -127,7 +127,7 @@ class AraTaskCollector(object):
         # Save the most recent timestamp so we only scrape beyond it next time
         if tasks:
             created_after = cli_utils.increment_timestamp(tasks[0]["created"])
-            self.log.info(f"parsing metrics for {len(tasks)} tasks")
+            self.log.info(f"parsing metrics for {len(tasks)} tasks...")
 
         for task in tasks:
             self.metrics["total"].inc()
@@ -140,7 +140,7 @@ class AraTaskCollector(object):
                 results=task["items"]["results"],
             ).inc()
 
-        self.log.info("finished updating task metrics")
+        self.log.info("finished updating task metrics.")
         return (self.metrics, created_after)
 
 
@@ -159,7 +159,7 @@ class AraHostCollector(object):
         }
 
     def collect_metrics(self, created_after=None, limit=2500):
-        self.log.info("collecting host metrics")
+        self.log.info("collecting host metrics...")
         self.metrics["range"].set(limit)
 
         if created_after is None:
@@ -179,7 +179,7 @@ class AraHostCollector(object):
         # Save the most recent timestamp so we only scrape beyond it next time
         if hosts:
             created_after = cli_utils.increment_timestamp(hosts[0]["created"])
-            self.log.info(f"parsing metrics for {len(hosts)} hosts")
+            self.log.info(f"parsing metrics for {len(hosts)} hosts...")
 
         for host in hosts:
             self.metrics["total"].inc()
@@ -192,7 +192,7 @@ class AraHostCollector(object):
                 unreachable=host["unreachable"],
             ).inc()
 
-        self.log.info("finished updating host metrics")
+        self.log.info("finished updating host metrics.")
         return (self.metrics, created_after)
 
 
@@ -235,7 +235,12 @@ class PrometheusExporter(Command):
             default=8001,
             type=int
         )
-        # TODO: --max-days
+        parser.add_argument(
+            '--max-days',
+            help='Maximum number of days to backfill metrics for (default: 90)',
+            default=90,
+            type=int
+        )
         return parser
 
     def take_action(self, args):
@@ -263,11 +268,17 @@ class PrometheusExporter(Command):
         hosts = AraHostCollector(client=client, log=self.log)
 
         start_http_server(args.prometheus_port)
-        self.log.info(f"ara Prometheus exporter listening on http://0.0.0.0:{args.prometheus_port}/metrics")
+        self.log.info(f"ara prometheus exporter listening on http://0.0.0.0:{args.prometheus_port}/metrics")
 
-        latest = dict(playbook=None, task=None, host=None)
+        created_after = (datetime.now() - timedelta(days=args.max_days)).isoformat()
+        self.log.info(f"backfilling metrics for the last {args.max_days} days since {created_after}...")
+        latest = dict(
+            playbook=created_after,
+            task=created_after,
+            host=created_after
+        )
         while True:
             playbook_metrics, latest["playbook"] = playbooks.collect_metrics(latest["playbook"], limit=args.playbook_limit)
-            task_metrics, latest["task"] = tasks.collect_metrics(latest["task"], limit=args.task_limit)
             host_metrics, latest["host"] = hosts.collect_metrics(latest["host"], limit=args.host_limit)
+            task_metrics, latest["task"] = tasks.collect_metrics(latest["task"], limit=args.task_limit)
             time.sleep(args.poll_frequency)
