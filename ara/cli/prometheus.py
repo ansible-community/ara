@@ -14,7 +14,7 @@ from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
 try:
-    from prometheus_client import Gauge, start_http_server
+    from prometheus_client import Gauge, Histogram, start_http_server
     HAS_PROMETHEUS_CLIENT = True
 except ImportError:
     HAS_PROMETHEUS_CLIENT = False
@@ -28,23 +28,25 @@ class AraPlaybookCollector(object):
             "total": Gauge("ara_playbooks_total", "Total number of playbooks recorded by ara"),
             "range": Gauge("ara_playbooks_range", "Limit metric collection to the N most recent playbooks"),
 
-            "playbooks": Gauge(
+            "playbooks": Histogram(
                 "ara_playbooks",
                 "Ansible playbooks recorded by ara",
                 [
+                    "timestamp",
                     "path",
                     "status",
-                    "ansible_version",
-                    "python_version",
-                    "client_version",
-                    "server_version",
                     "plays",
                     "tasks",
                     "results",
                     "hosts",
                     "files",
                     "records",
+                    "ansible_version",
+                    "python_version",
+                    "client_version",
+                    "server_version",
                 ],
+                buckets=(0.1, 1.0, 5.0, 10.0, 30.0, 60.0, 90.0, 120.0, 300.0, 600.0, 1200.0, 1800.0, 3600.0, float("inf"))
             ),
         }
 
@@ -73,7 +75,14 @@ class AraPlaybookCollector(object):
 
         for playbook in playbooks:
             self.metrics["total"].inc()
+            if playbook["duration"] is not None:
+                duration = datetime.strptime(playbook["duration"], "%H:%M:%S.%f").time()
+                seconds = duration.hour * 3600 + duration.minute * 60 + duration.second + duration.microsecond / 1000000
+            else:
+                seconds = 0
+
             self.metrics["playbooks"].labels(
+                timestamp=playbook["created"],
                 path=playbook["path"],
                 status=playbook["status"],
                 ansible_version=playbook["ansible_version"],
@@ -85,8 +94,8 @@ class AraPlaybookCollector(object):
                 results=playbook["items"]["results"],
                 hosts=playbook["items"]["hosts"],
                 files=playbook["items"]["files"],
-                records=playbook["items"]["records"],
-            ).inc()
+                records=playbook["items"]["records"]
+            ).observe(seconds)
 
         self.log.info("finished updating playbook metrics.")
         return (self.metrics, created_after)
