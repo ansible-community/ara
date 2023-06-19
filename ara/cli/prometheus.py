@@ -15,7 +15,7 @@ from ara.cli.base import global_arguments
 from ara.clients.utils import get_client
 
 try:
-    from prometheus_client import Gauge, Histogram, start_http_server
+    from prometheus_client import Gauge, Histogram, Summary, start_http_server
     HAS_PROMETHEUS_CLIENT = True
 except ImportError:
     HAS_PROMETHEUS_CLIENT = False
@@ -115,7 +115,12 @@ class AraTaskCollector(object):
             "completed": Gauge("ara_tasks_completed", "Completed Ansible tasks", labels),
             "failed": Gauge("ara_tasks_failed", "Failed Ansible tasks", labels),
             "running": Gauge("ara_tasks_running", "Running Ansible tasks", labels),
-            "expired": Gauge("ara_tasks_expired", "Expired Ansible tasks", labels)
+            "expired": Gauge("ara_tasks_expired", "Expired Ansible tasks", labels),
+            "duration": Summary(
+                "ara_tasks_duration",
+                "Duration, in seconds, of playbook tasks recorded by ara",
+                labels
+            )
         }
 
     def collect_metrics(self, created_after=None):
@@ -154,6 +159,29 @@ class AraTaskCollector(object):
                 updated=task["updated"],
                 results=task["items"]["results"],
             ).inc()
+
+            if task["duration"] is not None:
+                duration = datetime.strptime(task["duration"], "%H:%M:%S.%f")
+                delta = timedelta(
+                    hours=duration.hour,
+                    minutes=duration.minute,
+                    seconds=duration.second,
+                    microseconds=duration.microsecond
+                )
+                seconds = delta.total_seconds()
+            else:
+                seconds = 0
+
+            self.metrics["duration"].labels(
+                name=task["name"],
+                playbook=task["playbook"],
+                status=task["status"],
+                path=task["path"],
+                action=task["action"],
+                duration=task["duration"],
+                updated=task["updated"],
+                results=task["items"]["results"],
+            ).observe(seconds)
 
         return created_after
 
