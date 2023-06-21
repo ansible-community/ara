@@ -16,3 +16,5 @@ dynaconf[yaml]
 tzlocal
 whitenoise
 pygments
+# for the "ara prometheus" exporter CLI command
+prometheus_client

@@ -39,7 +39,7 @@ DEFAULT_TASK_LABELS = ["action", "name", "path", "playbook", "status", "updated"
 DEFAULT_HOST_LABELS = ["name", "playbook", "updated"]
 
 
-# TODO: This method should be more flexible and live in a library
+# TODO: This could be made more flexible and live in a library
 def get_search_results(client, kind, limit, created_after):
     """
     kind: string, one of ["playbooks", "hosts", "tasks"]
@@ -72,18 +72,15 @@ class AraPlaybookCollector(object):
         self.labels = labels
 
         self.metrics = {
-            "completed": Gauge("ara_playbooks_completed", "Completed Ansible playbooks", labels),
-            "expired": Gauge("ara_playbooks_expired", "Expired Ansible playbooks", labels),
-            "failed": Gauge("ara_playbooks_failed", "Failed Ansible playbooks", labels),
             "range": Gauge("ara_playbooks_range", "Limit metric collection to the N most recent playbooks"),
-            "running": Gauge("ara_playbooks_running", "Running Ansible playbooks", labels),
             "total": Gauge("ara_playbooks_total", "Total number of playbooks recorded by ara"),
-            "duration": Summary("ara_playbooks_duration", "Duration (in seconds) of playbooks recorded by ara", labels),
+            "playbooks": Summary(
+                "ara_playbooks", "Labels and duration (in seconds) of playbooks recorded by ara", labels
+            ),
         }
+        self.metrics["range"].set(self.limit)
 
-    def collect_metrics(self, created_after=None, limit=1000):
-        self.metrics["range"].set(limit)
-
+    def collect_metrics(self, created_after=None):
         playbooks = get_search_results(self.client, "playbooks", self.limit, created_after)
         # Save the most recent timestamp so we only scrape beyond it next time
         if playbooks:
@@ -91,12 +88,6 @@ class AraPlaybookCollector(object):
             self.log.info(f"updating metrics for {len(playbooks)} playbooks...")
 
         for playbook in playbooks:
-            self.metrics["total"].inc()
-
-            # Gather the values of each label so we can attach them to our metrics
-            labels = {label: playbook[label] for label in self.labels}
-            self.metrics[playbook["status"]].labels(**labels).inc()
-
             # The API returns a duration in string format, convert it back to seconds
             # so we can use it as a value for the metric.
             if playbook["duration"] is not None:
@@ -108,7 +99,12 @@ class AraPlaybookCollector(object):
                     seconds = 0
             else:
                 seconds = 0
-            self.metrics["duration"].labels(**labels).observe(seconds)
+
+            # Gather the values of each label so we can attach them to our metrics
+            labels = {label: playbook[label] for label in self.labels}
+
+            self.metrics["playbooks"].labels(**labels).observe(seconds)
+            self.metrics["total"].inc()
 
         return created_after
 
@@ -121,20 +117,13 @@ class AraTaskCollector(object):
         self.labels = labels
 
         self.metrics = {
-            "completed": Gauge("ara_tasks_completed", "Completed Ansible tasks", labels),
-            "expired": Gauge("ara_tasks_expired", "Expired Ansible tasks", labels),
-            "failed": Gauge("ara_tasks_failed", "Failed Ansible tasks", labels),
             "range": Gauge("ara_tasks_range", "Limit metric collection to the N most recent tasks"),
-            "running": Gauge("ara_tasks_running", "Running Ansible tasks", labels),
             "total": Gauge("ara_tasks_total", "Number of tasks recorded by ara in prometheus"),
-            "duration": Summary(
-                "ara_tasks_duration", "Duration, in seconds, of playbook tasks recorded by ara", labels
-            ),
+            "tasks": Summary("ara_tasks", "Labels and duration, in seconds, of playbook tasks recorded by ara", labels),
         }
-
-    def collect_metrics(self, created_after=None):
         self.metrics["range"].set(self.limit)
 
+    def collect_metrics(self, created_after=None):
         tasks = get_search_results(self.client, "tasks", self.limit, created_after)
         # Save the most recent timestamp so we only scrape beyond it next time
         if tasks:
@@ -142,12 +131,6 @@ class AraTaskCollector(object):
             self.log.info(f"updating metrics for {len(tasks)} tasks...")
 
         for task in tasks:
-            self.metrics["total"].inc()
-
-            # Gather the values of each label so we can attach them to our metrics
-            labels = {label: task[label] for label in self.labels}
-            self.metrics[task["status"]].labels(**labels).inc()
-
             # The API returns a duration in string format, convert it back to seconds
             # so we can use it as a value for the metric.
             if task["duration"] is not None:
@@ -159,7 +142,12 @@ class AraTaskCollector(object):
                     seconds = 0
             else:
                 seconds = 0
-            self.metrics["duration"].labels(**labels).observe(seconds)
+
+            # Gather the values of each label so we can attach them to our metrics
+            labels = {label: task[label] for label in self.labels}
+
+            self.metrics["tasks"].labels(**labels).observe(seconds)
+            self.metrics["total"].inc()
 
         return created_after
 
@@ -180,10 +168,9 @@ class AraHostCollector(object):
             "total": Gauge("ara_hosts_total", "Hosts recorded by ara"),
             "unreachable": Gauge("ara_hosts_unreachable", "Number of unreachable errors on a host", labels),
         }
-
-    def collect_metrics(self, created_after=None):
         self.metrics["range"].set(self.limit)
 
+    def collect_metrics(self, created_after=None):
         hosts = get_search_results(self.client, "hosts", self.limit, created_after)
         # Save the most recent timestamp so we only scrape beyond it next time
         if hosts:
