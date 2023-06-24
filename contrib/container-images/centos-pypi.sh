@@ -5,7 +5,7 @@ DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-connector-c-devel"
 
 # Builds an ARA API server container image using the latest PyPi packages on CentOS Stream 8.
 # TODO: update to stream9 once 1.6.0 is released https://github.com/ansible-community/ara/issues/401
-build=$(buildah from quay.io/centos/centos:stream8)
+build=$(buildah from quay.io/centos/centos:stream9)
 
 # Ensure everything is up to date and install requirements
 buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-pip-wheel postgresql libpq mariadb-connector-c"
