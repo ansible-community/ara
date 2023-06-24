@@ -4,10 +4,12 @@
 
 - name: Test container images
   hosts: all
-  gather_facts: true
   vars:
+    required_test_packages:
+      - git
+      - buildah
+      - podman
     ara_api_root_dir: "{{ ansible_user_dir }}/.ara-tests"
-    ara_api_source: "{{ ansible_user_dir }}/src/github.com/ansible-community/ara"
     images:
       # These are in chronological order of release so that we don't end up
       # running SQL migrations backwards during the tests.
@@ -27,17 +29,43 @@
         script: fedora-distribution.sh
         name: localhost/ara-api
   tasks:
-    - name: Install git, buildah and podman
-      become: true
-      package:
-        name:
-          - git
-          - buildah
-          - podman
-        state: present
+    - name: Get necessary facts
+      ansible.builtin.setup:
+        filter:
+          - date_time
+          - distribution
+          - os_family
+          - python
+          - user_dir
 
-    # TODO: Troubleshoot permission denied issues when running
-    #       ara-manage generate from container
+    - name: Get list of installed packages
+      package_facts:
+        manager: "auto"
+      no_log: true
+
+    - name: Retrieve list of missing required packages
+      set_fact:
+        _missing_packages: "{{ required_test_packages | difference(ansible_facts['packages'].keys()) }}"
+
+    # Only attempt to elevate privileges if there are any missing packages
+    # This lets us run this playbook without requiring elevated privileges
+    - when: _missing_packages | length > 0
+      become: true
+      block:
+        - name: Install required packages
+          package:
+            name: "{{ required_test_packages }}"
+            state: present
+      rescue:
+        - name: Fail due to missing packages
+          fail:
+            msg: |
+              Failed to elevate privileges and install missing required packages.
+              Install the following packages before running this playbook again:
+              {{ _missing_packages | join(' ') }}
+
+    # TODO: https://github.com/containers/podman/issues/11109
+    # bash: error while loading shared libraries: /lib64/libc.so.6: cannot apply additional memory protection after relocation: Permission denied
     - when: ansible_os_family == "RedHat"
       become: true
       block:
