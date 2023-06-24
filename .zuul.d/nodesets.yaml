@@ -2,7 +2,7 @@
     name: ara-basic-nodeset
     nodes:
       - name: ara-api-server
-        label: ansible-cloud-fedora-36-tiny
+        label: ansible-cloud-fedora-38-tiny
     # or if testing multiple OS simultaneously:
     # groups:
     #  - name: ara-api-server
@@ -10,3 +10,13 @@
     #      - fedora-35-1vcpu
     #      - centos-8-stream
     #      - ubuntu-bionic-1vcpu
+
+- nodeset:
+    name: ara-fedora-38
+    nodes:
+      - name: fedora-38
+        label: ansible-cloud-fedora-38-tiny
+    groups:
+      - name: ara-api-server
+        nodes:
+          - fedora-38
