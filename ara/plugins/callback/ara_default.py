@@ -227,6 +227,16 @@ options:
     ini:
       - section: ara
         key: record_controller
+  record_controller_name:
+    description:
+      - The name to use when recording the controller hostname.
+      - Defaults to the system hostname.
+    type: string
+    env:
+      - name: ARA_RECORD_CONTROLLER_NAME
+    ini:
+      - section: ara
+        key: record_controller_name
   record_user:
     description:
       - Whether ara should record the user that ran a playbook
@@ -238,6 +248,16 @@ options:
     ini:
       - section: ara
         key: record_user
+  record_user_name:
+    description:
+      - The name to use when recording the user that ran a playbook.
+      - Defaults to the OS user which ran the playbook.
+    type: string
+    env:
+      - name: ARA_RECORD_USER_NAME
+    ini:
+      - section: ara
+        key: record_user_name
 """
 
 # Task modules for which ara should save host facts
@@ -307,7 +327,9 @@ class CallbackModule(CallbackBase):
         self.localhost_as_hostname = self.get_option("localhost_as_hostname")
         self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
         self.record_controller = self.get_option("record_controller")
+        self.record_controller_name = self.get_option("record_controller_name")
         self.record_user = self.get_option("record_user")
+        self.record_user_name = self.get_option("record_user_name")
 
         # The intent for the ignored_files default value is to ignore the ansible local tmpdir but the path
         # can be changed by the user's configuration so retrieve that and use it instead.
@@ -826,6 +848,9 @@ class CallbackModule(CallbackBase):
         if not self.record_controller:
             return hostname
 
+        if self.record_controller_name:
+            return self.record_controller_name
+
         if self.localhost_as_hostname_format.startswith("fqdn"):
             hostname = socket.getfqdn()
 
@@ -847,6 +872,9 @@ class CallbackModule(CallbackBase):
         user = None
         if not self.record_user:
             return user
+
+        if self.record_user_name:
+            return self.record_user_name
 
         try:
             user = getpass.getuser()
