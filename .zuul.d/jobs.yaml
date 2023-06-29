@@ -28,7 +28,6 @@
       - ara/*
       - manage.py
       - requirements.txt
-      - roles/*
       - setup.cfg
       - setup.py
       - test-requirements.txt
