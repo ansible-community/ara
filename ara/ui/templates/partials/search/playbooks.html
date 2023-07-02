@@ -1,0 +1,127 @@
+<!-- Search accordion for /api/v1/playbooks -->
+{% load datetime_formatting %}
+
+{% if not static_generation %}
+<div class="col-xl-6 offset-xl-3">
+  <div class="accordion" id="search_playbooks">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button text-bg-ara {% if not expand_search %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#search_playbooks_arguments" aria-expanded="{% if expand_search %}true{% else %}false{% endif %}" aria-controls="search_playbooks_arguments">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            &nbsp; Search and filter playbooks
+        </button>
+      </h2>
+
+      <div id="search_playbooks_arguments" class="accordion-collapse collapse {% if expand_search %}show{% endif %}" data-bs-parent="#search_playbooks">
+        <div class="accordion-body">
+          <form action="{% url 'ui:index' %}" method="get">
+          <!-- playbook path -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="path" aria-describedby="path" name="path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.path.value | default_if_none:'' }}">
+                <label for="path" {% if request.GET.path %}style="font-weight:bold;"{% endif %}>Path</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- ansible version, controller and user -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="ansible_version" aria-describedby="ansible_version" name="ansible_version" placeholder="ex: 2.10.5 (or) 2.10" value="{{ search_form.ansible_version.value | default_if_none:'' }}">
+                <label for="ansible_version" {% if request.GET.ansible_version %}style="font-weight:bold;"{% endif %}>Ansible version</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="controller" aria-describedby="controller" name="controller" placeholder="ex: host.domain.tld (or) host" value="{{ search_form.controller.value | default_if_none:'' }}">
+                <label for="controller" {% if request.GET.controller %}style="font-weight:bold;"{% endif %}>Ansible controller</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="user" name="user" aria-describedby="user" placeholder="ex: root" value="{{ search_form.user.value | default_if_none:'' }}">
+                <label for="user" {% if request.GET.user %}style="font-weight:bold;"{% endif %}>User</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook name and label -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="name" name="name" aria-describedby="name" placeholder="ex: install server" value="{{ search_form.name.value | default_if_none:'' }}">
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Name</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="label" name="label" aria-describedby="label" placeholder="ex: check:False" value="{{ search_form.label.value | default_if_none:'' }}">
+                <label for="label" {% if request.GET.label %}style="font-weight:bold;"{% endif %}>Label</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook status -->
+          <div class="row g-2">
+            <div class="col-md">
+              <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+              {% for value, text in search_form.status.field.choices %}
+                {% if value != "unknown" %}
+                  <div class="form-check form-check-inline {% if value == 'completed' %}text-success{% elif value == 'failed' %}text-danger{% elif value == 'running' %}text-info{% else %}text-warning{% endif %}">
+                    <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ value }}">
+                      {% include "partials/status_icon.html" with status=value %} {{ value }}
+                    </label>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <br />
+
+          <!-- submit and filter by date -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="btn-group" role="group" aria-label="Filter by date">
+                <button type="submit" class="btn btn-primary">
+                  Submit
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with minutes=60 %}">
+                  Last 60 minutes
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with hours=24 %}">
+                  Last 24 hours
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=7 %}">
+                  Last 7 days
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="started_after" value="{% past_timestamp with days=30 %}">
+                  Last 30 days
+                </button>
+              </div>
+            </div>
+          </div>
+          </form>
+
+          <!-- reset button -->
+          {% if request.GET %}
+          <br />
+          <div class="row g-2">
+            <div class="col-md">
+              <a class="btn btn-outline-danger" href="{% url 'ui:index' %}" role="button">Reset</a>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

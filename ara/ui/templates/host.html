@@ -1,18 +1,24 @@
 {% extends "base.html" %}
 {% load truncatepath %}
 
-{% block title %}| Host #{{ host.id }}: {{ results.count }} results on {{ host.name | truncatechars:50 }} for {{ host.playbook.path | truncatepath:50 }}{% endblock %}
+{% block title %}| Host #{{ host.id }}: {{ results.count }} results on {{ host.name | truncatechars:50 }} for {{ host.playbook.path | truncatepath:50 }}{% endblock title %}
 {% block body %}
-  <div>
-    {% include "partials/playbook_card.html" with playbook=host.playbook %}
-  </div>
-  <br/>
-  <div>
-    {% include "partials/host_facts.html" %}
-  </div>
-  <br/>
-  <div>
-    {% include "partials/host_results.html" %}
-  </div>
-  <br/>
-{% endblock %}
+
+<div>
+  {% include "partials/playbook_card.html" with playbook=host.playbook %}
+</div>
+<br/>
+<div>
+  {% include "partials/tables/host_facts.html" %}
+</div>
+<br/>
+<div>
+  {% include "partials/tables/host_results.html" %}
+</div>
+
+<script>
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
+
+{% endblock body %}

@@ -4,74 +4,119 @@
 {% load diff_result %}
 {% load static_url %}
 
-{% block title %}| Result #{{ result.id }}: [{{ result.status }}] {{ result.task.action }} on {{ result.host.name }} for "{{ result.task.name }}"{% endblock %}
+{% block title %}| Result #{{ result.id }}: [{{ result.status }}] {{ result.task.action }} on {{ result.host.name }} for "{{ result.task.name }}"{% endblock title %}
 {% block body %}
-  <div>
-    {% include "partials/playbook_card.html" with playbook=result.playbook %}
-  </div>
-  <br/>
-  <div>
-    <div class="card">
-      <div class="card-header">
-        <h4>Task result details</h4>
-      </div>
-      <div class="card-body">
-        <ul>
-          <li><strong>Play</strong>: {{ result.play.name }}</li>
-          <li><strong>Task</strong>: {{ result.task.name }}</li>
-          <li><strong>Action</strong>: {{ result.task.action }}</li>
-          {% url 'ui:file' result.task.file as file_url %}
-          <li><strong>Path</strong>: <a href="{% static_url file_url %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a></li>
-          {% url 'ui:host' result.host.id as host_url %}
-          <li>
-            <strong>Host</strong>: <a href="{% static_url host_url %}">{{ result.host.name }}</a>
-            {% if result.delegated_to %}
-              <i>( task delegated to
-              {% for delegated in result.delegated_to %}
-                {% url 'ui:host' delegated.id as delegated_host_url %}
-                <a href="{% static_url delegated_host_url %}">{{ delegated.name }}</a>{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-              )</i>
-            {% endif %}
+
+<div>
+  {% include "partials/playbook_card.html" with playbook=result.playbook %}
+</div>
+<br/>
+<div>
+  <div class="card">
+    <div class="card-header bg-body-tertiary">
+      <h4>Task result details</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <ul class="list-group list-group-horizontal">
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Status</div>
+              {% include "partials/result_status_icon.html" with status=result.status %}
+            </div>
           </li>
-          <li><strong>Status</strong>: {{ result.status }}</li>
-          <li><strong>Started</strong>: {{ result.started | format_date }}</li>
-          <li><strong>Ended</strong>: {{ result.ended | format_date }}</li>
-          <li><strong>Duration</strong>: {{ result.duration | format_duration }}</li>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Duration</div>
+              {{ result.duration | format_duration }}
+            </div>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Play</div>
+              {{ result.play.name }}
+            </div>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Task</div>
+              {{ result.task.name }}
+            </div>
+          </li>
+          {% url 'ui:host' result.host.id as host_url %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Host</div>
+              <a href="{% static_url host_url %}">{{ result.host.name }}</a>
+              {% if result.delegated_to %}
+                <i>( task delegated to
+                {% for delegated in result.delegated_to %}
+                  {% url 'ui:host' delegated.id as delegated_host_url %}
+                  <a href="{% static_url delegated_host_url %}">{{ delegated.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                )</i>
+              {% endif %}
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold" title="Date at which the task ended">Date</div>
+              {{ result.ended | format_date }}
+            </div>
+          </li>
+          {% url 'ui:file' result.task.file as file_url %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Module / Action</div>
+              {{ result.task.action }} (<a href="{% static_url file_url %}#line-{{ result.task.lineno }}">{{ result.task.path }}:{{ result.task.lineno }}</a>)
+            </div>
+          </li>
           {% if result.task.tags %}
-          <li><strong>Tags</strong>: {% include "partials/tags_list.html" with tags=result.task.tags %} </li>
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">Tags</div>
+              {% include "partials/tags_list.html" with tags=result.task.tags %}
+            </div>
+          </li>
           {% endif %}
         </ul>
-        <div class="table-responsive">
-          <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
-            <thead>
+      </div>
+      <br />
+      <div class="table-responsive">
+        <table class="table table-sm table-hover" style="table-layout:fixed; max-width:100%;">
+          <thead>
+          <tr>
+            <th style="width:20%;">Field</th>
+            <th style="width:80%;">Value</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for field, value in result.content.items %}
             <tr>
-              <th style="width:20%;">Field</th>
-              <th style="width:80%;">Value</th>
+              <td id="{{ field }}">
+                <a href="#{{ field }}">{{ field }}</a>
+              </td>
+              <td>
+                {% if field == "diff" %}
+                  {{ value | diff_result | format_data | safe }}
+                {% elif field == "results" %}
+                  {% include "partials/nested_results.html" with results=value %}
+                {% else %}
+                  {{ value | format_data | safe }}
+                {% endif %}
+              </td>
             </tr>
-            </thead>
-            <tbody>
-            {% for field, value in result.content.items %}
-              <tr>
-                <td id="{{ field }}">
-                  <a href="#{{ field }}">{{ field }}</a>
-                </td>
-                <td>
-                  {% if field == "diff" %}
-                    {{ value | diff_result | format_data | safe }}
-                  {% elif field == "results" %}
-                    {% include "partials/nested_results.html" with results=value %}
-                  {% else %}
-                    {{ value | format_data | safe }}
-                  {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-        </div>
+          {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  <br/>
-{% endblock %}
+</div>
+<br/>
+
+{% endblock body %}

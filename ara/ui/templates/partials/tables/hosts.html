@@ -1,0 +1,35 @@
+<!-- Search result table for /api/v1/hosts and /api/v1/latesthosts -->
+{% load datetime_formatting %}
+{% load truncatepath %}
+{% load static_url %}
+
+<div class="table-responsive">
+  <table class="table table-sm table-hover" id="hosts">
+    <thead>
+      <tr style="height:50px;">
+        <th class="report-column" title="Link to the host report">Report</th>
+        <th class="long-status-column" title="Status of the tasks for this host">Status</th>
+        <th class="date-column" title="Date this host was recorded">
+          <form action="{% url 'ui:host_index' %}" method="get">{% include "partials/sort_by_date.html" with arg="created" %}</form>
+        </th>
+        <th class="duration-column" title="Duration of the playbook the host was involved in">Duration</th>
+        <th title="Name of the inventory host">
+          <form action="{% url 'ui:host_index' %}" method="get">{% include "partials/sort_by_name.html" %}</form>
+        </th>
+        <th title="Name (or path) of the playbook">Playbook name (or path)</th>
+        <th title="Host facts">Host facts</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for host in hosts %}
+      {# /latesthosts/ returns the host under a nested host attribute -- /hosts/ returns it directly #}
+      {# TODO: Consider whether we should handle this in the view or change the serializer to return it in the same format #}
+      {% if host.host %}
+        {% include "partials/tables/hosts_row.html" with host=host.host %}
+      {% else %}
+        {% include "partials/tables/hosts_row.html" with host=host %}
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -1,127 +1,119 @@
 {% load datetime_formatting %}
 {% load truncatepath %}
 {% load static_url %}
-{% if playbook.status == "completed" %}
-  <div class="card border-success">
-{% elif playbook.status == "failed" %}
-  <div class="card border-danger">
-{% elif playbook.status == "running" %}
-  <div class="card border-info">
-{% else %}
-  <div class="card border-warning">
-{% endif %}
-<div class="card-header">
-  <div class="table-responsive">
-    <table class="table table-sm text-nowrap">
-      <tbody>
-        <tr>
-          <td class="text-left" title="Playbook id">
-            <h4>Playbook #{{ playbook.id }}</h4>
-          </td>
-          <td class="text-right" title="{% if playbook.name is not None %}{{ playbook.name }}: {{ playbook.path }}{% else %}{{ playbook.path }}{% endif %}">
-            <h4>{% if playbook.name is not None %}{{ playbook.name | truncatechars:75 }}: {{ playbook.path | truncatepath:125 }}{% else %}{{ playbook.path | truncatepath:200 }}{% endif %}</h4>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<div class="card">
+  <div class="card-header bg-body-tertiary">
+    <div class="table-responsive">
+      <table class="table table-borderless text-nowrap">
+        <tbody>
+          <tr>
+            <td class="bg-transparent"><h3>Playbook #{{ playbook.id }}</h3></td>
+            <td class="bg-transparent">
+              <h3 style="text-align:right !important;">
+                {% if playbook.name is not None %}{{ playbook.name | truncatechars:50 }}: {{ playbook.path | truncatepath:75 }}{% else %}{{ playbook.path | truncatepath:125 }}{% endif %}
+              </h3>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-<div class="card-body text-info" style="max-height:100px;">
-  <div class="table-responsive">
-    <table class="table table-sm" id="playbook_summary">
-      <thead>
-      <tr>
-        <th class="report-column" title="Link to the playbook report">Report</th>
-        <th class="short-status-column" title="Status of the playbook run">Status</th>
-        <th class="cli-column" title="CLI arguments given to the ansible command">CLI</th>
-        <th title="Date at which the playbook started">Date</th>
-        <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
-        <th class="text-center" title="Host that ran the playbook">Controller</th>
-        <th class="text-center" title="User that ran the playbook">User</th>
-        <th colspan="3" class="text-center card-border-left card-border-right" title="Versions of software involved in the playbook">Versions</th>
-        <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
-        <th class="text-center" title="Number of plays involved in the playbook">Plays</th>
-        <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
-        <th class="text-center" title="Number of results recorded from the playbook">Results</th>
-        <th class="text-center" title="Number of files recorded from the playbook">Files</th>
-        <th class="text-center" title="Number of ara_record keys recorded in the playbook">Records</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td class="report-column">
-          {% url 'ui:playbook' playbook.id as playbook_url %}
-          <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
-              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+  <div class="card-body text-info" style="max-height:100px;">
+    <div class="table-responsive">
+      <table class="table table-sm ara-playbook-card-table" id="playbook_summary">
+        <thead>
+        <tr>
+          <th class="report-column" title="Link to the playbook report">Report</th>
+          <th class="short-status-column" title="Status of the playbook run">Status</th>
+          <th class="cli-column" title="CLI arguments given to the ansible command">CLI</th>
+          <th title="Date at which the playbook started">Date</th>
+          <th class="text-nowrap" title="Duration of the playbook (HH:MM:SS.ms)">Duration</th>
+          <th class="text-center" title="Host that ran the playbook">Controller</th>
+          <th class="text-center" title="User that ran the playbook">User</th>
+          <th colspan="3" class="text-center card-border-left card-border-right" title="Versions of software involved in the playbook">Versions</th>
+          <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
+          <th class="text-center" title="Number of plays involved in the playbook">Plays</th>
+          <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
+          <th class="text-center" title="Number of results recorded from the playbook">Results</th>
+          <th class="text-center" title="Number of files recorded from the playbook">Files</th>
+          <th class="text-center" title="Number of ara_record keys recorded in the playbook">Records</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="report-column">
+            {% url 'ui:playbook' playbook.id as playbook_url %}
+            <a role="button" class="btn btn-outline-primary btn-link btn-sm d-inline-flex justify-content-center align-items-center" href="{% static_url playbook_url %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
             </svg>
-          </a>
-        </td>
-        <td class="short-status-column">
-          {% include "partials/playbook_status_icon.html" with status=playbook.status %}
-        </td>
-        <td class="cli-column">
-          <button type="button" class="btn btn-outline-secondary btn-link btn-sm" data-toggle="modal" data-target="#cli_{{ playbook.id }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16">
-              <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/>
-            </svg>
-          </button>
-          <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h3 class="modal-title">CLI arguments</h3>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        {% if playbook.name is not None %}
-                          <h5>{{ playbook.name }} @ {{ playbook.started | format_date }}</h5>
-                        {% else %}
-                          <h5>{{ playbook.path | truncatepath:50 }} @ {{ playbook.started | format_date }}</h5>
-                        {% endif %}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
-                      </div>
-                    </div>
+            </a>
+          </td>
+
+          <td class="short-status-column">
+            {% include "partials/playbook_status_icon.html" with status=playbook.status %}
+          </td>
+
+          <td class="cli-column">
+            <button type="button" class="btn btn-outline-secondary btn-link btn-sm d-inline-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#cli_{{ playbook.id }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-terminal" viewBox="0 0 16 16">
+                <path d="M6 9a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3A.5.5 0 0 1 6 9zM3.854 4.146a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
+                <path d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h12z"/>
+              </svg>
+            </button>
+            <div class="modal fade" id="cli_{{ playbook.id }}" tabindex="-1" aria-labelledby="cli_{{ playbook.id }}" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="aboutModalLabel">Playbook <a href="{% static_url playbook_url %}">#{{ playbook.id }}</a>: CLI Arguments</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body" style="text-align:left;">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-start">
+                          <div class="ms-2 me-auto">
+                            <div class="fw-bold">Date</div>
+                            {{ playbook.started | format_date }}
+                          </div>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                          <div class="ms-2 me-auto">
+                            <div class="fw-bold">Path</div>
+                            {{ playbook.path | truncatepath:250 }}
+                          </div>
+                        </li>
+                    </ul>
+                    {% include "partials/cli_arguments.html" with arguments=playbook.arguments %}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </td>
-        <td class="text-nowrap">{{ playbook.started | format_date }}</td>
-        <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
-        <td class="text-center">{{ playbook.controller | default_if_none:"n/a" }}</td>
-        <td class="text-center">{{ playbook.user | default_if_none:"n/a" }}</td>
-        <td class="text-center text-nowrap card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
-        <td class="text-center text-nowrap" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
-        <td class="text-center text-nowrap card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
-        <td class="text-center">{{ playbook.items.hosts }}</td>
-        <td class="text-center">{{ playbook.items.plays }}</td>
-        <td class="text-center">{{ playbook.items.tasks }}</td>
-        <td class="text-center">{{ playbook.items.results }}</td>
-        <td class="text-center">{{ playbook.items.files }}</td>
-        <td class="text-center">{{ playbook.items.records }}</td>
-      </tr>
-      </tbody>
-    </table>
+          </td>
+
+          <td class="text-nowrap">{{ playbook.started | format_date }}</td>
+          <td class="text-nowrap">{{ playbook.duration | format_duration }}</td>
+          <td class="text-center">{{ playbook.controller | default_if_none:"n/a" }}</td>
+          <td class="text-center">{{ playbook.user | default_if_none:"n/a" }}</td>
+          <td class="text-center text-nowrap card-border-left" title="Version of ansible(-core) that ran the playbook"><strong>Ansible</strong> {{ playbook.ansible_version }}</td>
+          <td class="text-center text-nowrap" title="Version of the ara client (callback) and API server that recorded the playbook"><strong>ara</strong> {{ playbook.client_version | default_if_none:"n/a" }} (client), {{ playbook.server_version }} (server)</td>
+          <td class="text-center text-nowrap card-border-right" title="Version of python used by ansible(-core) and the ara callback"><strong>Python</strong> {{ playbook.python_version | default_if_none:"n/a" }}</td>
+          <td class="text-center">{{ playbook.items.hosts }}</td>
+          <td class="text-center">{{ playbook.items.plays }}</td>
+          <td class="text-center">{{ playbook.items.tasks }}</td>
+          <td class="text-center">{{ playbook.items.results }}</td>
+          <td class="text-center">{{ playbook.items.files }}</td>
+          <td class="text-center">{{ playbook.items.records }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-{% if playbook.labels %}
-  <div class="card-footer text-center" title="Playbook labels">
-    {% for label in playbook.labels %}
-      <span class="btn btn-outline-success ara-label" style="cursor:default; user-select: text;">{{ label.name }}</span>
-    {% endfor %}
-  </div>
-{% endif %}
+  {% if playbook.labels %}
+    <div class="card-footer text-center" title="Playbook labels">
+      {% for label in playbook.labels %}
+        <span class="btn btn-outline-success ara-label" style="cursor:default; user-select: text;">{{ label.name }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
 </div>

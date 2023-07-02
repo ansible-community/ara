@@ -15,7 +15,11 @@ register = template.Library()
 @register.filter(name="format_yaml")
 def format_yaml(code):
     formatter = HtmlFormatter(
-        linenos="table", anchorlinenos=True, lineanchors="line", linespans="line", cssclass="codehilite"
+        linenos="table",
+        anchorlinenos=True,
+        lineanchors="line",
+        linespans="line",
+        cssclass="table-responsive codehilite",
     )
 
     if not code:

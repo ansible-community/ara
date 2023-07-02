@@ -1,0 +1,96 @@
+<!-- Search result table for /api/v1/tasks -->
+{% load datetime_formatting %}
+{% load truncatepath %}
+{% load static_url %}
+
+<div class="table-responsive">
+  <table class="table table-sm table-hover" id="tasks">
+    <thead>
+      <tr style="height:50px;">
+        <th class="report-column" title="Link to the playbook results for this task">Report</th>
+        <th class="short-status-column" title="Status of the task">Status</th>
+        <th class="single-pill-column" title="Number of results for this task">Results</th>
+        <th class="date-column" title="Date at which the task was first recorded">
+          <form action="{% url 'ui:task_index' %}" method="get">{% include "partials/sort_by_date.html" with arg="created" %}</form>
+        </th>
+        <th class="duration-column" title="Duration of the task (HH:MM:SS.ms)">
+          <form action="{% url 'ui:task_index' %}" method="get">{% include "partials/sort_by_duration.html" %}</form>
+        </th>
+        <th title="Action (module) of the task">Action</th>
+        <th title="Name of the task">Task name</th>
+        <th title="Path and line number to the task">Task path</th>
+        <th title="Name or path of this task's playbook">Playbook name (or path)</th>
+        <th class="single-pill-column" title="Tags">Tags</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+      <tr>
+        <td class="report-column">
+          {% url 'ui:playbook' task.playbook.id as playbook_url %}
+          <a role="button" class="btn btn-outline-primary btn-link btn-sm d-inline-flex justify-content-center align-items-center" href="{% static_url playbook_url %}?task={{ task.id }}#results">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+              <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+            </svg>
+          </a>
+        </td>
+
+        <td class="short-status-column">
+            {% include "partials/task_status_icon.html" with status=task.status %}
+        </td>
+
+        <td class="single-pill-column">{{ task.items.results }}</td>
+        <td class="date-column">{{ task.started | format_date }}</td>
+        <td class="duration-column">{{ task.duration | format_duration }}</td>
+
+        <td>
+          <a {% if not static_generation %}href="{% url 'ui:task_index' %}?action={{ task.action }}" title="Search tasks for {{ task.action }}"{% endif %}>
+            {{ task.action }}
+          </a>
+        </td>
+
+        <td>
+          <a {% if not static_generation %}href="{% url 'ui:task_index' %}?name={{ task.name }}" title="Search tasks for {{ task.name }}"{% endif %}>
+            {{ task.name }}
+          </a>
+        </td>
+
+        <td class="text-nowrap" title="Search results for {{ task.path }}">
+          {% if not static_generation %}
+          <a href="{% url 'ui:task_index' %}?path={{ task.path }}">{{ task.path | truncatepath:40 }}</a>
+          <strong>:</strong>
+          <a href="{% url 'ui:task_index' %}?path={{ task.path }}&lineno={{ task.lineno }}">{{ task.lineno }}</a>
+          {% else %}
+          {{ task.path | truncatepath:40 }}:{{ task.lineno }}
+          {% endif %}
+        </td>
+
+        {% if task.playbook.name is not None %}
+        <td title="Search results for {{ task.playbook.name }}">
+          {% if not static_generation %}
+            <a href="{% url 'ui:task_index' %}?playbook_name={{ task.playbook.name }}">{{ task.playbook.name | truncatechars:50 }}</a>
+          {% else %}
+            {{ task.playbook.name | truncatechars:50 }}
+          {% endif %}
+        </td>
+        {% else %}
+        <td title="Search results for {{ task.playbook.path }}">
+          {% if not static_generation %}
+            <a href="{% url 'ui:task_index' %}?playbook_path={{ task.playbook.path }}">{{ task.playbook.path | truncatepath:25 }}</a>
+          {% else %}
+            {{ task.playbook.path | truncatepath:25 }}
+          {% endif %}
+        </td>
+        {% endif %}
+
+        <td class="single-pill-column">
+          <span class="btn btn-secondary btn-sm d-inline-flex justify-content-center align-items-center ara-result-status-badge" {% if task.tags %}data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="{% include 'partials/tags_list.html' with tags=task.tags %}{% endif %}">
+            {{ task.tags | length }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

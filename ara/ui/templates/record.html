@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 {% load pygments_highlights %}
 
-{% block title %}| Record #{{ record.id }}: {{ record.type }} value for {{ record.key }}{% endblock %}
+{% block title %}| Record #{{ record.id }}: {{ record.type }} value for {{ record.key }}{% endblock title %}
 {% block body %}
-  <div>
-    {% include "partials/playbook_card.html" with playbook=record.playbook %}
-  </div>
-  <br/>
-  <div>
+
+<div>
+  {% include "partials/playbook_card.html" with playbook=record.playbook %}
+</div>
+<br/>
+<div>
   <div class="card">
-    <div class="card-header">
+    <div class="card-header bg-body-tertiary">
       <h4 title="key saved with ara_record">Record: {{ record.key }}</h4>
     </div>
     <div class="card-body">
       {{ record.value | format_data | safe }}
     </div>
   </div>
-{% endblock %}
+</div>
+
+{% endblock body %}

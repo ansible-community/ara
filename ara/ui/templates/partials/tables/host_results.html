@@ -1,0 +1,153 @@
+{% load datetime_formatting %}
+{% load static_url %}
+<div class="accordion" id="results">
+  <div class="card">
+    <div class="card-header bg-body-tertiary" id="results_card">
+      <div class="table-responsive">
+        <table class="table table-borderless text-nowrap">
+          <tbody>
+            <tr>
+              <td class="bg-transparent">
+                <button class="btn ara-card-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_results" aria-expanded="true" aria-controls="collapse_results">
+                  <h4>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bar-chart-steps" viewBox="0 0 16 16">
+                      <path d="M.5 0a.5.5 0 0 1 .5.5v15a.5.5 0 0 1-1 0V.5A.5.5 0 0 1 .5 0zM2 1.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-6a.5.5 0 0 1-.5-.5v-1zm2 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5v-1z"/>
+                    </svg>
+                    Task results: {{ host.name | truncatechars:150 }}
+                  </h4>
+                </button>
+                <br>
+              </td>
+              <td class="bg-transparent" style="text-align:right !important">
+                {% if host.ok %}
+                  <a role="button" class="btn btn-success btn-sm ara-result-status-badge" title="Search for tasks with status: ok" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results"{% endif %}>
+                    {{ host.ok }} OK
+                  </a>
+                  {% endif %}
+                  {% if host.changed %}
+                  <a role="button" class="btn btn-warning btn-sm ara-result-status-badge" title="Search for tasks with status: changed" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results"{% endif %}>
+                    {{ host.changed }} CHANGED
+                  </a>
+                  {% endif %}
+                  {% if host.failed or host.unreachable %}
+                  <a role="button" class="btn btn-danger btn-sm ara-result-status-badge" title="Search for tasks with status: failed and unreachable" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed&status=unreachable#results"{% endif %}>
+                    {{ host.failed |add:host.unreachable }} FAILED
+                  </a>
+                  {% endif %}
+                  {% if host.skipped %}
+                  <a role="button" class="btn btn-info btn-sm ara-result-status-badge" title="Search for tasks with status: skipped" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results"{% endif %}>
+                    {{ host.skipped }} SKIPPED
+                  </a>
+                  {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% if not static_generation %}
+      <form method="get" action="{% url 'ui:host' host.id %}#results">
+    {% endif %}
+    <div id="collapse_results" class="collapse show" aria-labelledby="results_card" data-bs-parent="#results">
+      <div class="card-body">
+        {% include "partials/search/host_results.html" %}
+
+        {% if results.count %}
+          {% if not static_generation %}
+            {% include "partials/pagination.html" with data=results %}
+          {% endif %}
+          <div class="table-responsive">
+            <table class="table table-sm table-hover" id="results">
+              <thead>
+                <tr style="height:50px;">
+                  <th class="report-column">Report</th>
+                  <th class="medium-status-column">Status</th>
+                  <th class="date-column">Date {% include "partials/sort_by_date.html" with arg="started" %}</th>
+                  <th class="duration-column">{% include "partials/sort_by_duration.html" %}</th>
+                  <th>Host</th>
+                  <th>Action</th>
+                  <th>Task</th>
+                  <th class="single-pill-column">Tags</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for result in results.results %}
+                {% url 'ui:playbook' playbook.id as playbook_url %}
+                {% url 'ui:result' result.id as result_url %}
+                <tr>
+                  <td class="report-column">
+                    <a role="button" class="btn btn-outline-primary btn-link btn-sm" href="{% static_url result_url %}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"></path>
+                        <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"></path>
+                      </svg>
+                    </a>
+                  </td>
+
+                  <td class="medium-status-column">
+                    {% if not static_generation %}
+                      {% url 'ui:host' host.id as host_url %}
+                      {% include "partials/result_status_icon.html" with status=result.status search_url=host_url %}
+                    {% else %}
+                      {% include "partials/result_status_icon.html" with status=result.status %}
+                    {% endif %}
+                  </td>
+
+                  <td class="date-column">{{ result.started | format_date }}</td>
+                  <td class="duration-column">{{ result.duration | format_duration }}</td>
+
+                  <td>
+                    {{ host.name | truncatechars:50 }}
+                    {% if result.delegated_to %}
+                      <span title="task delegated to {% for delegated in result.delegated_to %}{{ delegated.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                        </svg>
+                      </span>
+                    {% endif %}
+                  </td>
+
+                  <td nowrap>
+                    {% if not static_generation %}
+                      {% url 'ui:file' result.task.file as file_url %}
+                      <a href="{% static_url file_url %}?#line-{{ result.task.lineno }}">{{ result.task.action }}</a>
+                    {% else %}
+                      {{ result.task.action }}
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if not static_generation %}
+                      <a href="{% static_url playbook_url %}?task_name={{ result.task.name }}#results">{{ result.task.name }}</a>
+                    {% else %}
+                      {{ result.task.name }}
+                    {% endif %}
+                  </td>
+
+                  <td class="single-pill-column">
+                    <span class="btn btn-secondary btn-sm d-inline-flex justify-content-center align-items-center ara-result-status-badge" {% if result.task.tags %}data-bs-toggle="tooltip"  data-bs-placement="left" data-bs-html="true" data-bs-title="{% include 'partials/tags_list.html' with tags=result.task.tags %}{% endif %}">
+                      {{ result.task.tags | length }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <br/>
+          <div>
+            {% if not request.GET %}
+              <h2>No recorded results found for this host.</h2>
+              <h3>The playbook might have been interrupted or is in progress.</h3>
+            {% else %}
+              <h3>No results found matching your query: try <a href="{% url 'ui:host' host.id %}#results">clearing search filters</a>.</h3>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    </form>
+  </div>
+</div>

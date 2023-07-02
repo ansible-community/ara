@@ -1,0 +1,138 @@
+<!-- Search accordion for /api/v1/tasks -->
+{% load datetime_formatting %}
+
+{% if not static_generation %}
+<div class="col-xl-6 offset-xl-3">
+  <div class="accordion" id="search_tasks">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button text-bg-ara {% if not expand_search %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#search_tasks_arguments" aria-expanded="{% if expand_search %}true{% else %}false{% endif %}" aria-controls="search_playbooks_arguments">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            &nbsp; Search and filter tasks
+        </button>
+      </h2>
+
+      <div id="search_tasks_arguments" class="accordion-collapse collapse {% if expand_search %}show{% endif %}" data-bs-parent="#search_tasks">
+        <div class="accordion-body">
+          <form action="{% url 'ui:index' %}" method="get">
+          <!-- task action and name -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="action" name="action" placeholder="ex: template" value="{{ search_form.action.value | default_if_none:'' }}">
+                <label for="action" {% if request.GET.action %}style="font-weight:bold;"{% endif %}>Task action</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="name" name="name" placeholder="ex: install apache2" value="{{ search_form.name.value | default_if_none:'' }}">
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Task name</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- task path and line -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="path" name="path" placeholder="ex: /path/to/task.yml (or) task.yml" value="{{ search_form.path.value | default_if_none:'' }}">
+                <label for="path" {% if request.GET.path %}style="font-weight:bold;" {% endif %}>Task path</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="lineno" name="lineno" placeholder="ex: 123" value="{{ search_form.lineno.value | default_if_none:'' }}">
+                <label for="lineno" {% if request.GET.lineno %}style="font-weight:bold;" {% endif %}>Line</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook id and name -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook" aria-describedby="playbook" name="playbook" placeholder="ex: 1234" value="{{ search_form.playbook.value | default_if_none:'' }}">
+                <label for="playbook" {% if request.GET.playbook %}style="font-weight:bold;"{% endif %}>Playbook (id)</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook_name" aria-describedby="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
+                <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;"{% endif %}>Playbook name</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook path -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook_path" aria-describedby="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
+                <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;"{% endif %}>Playbook path</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- task status -->
+          <div class="row g-2">
+            <div class="col-md">
+              <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+              {% for value, text in search_form.status.field.choices %}
+                {% if value != "unknown" %}
+                  <div class="form-check form-check-inline {% if value == 'completed' %}text-success{% elif value == 'failed' %}text-danger{% elif value == 'running' %}text-info{% else %}text-warning{% endif %}">
+                    <input class="form-check-input" type="checkbox" id="{{ value }}" value="{{ value }}" name="status" {% if value in search_form.status.data %}checked{% endif %}>
+                    <label class="form-check-label" for="{{ value }}">
+                      {% include "partials/status_icon.html" with status=value %} {{ value }}
+                    </label>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <br />
+
+          <!-- submit and filter by date -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="btn-group" role="group" aria-label="Filter by date">
+                <button type="submit" class="btn btn-primary">
+                  Submit
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with minutes=60 %}">
+                  Last 60 minutes
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with hours=24 %}">
+                  Last 24 hours
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=7 %}">
+                  Last 7 days
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=30 %}">
+                  Last 30 days
+                </button>
+              </div>
+            </div>
+          </div>
+          </form>
+
+          <!-- reset button -->
+          {% if request.GET %}
+          <br />
+          <div class="row g-2">
+            <div class="col-md">
+              <a class="btn btn-outline-danger" href="{% url 'ui:task_index' %}" role="button">Reset</a>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
