@@ -1,0 +1,150 @@
+<!-- Search accordion for /api/v1/hosts -->
+{% load datetime_formatting %}
+{% load truncatepath %}
+{% load static_url %}
+
+{% if not static_generation %}
+<div class="col-xl-6 offset-xl-3">
+  <div class="accordion" id="search_hosts">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button text-bg-ara {% if not expand_search %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#search_hosts_arguments" aria-expanded="{% if expand_search %}true{% else %}false{% endif %}" aria-controls="search_hosts_arguments">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            &nbsp; Search and filter hosts
+        </button>
+      </h2>
+
+      <div id="search_hosts_arguments" class="accordion-collapse collapse {% if expand_search %}show{% endif %}" data-bs-parent="#search_hosts">
+        <div class="accordion-body">
+          <form action="{% url 'ui:host_index' %}" method="get">
+          <!-- host name -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="name" aria-describedby="name" name="name" placeholder="ex: localhost (or) hostname.fqdn" value="{{ search_form.name.value | default_if_none:'' }}">
+                <label for="name" {% if request.GET.name %}style="font-weight:bold;"{% endif %}>Host name</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook id and name -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook" aria-describedby="playbook" name="playbook" placeholder="ex: 1234" value="{{ search_form.playbook.value | default_if_none:'' }}">
+                <label for="playbook" {% if request.GET.playbook %}style="font-weight:bold;"{% endif %}>Playbook (id)</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook_name" aria-describedby="playbook_name" name="playbook_name" placeholder="ex: install server" value="{{ search_form.playbook_name.value | default_if_none:'' }}">
+                <label for="playbook_name" {% if request.GET.playbook_name %}style="font-weight:bold;"{% endif %}>Playbook name</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- playbook path -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="playbook_path" aria-describedby="playbook_path" name="playbook_path" placeholder="ex: /path/to/playbook.yml (or) playbook.yml" value="{{ search_form.playbook_path.value | default_if_none:'' }}">
+                <label for="playbook_path" {% if request.GET.playbook_path %}style="font-weight:bold;"{% endif %}>Playbook path</label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- include all playbook reports (use /api/v1/latesthosts or /api/v1/hosts) -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="latest" value="false" name="latest" {{ checkbox_status }}>
+                <label class="form-check-label" for="latest" title="Include every playbook report, not only the latest one for each host" {% if request.GET.latest or checkbox_status %}style="font-weight:bold;"{% endif %}>
+                  Include all playbook reports
+                </label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- host status -->
+          <div class="row g-2">
+            <div class="col-md">
+              <label for="status" {% if request.GET.status %}style="font-weight:bold;"{% endif %}>Status: </label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="ok__gt" value="0" name="ok__gt" {% if search_form.ok__gt.data %}checked{% endif %}/>
+                <label class="form-check-label" for="ok__gt">
+                  {% include "partials/result_status_icon.html" with status="ok" %}
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="changed__gt" value="0" name="changed__gt" {% if search_form.changed__gt.data %}checked{% endif %}/>
+                <label class="form-check-label" for="changed__gt">
+                  {% include "partials/result_status_icon.html" with status="changed" %}
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="failed__gt" value="0" name="failed__gt" {% if search_form.failed__gt.data %}checked{% endif %}/>
+                <label class="form-check-label" for="failed__gt">
+                  {% include "partials/result_status_icon.html" with status="failed" %}
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="unreachable__gt" value="0" name="unreachable__gt" {% if search_form.unreachable__gt.data %}checked{% endif %}/>
+                <label class="form-check-label" for="unreachable__gt">
+                  {% include "partials/result_status_icon.html" with status="unreachable" %}
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="skipped__gt" value="0" name="skipped__gt" {% if search_form.skipped__gt.data %}checked{% endif %}/>
+                <label class="form-check-label" for="skipped__gt">
+                  {% include "partials/result_status_icon.html" with status="skipped" %}
+                </label>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <!-- submit and filter by date -->
+          <div class="row g-2">
+            <div class="col-md">
+              <div class="btn-group" role="group" aria-label="Filter by date">
+                <button type="submit" class="btn btn-primary">
+                  Submit
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with minutes=60 %}">
+                  Last 60 minutes
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with hours=24 %}">
+                  Last 24 hours
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=7 %}">
+                  Last 7 days
+                </button>
+                <button type="submit" class="btn btn-outline-success" name="updated_after" value="{% past_timestamp with days=30 %}">
+                  Last 30 days
+                </button>
+              </div>
+            </div>
+          </div>
+          </form>
+
+          <!-- reset button -->
+          {% if request.GET %}
+          <br />
+          <div class="row g-2">
+            <div class="col-md">
+              <a class="btn btn-outline-danger" href="{% url 'ui:host_index' %}" role="button">Reset</a>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

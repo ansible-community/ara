@@ -1,99 +1,51 @@
 {% load static %}
 {% load static_url %}
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="ARA Records Ansible">
   <meta name="author" content="https://github.com/ansible-community/ara">
-  <title>ara {% block title %}{% endblock %}</title>
+  <title>ara {% block title %}{% endblock title %}</title>
 
   {% static 'images/favicon.ico' as favicon_url %}
   <link rel="shortcut icon" href="{% static_url favicon_url %}">
   {% static 'css/ara.css' as ara_css_url %}
   <link rel="stylesheet" href="{% static_url ara_css_url %}">
-  {% static 'css/bootstrap-darkly.min.css' as ara_bootstrap_darkly %}
-  <link id="bootstrap-dark-css" rel="stylesheet" href="{% static_url ara_bootstrap_darkly %}" disabled>
+  {% static 'css/bootstrap.min.css' as ara_bootstrap %}
+  <link id="bootstrap-css" rel="stylesheet" href="{% static_url ara_bootstrap %}">
   {% static 'css/pygments-dark.css' as ara_pygments_dark %}
   <link id="pygments-dark-css" rel="stylesheet" href="{% static_url ara_pygments_dark %}" disabled>
-  {% static 'css/bootstrap-flatly.min.css' as ara_bootstrap_flatly %}
-  <link id="bootstrap-light-css" rel="stylesheet" href="{% static_url ara_bootstrap_flatly %}">
   {% static 'css/pygments-light.css' as ara_pygments_light %}
   <link id="pygments-light-css" rel="stylesheet" href="{% static_url ara_pygments_light %}">
-  <script>
-    function setDarkModeOn() {
-      document.getElementById("bootstrap-dark-css").disabled = false;
-      document.getElementById("pygments-dark-css").disabled = false;
-      document.getElementById("bootstrap-light-css").disabled = true;
-      document.getElementById("pygments-light-css").disabled = true;
-    }
-
-    function setLightModeOn() {
-      document.getElementById("bootstrap-dark-css").disabled = true;
-      document.getElementById("pygments-dark-css").disabled = true;
-      document.getElementById("bootstrap-light-css").disabled = false;
-      document.getElementById("pygments-light-css").disabled = false;
-    }
-
-    let isDark = false;
-    const currentTheme = localStorage.getItem("theme");
-    if (currentTheme) {
-      isDark = currentTheme === "dark";
-    } else if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      isDark = true;
-    }
-    if (isDark) {
-      setDarkModeOn();
-    } else {
-      setLightModeOn();
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const darkLightToggleButton = document.getElementById("dark-light-toggle-btn");
-      darkLightToggleButton.checked = isDark;
-      darkLightToggleButton.addEventListener("click", function () {
-        if (darkLightToggleButton.checked) {
-          setDarkModeOn();
-          isDark = true;
-        } else {
-          setLightModeOn();
-          isDark = false;
-        }
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-      });
-    });
- </script>
 </head>
 <body>
 {% include "partials/about_modal.html" %}
-<header>
-  <!-- Fixed navbar -->
-  {% url 'ui:index' as index_url %}
-  {% url 'ui:host_index' as hosts_url %}
-  {% url 'ui:task_index' as tasks_url %}
-  <nav class="navbar navbar-expand-md bg-primary navbar-dark">
+
+{% url 'ui:index' as index_url %}
+{% url 'ui:host_index' as hosts_url %}
+{% url 'ui:task_index' as tasks_url %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark border-bottom border-bottom-dark">
+  <div class="container-fluid">
     <a class="navbar-brand" href="{% static_url index_url %}">
       {% static 'images/logo.svg' as logo_url %}
-      <img src="{% static_url logo_url %}" height="45" alt="ARA Records Ansible">
+      <img src="{% static_url logo_url %}" width="114" height="45" alt="ARA Records Ansible">
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-      <ul class="navbar-nav mr-auto">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {% if not distributed %}
-        <li class="nav-item{% if page == 'index' %} active{% endif %}">
-          <a class="nav-link" href="{% static_url index_url %}">Playbooks</a>
+        <li class="nav-item">
+          <a class="nav-link{% if page == 'index' %} active{% endif %}" href="{% static_url index_url %}">Playbooks</a>
         </li>
-        <li class="nav-item{% if page == 'host_index' %} active{% endif %}">
-          <a class="nav-link" href="{% static_url hosts_url %}">Hosts</a>
+        <li class="nav-item">
+          <a class="nav-link{% if page == 'host_index' %} active{% endif %}" href="{% static_url hosts_url %}">Hosts</a>
         </li>
-        <li class="nav-item{% if page == 'task_index' %} active{% endif %}">
-          <a class="nav-link" href="{% static_url tasks_url %}">Tasks</a>
+        <li class="nav-item">
+          <a class="nav-link {% if page == 'task_index' %} active{% endif %}" href="{% static_url tasks_url %}">Tasks</a>
         </li>
         {% if not static_generation %}
           <li class="nav-item">
@@ -102,40 +54,44 @@
         {% endif %}
         {% endif %}
       </ul>
-      <form class="form-inline">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun text-info" viewBox="0 0 16 16">
-          <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-        </svg>
-        &nbsp;
-        <div class="custom-control custom-switch custom-checkbox" title="Toggle Dark Mode" data-toggle="tooltip" data-placement="left">
-          <input type="checkbox" class="custom-control-input" id="dark-light-toggle-btn">
-          <label class="custom-control-label" for="dark-light-toggle-btn"></label>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon text-info" viewBox="0 0 16 16">
-          <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
-        </svg>
-      </form>
       <ul class="navbar-nav">
+        <li class="nav-item pt-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun text-info" viewBox="0 0 16 16">
+            <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+          </svg>&nbsp;&nbsp;
+        </li>
+        <li class="nav-item pt-2">
+          <form class="form-switch">
+            <input class="form-check-input me-2" type="checkbox" id="dark-light-toggle-btn" />
+          </form>
+        </li>
+        <li class="nav-item pt-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon text-info" viewBox="0 0 16 16">
+            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
+          </svg>
+        </li>&nbsp;
         <li class="nav-item">
           <a class="nav-link" href="https://ara.readthedocs.io" target="_blank">Documentation</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" role="button" data-toggle="modal" data-target="#aboutModal">About</a>
+          <a class="nav-link" href="#" role="button" data-bs-toggle="modal" data-bs-target="#aboutModal">About</a>
         </li>
       </ul>
     </div>
-  </nav>
-</header>
+  </div>
+</nav>
+
 <br/>
 <!-- Begin page content -->
-{% static 'js/jquery-3.5.1.slim.min.js' as jquery_url %}
 {% static 'js/bootstrap.bundle.min.js' as bootstrap_js_url %}
-<script src="{% static_url jquery_url %}"></script>
 <script src="{% static_url bootstrap_js_url %}"></script>
+{% static 'js/theme.js' as theme_js_url %}
+<script src="{% static_url theme_js_url %}"></script>
+
 <main role="main">
   <div class="container-fluid">
     {% block body %}
-    {% endblock %}
+    {% endblock body %}
   </div>
 </main>
 </body>

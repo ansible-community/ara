@@ -1,16 +1,18 @@
-<table class="table table-sm table-hover" id="cli_args">
-  <thead>
-  <tr>
-    <th class="text-center">Argument</th>
-    <th class="text-center">Value</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for arg, value in arguments.items %}
+<div class="container text-center">
+  <table class="table table-sm table-hover" id="cli_args">
+    <thead>
     <tr>
-      <td>{{ arg }}</td>
-      <td>{{ value }}</td>
+      <th class="text-center">Argument</th>
+      <th class="text-center">Value</th>
     </tr>
-  {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+    {% for arg, value in arguments.items %}
+      <tr>
+        <td>{{ arg }}</td>
+        <td>{{ value }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

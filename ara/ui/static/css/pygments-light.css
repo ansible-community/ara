@@ -1,7 +1,7 @@
 /* https://github.com/richleland/pygments-css/blob/master/default.css */
 .codehilite { padding-left: 10px; }
 .codehilite .hll { background-color: #ffffcc }
-.codehilite  { background: #f8f8f8; }
+.codehilite  { background: #ffffff; }
 .codehilite .c { color: #408080; font-style: italic } /* Comment */
 .codehilite .err { border: 1px solid #FF0000 } /* Error */
 .codehilite .k { color: #008000; font-weight: bold } /* Keyword */

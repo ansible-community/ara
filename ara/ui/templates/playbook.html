@@ -2,27 +2,33 @@
 {% load datetime_formatting %}
 {% load truncatepath %}
 
-{% block title %}| Playbook #{{ playbook.id }}: {{ playbook.items.tasks }} task{{ playbook.items.tasks | pluralize }} on {{ playbook.items.hosts }} host{{ playbook.items.hosts | pluralize }} for {{ playbook.path | truncatepath:60 }}{% endblock %}
+{% block title %}| Playbook #{{ playbook.id }}: {{ playbook.path | truncatepath:60 }} ({{ playbook.items.tasks }} task{{ playbook.items.tasks | pluralize }} on {{ playbook.items.hosts }} host{{ playbook.items.hosts | pluralize }}){% endblock title %}
 {% block body %}
-  <div>
-    {% include "partials/playbook_card.html" %}
-  </div>
-  <br/>
-  <div>
-    <div class="row">
-      <div class="col-md-6">
-        {% include "partials/playbook_hosts.html" %}
-      </div>
-      <div class="col-md-4">
-        {% include "partials/playbook_files.html" %}
-      </div>
-      <div class="col-md-2">
-        {% include "partials/playbook_records.html" %}
-      </div>
+
+<div>
+  {% include "partials/playbook_card.html" %}
+</div>
+<br/>
+<div>
+  <div class="row">
+    <div class="col-md-6">
+      {% include "partials/tables/playbook_hosts.html" %}
+    </div>
+    <div class="col-md-4">
+      {% include "partials/playbook_files.html" %}
+    </div>
+    <div class="col-md-2">
+      {% include "partials/playbook_records.html" %}
     </div>
   </div>
-  <br/>
-  <div>
-    {% include "partials/playbook_results.html" %}
-  </div>
-{% endblock %}
+</div>
+<br/>
+<div>
+  {% include "partials/tables/playbook_results.html" %}
+</div>
+<script>
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
+
+{% endblock body %}

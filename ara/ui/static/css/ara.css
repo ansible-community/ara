@@ -1,13 +1,58 @@
-.table > thead > tr > th {
-    vertical-align: middle;
+/* Allow for placeholders to be shown on floating label forms */
+/* https://github.com/twbs/bootstrap/issues/33999 */
+.form-floating > .form-control::placeholder {
+    color: revert !important;
 }
 
-.table > tbody > tr > td {
-    vertical-align: middle;
+.form-floating > .form-control:not(:focus)::placeholder {
+    color: transparent !important;
 }
 
-.navbar {
-    padding: 0.75rem 1.0rem !important;
+/* Background color ara green (#22b573) */
+.text-bg-ara {
+    color: #fff !important;
+    background-color: RGBA(34,181,115,var(--bs-bg-opacity,1)) !important;
+}
+
+/* Font size for the accordion headers */
+.accordion-button {
+    font-size: 65% !important;
+}
+
+/* Fill the accordion svg arrow with white */
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23FFF' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
+}
+
+.accordion-body {
+    background-color: var(--bs-light-bg-subtle) !important;
+}
+
+/* Remove extraneous padding around card collapse header buttons */
+.ara-card-collapse {
+    padding: 0 !important;
+}
+
+/* Size playbook labels and add padding/margin */
+.ara-label {
+    font-size: 90% !important;
+    padding: 0.10rem 0.25rem !important;
+    margin-bottom: 3px;
+}
+
+.ara-playbook-status-badge {
+    padding-top: 0.05rem !important;
+    padding-bottom: 0.25rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.ara-result-status-badge {
+    padding: 0.05rem 0.30rem !important;
+}
+
+.ara-playbook-card-table td {
+    border-bottom: none !important;
 }
 
 .card-header {
@@ -27,28 +72,7 @@
     border-right: 1px solid #444;
 }
 
-.ara-label {
-    font-size: 90% !important;
-    padding: 0.10rem 0.25rem !important;
-    margin-bottom: 3px;
-}
-
-.ara-result-status-badge {
-    font-size: 90% !important;
-}
-
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #b4bcc2;
-}
-
-.custom-checkbox .custom-control-input:active ~ .custom-control-label::before {
-    background-color: #ffffff;
-}
-
-.tooltip {
-    pointer-events: none;
-}
-
+/* Size and text formatting on some table columns */
 .report-column {
     width: 60px;
     text-align: center;

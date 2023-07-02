@@ -1,0 +1,67 @@
+{# Note: rows from the hosts.html table are split into this template to handle the conditional difference between /api/v1/hosts and /api/v1/latesthosts #}
+{% load datetime_formatting %}
+{% load static_url %}
+{% load truncatepath %}
+<tr>
+  <td class="report-column">
+    {% url 'ui:host' host.id as host_url %}
+    <a role="button" class="btn btn-outline-primary btn-link btn-sm d-inline-flex justify-content-center align-items-center" href="{% static_url host_url %}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
+      <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
+    </svg>
+    </a>
+  </td>
+
+  <td class="long-status-column">
+    {% if host.ok %}
+    <a role="button" class="btn btn-success btn-sm ara-result-status-badge" title="Search for tasks with status: ok" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results"{% endif %}>
+      {{ host.ok }}
+    </a>
+    {% endif %}
+    {% if host.changed %}
+    <a role="button" class="btn btn-warning btn-sm ara-result-status-badge" title="Search for tasks with status: changed" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results"{% endif %}>
+      {{ host.changed }}
+    </a>
+    {% endif %}
+    {% if host.failed or host.unreachable %}
+    <a role="button" class="btn btn-danger btn-sm ara-result-status-badge" title="Search for tasks with status: failed and unreachable" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed&status=unreachable#results"{% endif %}>
+      {{ host.failed |add:host.unreachable }}
+    </a>
+    {% endif %}
+    {% if host.skipped %}
+    <a role="button" class="btn btn-info btn-sm ara-result-status-badge" title="Search for tasks with status: skipped" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results"{% endif %}>
+      {{ host.skipped }}
+    </a>
+    {% endif %}
+  </td>
+
+  <td class="date-column">{{ host.updated | format_date }}</td>
+  <td class="duration-column">{{ host.playbook.duration | format_duration }}</td>
+
+  <td>
+    <a {% if not static_generation %}href="{% url 'ui:host_index' %}?name={{ host.name }}&latest=false" title="Search results for {{ host.name }}"{% endif %}>
+      {{ host.name | truncatechars:50 }}
+    </a>
+  </td>
+
+  {% if host.playbook.name is not None %}
+  <td title="Search results for {{ host.playbook.name }}">
+    {% if not static_generation %}
+      <a href="{% url 'ui:host_index' %}?playbook_name={{ host.playbook.name }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.name | truncatechars:50 }}</a>
+    {% else %}
+      {{ host.playbook.name | truncatechars:50 }}
+    {% endif %}
+  </td>
+  {% else %}
+  <td title="Search results for {{ host.playbook.path }}">
+    {% if not static_generation %}
+      <a href="{% url 'ui:host_index' %}?playbook_path={{ host.playbook.path }}&latest={{ request.GET.latest | default:'true' }}">{{ host.playbook.path | truncatepath:50 }}</a>
+    {% else %}
+      {{ host.playbook.path | truncatepath:50 }}
+    {% endif %}
+  </td>
+  {% endif %}
+
+  <td>{% include "partials/host_facts_snippets.html" with host=host %}</td>
+</tr>

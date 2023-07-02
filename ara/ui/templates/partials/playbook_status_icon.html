@@ -1,6 +1,6 @@
 <a
   {% if not static_generation %}href="{% url 'ui:index' %}?status={{ status }}"{% endif %}
-  class="btn btn-sm {% if status == 'completed' %}btn-success{% elif status == 'failed' %}btn-danger{% elif status == 'running' %}btn-info{% else %}btn-warning{% endif %}"
+  class="btn btn-sm ara-playbook-status-badge {% if status == 'completed' %}btn-success{% elif status == 'failed' %}btn-danger{% elif status == 'running' %}btn-info{% else %}btn-warning{% endif %}"
 >
   {% include "partials/status_icon.html" with status=status %}
 </a>

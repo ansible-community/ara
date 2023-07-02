@@ -1,15 +1,13 @@
 {% if status == "ok" %}
-  <a class="badge badge-pill badge-success ara-result-status-badge" title="Task completed successfully" {% if search_url %}href="{{ search_url | add:'?status=ok#results' }}"{% endif %}>
+  <a role="button" class="btn btn-success btn-sm ara-result-status-badge" title="Task completed successfully" {% if search_url %}href="{{ search_url | add:'?status=ok#results' }}"{% endif %}>{{ status | upper }}</a>
 {% elif status == "failed" or status == "unreachable" %}
-  <a class="badge badge-pill badge-danger ara-result-status-badge" title="Task failed" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>
+  <a role="button" class="btn btn-danger btn-sm ara-result-status-badge" title="Task failed" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>{{ status | upper }}</a>
 {% elif status == "ignored" %}
-  <a class="badge badge-pill badge-info ara-result-status-badge" title="Task failed but was ignored" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>
+  <a role="button" class="btn btn-info btn-sm ara-result-status-badge" title="Task failed but was ignored" {% if search_url %}href="{{ search_url | add:'?status=failed#results' }}"{% endif %}>{{ status | upper }}</a>
 {% elif status == "skipped" %}
-  <a class="badge badge-pill badge-info ara-result-status-badge" title="Task was skipped" {% if search_url %}href="{{ search_url | add:'?status=skipped#results' }}"{% endif %}>
+  <a role="button" class="btn btn-info btn-sm ara-result-status-badge" title="Task was skipped" {% if search_url %}href="{{ search_url | add:'?status=skipped#results' }}"{% endif %}>{{ status | upper }}</a>
 {% elif status == "changed" %}
-  <a class="badge badge-pill badge-warning ara-result-status-badge" title="Task resulted in a change" {% if search_url %}href="{{ search_url | add:'?changed=true#results' }}"{% endif %}>
+  <a role="button" class="btn btn-warning btn-sm ara-result-status-badge" title="Task resulted in a change" {% if search_url %}href="{{ search_url | add:'?changed=true#results' }}"{% endif %}>{{ status | upper }}</a>
 {% else %}
-  <a class="badge badge-pill badge-warning ara-result-status-badge" title="Task result is unknown" {% if search_url %}href="{{ search_url | add:'?status=unknown#results' }}"{% endif %}>
+  <a role="button" class="btn btn-warning btn-sm ara-result-status-badge" title="Task result is unknown" {% if search_url %}href="{{ search_url | add:'?status=unknown#results' }}"{% endif %}>{{ status | upper }}</a>
 {% endif %}
-{{ status | upper }}
-</a>
