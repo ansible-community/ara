@@ -13,7 +13,7 @@ ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook``
 - from a terminal, by hand or from a script
 - from a laptop, desktop, server, VM or container
 - for development, CI or production
-- from most Linux distributions and even on Mac OS (as long as ``python >= 3.6`` is available)
+- from most Linux distributions and even on Mac OS (as long as ``python >= 3.8`` is available)
 - from tools that run playbooks such as AWX & Automation Controller (Tower), ansible-(pull|test|runner|navigator) and Molecule
 - from CI/CD platforms such as Jenkins, GitHub Actions, GitLab CI, Rundeck and Zuul
 
@@ -35,7 +35,7 @@ The callback plugin leverages built-in python API clients to send data to a REST
 
 ## Requirements
 
-- Any recent Linux distribution or Mac OS with python >=3.6 available
+- Any recent Linux distribution or Mac OS with python >=3.8 available
 - The ara package (containing the Ansible plugins) must be installed for the same python interpreter as Ansible itself
 
 ## Getting started
