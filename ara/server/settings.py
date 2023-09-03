@@ -216,6 +216,9 @@ WHITENOISE_USE_FINDERS = True
 # https://github.com/evansd/whitenoise/issues/215
 # Whitenoise raises a warning if STATIC_ROOT doesn't exist
 warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
+# https://github.com/ansible-community/ara/issues/492
+# Django expects a ~/.ara/www/static directory but there is no such thing
+warnings.filterwarnings("ignore", message="No directory at", module="django.core.handlers.base")
 
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 STATIC_ROOT = settings.get("STATIC_ROOT", os.path.join(BASE_DIR, "www", "static"))
