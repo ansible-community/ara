@@ -193,6 +193,13 @@
             ARA_LOCALHOST_AS_HOSTNAME: "{{ ara_localhost_as_hostname | default(true) }}"
           command: "ansible-playbook -vvv {{ _test_root }}/lookups.yaml"
 
+        - name: Run record settings tests
+          environment:
+            ARA_RECORD_USER_NAME: "test-user"
+            ARA_RECORD_CONTROLLER_NAME: "test-controller"
+            ARA_RECORD_TASK_CONTENT: "false"
+          command: "ansible-playbook -vvv {{ _test_root }}/record_settings.yaml"
+
         - name: Run delegate_to integration tests
           command: "ansible-playbook -vvv {{ _test_root }}/delegate_to.yaml"
 

@@ -1,0 +1,49 @@
+---
+# Copyright (c) 2023 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+# This tests the behavior when these settings are enabled and so it expects them set as:
+# ARA_RECORD_USER_NAME=test-user (to manually override the recorded user for a playbook)
+# ARA_RECORD_CONTROLLER_NAME=test-controller (to manually override the recorded controller for a playbook)
+# ARA_RECORD_TASK_CONTENT=false (to prevent ara from recording task content)
+
+- name: Validate recording settings
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    ara_playbook_name: ARA tests for recording settings
+    ara_playbook_labels:
+      - recording-tests
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Save the playbook id so we can re-use it easily
+      set_fact:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+
+    - name: Recover data from ARA
+      set_fact:
+        playbook: "{{ lookup('ara_api', '/api/v1/playbooks/' + playbook_id) }}"
+        results: "{{ lookup('ara_api', '/api/v1/results?playbook=' + playbook_id) }}"
+
+    # The list search view for results does not provide the content.
+    # We must first retrieve it via the detailed view.
+    - name: Validate that every result is empty of content
+      vars:
+        _result: "{{ lookup('ara_api', '/api/v1/results/' + item.id | string) }}"
+      assert:
+        that:
+          - _result.id == item.id
+          - _result.content == {}
+      loop: "{{ results['results'] }}"
+
+    - name: Validate that the controller and user are set properly
+      assert:
+        that:
+          - playbook.controller == "test-controller"
+          - playbook.user == "test-user"
+        fail_msg: |
+          The controller or user aren't the expected values.
+          Were environment variables set before running the playbook ?
