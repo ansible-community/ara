@@ -139,11 +139,3 @@
       - name: github.com/ansible/ansible
         override-checkout: stable-2.14
 
-- job:
-    name: ara-basic-ansible-2.9
-    parent: ara-ansible-integration-base
-    description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with Ansible 2.9.
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.9

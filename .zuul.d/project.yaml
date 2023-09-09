@@ -10,7 +10,6 @@
         - ara-basic-ansible-8
         - ara-basic-ansible-core-2.15
         - ara-basic-ansible-core-2.14
-        - ara-basic-ansible-2.9
         - ara-container-images
     gate:
       jobs:
@@ -20,7 +19,6 @@
         - ara-basic-ansible-8
         - ara-basic-ansible-core-2.15
         - ara-basic-ansible-core-2.14
-        - ara-basic-ansible-2.9
         - ara-container-images
     post:
       jobs:
