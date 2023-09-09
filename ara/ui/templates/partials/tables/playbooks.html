@@ -4,7 +4,7 @@
 {% load static_url %}
 
 <div class="table-responsive">
-  <table class="table table-sm table-hover" id="playbooks">
+  <table class="table table-sm table-hover table-striped" id="playbooks">
     <thead>
       <tr style="height:50px;">
         <th class="report-column" title="Link to the playbook report">Report</th>
@@ -23,16 +23,15 @@
         <th class="text-center" title="Number of hosts involved in the playbook">Hosts</th>
         <th class="text-center" title="Number of tasks run in the playbook">Tasks</th>
         <th class="text-center" title="Number of results recorded from the playbook">Results</th>
-        <th title="Labels applied to the playbook (provided by ara_playbook_labels)">Labels</th>
       </tr>
     </thead>
     <tbody>
     {% for playbook in playbooks %}
       <tr>
-        <td class="report-column">
+        <td rowspan=2 class="report-column">
           {% url 'ui:playbook' playbook.id as playbook_url %}
           <a role="button" class="btn btn-outline-primary btn-link btn-sm d-inline-flex justify-content-center align-items-center" href="{% static_url playbook_url %}{% if playbook.status == 'failed' %}?status=failed&status=unreachable#results{% endif %}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>
             <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>
           </svg>
@@ -85,15 +84,15 @@
         <td title="{{ playbook.path }}">
           {% if not static_generation %}
             {% if playbook.name is not None %}
-              <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name | truncatechars:50 }}</a>
+              <a href="{% url 'ui:index' %}?name={{ playbook.name }}">{{ playbook.name | truncatechars:65 }}</a>
             {% else %}
-              <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:50 }}</a>
+              <a href="{% url 'ui:index' %}?path={{ playbook.path }}">{{ playbook.path | truncatepath:65 }}</a>
             {% endif %}
           {% else %}
             {% if playbook.name is not None %}
-              {{ playbook.name | truncatechars:50 }}
+              {{ playbook.name | truncatechars:65 }}
             {% else %}
-              {{ playbook.path | truncatepath:50 }}
+              {{ playbook.path | truncatepath:65 }}
             {% endif %}
           {% endif %}
         </td>
@@ -139,15 +138,16 @@
         </td>
 
         <td class="text-center">{{ playbook.items.results }}</td>
-
-        <td class="col-md-2">
-          {% for label in playbook.labels %}
-            {% if not static_generation %}
-              <a href="{% url 'ui:index' %}?label={{ label.name }}" class="btn btn-outline-success ara-label">{{ label.name }}</a>
-            {% else %}
-              <span class="btn btn-outline-success ara-label">{{ label.name }}</span>
-            {% endif %}
-          {% endfor %}
+      </tr>
+      <tr>
+        <td colspan="11">
+            {% for label in playbook.labels %}
+              {% if not static_generation %}
+                <a href="{% url 'ui:index' %}?label={{ label.name }}" class="btn btn-outline-secondary ara-label">{{ label.name }}</a>
+              {% else %}
+                <span class="btn btn-outline-secondary ara-label">{{ label.name }}</span>
+              {% endif %}
+            {% endfor %}
         </td>
       </tr>
       {% endfor %}

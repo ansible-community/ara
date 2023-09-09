@@ -35,8 +35,8 @@
 
 /* Size playbook labels and add padding/margin */
 .ara-label {
-    font-size: 90% !important;
-    padding: 0.10rem 0.25rem !important;
+    font-size: 95% !important;
+    padding: 0.05rem 0.25rem !important;
     margin-bottom: 3px;
 }
 
@@ -76,6 +76,7 @@
 .report-column {
     width: 60px;
     text-align: center;
+    vertical-align: middle;
 }
 
 .short-status-column {
