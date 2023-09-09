@@ -119,7 +119,7 @@
       Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 8 (ansible-core 2.15).
     vars:
       ara_tests_ansible_name: ansible
-      ara_tests_ansible_version: 8.1.0
+      ara_tests_ansible_version: 8.3.0
 
 - job:
     name: ara-basic-ansible-core-2.15
