@@ -7,7 +7,7 @@ sphinxcontrib-programoutput
 cliff
 
 # For ara-manage cli's programoutput, we need to include server extra dependencies from setup.cfg
-Django>=2.1.5,<3.0
+Django>=3.2,<4.3
 djangorestframework>=3.9.1
 django-cors-headers
 django-filter
