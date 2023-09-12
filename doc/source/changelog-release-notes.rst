@@ -4,6 +4,103 @@
 Changelog and release notes
 ***************************
 
+1.7.0 (2023-09-10)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.7.0
+
+.. code-block:: text
+
+    This is the 1.7.0 stable release of ara.
+    
+    It features a refresh of the built-in web interface with the upgrade
+    from bootstrap 4.6.0 to 5.3.0.
+    
+    It lifts the supported version of django up to the latest LTS, 4.2, and
+    raises the minimum version of python to >=3.8 as a result.
+    
+    There's also bug fixes and new features.
+    
+    Changes since 1.6.1:
+    
+    UI
+    --
+    Boostrap and CSS:
+    
+    - Update bootstrap CSS from 4.6.0 to 5.3.0 and fix broken layout and
+      components as a result of the update
+    - Removed separate light/dark themes via bootstrap-darkly and
+      bootstrap-flatly: bootstrap 5.3 features a new built-in dark theme
+    - Re-worked the dark/light theme selection to match the new bootstrap
+      built-in dark theme including pygments highlighting for pretty-printed
+      output
+    - Removed jquery, it is no longer required with bootstrap
+    - Re-worked implementation of file line highlighting since it relied on
+      jquery
+    - Fixed tooltip implementation (i.e, for task tags) since the
+      implementation in bootstrap had changed
+    
+    Site-wide minor cleanups and improvements:
+    
+    - Headers and font size made generally larger and more consistent
+    - Improved the about and CLI argument modals
+    - Improved display for the report and CLI argument buttons
+    - Improved the playbook report header card
+    - Adjusted search accordions to match new bootstrap theme
+    - Improvements to responsiveness of layout at smaller (e.g, mobile)
+      resolutions
+    - Truncate excessively long controller hostnames such that they do not
+      needlessly take up all the table's available width
+    - Added support for colored diff when viewing task results
+    - Fixed the API link when viewing tasks to properly direct to
+      /api/v1/tasks
+    
+    Django templating:
+    
+    - Large chunks of templating were moved out to partials/tables and
+      partials/search in order to improve readability.
+    - Round of template cleanups and fixes as reported by djlint
+    - Will continue to be a work in progress to simplify and standardize
+      templates.
+    
+    API Server
+    ----------
+    
+    - Raised the requirement on django from >=3.2,<3.3 to >=3.2,<4.3 to
+      allow installation with the latest LTS release of django.
+    - Raised the requirement on python from >=3.6 to >=3.8 to accomodate
+      django 4.2.
+    - Ignored Django warning about the lack of a STATIC_ROOT directory.
+      ara uses whitenoise for serving static files which makes the warning
+      superfluous. (#492)
+    
+    Ansible callback plugin
+    -----------------------
+    
+    - Added ARA_RECORD_CONTROLLER_NAME and ARA_RECORD_USER_NAME settings to
+      override the automatic detection of the controller hostname and user
+      name for the specified values.
+    - Added ARA_RECORD_TASK_CONTENT which defaults to true but can be set to
+      false to prevent ara from recording the task content for use cases
+      where it is not important or to avoid leaking sensitive information.
+    
+    Maintenance
+    -----------
+    
+    Update versions, CI test jobs and container images:
+    
+    - containers: updated fedora base image from 36 to 38
+    - containers: updated centos-pypi image from stream8 to stream9
+    - zuul: Update fedora base image from 36 to 38
+    - zuul: Update ansible version tested from 6.4.0 to 8.3.0
+    - zuul: Update versions of ansible-core tested (2.14, 2.15)
+    - Dropped testing for Ansible 2.9 which has been EOL for over a year.
+    
+    Upgrade notes
+    -------------
+    
+    There are no API changes or SQL migrations in this release.
+
 1.6.1 (2022-12-12)
 ##################
 
