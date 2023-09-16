@@ -4,32 +4,26 @@ ARA Records Ansible and makes it easier to understand and troubleshoot.
 
 ![logo](doc/source/_static/ara-with-icon.png)
 
-It's another recursive acronym and features simplicity as a core principle.
+It is another recursive acronym with a focus on simplicity.
 
 ## About ara
 
-ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook`` commands wherever and however they are run:
+ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook`` commands regardless of how and where they run:
 
-- from a terminal, by hand or from a script
-- from a laptop, desktop, server, VM or container
-- for development, CI or production
 - from most Linux distributions and even on Mac OS (as long as ``python >= 3.8`` is available)
-- from tools that run playbooks such as AWX & Automation Controller (Tower), ansible-(pull|test|runner|navigator) and Molecule
-- from CI/CD platforms such as Jenkins, GitHub Actions, GitLab CI, Rundeck and Zuul
+- from tools that run Ansible like ansible-(pull|test|runner|navigator), AWX & Automation Controller (Tower), Molecule and Semaphore
+- from a terminal, a script or by hand
+- from a laptop, desktop, server, virtual machine, container or execution environment
+- from CI/CD platforms such as Jenkins, Rundeck and Zuul
+- from git forges like GitHub, GitLab, Gitea & Forgejo
 
-![getting-started](doc/source/_static/getting-started.gif)
-
-In addition to the built-in CLI, the data is made available through an included reporting interface as well as a REST API.
-
-![ui-web-demo](doc/source/_static/ui-web-demo.gif)
-
-*Note: open the above gifs in a new tab (or window) if the resolution is too small*
+The recorded results are available via an included CLI, a REST API as well as a self-hosted, local-first web reporting interface.
 
 ## How it works
 
-ara records results to SQLite, MySQL and PostgreSQL databases with a standard [Ansible callback plugin](https://docs.ansible.com/ansible/latest/plugins/callback.html).
+ARA Records Ansible results to SQLite, MySQL and PostgreSQL databases with a standard [callback plugin](https://docs.ansible.com/ansible/latest/plugins/callback.html).
 
-The callback plugin leverages built-in python API clients to send data to a REST API server:
+This plugin gathers data as Ansible runs and sends it to a Django REST API server:
 
 ![recording-workflow](doc/source/_static/graphs/recording-workflow.png)
 
@@ -40,37 +34,35 @@ The callback plugin leverages built-in python API clients to send data to a REST
 
 ## Getting started
 
-Running an API server is not required to get started and it is designed to be simple to record data to a local sqlite database.
+Running an API server is not required to get started: it's designed to be simple to record data to a local sqlite database without requiring a persistent service.
 
-For production use, it is strongly encouraged to:
-
-- [Enable authentication for the web interface and API](https://ara.readthedocs.io/en/latest/api-security.html#authentication) to avoid unintentionally leaking passwords, tokens, secrets or otherwise sensitive information that ara might come across and record
-- [Configure the callback plugin to ignore sensitive files, host facts and CLI arguments (such as extra vars)](https://ara.readthedocs.io/en/latest/ansible-plugins-and-use-cases.html#ansible-plugins)
-- Learn about the [best practices to improve playbook recording performance](https://ara.readthedocs.io/en/latest/troubleshooting.html#improving-playbook-recording-performance)
+For production use, consider learning about [best practices](https://ara.readthedocs.io/en/latest/troubleshooting.html#improving-playbook-recording-performance), [enabling authentication](https://ara.readthedocs.io/en/latest/api-security.html#authentication) and [ignoring what doesn't need to be recorded](https://ara.readthedocs.io/en/latest/ansible-plugins-and-use-cases.html#ansible-plugins).
 
 ### Recording playbooks without an API server
+
+![getting-started](doc/source/_static/getting-started.gif)
 
 ```bash
 # Install ansible (or ansible-core) with ara (including API server dependencies)
 python3 -m pip install --user ansible "ara[server]"
 
-# Configure Ansible to use the ara callback plugin
+# Configure Ansible to enable ara
 export ANSIBLE_CALLBACK_PLUGINS="$(python3 -m ara.setup.callback_plugins)"
 
 # Run an Ansible playbook as usual
-ansible-playbook hello-world.yml
+ansible-playbook playbook.yml
 
-# Use the CLI to see recorded playbooks
+# Check out the CLI
 ara playbook list
+ara host list
 
-# Start the development server at http://127.0.0.1:8000
-# to query the API or browse recorded results
+# or the UI at http://127.0.0.1:8000
 ara-manage runserver
 ```
 
 ### Recording playbooks with an API server
 
-It is possible to get started with the [ara_api role](https://github.com/ansible-community/ara-collection/blob/master/roles/ara_api/README.md)
+Get started with the [ara_api role](https://github.com/ansible-community/ara-collection/blob/master/roles/ara_api/README.md)
 or with the [container images](https://ara.readthedocs.io/en/latest/container-images.html) published by the project on
 [DockerHub](https://hub.docker.com/r/recordsansible/ara-api) and [quay.io](https://quay.io/repository/recordsansible/ara-api):
 
@@ -89,13 +81,13 @@ podman run --name api-server --detach --tty \
   quay.io/recordsansible/ara-api:latest
 ```
 
-Once the server is running, ara's Ansible callback plugin must be installed and configured to send data to it:
+Once the server is running, ara must be installed and configured to send data to it:
 
 ```bash
 # Install ansible (or ansible-core) with ara (excluding API server dependencies)
 python3 -m pip install --user ansible ara
 
-# Configure Ansible to use the ara callback plugin
+# Configure Ansible to enable ara
 export ANSIBLE_CALLBACK_PLUGINS="$(python3 -m ara.setup.callback_plugins)"
 
 # Set up the ara callback to know where the API server is located
@@ -103,16 +95,14 @@ export ARA_API_CLIENT="http"
 export ARA_API_SERVER="http://127.0.0.1:8000"
 
 # Run an Ansible playbook as usual
-ansible-playbook playbook.yaml
+ansible-playbook playbook.yml
 
-# Use the CLI to see recorded playbooks
+# Check out the CLI
 ara playbook list
+ara host list
 
-# Browse http://127.0.0.1:8000 (running from the container)
-# to view the reporting interface
+# Or browse http://127.0.0.1:8000 (running from the container)
 ```
-
-Data will be available on the API server in real time as the playbook progresses and completes.
 
 ## Live demo
 
@@ -153,7 +143,7 @@ The ara parrot logo was designed and contributed by [Jason E. Rist](https://gith
 ## Copyright
 
 ```
-Copyright (c) 2022 The ARA Records Ansible authors
+Copyright (c) 2023 The ARA Records Ansible authors
 
 ARA Records Ansible is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
