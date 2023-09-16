@@ -19,6 +19,9 @@ ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook``
 
 The recorded results are available via an included CLI, a REST API as well as a self-hosted, local-first web reporting interface.
 
+<!-- https://github.com/ansible-community/ara/blob/master/doc/source/_static/demo.mp4 -->
+https://github.com/ansible-community/ara/assets/1291204/4fbdf5f7-509c-46ea-beb0-726b43e1b985
+
 ## How it works
 
 ARA Records Ansible results to SQLite, MySQL and PostgreSQL databases with a standard [callback plugin](https://docs.ansible.com/ansible/latest/plugins/callback.html).
