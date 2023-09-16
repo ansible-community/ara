@@ -37,13 +37,11 @@ This plugin gathers data as Ansible runs and sends it to a Django REST API serve
 
 ## Getting started
 
-Running an API server is not required to get started: it's designed to be simple to record data to a local sqlite database without requiring a persistent service.
-
 For production use, consider learning about [best practices](https://ara.readthedocs.io/en/latest/troubleshooting.html#improving-playbook-recording-performance), [enabling authentication](https://ara.readthedocs.io/en/latest/api-security.html#authentication) and [ignoring what doesn't need to be recorded](https://ara.readthedocs.io/en/latest/ansible-plugins-and-use-cases.html#ansible-plugins).
 
 ### Recording playbooks without an API server
 
-![getting-started](doc/source/_static/getting-started.gif)
+ara records to a local sqlite database by default and does not require a persistent server:
 
 ```bash
 # Install ansible (or ansible-core) with ara (including API server dependencies)
@@ -63,7 +61,13 @@ ara host list
 ara-manage runserver
 ```
 
+![getting-started](doc/source/_static/getting-started.gif)
+
 ### Recording playbooks with an API server
+
+The server includes a REST API as well a web reporting interface.
+
+Consider running one to aggregate playbook runs from different tools, jobs or servers into a single dashboard that can be shared with friends.
 
 Get started with the [ara_api role](https://github.com/ansible-community/ara-collection/blob/master/roles/ara_api/README.md)
 or with the [container images](https://ara.readthedocs.io/en/latest/container-images.html) published by the project on
