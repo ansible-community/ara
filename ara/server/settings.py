@@ -9,12 +9,14 @@ import tzlocal
 from django.utils.crypto import get_random_string
 from dynaconf import LazySettings
 
-# dynaconf prefers ruamel.yaml but works with pyyaml
+# dynaconf prefers ruamel.yaml but historically we also used pyyaml
 # https://github.com/rochacbruno/dynaconf/commit/d5cf87cbbdf54625ccf1138a4e4c210956791e61
-try:
-    from ruamel import yaml as yaml
-except ImportError:
-    import yaml
+# ruamel.yaml >= 0.18 deprecated raw use of .dump
+# https://github.com/ansible-community/ara/issues/524
+from ruamel.yaml import YAML
+
+yaml = YAML(typ="unsafe", pure=True)
+yaml.default_flow_style = False
 
 BASE_DIR = os.environ.get("ARA_BASE_DIR", os.path.expanduser("~/.ara/server"))
 DEFAULT_SETTINGS = os.path.join(BASE_DIR, "settings.yaml")
@@ -303,7 +305,7 @@ if not os.path.exists(DEFAULT_SETTINGS) and "ARA_SETTINGS" not in os.environ:
         )
         print("[ara] Writing default settings to %s" % DEFAULT_SETTINGS)
         settings_file.write(comment.lstrip())
-        yaml.dump({"default": SETTINGS}, settings_file, default_flow_style=False)
+        yaml.dump({"default": SETTINGS}, settings_file)
 
 if BASE_PATH:
     BASE_PATH = BASE_PATH.rstrip("/")
