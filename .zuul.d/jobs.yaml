@@ -2,21 +2,21 @@
 - job:
     name: ara-tox-py3
     parent: tox
-    nodeset: ara-fedora-38
+    nodeset: ara-fedora-39
     vars:
       tox_envlist: py3
 
 - job:
     name: ara-tox-linters
     parent: tox
-    nodeset: ara-fedora-38
+    nodeset: ara-fedora-39
     vars:
       tox_envlist: linters
 
 - job:
     name: ara-tox-docs
     parent: base
-    nodeset: ara-fedora-38
+    nodeset: ara-fedora-39
     files:
       - doc/*
     run: tests/zuul_docs.yaml
@@ -44,7 +44,7 @@
 - job:
     name: ara-integration-container-base
     parent: ara-integration-base
-    nodeset: ara-fedora-38
+    nodeset: ara-fedora-39
     files:
       - ara/*
       - manage.py
@@ -113,13 +113,22 @@
         override-checkout: devel
 
 - job:
-    name: ara-basic-ansible-8
+    name: ara-basic-ansible-9
     parent: ara-ansible-integration-base
     description: |
       Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 8 (ansible-core 2.15).
     vars:
       ara_tests_ansible_name: ansible
-      ara_tests_ansible_version: 8.3.0
+      ara_tests_ansible_version: 9.2.0
+
+- job:
+    name: ara-basic-ansible-core-2.16
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.16.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.16
 
 - job:
     name: ara-basic-ansible-core-2.15
@@ -129,13 +138,4 @@
     required-projects:
       - name: github.com/ansible/ansible
         override-checkout: stable-2.15
-
-- job:
-    name: ara-basic-ansible-core-2.14
-    parent: ara-ansible-integration-base
-    description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.14.
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.14
 
