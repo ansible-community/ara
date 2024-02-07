@@ -4,6 +4,26 @@
 Changelog and release notes
 ***************************
 
+1.7.1 (2024-02-06)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.7.1
+
+.. code-block:: text
+
+    This is the 1.7.1 stable release of ara.
+    
+    1.7.1 is a maintenance release that features minor bug fixes.
+    
+    Changes since 1.7.0:
+    
+    - Address deprecation of yaml.dump in ruamel.yaml when generating
+      the default server settings.yaml file (#524)
+    - Don't use setuptools/pkg_resources to retrieve the version of ara
+      since it is not always installed by default.
+    - Bumped the version of ansible, ansible-core and fedora used in Zuul
+      CI jobs.
+
 1.7.0 (2023-09-10)
 ##################
 
