@@ -20,7 +20,7 @@
         - ara-basic-ansible-core-2.16
         - ara-basic-ansible-core-2.15
         - ara-container-images
-#    post:
-#      jobs:
-#        - ara-container-images-dockerhub
-#        - ara-container-images-quayio
+    post:
+      jobs:
+        - ara-container-images-dockerhub
+        - ara-container-images-quayio
