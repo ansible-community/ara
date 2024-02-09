@@ -20,5 +20,6 @@ Table of Contents
     CLI: ara and ara-manage <cli>
     Contributing to ARA <contributing>
     Frequently asked questions <faq>
+    Ansible metrics with Prometheus <prometheus>
     Troubleshooting <troubleshooting>
     Changelog and release notes <changelog-release-notes>
