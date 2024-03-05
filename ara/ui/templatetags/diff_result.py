@@ -9,13 +9,16 @@ from django import template
 register = template.Library()
 
 
-def render_diff(before="", after="", before_header="before", after_header="after"):
+def render_diff(before="", after="", prepared="", before_header="before", after_header="after"):
     """
     Renders a diff provided by Ansible task results
     """
     # fmt: off
-    # Some modules, such as file, might provide a diff in a dict format
-    if isinstance(before, dict) and isinstance(after, dict):
+    if prepared:
+        # Modules like apt, git or ios/eos provide pre-generated diff as string
+        return prepared.splitlines()
+    elif isinstance(before, dict) and isinstance(after, dict):
+        # Some modules, such as file, might provide a diff in a dict format
         return difflib.unified_diff(
             json.dumps(before, indent=4).splitlines(),
             json.dumps(after, indent=4).splitlines(),
