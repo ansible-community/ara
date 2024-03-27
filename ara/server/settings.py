@@ -69,7 +69,10 @@ if "root" in LOGGING:
     del LOGGING["root"]
 
 # Django built-in server and npm development server
-ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
+if isinstance(settings.get("ALLOWED_HOSTS"), str):
+    ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", "").split(',')
+else:
+    ALLOWED_HOSTS = settings.get("ALLOWED_HOSTS", ["::1", "127.0.0.1", "localhost"])
 CORS_ORIGIN_WHITELIST = settings.get("CORS_ORIGIN_WHITELIST", ["http://127.0.0.1:8000", "http://localhost:3000"])
 CORS_ORIGIN_REGEX_WHITELIST = settings.get("CORS_ORIGIN_REGEX_WHITELIST", [])
 CORS_ORIGIN_ALLOW_ALL = settings.get("CORS_ORIGIN_ALLOW_ALL", False)
