@@ -27,8 +27,12 @@
                 <tr style="height:50px;">
                   <th class="report-column">Report</th>
                   <th class="medium-status-column">Status</th>
-                  <th class="date-column">{% include "partials/sort_by_date.html" with arg="started" form_url="ui:playbook" %}</th>
-                  <th class="duration-column">{% include "partials/sort_by_duration.html" with form_url="ui:playbook" %}</th>
+                  <th class="date-column">
+                    <form action="{% url 'ui:playbook' playbook.id %}" method="get">{% include "partials/sort_by_date.html" with arg="started" %}</form>
+                  </th>
+                  <th class="duration-column">
+                    <form action="{% url 'ui:playbook' playbook.id %}" method="get">{% include "partials/sort_by_duration.html" %}
+                  </th>
                   <th>Host</th>
                   <th>Action</th>
                   <th>Task</th>
