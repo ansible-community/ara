@@ -8,6 +8,7 @@ Table of Contents
 .. toctree::
     :maxdepth: 3
 
+    Introduction <introduction>
     Getting started <getting-started>
     Ansible: configuration to use ARA <ansible-configuration>
     Ansible: plugins and use cases <ansible-plugins-and-use-cases>
