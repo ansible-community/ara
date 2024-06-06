@@ -212,7 +212,9 @@ class HostShow(ShowOne):
     def take_action(self, args):
         # TODO: Render json properly in pretty tables
         if args.with_facts and args.formatter == "table":
-            self.log.warn("Rendering using default table formatter, use '-f yaml' or '-f json' for improved display.")
+            self.log.warning(
+                "Rendering using default table formatter, use '-f yaml' or '-f json' for improved display."
+            )
 
         verify = False if args.insecure else True
         if args.ssl_ca:

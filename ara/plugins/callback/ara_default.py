@@ -472,7 +472,7 @@ class CallbackModule(CallbackBase):
             # https://github.com/ansible-community/ara/issues/185
             # https://github.com/ansible-community/ara/issues/265
             if len(play_vars["ara_playbook_name"]) >= 255:
-                self.log.warn("Truncating playbook name before recording: it's longer than 255 characters")
+                self.log.warning("Truncating playbook name before recording: it's longer than 255 characters")
 
             self.playbook = self.client.patch(
                 "/api/v1/playbooks/%s" % self.playbook["id"], name=play_vars["ara_playbook_name"][:254]
@@ -482,7 +482,7 @@ class CallbackModule(CallbackBase):
         # https://github.com/ansible-community/ara/issues/185
         # https://github.com/ansible-community/ara/issues/265
         if len(play.name) >= 255:
-            self.log.warn("Truncating play name before recording: it's longer than 255 characters")
+            self.log.warning("Truncating play name before recording: it's longer than 255 characters")
             play.name = play.name[:254]
 
         labels = self.default_labels + self.argument_labels
@@ -680,7 +680,7 @@ class CallbackModule(CallbackBase):
         expected_labels = []
         for label in labels:
             if len(label) >= 255:
-                self.log.warn("Truncating label name before recording: it's longer than 255 characters (%s)" % label)
+                self.log.warning("Truncating label name before recording: it's longer than 255 characters (%s)" % label)
                 label = label[:254]
             expected_labels.append(label)
 
@@ -724,7 +724,7 @@ class CallbackModule(CallbackBase):
         if len(host) >= 255:
             # Only warn about this once so we don't print a warning on every task
             if host not in self.warned_about_host_length:
-                self.log.warn("Truncating hostname before recording: it's longer than 255 characters (%s)" % host)
+                self.log.warning("Truncating hostname before recording: it's longer than 255 characters (%s)" % host)
                 self.warned_about_host_length.append(host)
             host = host[:254]
 

@@ -65,7 +65,7 @@ def distributed_sqlite(environ, start_response):
         return default_application(environ, start_response)
 
     if prefix not in path_info:
-        logger.warn("Ignoring request: URL does not contain delegated prefix (%s)" % prefix)
+        logger.warning("Ignoring request: URL does not contain delegated prefix (%s)" % prefix)
         return handle_404(start_response)
 
     # Slice path_info up until after the prefix to obtain the requested directory
@@ -75,16 +75,16 @@ def distributed_sqlite(environ, start_response):
     # Make sure we aren't escaping outside the root and the directory exists
     db_dir = os.path.abspath(os.path.join(root, fs_path.lstrip("/")))
     if not db_dir.startswith(root):
-        logger.warn("Ignoring request: path is outside the root (%s)" % db_dir)
+        logger.warning("Ignoring request: path is outside the root (%s)" % db_dir)
         return handle_404(start_response)
     elif not os.path.exists(db_dir):
-        logger.warn("Ignoring request: database directory not found (%s)" % db_dir)
+        logger.warning("Ignoring request: database directory not found (%s)" % db_dir)
         return handle_404(start_response)
 
     # Find the database file and make sure it exists
     db_file = os.path.join(db_dir, "ansible.sqlite")
     if not os.path.exists(db_file):
-        logger.warn("Ignoring request: database file not found (%s)" % db_file)
+        logger.warning("Ignoring request: database file not found (%s)" % db_file)
         return handle_404(start_response)
 
     # Tell Django about the new URLs it should be using

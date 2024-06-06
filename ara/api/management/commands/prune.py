@@ -47,7 +47,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.warn("This command has been replaced by 'ara playbook prune' in 1.5. It will be removed in 1.6.")
+        logger.warning("This command has been replaced by 'ara playbook prune' in 1.5. It will be removed in 1.6.")
 
         client = options.get("client")
         endpoint = options.get("endpoint")
