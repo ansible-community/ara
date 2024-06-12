@@ -7,18 +7,18 @@
         - ara-tox-docs
         - ara-basic-ansible-core-devel:
             voting: false
-        - ara-basic-ansible-9
+        - ara-basic-ansible-10
         - ara-basic-ansible-core-2.16
-        - ara-basic-ansible-core-2.15
+        - ara-basic-ansible-core-2.17
         - ara-container-images
     gate:
       jobs:
         - ara-tox-py3
         - ara-tox-linters
         - ara-tox-docs
-        - ara-basic-ansible-9
+        - ara-basic-ansible-10
         - ara-basic-ansible-core-2.16
-        - ara-basic-ansible-core-2.15
+        - ara-basic-ansible-core-2.17
         - ara-container-images
     post:
       jobs:
