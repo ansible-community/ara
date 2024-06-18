@@ -193,7 +193,7 @@ options:
     description:
         - Associates results to the hostname (or fqdn) instead of localhost when the inventory name is localhost
         - Defaults to false for backwards compatibility, set to true to enable
-        - This can be useful when targetting localhost, using ansible-pull or ansible-playbook -i 'localhost,'
+        - This can be useful when targeting localhost, using ansible-pull or ansible-playbook -i 'localhost,'
         - This helps differentiating results between hosts, otherwise everything would be recorded under localhost.
     type: boolean
     default: false

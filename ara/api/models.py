@@ -157,7 +157,7 @@ class Record(Base):
 class Play(Duration):
     """
     Data about Ansible plays.
-    Hosts, tasks and results are childrens of an Ansible play.
+    Hosts, tasks and results are children of an Ansible play.
     """
 
     class Meta:
