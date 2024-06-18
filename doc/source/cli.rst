@@ -23,7 +23,7 @@ Examples:
 
 .. code-block:: bash
 
-    # Return which objects would be expired by ommitting --confirm
+    # Return which objects would be expired by omitting --confirm
     ara expire
 
     # Expire running objects without updates faster than the default
@@ -140,7 +140,7 @@ Examples:
 
 .. code-block:: bash
 
-    # Return which playbooks would be deleted by ommitting --confirm
+    # Return which playbooks would be deleted by omitting --confirm
     ara playbook prune
 
     # Different retention for completed, failed and expired playbooks

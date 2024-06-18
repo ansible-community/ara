@@ -153,7 +153,7 @@ ARA_BASE_PATH
 The URL path under which ARA should get deployed.
 
 By default this is empty, meaning that ARA will listen directly on ``/``.
-This setting can be used in conjuntion with a reverse proxy to deploy ARA
+This setting can be used in conjunction with a reverse proxy to deploy ARA
 on sub paths without having the reverse proxy to rewrite all URLs in the
 generated HTML.
 
