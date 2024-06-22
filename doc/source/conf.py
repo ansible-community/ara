@@ -29,7 +29,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "ara"
-copyright = "2022, ARA Records Ansible authors"
+copyright = "2024, ARA Records Ansible authors"
 author = "ARA Records Ansible authors"
 
 # The short X.Y version.

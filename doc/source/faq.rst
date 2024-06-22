@@ -1,3 +1,5 @@
+.. _faq:
+
 FAQ
 ===
 
@@ -7,8 +9,8 @@ Where is the source code ?
 ARA is currently composed of three different free and open source projects:
 
 - https://github.com/ansible-community/ara for the REST API server and Ansible plugins
-- https://github.com/ansible-community/ara-web for the standalone web interface
 - https://github.com/ansible-community/ara-infra for project-specific infrastructure needs (such as the `ara.recordsansible.org <https://ara.recordsansible.org>`_ website)
+- https://github.com/ansible-community/ara-collection for the Ansible collection of ara
 
 What's an Ansible callback ?
 ----------------------------
@@ -75,16 +77,20 @@ Can I set up the different components of ARA on different servers ?
 
 Yes.
 
-The defaults are set to have the callback use the offline API client which
-expects the server dependencies installed and the data is saved to a local
-sqlite database.
+By default ara operates "offline" on localhost, recording Ansible playbook results
+to a local sqlite database without requiring users to start a server.
 
-However, the callback can also be configured to send data to a specified API
-server address and the API server can be configured to use a remote database
-server such as PostgreSQL or MySQL.
+According to preference or use case, the data can be saved to local (or remote)
+MySQL or PostgreSQL databases instead.
 
-The web client interface provided by ara-web_ is stateless and requires an API
-server address to connect to.
-It can be installed anywhere that has access to the API server.
+The ara server (based on django & django-rest-framework) provides the reporting
+interface as well as the API used by the ara Ansible plugins.
 
-.. _ara-web: https://github.com/ansible-community/ara-web
+The server's state is stored in the database and it can be self hosted anywhere.
+Running multiple servers allows for load balancing, scalability and high availability.
+
+To make use of a persistent server, configure the ara Ansible plugins with:
+
+- ``export ARA_API_CLIENT=http``
+- ``export ARA_API_SERVER=http://ara.example.org``
+
