@@ -3,16 +3,6 @@ sphinx>=1.4
 sphinx-rtd-theme
 sphinxcontrib-programoutput
 
-# For ara cli's programoutput
-cliff
-
-# For ara-manage cli's programoutput, we need to include server extra dependencies from setup.cfg
-Django>=3.2,<4.3
-djangorestframework>=3.9.1
-django-cors-headers
-django-filter
-django-health-check
-dynaconf[yaml]
-tzlocal
-whitenoise
-pygments
+# the docs include snippets from ara --help commands
+# ara needs to be installed so sphinxcontrib-programoutput can retrieve them
+ara[server]
