@@ -474,6 +474,26 @@ Examples:
     # Aggregate metrics by task file rather than action
     ara task metrics --aggregate path
 
+ara prometheus
+--------------
+
+.. command-output:: ara prometheus --help
+
+Also read: `documentation on prometheus <prometheus>`_.
+
+Examples:
+
+.. code-block:: bash
+
+    # Start a prometheus exporter on the default address (http://0.0.0.0:8001/metrics)
+    # Then, backfill metrics from the last 365 days until now
+    # Then, poll every 30s for new metrics
+    ara prometheus --max-days 365 --poll 30
+
+    # When gathering metrics, customize the number of items returned in each page of results
+    # from the API based on instance size and performance expectations
+    ara prometheus --playbook-limit 500 --task-limit 1000 --host-limit 1000
+
 CLI: ara-manage (django API server)
 ===================================
 
