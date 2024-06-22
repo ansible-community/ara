@@ -1,3 +1,5 @@
+.. _troubleshooting:
+
 Troubleshooting
 ===============
 
@@ -27,7 +29,7 @@ In order to retrieve the tracebacks, run these commands with increased verbosity
     # ...
     TASK [Gathering Facts] *****************************************************
     [WARNING]: Failure using method (v2_playbook_on_task_start) in callback plugin (<ansible.plugins.callback.ara_default.CallbackModule object at 0x7f1e7fd5ce50>):
-    Callback Exception: 
+    Callback Exception:
       File "/usr/lib/python3.9/site-packages/ansible/executor/task_queue_manager.py", line 389, in send_callback
         method(*new_args, **kwargs)
       File "/usr/lib/python3.9/site-packages/ara/plugins/callback/ara_default.py", line 354, in v2_playbook_on_task_start

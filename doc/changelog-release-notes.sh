@@ -23,6 +23,7 @@ function smallheader() {
 
 echo ".."
 echo "  note: generated through doc/changelog-release-notes.sh"
+echo ".. _changelog-release-notes:"
 echo
 
 header "Changelog and release notes"
