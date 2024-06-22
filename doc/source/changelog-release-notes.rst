@@ -1,5 +1,6 @@
 ..
   note: generated through doc/changelog-release-notes.sh
+.. _changelog-release-notes:
 
 Changelog and release notes
 ***************************
