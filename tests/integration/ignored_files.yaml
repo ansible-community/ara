@@ -100,6 +100,14 @@
           # Playbook, role or task files must be recorded (to maintain relationships between objects) but they must be censored
           - _ignored_task['count'] == 1
           - _with_content['content'] == "Not saved by ARA as configured by 'ignored_files'"
+
+    # TODO: Find out whether we should explicitly save vars_files and adjust accordingly moving forward
+    # Some vars_files are seemingly no longer being picked up after ansible-core 2.17
+    # https://github.com/ansible-community/ara/issues/560
+    - name: Validate vars_files with ansible-core <=2.17.0
+      when: ansible_version.full is version("2.17.0", "<=")
+      assert:
+        that:
           # Variable files included via vars_files are in the play context and are recorded by ara
           - _verysecret['count'] == 1
           - "'vars/verysecret.yaml' in _verysecret['results'][0]['path']"
