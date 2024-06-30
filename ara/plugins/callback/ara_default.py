@@ -8,6 +8,7 @@ import getpass
 import json
 import logging
 import os
+import signal
 import socket
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -326,6 +327,27 @@ class CallbackModule(CallbackBase):
         self.task_cache = {}
         self.delegation_cache = {}
         self.warned_about_host_length = []
+
+        self.set_handler(signal.SIGINT)
+        self.set_handler(signal.SIGTERM)
+
+    def set_handler(self, sig):
+        original_handler = signal.getsignal(sig)
+
+        def handler(sig, frame):
+            ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            status = "failed"
+            self.client.patch(
+                "/api/v1/playbooks/%s" % self.playbook["id"],
+                status=status,
+                ended=ended,
+            )
+            if original_handler:
+                original_handler(sig, frame)
+            else:
+                sys.exit(128 + sig)
+
+        signal.signal(sig, handler)
 
     def set_options(self, task_keys=None, var_options=None, direct=None):
         super().set_options(task_keys=task_keys, var_options=var_options, direct=direct)
