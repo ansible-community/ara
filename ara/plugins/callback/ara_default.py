@@ -336,7 +336,7 @@ class CallbackModule(CallbackBase):
 
         def handler(sig, frame):
             ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
-            status = "failed"
+            status = "expired"
             self.client.patch(
                 "/api/v1/playbooks/%s" % self.playbook["id"],
                 status=status,
