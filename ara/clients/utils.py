@@ -22,7 +22,7 @@ def get_client(
     """
     auth = None
     if username is not None and password is not None:
-        auth = HTTPBasicAuth(username, password)
+        auth = HTTPBasicAuth(username.encode('utf-8'), password.encode('utf-8'))
 
     # Verify can be a bool (to ignore SSL verification or not)
     # or the path to a certificate authority
