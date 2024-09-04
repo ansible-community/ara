@@ -5,6 +5,59 @@
 Changelog and release notes
 ***************************
 
+1.7.2 (2024-08-29)
+##################
+
+https://github.com/ansible-community/ara/releases/tag/1.7.2
+
+.. code-block:: text
+
+    This is the 1.7.2 stable release of ara.
+    
+    1.7.2 is a maintenance and bugfix release that includes a few new features.
+    
+    Changes since 1.7.1:
+    
+    UI
+    --
+    
+    - When recording diffs, properly format and display the "prepared" key
+      for the modules that use it (apt, git, cli_config and others)
+    - Sorting task results by duration when browsing playbook results works once again
+    - Updated bootstrap css from 5.3.0 to 5.3.3
+    
+    Callback plugin
+    ---------------
+    
+    - Catch SIGINT and SIGTERM signals resulting in the interruption of playbooks to
+      set the status of the playbook to "expired" instead of keeping it running forever
+      unless expired with `ara playbook expire` from the CLI.
+    
+    API Client
+    ----------
+    
+    - Add support for UTF-8 encoded usernames and passwords
+    
+    Docs
+    ----
+    
+    - Add .readthedocs.yaml to fix broken documentation builds
+    - Formally include ara as a dependency in order to include --help commands in the docs
+    - Added an introduction page
+    
+    Maintenance and packaging
+    -------------------------
+    
+    - Made dependency on ruamel.yaml explicit rather than implicit
+    - Update usage of logging.warn to logging.warning for
+      python 3.13
+    - Updated versions of Ansible tested in CI to Ansible 10 and ansible-core 2.17
+    
+    Upgrade notes
+    -------------
+    
+    There are no API changes or SQL migrations in this release.
+
 1.7.1 (2024-02-06)
 ##################
 
