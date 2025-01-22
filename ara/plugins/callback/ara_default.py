@@ -518,6 +518,16 @@ class CallbackModule(CallbackBase):
                 labels.extend(play_vars["ara_playbook_labels"].split(","))
             else:
                 raise TypeError("ara_playbook_labels must be a list or a comma-separated string")
+
+        for host in play_vars["ansible_play_hosts"]:
+            if "ara_playbook_labels" in play_vars["hostvars"][host]:
+                if isinstance(play_vars["hostvars"][host]["ara_playbook_labels"], list):
+                    labels.extend(play_vars["hostvars"][host]["ara_playbook_labels"])
+                elif isinstance(play_vars["hostvars"][host]["ara_playbook_labels"], str):
+                    labels.extend(play_vars["hostvars"][host]["ara_playbook_labels"].split(","))
+                else:
+                    raise TypeError("ara_playbook_labels must be a list or a comma-separated string")
+
         if labels:
             self._submit_thread("global", self._set_playbook_labels, labels)
 
