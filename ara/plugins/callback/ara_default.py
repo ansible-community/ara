@@ -8,9 +8,11 @@ import getpass
 import json
 import logging
 import os
+import re
 import signal
 import socket
 import sys
+from collections.abc import MutableMapping
 from concurrent.futures import ThreadPoolExecutor
 
 from ansible import __version__ as ANSIBLE_VERSION, constants as C
@@ -190,6 +192,21 @@ options:
     ini:
       - section: ara
         key: ignored_files
+  ignored_results:
+    description:
+      - List of regexes which are matched against variable paths
+      - Paths consist of the task_action (as defined in your playbook) and the variables used by the task.
+      - "Example: '<task_action>:<dict_path>' -> 'ansible.builtin.user:invocation.password'"
+      - This regex 'ansible\.builtin\.user:invocation\.password' would remove the password from the result
+        and replace it with a message
+      - Ensure that each '.' in the variable path is escaped with '\.'
+    type: list
+    default: []
+    env:
+      - name: ARA_IGNORED_RESULTS
+    ini:
+      - section: ara
+        key: ignored_results
   localhost_as_hostname:
     description:
         - Associates results to the hostname (or fqdn) instead of localhost when the inventory name is localhost
@@ -312,6 +329,7 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = []
         self.ignored_arguments = []
         self.ignored_files = []
+        self.ignored_results = []
         self.localhost_as_hostname = None
         self.localhost_as_hostname_format = None
 
@@ -357,6 +375,7 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = self.get_option("ignored_facts")
         self.ignored_arguments = self.get_option("ignored_arguments")
         self.ignored_files = self.get_option("ignored_files")
+        self.ignored_results = self.get_option("ignored_results")
         self.localhost_as_hostname = self.get_option("localhost_as_hostname")
         self.localhost_as_hostname_format = self.get_option("localhost_as_hostname_format")
         self.record_controller = self.get_option("record_controller")
@@ -415,6 +434,38 @@ class CallbackModule(CallbackBase):
             threads.submit(func, *args, **kwargs)
         else:
             func(*args, **kwargs)
+
+    def _flatten_dict(self, dictionary, prefix="", parent_key="", separator=".", prefix_separator=":"):
+        items = []
+        for key, value in dictionary.items():
+            new_key = parent_key + separator + key if parent_key else key
+            if isinstance(value, MutableMapping):
+                items.extend(
+                    self._flatten_dict(
+                        value, prefix=prefix, parent_key=new_key, separator=separator, prefix_separator=prefix_separator
+                    ).items()
+                )
+            else:
+                items.append(((prefix + prefix_separator + new_key if prefix else new_key), value))
+        return dict(items)
+
+    def _update_dict(self, dictionary, path, new_value, prefix="", parent_key="", separator=".", prefix_separator=":"):
+        for key, value in dictionary.items():
+            new_key = parent_key + separator + key if parent_key else key
+            if path == (prefix + prefix_separator + new_key if prefix else new_key):
+                dictionary[key] = new_value
+            else:
+                if isinstance(value, MutableMapping):
+                    dictionary[key] = self._update_dict(
+                        value,
+                        path,
+                        new_value,
+                        prefix=prefix,
+                        parent_key=new_key,
+                        separator=separator,
+                        prefix_separator=prefix_separator,
+                    )
+        return dictionary
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
@@ -835,6 +886,17 @@ class CallbackModule(CallbackBase):
             results = json.loads(jsonified)
         else:
             results = {}
+
+        flattened_results = self._flatten_dict(results, prefix=self.task["action"])
+        for result_name in flattened_results:
+            if any(re.match(regex, result_name) for regex in self.ignored_results):
+                self.log.debug("Ignoring result: %s" % result_name)
+                results = self._update_dict(
+                    results,
+                    result_name,
+                    "Not saved by ARA as configured by 'ignored_results'",
+                    prefix=self.task["action"],
+                )
 
         # Sanitize facts
         if "ansible_facts" in results:
