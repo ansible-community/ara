@@ -1,5 +1,5 @@
 #!/bin/bash -x
-# Copyright (c) 2023 The ARA Records Ansible authors
+# Copyright (c) 2025 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-devel"
 
@@ -14,7 +14,7 @@ python3 setup.py sdist
 sdist=$(ls dist/ara-*.tar.gz)
 popd
 
-build=$(buildah from quay.io/fedora/fedora:40)
+build=$(buildah from quay.io/fedora/fedora:41)
 
 # Ensure everything is up to date and install requirements
 buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-wheel postgresql libpq mariadb-connector-c"
