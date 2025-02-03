@@ -78,12 +78,12 @@ or with the [container images](https://ara.readthedocs.io/en/latest/container-im
 mkdir -p ~/.ara/server
 
 # Start an API server with docker from the image on DockerHub:
-docker run --name api-server --detach --tty \
+docker run --name ara-api --detach --tty \
   --volume ~/.ara/server:/opt/ara -p 8000:8000 \
   docker.io/recordsansible/ara-api:latest
 
 # or with podman from the image on quay.io:
-podman run --name api-server --detach --tty \
+podman run --name ara-api --detach --tty \
   --volume ~/.ara/server:/opt/ara -p 8000:8000 \
   quay.io/recordsansible/ara-api:latest
 ```
