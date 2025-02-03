@@ -84,7 +84,7 @@ persist inside a volume and then start the container:
 .. code-block:: bash
 
     $ mkdir -p ~/.ara/server
-    $ podman run --name api-server --detach --tty \
+    $ podman run --name ara-api --detach --tty \
          --volume ~/.ara/server:/opt/ara:z -p 8000:8000 \
          localhost/ara-api
     bc4b7630c265bdac161f2e08116f3f45c2db519fb757ddf865bb0f212780fa8d
@@ -95,9 +95,9 @@ You can validate if the container is running properly with podman:
 
     $ podman ps
     CONTAINER ID  IMAGE                     COMMAND               CREATED         STATUS             PORTS                   NAMES
-    bc4b7630c265  localhost/ara-api:latest  /usr/bin/gunicorn...  12 seconds ago  Up 11 seconds ago  0.0.0.0:8000->8000/tcp  api-server
+    bc4b7630c265  localhost/ara-api:latest  /usr/bin/gunicorn...  12 seconds ago  Up 11 seconds ago  0.0.0.0:8000->8000/tcp  ara-api
 
-    $ podman logs api-server
+    $ podman logs ara-api
     [ara] No setting found for SECRET_KEY. Generating a random key...
     [ara] Writing default settings to /opt/ara/settings.yaml
     [ara] Using settings file: /opt/ara/settings.yaml
@@ -179,7 +179,7 @@ effective after a container restart:
 
 .. code-block:: bash
 
-    podman restart api-server
+    podman restart ara-api
 
 See the `documentation <https://ara.readthedocs.io/en/latest/api-configuration.html>`_
 for the full list of available options.
@@ -219,7 +219,7 @@ an upgrade, the command ``ara-manage migrate`` can be run from inside the contai
 
 .. code-block:: bash
 
-    $ podman exec -it api-server ara-manage migrate
+    $ podman exec -it ara-api ara-manage migrate
     [ara] Using settings file: /opt/ara/settings.yaml
     Operations to perform:
     Apply all migrations: admin, api, auth, contenttypes, db, sessions
