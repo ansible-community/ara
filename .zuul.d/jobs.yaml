@@ -113,22 +113,13 @@
         override-checkout: devel
 
 - job:
-    name: ara-basic-ansible-10
+    name: ara-basic-ansible-11
     parent: ara-ansible-integration-base
     description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 10 (ansible-core 2.17).
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible 11 (ansible-core 2.18).
     vars:
       ara_tests_ansible_name: ansible
-      ara_tests_ansible_version: 10.0.1
-
-- job:
-    name: ara-basic-ansible-core-2.16
-    parent: ara-ansible-integration-base
-    description: |
-      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.16.
-    required-projects:
-      - name: github.com/ansible/ansible
-        override-checkout: stable-2.16
+      ara_tests_ansible_version: 11.2.0
 
 - job:
     name: ara-basic-ansible-core-2.17
@@ -139,3 +130,11 @@
       - name: github.com/ansible/ansible
         override-checkout: stable-2.17
 
+- job:
+    name: ara-basic-ansible-core-2.18
+    parent: ara-ansible-integration-base
+    description: |
+      Runs basic integration tests through the equivalent of "tox -e ansible-integration" with ansible-core 2.18.
+    required-projects:
+      - name: github.com/ansible/ansible
+        override-checkout: stable-2.18
