@@ -115,3 +115,23 @@
     width: 25px;
     text-align: center;
 }
+
+/*
+ * Auto-refresh styling
+*/
+/* Spin and color the refresh arrow */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.refresh-spin {
+  animation: spin 1s linear infinite;
+  color: RGBA(34,181,115,var(--bs-bg-opacity,1)) !important;
+}
+
+/* Make the disabled list header more subtle instead of bright blue */
+.dropdown-item.active[data-refresh-interval="0"] {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-body-color);
+}
