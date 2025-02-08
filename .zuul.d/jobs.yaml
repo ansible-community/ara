@@ -2,21 +2,21 @@
 - job:
     name: ara-tox-py3
     parent: tox
-    nodeset: ara-fedora-39
+    nodeset: ara-fedora-41
     vars:
       tox_envlist: py3
 
 - job:
     name: ara-tox-linters
     parent: tox
-    nodeset: ara-fedora-39
+    nodeset: ara-fedora-41
     vars:
       tox_envlist: linters
 
 - job:
     name: ara-tox-docs
     parent: base
-    nodeset: ara-fedora-39
+    nodeset: ara-fedora-41
     files:
       - doc/*
     run: tests/zuul_docs.yaml
@@ -44,7 +44,7 @@
 - job:
     name: ara-integration-container-base
     parent: ara-integration-base
-    nodeset: ara-fedora-39
+    nodeset: ara-fedora-41
     files:
       - ara/*
       - manage.py
