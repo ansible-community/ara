@@ -838,10 +838,17 @@ class CallbackModule(CallbackBase):
 
         # Sanitize facts
         if "ansible_facts" in results:
-            for fact in self.ignored_facts:
-                if fact in results["ansible_facts"]:
-                    self.log.debug("Ignoring fact: %s" % fact)
-                    results["ansible_facts"][fact] = "Not saved by ARA as configured by 'ignored_facts'"
+            ignored_facts_hint = "Not saved by ARA as configured by 'ignored_facts'"
+
+            if "all" in self.ignored_facts:
+                self.log.debug("Ignoring all facts")
+                results["ansible_facts"] = {"all": ignored_facts_hint}
+
+            else:
+                for fact in self.ignored_facts:
+                    if fact in results["ansible_facts"]:
+                        self.log.debug("Ignoring fact: %s" % fact)
+                        results["ansible_facts"][fact] = ignored_facts_hint
 
         # Note: ignore_errors might be None instead of a boolean
         ignore_errors = kwargs.get("ignore_errors", False) or False
