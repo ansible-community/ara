@@ -161,7 +161,9 @@ options:
       - section: ara
         key: default_labels
   ignored_facts:
-    description: List of host facts that will not be saved by ARA
+    description:
+      - List of host facts that will not be saved by ARA
+      - Every fact can be ignored by specifying 'all'
     type: list
     default: ["ansible_env"]
     env:

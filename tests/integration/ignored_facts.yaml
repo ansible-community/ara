@@ -1,0 +1,62 @@
+---
+# Copyright (c) 2025 The ARA Records Ansible authors
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+# Note: expects the following to be set:
+#   export ARA_IGNORED_FACTS=all
+#   export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
+#   export ANSIBLE_ACTION_PLUGINS=$(python3 -m ara.setup.action_plugins)
+#   export ANSIBLE_LOOKUP_PLUGINS=$(python3 -m ara.setup.lookup_plugins)
+
+- name: assert that facts are ignored properly
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Save the playbook id so we can re-use it easily
+      set_fact:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+
+    - name: Recover data from ARA
+      set_fact:
+        hosts: "{{ lookup('ara_api', '/api/v1/hosts?playbook=' + playbook_id) }}"
+
+    - name: Assert that the host doesn't have any facts so far
+      vars:
+        host: "{{ lookup('ara_api', '/api/v1/hosts/' + hosts['results'][0]['id'] | string) }}"
+      assert:
+        that:
+          - host['name'] == 'localhost'
+          - host['facts'].keys() | length == 0
+
+    - name: Get some facts
+      setup:
+        gather_subset:
+          - '!all'
+          - '!any'
+          - kernel
+          - python
+
+    - name: Assert that we have collected the facts
+      assert:
+        that:
+          - "'kernel' in ansible_facts"
+          - "'kernel_version' in ansible_facts"
+          - "'python' in ansible_facts"
+          - "'python_version' in ansible_facts"
+
+    - name: Print facts for assertion
+      debug:
+        msg: "{{ ansible_facts }}"
+
+    - name: Assert that facts have not been saved
+      vars:
+        host: "{{ lookup('ara_api', '/api/v1/hosts/' + hosts['results'][0]['id'] | string) }}"
+      assert:
+        that:
+          - host['name'] == 'localhost'
+          - host['facts'].keys() | length == 1
+          - host['facts']['all'] == "Not saved by ARA as configured by 'ignored_facts'"
