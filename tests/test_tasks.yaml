@@ -115,6 +115,16 @@
         executable: /bin/bash
       ignore_errors: yes
 
+    - name: Run ignored_files tests
+      environment:
+        ANSIBLE_VAULT_PASSWORD_FILE: "{{ _test_root }}/vault_password_file"
+      command: "ansible-playbook -vvv {{ _test_root }}/ignored_files.yaml"
+
+    - name: Run ignored_facts tests
+      environment:
+        ARA_IGNORED_FACTS: all
+      command: "ansible-playbook -vvv {{ _test_root }}/ignored_facts.yaml"
+
     - name: Generate static report
       command: ara-manage generate {{ ara_api_root_dir }}/server/static
 
