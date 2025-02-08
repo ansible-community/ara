@@ -76,6 +76,24 @@
         <li class="nav-item">
           <a class="nav-link" href="#" role="button" data-bs-toggle="modal" data-bs-target="#aboutModal">About</a>
         </li>
+        <li class="nav-item dropdown">
+          <button class="btn btn-link nav-link pt-2" type="button" data-bs-toggle="dropdown" title="Toggle Auto Refresh" aria-label="Toggle Auto Refresh" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" id="refresh-icon" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+            <span id="refresh-badge" class="badge rounded-pill bg-secondary ms-2"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" id="auto-refresh">
+            <li><span class="dropdown-header text-bg-ara" title="(another recursive acronym)">Auto Refresh</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" data-refresh-interval="0">Disabled</button></li>
+            <li><button class="dropdown-item" data-refresh-interval="15">15s</button></li>
+            <li><button class="dropdown-item" data-refresh-interval="30">30s</button></li>
+            <li><button class="dropdown-item" data-refresh-interval="60">1m</button></li>
+            <li><button class="dropdown-item" data-refresh-interval="300">5m</button></li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
@@ -94,5 +112,8 @@
     {% endblock body %}
   </div>
 </main>
+
+{% static 'js/auto-refresh.js' as auto_refresh_js_url %}
+<script src="{% static_url auto_refresh_js_url %}"></script>
 </body>
 </html>
