@@ -1,48 +1,86 @@
-{% load pygments_highlights %}
-<div class="accordion" id="host_facts">
-  <div class="card">
-    <div class="card-header bg-body-tertiary" id="host_facts_card">
-      <button class="btn ara-card-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_host_facts" aria-expanded="true" aria-controls="collapse_host_facts">
-        <h4>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-            <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-          </svg>
-          Host facts: {{ host.name | truncatechars:150 }}
-        </h4>
-      </button>
-    </div>
-    <div id="collapse_host_facts" class="collapse show" aria-labelledby="host_facts_card" data-bs-parent="#host_facts" style="overflow-y: auto;">
-      <div class="card-body">
-        {% if host.facts.items %}
-        <div class="table-responsive">
-          <table class="table table-sm table-hover">
-            <thead>
-            <tr>
-              <th style="width:20%;">Fact</th>
-              <th style="width:80%;">Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for fact, value in host.facts.items %}
-              <tr>
-                <td id="{{ fact }}" data-label="{{ fact }}">
-                  <a href="#{{ fact }}">{{ fact }}</a>
-                </td>
-                {# Some facts are VERY LONG uninterrupted single lines (looking at you ansible_ssh_host_key_rsa_public) #}
-                <td data-label="Value" style="max-width:400px;">
-                  {{ value | format_data | safe }}
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
+{% load datetime_formatting %}
+<div class="row">
+    <!-- Left side -->
+    <div class="col-md-6">
+        <div class="card">
+          <h5 class="card-header">System Information: {{ host.facts.ansible_fqdn }}</h5>
+            <div class="card-body">
+              <ul>
+                <li><strong>Uptime: </strong>{{ host.facts.ansible_uptime_seconds | duration_from_seconds }}</li>
+                <li><strong>Load average: </strong>{{ host.facts.ansible_loadavg.15m | floatformat:2 }}, {{ host.facts.ansible_loadavg.5m | floatformat:2 }}, {{ host.facts.ansible_loadavg.1m | floatformat:2 }}</li>
+                <li><strong>Processor: </strong>{{ host.facts.ansible_processor.2 }} ({{ host.facts.ansible_processor_cores }} cores, {{ host.facts.ansible_processor_nproc }} threads)</li>
+                <li><strong>OS: </strong>{{ host.facts.ansible_distribution }} {{ host.facts.ansible_distribution_version }}</li>
+                <li><strong>Kernel: </strong>{{ host.facts.ansible_kernel }}</li>
+                <li><strong>Python: </strong>{{ host.facts.ansible_python.version.major }}.{{ host.facts.ansible_python.version.minor }}.{{ host.facts.ansible_python.version.micro }}</li>
+                <li><strong>Default ipv4: </strong>{{ host.facts.ansible_default_ipv4.address }} on {{ host.facts.ansible_default_ipv4.interface }} ({{ host.facts.ansible_default_ipv4.macaddress }})</li>
+                <li><strong>Default ipv6: </strong>{{ host.facts.ansible_default_ipv6.address }} on {{ host.facts.ansible_default_ipv6.interface }} ({{ host.facts.ansible_default_ipv6.macaddress }})</li>
+            </div>
         </div>
-        {% else %}
-        <p>No recorded host facts found.</p>
-        <p>Host facts are saved automatically when the <code>setup</code> module is used or when <code>gather_facts: true</code> is set.</p>
-        {% endif %}
-      </div>
     </div>
-  </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Memory</h5>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="type"></th>
+                                <th scope="col">total</th>
+                                <th scope="col">used</th>
+                                <th scope="col">free</th>
+                                <th scope="col">buff/cache</th>
+                                <th scope="col">available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mem:</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.real.total }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.real.used }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.real.free }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.nocache.free }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.nocache.used }} MB</td>
+                            </tr>
+                           <tr>
+                                <td>Swap:</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.swap.total }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.swap.used }} MB</td>
+                                <td class="align-middle">{{ host.facts.ansible_memory_mb.swap.free }} MB</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">Disk Partitions</h5>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Filesystem</th>
+                                <th scope="type">Type</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Available</th>
+                                <th scope="col">Mounted on</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mount in host.facts.ansible_mounts %}
+                            <tr>
+                                <td class="align-middle">{{ mount.device }}</td>
+                                <td class="align-middle">{{ mount.fstype }}</td>
+                                <td class="align-middle">{{ mount.size_total | filesizeformat }}</td>
+                                <td class="align-middle">{{ mount.size_available | filesizeformat }}</td>
+                                <td class="align-middle">{{ mount.mount }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
