@@ -149,6 +149,48 @@ or through the environment variable ``ARA_ARGUMENT_LABELS``:
 
     export ARA_ARGUMENT_LABELS=check,subset,tags
 
+ara_label: managing labels on playbooks
+---------------------------------------
+
+The ``ara_label`` Ansible action plugin can be enabled by :ref:`configuring Ansible <ansible-configuration>` with the
+``ANSIBLE_ACTION_PLUGINS`` environment variable or the ``action_plugins`` setting in an ``ansible.cfg`` file.
+
+It provides another way to manage labels on playbooks recorded by ara from within your playbooks:
+
+.. code-block:: yaml
+
+  - name: Add a static label to this playbook (the one that is running)
+    # Note: By default Ansible will run this task on every host.
+    # Consider the use case and declare 'run_once: true' when there is no need to
+    # run this task more than once.
+    # This might sound obvious but it avoids updating the same labels 100 times
+    # if there are 100 hosts, incurring a performance penalty needlessly.
+    run_once: true
+    ara_label:
+      state: present
+      labels:
+        - state:running
+
+  - name: Add dynamically templated labels to this playbook
+    ara_label:
+      state: present
+      labels:
+        - "git:{{ lookup('git -C {{ playbook_dir }} rev-parse HEAD') }}"
+        - "os:{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+
+  - name: Add labels to a specific playbook
+    ara_label:
+      state: present
+      playbook_id: 1
+      labels:
+        - state:deployed
+
+  - name: Remove labels from the running playbook (if they exist)
+    ara_label:
+      state: absent
+      labels:
+        - state:running
+
 ara_api: free-form API queries
 ------------------------------
 
