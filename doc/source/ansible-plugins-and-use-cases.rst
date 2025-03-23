@@ -93,6 +93,8 @@ or as extra-vars:
         -e ara_playbook_name="deploy prod" \
         -e ara_playbook_labels=deploy,prod
 
+You can also set the :code:`ara_playbook_labels` variable in your inventory. In that case all configured labels of the processed hosts are set.
+
 Once set, they can be searched for in the UI, the API:
 
 - ``/api/v1/playbooks?name=prod``
