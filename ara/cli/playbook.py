@@ -117,6 +117,7 @@ class PlaybookList(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -247,6 +248,7 @@ class PlaybookShow(ShowOne):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -308,6 +310,7 @@ class PlaybookDelete(Command):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -426,6 +429,7 @@ class PlaybookPrune(Command):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -600,6 +604,7 @@ class PlaybookMetrics(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,

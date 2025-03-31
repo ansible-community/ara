@@ -108,6 +108,7 @@ class ResultList(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -227,6 +228,7 @@ class ResultShow(ShowOne):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -314,6 +316,7 @@ class ResultDelete(Command):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,

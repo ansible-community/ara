@@ -99,6 +99,7 @@ class TaskList(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -209,6 +210,7 @@ class TaskShow(ShowOne):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -267,6 +269,7 @@ class TaskDelete(Command):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -371,6 +374,7 @@ class TaskMetrics(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,

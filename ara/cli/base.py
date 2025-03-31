@@ -28,6 +28,12 @@ def global_arguments(parser):
         help=("API server endpoint if using http client, defaults to ARA_API_SERVER or 'http://127.0.0.1:8000'"),
     )
     parser.add_argument(
+        "--base-path",
+        metavar="<url/path>",
+        default=os.environ.get("ARA_BASE_PATH", "/"),
+        help=("URL path under which ARA API server is deployed if using http client, defaults to ARA_BASE_PATH or '/'"),
+    )
+    parser.add_argument(
         "--timeout",
         metavar="<seconds>",
         default=os.environ.get("ARA_API_TIMEOUT", 30),

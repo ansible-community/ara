@@ -123,6 +123,7 @@ class HostList(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -222,6 +223,7 @@ class HostShow(ShowOne):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -294,6 +296,7 @@ class HostDelete(Command):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,
@@ -399,6 +402,7 @@ class HostMetrics(Lister):
         client = get_client(
             client=args.client,
             endpoint=args.server,
+            basepath=args.base_path,
             timeout=args.timeout,
             username=args.username,
             password=args.password,

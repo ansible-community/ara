@@ -4,6 +4,7 @@
 import json
 import logging
 import weakref
+from urllib.parse import urljoin
 
 import requests
 import urllib3
@@ -13,10 +14,11 @@ from ara.setup import ara_version
 
 
 class HttpClient:
-    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
+    def __init__(self, endpoint="http://127.0.0.1:8000", basepath="/", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
 
         self.endpoint = endpoint.rstrip("/")
+        self.basepath = basepath
         self.auth = auth
         self.cert = cert
         self.timeout = int(timeout)
@@ -41,7 +43,8 @@ class HttpClient:
         # The actual endpoint is:
         # <endpoint>              <url>
         # http://127.0.0.1:8000 / api/v1/playbooks
-        return self.http.request(method, self.endpoint + url, timeout=self.timeout, **payload)
+        url_join = urljoin(self.endpoint, f"{self.basepath.strip('/')}/{url.lstrip('/')}")
+        return self.http.request(method, url_join, timeout=self.timeout, **payload)
 
     def get(self, url, **payload):
         if payload:
@@ -63,15 +66,21 @@ class HttpClient:
 
 
 class AraHttpClient:
-    def __init__(self, endpoint="http://127.0.0.1:8000", auth=None, cert=None, timeout=30, verify=True):
+    def __init__(self, endpoint="http://127.0.0.1:8000", basepath="/", auth=None, cert=None, timeout=30, verify=True):
         self.log = logging.getLogger(__name__)
         self.endpoint = endpoint
+        self.basepath = basepath
         self.auth = auth
         self.cert = cert
         self.timeout = int(timeout)
         self.verify = verify
         self.client = HttpClient(
-            endpoint=self.endpoint, timeout=self.timeout, auth=self.auth, cert=self.cert, verify=self.verify
+            endpoint=self.endpoint,
+            basepath=self.basepath,
+            timeout=self.timeout,
+            auth=self.auth,
+            cert=self.cert,
+            verify=self.verify,
         )
         active_client._instance = weakref.ref(self)
 
