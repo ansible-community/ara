@@ -124,7 +124,7 @@
 
         <td class="text-center">
           {% if not static_generation %}
-            <a href="{% url 'ui:host_index' %}?playbook={{ playbook.id }}" title="Search for hosts in this playbook">{{ playbook.items.hosts }}</a>
+            <a href="{% url 'ui:host_index' %}?playbook={{ playbook.id }}&latest=false" title="Search for hosts in this playbook">{{ playbook.items.hosts }}</a>
           {% else %}
             {{ playbook.items.hosts }}
           {% endif %}
