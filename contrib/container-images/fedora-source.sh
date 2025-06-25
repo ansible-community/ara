@@ -1,11 +1,11 @@
 #!/bin/bash -x
 # Copyright (c) 2025 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-devel"
+DEV_DEPENDENCIES="gcc python3-devel postgresql-devel libpq-devel mariadb-devel"
 
 # Builds an ARA API server container image from checked out source on Fedora 40.
 # Figure out source directory relative to the contrib/container-images directory
-SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
+SCRIPT_DIR=$(cd $(dirname $0) && pwd -P)
 SOURCE_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd -P)
 
 # Clone the source to a temporary directory and generate an sdist tarball we can install from

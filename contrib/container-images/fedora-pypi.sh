@@ -1,7 +1,7 @@
 #!/bin/bash -x
 # Copyright (c) 2025 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-devel"
+DEV_DEPENDENCIES="gcc python3-devel postgresql-devel libpq-devel mariadb-devel"
 
 # Builds an ARA API server container image using the latest PyPi packages on Fedora 40.
 build=$(buildah from quay.io/fedora/fedora:41)
