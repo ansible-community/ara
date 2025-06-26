@@ -21,7 +21,7 @@ def get_client(
     Returns a specified client configuration or one with sane defaults.
     """
     auth = None
-    if username is not None and password is not None:
+    if all(cred is not None and cred != "" for cred in [username, password]):
         auth = HTTPBasicAuth(username.encode("utf-8"), password.encode("utf-8"))
 
     # Verify can be a bool (to ignore SSL verification or not)
