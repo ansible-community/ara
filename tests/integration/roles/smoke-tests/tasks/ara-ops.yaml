@@ -191,13 +191,17 @@
   ara_label:
     state: present
     labels:
-      - "git:{{ lookup('pipe', 'git -C {{ playbook_dir }} rev-parse HEAD') }}"
+      - "sha:{{ lookup('pipe', 'git -C {{ playbook_dir }} rev-parse HEAD') }}"
       - "os:{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+
+- name: Get the oldest playbook to put labels on
+  set_fact:
+    query: "{{ lookup('ara_api', '/api/v1/playbooks?order=started&limit=1') }}"
 
 - name: Add labels to a specific playbook
   ara_label:
     state: present
-    playbook_id: 1
+    playbook_id: "{{ query.results[0].id }}"
     labels:
       - "state:deployed"
 

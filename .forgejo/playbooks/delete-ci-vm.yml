@@ -1,0 +1,7 @@
+- name: Tear down OpenStack VM
+  hosts: localhost
+  tasks:
+    - name: Delete instance
+      openstack.cloud.server:
+        name: "ci-{{ lookup('env', 'GITHUB_SHA') | default('ara') }}"
+        state: absent

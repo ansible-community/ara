@@ -1,0 +1,5 @@
+os_keypair_name: instances
+os_flavor: ci.4cpu_8gb_25gb
+os_image: fedora-42
+os_network: private_ci_network
+os_security_group: default

@@ -1,0 +1,83 @@
+- name: Create an OpenStack VM for CI
+  hosts: localhost
+  pre_tasks:
+    # These are used to give a name to the created VM
+    # and check out the pull request.
+    - name: Prepare facts
+      ansible.builtin.set_fact:
+        # ex: https://codeberg.org
+        _git_server: "{{ lookup('env', 'GITHUB_SERVER_URL') }}"
+        # ex: ansible-community/ara
+        _git_repo: "{{ lookup('env', 'GITHUB_REPOSITORY') }}"
+        # ex: 7d7889cd8ee26ccd30d213f5596623b9fded8129
+        _git_sha: "{{ lookup('env', 'GITHUB_SHA') }}"
+        # ex: refs/remotes/pull/604/head
+        _git_ref: "{{ lookup('env', 'GITHUB_REF') }}"
+        # ex: /workspace/ansible-community/ara
+        _git_workspace: "{{ lookup('env', 'GITHUB_WORKSPACE') }}"
+
+    # Ensure any previous job hasn't leaked for too long
+    - name: Gather OpenStack facts
+      openstack.cloud.server_info:
+        name: ci*
+      register: _openstack_servers
+
+    - name: Delete VMs in ERROR state or too old
+      vars:
+        _fmt: '%Y-%m-%dT%H:%M:%SZ'
+      openstack.cloud.server:
+        state: "absent"
+        name: "{{ item.id }}"
+        wait: false
+      # Find VMs in error or >= 12 hours old
+      when: item.status == "ERROR" or ((ansible_facts['date_time'].iso8601 | to_datetime(_fmt)) - (item.created_at | to_datetime(_fmt))).total_seconds() / 3600 >= 12
+      with_items:
+        - "{{ _openstack_servers.servers }}"
+
+    - name: Include OS family/distribution specific variables
+      ansible.builtin.include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ ci_image }}.yml"
+        - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
+        - "{{ ansible_facts['distribution'] }}.yml"
+        - "{{ ansible_facts['os_family'] }}.yml"
+  tasks:
+    # This creates a VM and adds it to the in-memory Ansible inventory as "ci_vm"
+    # TODO: Multi-node
+    - name: Include the role to create the VM
+      ansible.builtin.include_role:
+        name: create_vm
+  post_tasks:
+    - delegate_to: ci_vm
+      become: true
+      block:
+        # This would be the first task executed on the VM, allow for some resilience
+        - name: Gather facts on the CI VM
+          ansible.builtin.setup:
+          register: _host_setup
+          until: "_host_setup is not failed"
+          retries: 5
+          delay: 5
+
+        - name: Install dependencies
+          ansible.builtin.package:
+            name: "{{ ci_requirements }}"
+            state: present
+            update_cache: true
+
+        # This is done with elevated privileges to let git create the workspace directory
+        # It means we need to fix permissions afterwards
+        - name: Prepare git repo with pull request
+          ansible.builtin.git:
+            repo: "{{ _git_server }}/{{ _git_repo }}"
+            dest: "{{ _git_workspace }}"
+            refspec: "{{ _git_ref }}"
+            version: "{{ _git_sha }}"
+
+        - name: Fix git repo permissions
+          ansible.builtin.file:
+            path: "{{ _git_workspace }}"
+            state: directory
+            owner: "{{ ci_user }}"
+            group: "{{ ci_group }}"
+            recurse: true

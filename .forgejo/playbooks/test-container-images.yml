@@ -1,0 +1,9 @@
+- import_playbook: create-ci-vm.yml
+
+- import_playbook: ../../tests/with_container_images.yaml
+
+# Note: If anything fails above, this will not run because we can't wrap playbook imports in a block/rescue.
+# That's why before creating a new VM we check if there's any old VM and delete them before running a new job.
+# In other words: the intent is to delete the VM immediately on success but leave it up for troubleshooting
+# if it fails, up to a specified timeout.
+- import_playbook: delete-ci-vm.yml

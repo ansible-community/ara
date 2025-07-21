@@ -1,0 +1,14 @@
+# User/group to let the tests run largely unprivileged
+ci_user: debian
+ci_group: debian
+
+# Dependencies expected to be installed
+ci_requirements:
+  - git
+  - python3
+  - python3-pip
+  - python3-wheel
+  - python3-venv
+
+# Name of the image for the VM in OpenStack
+os_image: debian-12

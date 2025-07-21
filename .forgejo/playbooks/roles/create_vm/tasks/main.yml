@@ -1,0 +1,26 @@
+- name: Create instance
+  openstack.cloud.server:
+    name: "ci-{{ _git_sha }}"
+    state: present
+    image: "{{ os_image }}"
+    flavor: "{{ os_flavor }}"
+    key_name: "{{ os_keypair_name }}"
+    auto_ip: false
+    nics:
+      - net-name: "{{ os_network }}"
+    security_groups:
+      - "{{ os_security_group }}"
+  register: _os_server
+
+- name: Add it to the Ansible inventory
+  ansible.builtin.add_host:
+    name: ci_vm
+    ansible_host: "{{ _os_server.server.addresses[os_network] | selectattr('version', 'equalto', 4) | map(attribute='addr') | first }}"
+    ansible_user: "{{ ci_user }}"
+
+- delegate_to: ci_vm
+  block:
+    - name: Wait until the VM is reachable
+      ansible.builtin.wait_for_connection:
+        delay: 5
+        sleep: 5

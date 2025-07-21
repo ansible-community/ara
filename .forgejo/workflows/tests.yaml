@@ -1,0 +1,87 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  docs:
+    runs-on: fedora-ci-image
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # TODO: Host an artifact preview build somewhere
+      - name: Build docs
+        shell: bash
+        run: |
+          tox -e docs
+
+  linters:
+    runs-on: fedora-ci-image
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run linters
+        shell: bash
+        run: |
+          tox -e linters
+
+  unit-tests:
+    runs-on: fedora-ci-image
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        shell: bash
+        run: |
+          tox -e py3
+
+  ansible-integration:
+    runs-on: fedora-ci-image
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run ansible integration tests
+        shell: bash
+        env:
+          ARA_API_CLIENT: http
+          ARA_API_SERVER: https://demo.recordsansible.org
+          ARA_CALLBACK_THREADS: 4
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          ARA_DEFAULT_LABELS: >-
+            repo:${{ github.repository }},ref:${{ github.ref }},sha:${{ github.sha }}
+        run: |
+          tox -e ansible-integration
+
+  container-images:
+    runs-on: fedora-ci-image
+    container:
+      volumes:
+        - /home/forgejo-runner/.ssh/id_ed25519:/root/.ssh/id_ed25519
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run container tests on a new VM
+        shell: bash
+        env:
+          ANSIBLE_SSH_ARGS: "-C -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=accept-new -o StrictHostKeyChecking=no"
+          ARA_API_CLIENT: http
+          ARA_API_SERVER: https://demo.recordsansible.org
+          ARA_CALLBACK_THREADS: 4
+          # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+          ARA_DEFAULT_LABELS: >-
+            repo:${{ github.repository }},ref:${{ github.ref }},sha:${{ github.sha }}
+        run: |
+          tox -e ansible-integration --notest
+          source .tox/ansible-integration/bin/activate
+          pip install openstacksdk
+          ansible-playbook -vv .forgejo/playbooks/test-container-images.yml \
+            -e ara_api_source=${{ github.workspace }} \
+            -e ci_image=Debian_12
