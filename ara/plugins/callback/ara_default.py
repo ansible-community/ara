@@ -369,7 +369,7 @@ class CallbackModule(CallbackBase):
 
         # The intent for the ignored_files default value is to ignore the ansible local tmpdir but the path
         # can be changed by the user's configuration so retrieve that and use it instead.
-        # https://github.com/ansible-community/ara/issues/385
+        # https://codeberg.org/ansible-community/ara/issues/385
         for pattern in self.ignored_files:
             if pattern == ".ansible/tmp":
                 tmpdir_config = os.path.dirname(C.DEFAULT_LOCAL_TMP)
@@ -493,8 +493,8 @@ class CallbackModule(CallbackBase):
         play_vars = play._variable_manager.get_vars(play=play)["vars"]
         if "ara_playbook_name" in play_vars and self.playbook["name"] != play_vars["ara_playbook_name"][:254]:
             # Playbook name may not exceed 255 characters
-            # https://github.com/ansible-community/ara/issues/185
-            # https://github.com/ansible-community/ara/issues/265
+            # https://codeberg.org/ansible-community/ara/issues/185
+            # https://codeberg.org/ansible-community/ara/issues/265
             if len(play_vars["ara_playbook_name"]) >= 255:
                 self.log.warning("Truncating playbook name before recording: it's longer than 255 characters")
 
@@ -503,8 +503,8 @@ class CallbackModule(CallbackBase):
             )
 
         # Play name may not exceed 255 characters
-        # https://github.com/ansible-community/ara/issues/185
-        # https://github.com/ansible-community/ara/issues/265
+        # https://codeberg.org/ansible-community/ara/issues/185
+        # https://codeberg.org/ansible-community/ara/issues/265
         if len(play.name) >= 255:
             self.log.warning("Truncating play name before recording: it's longer than 255 characters")
             play.name = play.name[:254]
@@ -539,7 +539,7 @@ class CallbackModule(CallbackBase):
 
         # Note: ansible-runner suffixes play UUIDs when running in serial so 34cff6f4-9f8e-6137-3461-000000000005 can
         # end up being 34cff6f4-9f8e-6137-3461-000000000005_2. Remove anything beyond standard 36 character UUIDs.
-        # https://github.com/ansible-community/ara/issues/211
+        # https://codeberg.org/ansible-community/ara/issues/211
         # Create the play
         self.play = self.client.post(
             "/api/v1/plays",
@@ -699,8 +699,8 @@ class CallbackModule(CallbackBase):
         current_labels = [label["name"] for label in self.playbook["labels"]]
 
         # Labels may not exceed 255 characters
-        # https://github.com/ansible-community/ara/issues/185
-        # https://github.com/ansible-community/ara/issues/265
+        # https://codeberg.org/ansible-community/ara/issues/185
+        # https://codeberg.org/ansible-community/ara/issues/265
         expected_labels = []
         for label in labels:
             if len(label) >= 255:
@@ -744,7 +744,7 @@ class CallbackModule(CallbackBase):
 
         # Ansible inventory hostnames can be longer than 255 characters
         # Ansible doesn't mind and this is OK in AWX with postgresql but is an issue with mysql in ara
-        # https://github.com/ansible-community/ara/issues/265
+        # https://codeberg.org/ansible-community/ara/issues/265
         if len(host) >= 255:
             # Only warn about this once so we don't print a warning on every task
             if host not in self.warned_about_host_length:

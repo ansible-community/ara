@@ -19,8 +19,7 @@ ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook``
 
 The recorded results are available via an included CLI, a REST API as well as a self-hosted, local-first web reporting interface.
 
-<!-- https://github.com/ansible-community/ara/blob/master/doc/source/_static/demo.mp4 -->
-https://github.com/ansible-community/ara/assets/1291204/4fbdf5f7-509c-46ea-beb0-726b43e1b985
+A [recorded demo](https://codeberg.org/ansible-community/ara/raw/branch/master/doc/source/_static/demo.mp4) of the web interface is included in the documentation.
 
 ## How it works
 
@@ -69,7 +68,7 @@ The server includes a REST API as well a web reporting interface.
 
 Consider running one to aggregate playbook runs from different tools, jobs or servers into a single dashboard that can be shared with friends.
 
-Get started with the [ara_api role](https://github.com/ansible-community/ara-collection/blob/master/roles/ara_api/README.md)
+Get started with the [ara_api role](https://codeberg.org/ansible-community/ara-collection/blob/master/roles/ara_api/README.md)
 or with the [container images](https://ara.readthedocs.io/en/latest/container-images.html) published by the project on
 [DockerHub](https://hub.docker.com/r/recordsansible/ara-api) and [quay.io](https://quay.io/repository/recordsansible/ara-api):
 
@@ -123,11 +122,11 @@ Documentation for installing, configuring, running and using ara is available on
 
 Common issues may be resolved by reading the [troubleshooting guide](https://ara.readthedocs.io/en/latest/troubleshooting.html).
 
-Changelog and release notes are available within the repository's [git tags](https://github.com/ansible-community/ara/tags) as well as the [documentation](https://ara.readthedocs.io/en/latest/changelog-release-notes.html).
+Changelog and release notes are available within the repository's [git tags](https://codeberg.org/ansible-community/ara/tags) as well as the [documentation](https://ara.readthedocs.io/en/latest/changelog-release-notes.html).
 
 ## Community and getting help
 
-- Bugs, issues and enhancements: https://github.com/ansible-community/ara/issues
+- Bugs, issues and enhancements: https://codeberg.org/ansible-community/ara/issues
 - IRC: #ara on [Libera.chat](https://web.libera.chat/?channels=#ara)
 - Matrix: Bridged from IRC via [#ara:libera.chat](https://matrix.to/#/#ara:libera.chat)
 - Slack: Bridged from IRC via [https://arecordsansible.slack.com](https://join.slack.com/t/arecordsansible/shared_invite/enQtMjMxNzI4ODAxMDQxLTU2NTU3YjMwYzRlYmRkZTVjZTFiOWIxNjE5NGRhMDQ3ZTgzZmQyZTY2NzY5YmZmNDA5ZWY4YTY1Y2Y1ODBmNzc>)
@@ -143,14 +142,14 @@ Get started with the [contributor's documentation](https://ara.readthedocs.io/en
 
 ## Authors
 
-Code contributions to the project can be viewed from the git log or on [GitHub](https://github.com/ansible-community/ara/graphs/contributors).
+Code contributions to the project can be viewed from the git log or on [Codeberg](https://codeberg.org/ansible-community/ara/activity/contributors).
 
-The ara parrot logo was designed and contributed by [Jason E. Rist](https://github.com/ansible-community/ara/commit/0d5d0939a6b7a319d99acc1fb20d4ca282bd76ab).
+The ara parrot logo was designed and contributed by [Jason E. Rist](https://codeberg.org/ansible-community/ara/commit/0d5d0939a6b7a319d99acc1fb20d4ca282bd76ab).
 
 ## Copyright
 
 ```
-Copyright (c) 2023 The ARA Records Ansible authors
+Copyright (c) 2025 The ARA Records Ansible authors
 
 ARA Records Ansible is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

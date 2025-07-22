@@ -12,7 +12,7 @@ from dynaconf import LazySettings
 # dynaconf prefers ruamel.yaml but historically we also used pyyaml
 # https://github.com/rochacbruno/dynaconf/commit/d5cf87cbbdf54625ccf1138a4e4c210956791e61
 # ruamel.yaml >= 0.18 deprecated raw use of .dump
-# https://github.com/ansible-community/ara/issues/524
+# https://codeberg.org/ansible-community/ara/issues/524
 from ruamel.yaml import YAML
 
 yaml = YAML(typ="unsafe", pure=True)
@@ -40,8 +40,8 @@ BASE_PATH = settings.get("BASE_PATH", "/")
 DEBUG = settings.get("DEBUG", False, "@bool")
 
 LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
-# default logger updated cf issue https://github.com/ansible-community/ara/issues/228
-# and PR https://github.com/ansible-community/ara/pull/367
+# default logger updated cf issue https://codeberg.org/ansible-community/ara/issues/228
+# and PR https://codeberg.org/ansible-community/ara/pull/367
 LOGGING = settings.get(
     "LOGGING",
     {
@@ -202,7 +202,7 @@ AUTH_PASSWORD_VALIDATORS = [
 USE_TZ = True
 # Under some circumstances tzlocal can't find the local timezone, it will return local or None
 # Default to UTC if this happens.
-# https://github.com/ansible-community/ara/issues/401
+# https://codeberg.org/ansible-community/ara/issues/401
 LOCAL_TIME_ZONE = tzlocal.get_localzone_name()
 if LOCAL_TIME_ZONE is None or LOCAL_TIME_ZONE == "local":
     LOCAL_TIME_ZONE = "UTC"
@@ -218,7 +218,7 @@ WHITENOISE_USE_FINDERS = True
 # https://github.com/evansd/whitenoise/issues/215
 # Whitenoise raises a warning if STATIC_ROOT doesn't exist
 warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
-# https://github.com/ansible-community/ara/issues/492
+# https://codeberg.org/ansible-community/ara/issues/492
 # Django expects a ~/.ara/www/static directory but there is no such thing
 warnings.filterwarnings("ignore", message="No directory at", module="django.core.handlers.base")
 

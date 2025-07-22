@@ -4,7 +4,7 @@ Running ARA API server container images
 The ARA API server is a good candidate for being served out of a container as
 the configuration and state can be kept in persistent files and databases.
 
-The project maintains `different scripts <https://github.com/ansible-community/ara/tree/master/contrib/container-images>`_
+The project maintains `different scripts <https://codeberg.org/ansible-community/ara/tree/master/contrib/container-images>`_
 that are used to build and push simple container images to
 `DockerHub <https://hub.docker.com/repository/docker/recordsansible/ara-api>`_.
 
@@ -29,22 +29,22 @@ The different scripts to build container images are available in the git reposit
 
 - fedora-distribution.sh_: Builds an image from Fedora 41 `distribution packages <https://koji.fedoraproject.org/koji/packageinfo?packageID=24394>`_
 - fedora-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on Fedora 41
-- fedora-source.sh_: Builds an image from `git source <https://github.com/ansible-community/ara>`_ on Fedora 41
+- fedora-source.sh_: Builds an image from `git source <https://codeberg.org/ansible-community/ara>`_ on Fedora 41
 - centos-pypi.sh_: Builds an image from `PyPi <https://pypi.org/project/ara>`_ packages on CentOS 9 Stream
-- centos-source.sh_: Builds an image from `git source <https://github.com/ansible-community/ara>`_ on CentOS 9 Stream
+- centos-source.sh_: Builds an image from `git source <https://codeberg.org/ansible-community/ara>`_ on CentOS 9 Stream
 
-.. _fedora-distribution.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-distribution.sh
-.. _fedora-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-pypi.sh
-.. _fedora-source.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/fedora-source.sh
-.. _centos-pypi.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/centos-pypi.sh
-.. _centos-source.sh: https://github.com/ansible-community/ara/blob/master/contrib/container-images/centos-source.sh
+.. _fedora-distribution.sh: https://codeberg.org/ansible-community/ara/blob/master/contrib/container-images/fedora-distribution.sh
+.. _fedora-pypi.sh: https://codeberg.org/ansible-community/ara/blob/master/contrib/container-images/fedora-pypi.sh
+.. _fedora-source.sh: https://codeberg.org/ansible-community/ara/blob/master/contrib/container-images/fedora-source.sh
+.. _centos-pypi.sh: https://codeberg.org/ansible-community/ara/blob/master/contrib/container-images/centos-pypi.sh
+.. _centos-source.sh: https://codeberg.org/ansible-community/ara/blob/master/contrib/container-images/centos-source.sh
 
 The scripts have no arguments other than the ability to specify an optional name
 and tag:
 
 .. code-block:: bash
 
-    $ git clone https://github.com/ansible-community/ara
+    $ git clone https://codeberg.org/ansible-community/ara
     $ cd ara/contrib/container-images
     $ ./fedora-source.sh ara-api:latest
     # [...]

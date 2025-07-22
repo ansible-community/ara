@@ -88,7 +88,7 @@ class ActionModule(ActionBase):
     TRANSFERS_FILES = False
     # Note: BYPASS_HOST_LOOP functions like a forced "run_once" on a task
     # We considered setting this as the default but decided against it for now.
-    # Discussion here: https://github.com/ansible-community/ara/pull/274
+    # Discussion here: https://codeberg.org/ansible-community/ara/pull/274
     # BYPASS_HOST_LOOP = True
     VALID_ARGS = frozenset(("state", "playbook_id", "labels"))
 
@@ -100,8 +100,8 @@ class ActionModule(ActionBase):
     # this is largely taken how the callback does it
     def _set_playbook_labels(self, playbook, labels):
         # Labels may not exceed 255 characters
-        # https://github.com/ansible-community/ara/issues/185
-        # https://github.com/ansible-community/ara/issues/265
+        # https://codeberg.org/ansible-community/ara/issues/185
+        # https://codeberg.org/ansible-community/ara/issues/265
         expected_labels = []
         for label in labels:
             if len(label) >= 255:

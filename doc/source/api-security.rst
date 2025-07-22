@@ -308,16 +308,18 @@ Managing hosts allowed to serve the API
 By default, :ref:`api-configuration:ARA_ALLOWED_HOSTS` authorizes
 ``localhost``, ``::1`` and ``127.0.0.1`` to serve requests for the API server.
 
-In order to host an instance of the API server on another domain, the domain must
+In order to host an instance of the API server on another domain the domain must
 be part of this list or the application server will deny any requests sent to
 it.
 
 Managing CORS (cross-origin resource sharing)
 ---------------------------------------------
 
-The :ref:`api-configuration:ARA_CORS_ORIGIN_WHITELIST` default is designed to
-allow a local development instance of an `ara-web <https://github.com/ansible-community/ara-web>`_
+The :ref:`api-configuration:ARA_CORS_ORIGIN_WHITELIST` default was designed to
+allow a local development instance of an `ara-web <https://codeberg.org/ansible-community/ara-web>`_
 dashboard to communicate with a local development instance of the API server.
 
 The whitelist must contain the domain names where you plan on hosting instances
 of ara-web.
+
+ara-web has since been archived but this could prove useful for other use cases.

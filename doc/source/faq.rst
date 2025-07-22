@@ -8,9 +8,9 @@ Where is the source code ?
 
 ARA is currently composed of three different free and open source projects:
 
-- https://github.com/ansible-community/ara for the REST API server and Ansible plugins
-- https://github.com/ansible-community/ara-infra for project-specific infrastructure needs (such as the `ara.recordsansible.org <https://ara.recordsansible.org>`_ website)
-- https://github.com/ansible-community/ara-collection for the Ansible collection of ara
+- https://codeberg.org/ansible-community/ara for the REST API server and Ansible plugins
+- https://codeberg.org/ansible-community/ara-infra for project-specific infrastructure needs (such as the `ara.recordsansible.org <https://ara.recordsansible.org>`_ website)
+- https://codeberg.org/ansible-community/ara-collection for the Ansible collection of ara
 
 What's an Ansible callback ?
 ----------------------------

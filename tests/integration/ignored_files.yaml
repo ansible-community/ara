@@ -57,7 +57,7 @@
 
     # Note: conditions are used because the behavior changed between versions (from 2.12.0 until 2.12.5), see:
     # - https://github.com/ansible/ansible/commit/2c2a204dc66e0822003c9f2ea559bb1b2034b7e4
-    # - https://github.com/ansible-community/ara/pull/386
+    # - https://codeberg.org/ansible-community/ara/pull/386
     - name: Validate the files that have been saved with ansible-core <=2.12.5
       when:
         - ansible_version.full is version("2.12.0", ">=")
@@ -103,7 +103,7 @@
 
     # TODO: Find out whether we should explicitly save vars_files and adjust accordingly moving forward
     # Some vars_files are seemingly no longer being picked up after ansible-core 2.17
-    # https://github.com/ansible-community/ara/issues/560
+    # https://codeberg.org/ansible-community/ara/issues/560
     - name: Validate vars_files with ansible-core <=2.17.0
       when: ansible_version.full is version("2.17.0", "<=")
       assert:

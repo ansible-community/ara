@@ -57,5 +57,5 @@
       command: echo -e '\x80abc'
       changed_when: false
       # ansible-core 2.18 introduced (non-)utf8 changes which doesn't let this happen
-      # https://github.com/ansible-community/ara/pull/592
+      # https://codeberg.org/ansible-community/ara/pull/592
       when: ansible_version.full is version('2.18.0', '<')

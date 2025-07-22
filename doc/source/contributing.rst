@@ -19,17 +19,20 @@ Code contributions
 Pull requests welcome
 ~~~~~~~~~~~~~~~~~~~~~
 
-The ara repository is hosted on GitHub and every pull request is automatically
-tested with linters, unit tests as well as a variety of integration test
-scenarios.
+ara is hosted at https://codeberg.org/ansible-community/ara thanks
+to `codeberg.org <https://codeberg.org/about>`_, a community deployment of `Forgejo <https://forgejo.org/>`_.
 
-This results in higher standards, better code, improved testing coverage,
-less regressions and increased stability.
+ara has a number of other repositories as well, including:
 
-There are many tutorials on how to create a pull request on GitHub but the process
-generally looks like the following:
+- https://codeberg.org/ansible-community/ara-infra (for things like the website and the live demo)
+- https://codeberg.org/ansible-community/ara-collection (for the ara Ansible collection)
 
-- Fork the `ara repository on GitHub <https://github.com/ansible-community/ara>`_
+Opening a pull request on Codeberg is similar to GitHub and GitLab.
+Documentation is available to get started: https://docs.codeberg.org/collaborating/pull-requests-and-git-flow/
+
+At a high level the process looks like this:
+
+- Fork the `ara repository on Codeberg <https://codeberg.org/ansible-community/ara>`_
 - Run ``git clone`` on your fork
 - Create a new branch: ``git checkout -b cool_feature``
 - Do your changes and test or preview them locally, as appropriate
@@ -37,13 +40,19 @@ generally looks like the following:
 - Push your commit to your fork with ``git push origin cool_feature``
 - Open a pull request using the proposed link returned by the ``git push`` command
 
+Every every pull request is automatically tested with linters, unit tests
+as well as a variety of integration test scenarios.
+
+This results in higher standards, better code, improved testing coverage,
+less regressions and increased stability.
+
 .. image:: ../source/_static/github-pull-request.gif
 
 Testing changes locally
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-You are encouraged to test your changes in a local environment before sending
-them for review.
+It is encouraged to test changes in a local environment before sending them
+for review.
 
 Most of the tests that are run against a pull request are fast and can be run
 from your development environment without any changes to the system.
@@ -69,3 +78,38 @@ manually tested and previewed from within a tox virtual environment like this:
     ansible-playbook tests/integration/smoke.yaml
     ara-manage runserver
     # Browse to http://127.0.0.1:8000
+
+CI jobs and how they work
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A `forgejo-runner <https://forgejo.org/docs/latest/admin/actions/runner-installation/>`_
+is set up to run Forgejo actions on each pull request.
+
+The code for the Forgejo workflows and Ansible playbooks is in the git repository:
+https://codeberg.org/ansible-community/ara/src/branch/master/.forgejo
+
+For the ara repository there are currently five jobs that run on pull requests:
+
+- tests/unit-tests (runs ``tox -e py3``)
+- tests/linters (runs ``tox -e linters``)
+- tests/docs (runs ``tox -e docs``)
+- tests/ansible-integration (runs ``tox -e ansible-integration``)
+- tests/container-images (builds and tests `container images <https://codeberg.org/ansible-community/ara/src/branch/master/contrib/container-images>`_)
+
+These jobs run from a fedora-42 based container image spun up by the forgejo runner in podman.
+The script to build this image is available here: https://codeberg.org/ansible-community/ara/src/branch/master/contrib/container-images/fedora-ci-image.sh.
+
+It is built periodically and published on Codeberg: https://codeberg.org/ansible-community/-/packages/container/ara%2Ffedora-ci-image/latest
+
+For ``tests/container-images``, we go a step further: we create an OpenStack VM with Ansible,
+synchronize the git repo on it and then run the job there instead.
+This prevents relying on "docker in docker" and paves the way to test different scenarios
+against multiple distributions with ara-collection.
+
+Finally, where relevant and possible, jobs that run Ansible integration tests
+use ara to record playbook results to https://demo.recordsansible.org.
+
+This provides simple reporting with labels for pull requests or git commits, for example:
+
+- https://demo.recordsansible.org/?label=sha:e6b30062c68847eb0a4b6a6617ab01078fe176c1
+- https://demo.recordsansible.org/?label=ref:refs/pull/604/head

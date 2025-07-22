@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     # Previously, choices included "ignored" and "changed" but these were never used
-    # See: https://github.com/ansible-community/ara/issues/150
+    # See: https://codeberg.org/ansible-community/ara/issues/150
     operations = [
         migrations.AlterField(
             model_name='result',

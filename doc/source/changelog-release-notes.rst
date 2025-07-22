@@ -8,7 +8,7 @@ Changelog and release notes
 1.7.2 (2024-08-29)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.7.2
+https://codeberg.org/ansible-community/ara/releases/tag/1.7.2
 
 .. code-block:: text
 
@@ -61,7 +61,7 @@ https://github.com/ansible-community/ara/releases/tag/1.7.2
 1.7.1 (2024-02-06)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.7.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.7.1
 
 .. code-block:: text
 
@@ -81,7 +81,7 @@ https://github.com/ansible-community/ara/releases/tag/1.7.1
 1.7.0 (2023-09-10)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.7.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.7.0
 
 .. code-block:: text
 
@@ -178,7 +178,7 @@ https://github.com/ansible-community/ara/releases/tag/1.7.0
 1.6.1 (2022-12-12)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.6.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.6.1
 
 .. code-block:: text
 
@@ -199,7 +199,7 @@ https://github.com/ansible-community/ara/releases/tag/1.6.1
 1.6.0 (2022-12-01)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.6.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.6.0
 
 .. code-block:: text
 
@@ -356,7 +356,7 @@ https://github.com/ansible-community/ara/releases/tag/1.6.0
 1.5.8 (2022-03-24)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.8
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.8
 
 .. code-block:: text
 
@@ -446,7 +446,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.8
 1.5.7 (2021-07-31)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.7
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.7
 
 .. code-block:: text
 
@@ -522,7 +522,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.7
 1.5.6 (2021-04-14)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.6
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.6
 
 .. code-block:: text
 
@@ -572,7 +572,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.6
 1.5.5 (2021-01-29)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.5
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.5
 
 .. code-block:: text
 
@@ -606,7 +606,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.5
 1.5.4 (2020-12-18)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.4
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.4
 
 .. code-block:: text
 
@@ -674,7 +674,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.4
 1.5.3 (2020-10-23)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.3
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.3
 
 .. code-block:: text
 
@@ -689,7 +689,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.3
 1.5.2 (2020-10-16)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.2
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.2
 
 .. code-block:: text
 
@@ -719,7 +719,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.2
 1.5.1 (2020-09-23)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.1
 
 .. code-block:: text
 
@@ -729,7 +729,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.1
 1.5.0.1 (2020-09-23)
 ####################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.0.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.0.1
 
 .. code-block:: text
 
@@ -739,7 +739,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.0.1
 1.5.0 (2020-09-23)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.5.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.5.0
 
 .. code-block:: text
 
@@ -869,7 +869,7 @@ https://github.com/ansible-community/ara/releases/tag/1.5.0
 1.4.3 (2020-08-11)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.4.3
+https://codeberg.org/ansible-community/ara/releases/tag/1.4.3
 
 .. code-block:: text
 
@@ -882,7 +882,7 @@ https://github.com/ansible-community/ara/releases/tag/1.4.3
 1.4.2 (2020-07-02)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.4.2
+https://codeberg.org/ansible-community/ara/releases/tag/1.4.2
 
 .. code-block:: text
 
@@ -909,7 +909,7 @@ https://github.com/ansible-community/ara/releases/tag/1.4.2
 1.4.1 (2020-05-26)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.4.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.4.1
 
 .. code-block:: text
 
@@ -977,7 +977,7 @@ https://github.com/ansible-community/ara/releases/tag/1.4.1
 1.4.0 (2020-04-16)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.4.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.4.0
 
 .. code-block:: text
 
@@ -1046,7 +1046,7 @@ https://github.com/ansible-community/ara/releases/tag/1.4.0
 0.16.7 (2020-04-14)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.7
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.7
 
 .. code-block:: text
 
@@ -1077,7 +1077,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.7
 1.3.2 (2019-12-12)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.3.2
+https://codeberg.org/ansible-community/ara/releases/tag/1.3.2
 
 .. code-block:: text
 
@@ -1093,7 +1093,7 @@ https://github.com/ansible-community/ara/releases/tag/1.3.2
 1.3.1 (2019-12-06)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.3.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.3.1
 
 .. code-block:: text
 
@@ -1113,7 +1113,7 @@ https://github.com/ansible-community/ara/releases/tag/1.3.1
 1.3.0 (2019-12-03)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.3.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.3.0
 
 .. code-block:: text
 
@@ -1225,7 +1225,7 @@ https://github.com/ansible-community/ara/releases/tag/1.3.0
 0.16.6 (2019-11-18)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.6
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.6
 
 .. code-block:: text
 
@@ -1253,7 +1253,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.6
 1.2.0 (2019-10-25)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.2.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.2.0
 
 .. code-block:: text
 
@@ -1301,7 +1301,7 @@ https://github.com/ansible-community/ara/releases/tag/1.2.0
 1.1.0 (2019-07-02)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.1.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.1.0
 
 .. code-block:: text
 
@@ -1333,7 +1333,7 @@ https://github.com/ansible-community/ara/releases/tag/1.1.0
 0.16.5 (2019-06-04)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.5
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.5
 
 .. code-block:: text
 
@@ -1345,7 +1345,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.5
 1.0.1 (2019-06-05)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.0.1
+https://codeberg.org/ansible-community/ara/releases/tag/1.0.1
 
 .. code-block:: text
 
@@ -1365,7 +1365,7 @@ https://github.com/ansible-community/ara/releases/tag/1.0.1
 1.0.0 (2019-06-03)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/1.0.0
+https://codeberg.org/ansible-community/ara/releases/tag/1.0.0
 
 .. code-block:: text
 
@@ -1392,7 +1392,7 @@ https://github.com/ansible-community/ara/releases/tag/1.0.0
 0.16.4 (2019-05-22)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.4
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.4
 
 .. code-block:: text
 
@@ -1413,7 +1413,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.4
 0.16.3 (2019-01-21)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.3
 
 .. code-block:: text
 
@@ -1434,7 +1434,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.3
 0.16.2 (2019-01-02)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.2
 
 .. code-block:: text
 
@@ -1460,7 +1460,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.2
 0.16.1 (2018-09-04)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.1
 
 .. code-block:: text
 
@@ -1482,7 +1482,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.1
 0.16.0 (2018-08-27)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.16.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.16.0
 
 .. code-block:: text
 
@@ -1546,7 +1546,7 @@ https://github.com/ansible-community/ara/releases/tag/0.16.0
 0.15.0 (2018-05-01)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.15.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.15.0
 
 .. code-block:: text
 
@@ -1596,7 +1596,7 @@ https://github.com/ansible-community/ara/releases/tag/0.15.0
 0.14.6 (2018-02-05)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.6
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.6
 
 .. code-block:: text
 
@@ -1619,7 +1619,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.6
 0.14.5 (2017-10-26)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.5
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.5
 
 .. code-block:: text
 
@@ -1651,7 +1651,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.5
 0.14.4 (2017-09-20)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.4
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.4
 
 .. code-block:: text
 
@@ -1670,7 +1670,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.4
 0.14.3 (2017-09-17)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.3
 
 .. code-block:: text
 
@@ -1699,7 +1699,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.3
 0.14.2 (2017-08-29)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.2
 
 .. code-block:: text
 
@@ -1709,7 +1709,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.2
 0.14.1 (2017-08-27)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.1
 
 .. code-block:: text
 
@@ -1742,7 +1742,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.1
 0.14.0 (2017-07-31)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.14.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.14.0
 
 .. code-block:: text
 
@@ -1798,7 +1798,7 @@ https://github.com/ansible-community/ara/releases/tag/0.14.0
 0.13.3 (2017-06-30)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.13.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.13.3
 
 .. code-block:: text
 
@@ -1809,7 +1809,7 @@ https://github.com/ansible-community/ara/releases/tag/0.13.3
 0.13.2 (2017-06-22)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.13.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.13.2
 
 .. code-block:: text
 
@@ -1842,7 +1842,7 @@ https://github.com/ansible-community/ara/releases/tag/0.13.2
 0.13.1 (2017-05-21)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.13.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.13.1
 
 .. code-block:: text
 
@@ -1854,7 +1854,7 @@ https://github.com/ansible-community/ara/releases/tag/0.13.1
 0.13.0 (2017-05-04)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.13.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.13.0
 
 .. code-block:: text
 
@@ -1946,7 +1946,7 @@ https://github.com/ansible-community/ara/releases/tag/0.13.0
 0.12.5 (2017-04-19)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.5
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.5
 
 .. code-block:: text
 
@@ -1967,7 +1967,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.5
 0.12.4 (2017-04-01)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.4
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.4
 
 .. code-block:: text
 
@@ -2035,7 +2035,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.4
 0.12.3 (2017-03-09)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.3
 
 .. code-block:: text
 
@@ -2046,7 +2046,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.3
 0.12.2 (2017-03-07)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.2
 
 .. code-block:: text
 
@@ -2061,7 +2061,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.2
 0.12.1 (2017-03-03)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.1
 
 .. code-block:: text
 
@@ -2071,7 +2071,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.1
 0.12.0 (2017-03-01)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.12.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.12.0
 
 .. code-block:: text
 
@@ -2136,7 +2136,7 @@ https://github.com/ansible-community/ara/releases/tag/0.12.0
 0.11.0 (2017-02-13)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.11.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.11.0
 
 .. code-block:: text
 
@@ -2172,7 +2172,7 @@ https://github.com/ansible-community/ara/releases/tag/0.11.0
 0.10.5 (2017-01-16)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.5
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.5
 
 .. code-block:: text
 
@@ -2185,7 +2185,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.5
 0.10.4 (2017-01-15)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.4
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.4
 
 .. code-block:: text
 
@@ -2206,7 +2206,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.4
 0.10.3 (2016-12-12)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.3
 
 .. code-block:: text
 
@@ -2220,7 +2220,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.3
 0.10.2 (2016-12-10)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.2
 
 .. code-block:: text
 
@@ -2234,7 +2234,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.2
 0.10.1 (2016-12-05)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.1
 
 .. code-block:: text
 
@@ -2248,7 +2248,7 @@ https://github.com/ansible-community/ara/releases/tag/0.10.1
 0.10.0 (2016-12-01)
 ###################
 
-https://github.com/ansible-community/ara/releases/tag/0.10.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.10.0
 
 .. code-block:: text
 
@@ -2269,13 +2269,13 @@ https://github.com/ansible-community/ara/releases/tag/0.10.0
 0.9.3 (2016-11-14)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.9.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.9.3
 
 
 0.9.2 (2016-10-22)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.9.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.9.2
 
 .. code-block:: text
 
@@ -2296,7 +2296,7 @@ https://github.com/ansible-community/ara/releases/tag/0.9.2
 0.9.1 (2016-09-15)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.9.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.9.1
 
 .. code-block:: text
 
@@ -2306,7 +2306,7 @@ https://github.com/ansible-community/ara/releases/tag/0.9.1
 0.9.0 (2016-09-13)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.9.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.9.0
 
 .. code-block:: text
 
@@ -2340,7 +2340,7 @@ https://github.com/ansible-community/ara/releases/tag/0.9.0
 0.8.1 (2016-06-03)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.8.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.8.1
 
 .. code-block:: text
 
@@ -2353,7 +2353,7 @@ https://github.com/ansible-community/ara/releases/tag/0.8.1
 0.8.0 (2016-06-02)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.8.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.8.0
 
 .. code-block:: text
 
@@ -2362,7 +2362,7 @@ https://github.com/ansible-community/ara/releases/tag/0.8.0
 0.7.1 (2016-05-30)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.7.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.7.1
 
 .. code-block:: text
 
@@ -2371,7 +2371,7 @@ https://github.com/ansible-community/ara/releases/tag/0.7.1
 0.7.0 (2016-05-27)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.7.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.7.0
 
 .. code-block:: text
 
@@ -2380,19 +2380,19 @@ https://github.com/ansible-community/ara/releases/tag/0.7.0
 0.6.0 (2016-05-21)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.6.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.6.0
 
 
 0.5.2 (2016-05-18)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.5.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.5.2
 
 
 0.5.1 (2016-05-17)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.5.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.5.1
 
 .. code-block:: text
 
@@ -2401,7 +2401,7 @@ https://github.com/ansible-community/ara/releases/tag/0.5.1
 0.5.0 (2016-05-14)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.5.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.5.0
 
 .. code-block:: text
 
@@ -2410,13 +2410,13 @@ https://github.com/ansible-community/ara/releases/tag/0.5.0
 0.4.0 (2016-05-10)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.4.0
+https://codeberg.org/ansible-community/ara/releases/tag/0.4.0
 
 
 0.3.1 (2016-05-09)
 ##################
 
-https://github.com/ansible-community/ara/releases/tag/0.3.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.3.1
 
 .. code-block:: text
 
@@ -2427,7 +2427,7 @@ https://github.com/ansible-community/ara/releases/tag/0.3.1
 0.3 (2016-05-09)
 ################
 
-https://github.com/ansible-community/ara/releases/tag/0.3
+https://codeberg.org/ansible-community/ara/releases/tag/0.3
 
 .. code-block:: text
 
@@ -2439,12 +2439,12 @@ https://github.com/ansible-community/ara/releases/tag/0.3
 0.2 (2016-05-09)
 ################
 
-https://github.com/ansible-community/ara/releases/tag/0.2
+https://codeberg.org/ansible-community/ara/releases/tag/0.2
 
 
 0.1 (2016-05-08)
 ################
 
-https://github.com/ansible-community/ara/releases/tag/0.1
+https://codeberg.org/ansible-community/ara/releases/tag/0.1
 
 

@@ -182,7 +182,7 @@ ARA_CORS_ORIGIN_WHITELIST
 Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_.
 
 This setting is typically used in order to allow the API and a web client
-(such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to
+(such as `ara-web <https://codeberg.org/ansible-community/ara-web>`_) to talk to
 each other.
 
 ARA_CORS_ORIGIN_REGEX_WHITELIST
@@ -208,7 +208,7 @@ ARA_CORS_ORIGIN_REGEX_WHITELIST
 Hosts in the whitelist for `Cross-Origin Resource Sharing <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_.
 
 This setting is typically used in order to allow the API and a web client
-(such as `ara-web <https://github.com/ansible-community/ara-web>`_) to talk to
+(such as `ara-web <https://codeberg.org/ansible-community/ara-web>`_) to talk to
 each other.
 
 Especially useful for situations like CI where the deployment domain may not be

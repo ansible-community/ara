@@ -12,7 +12,7 @@ try:
     from ara.clients.utils import get_client
     from ara.setup import action_plugins, callback_plugins, lookup_plugins
 except ImportError as e:
-    print("ara must be installed first: https://github.com/ansible-community/ara#getting-started")
+    print("ara must be installed first: https://codeberg.org/ansible-community/ara#getting-started")
     raise e
 
 PLAYBOOK = os.path.join(os.path.dirname(__file__), "runner-playbook.yml")

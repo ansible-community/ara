@@ -11,8 +11,8 @@ class Migration(migrations.Migration):
 
     # This reverts migration 0011 which bumped the max_length to 512
     # varchar may not be above 255 to keep compatibility with mysql
-    # see: https://github.com/ansible-community/ara/issues/265 and
-    # https://github.com/ansible-community/ara/issues/185
+    # see: https://codeberg.org/ansible-community/ara/issues/265 and
+    # https://codeberg.org/ansible-community/ara/issues/185
     operations = [
         migrations.AlterField(
             model_name='label',

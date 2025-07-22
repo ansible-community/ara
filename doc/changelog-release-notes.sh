@@ -33,7 +33,7 @@ header "Changelog and release notes"
 for tag in $(git tag -l --sort=creatordate | egrep -v "a|b|rc" | tac); do
     tag_date=$(git log -1 --pretty='%cd' --date=format:'%Y-%m-%d' $tag)
     smallheader "${tag} (${tag_date})"
-    echo "https://github.com/ansible-community/ara/releases/tag/${tag}"
+    echo "https://codeberg.org/ansible-community/ara/releases/tag/${tag}"
     echo
     # Don't include a code-block if there's no message
     length=$(git tag -n9001 $tag | tail -n +3 | wc -l)

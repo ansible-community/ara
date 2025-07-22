@@ -1,6 +1,6 @@
 # Copyright (c) 2022 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-# See https://github.com/ansible-community/ara/issues/26 for rationale on expiring
+# See https://codeberg.org/ansible-community/ara/issues/26 for rationale on expiring
 
 import logging
 import os
