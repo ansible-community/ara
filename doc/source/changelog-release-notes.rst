@@ -5,6 +5,109 @@
 Changelog and release notes
 ***************************
 
+1.7.3 (2025-08-16)
+##################
+
+https://codeberg.org/ansible-community/ara/releases/tag/1.7.3
+
+.. code-block:: text
+
+    1.7.3 is a maintenance release which adds a few new features.
+    
+    It includes minor changes as a result of the project migration from
+    GitHub to Codeberg.
+    
+    The source repository now lives at:
+    https://codeberg.org/ansible-community/ara
+    
+    The repository on GitHub remains as a mirror for now.
+    
+    Changes since 1.7.2:
+    
+    Server
+    ------
+    
+    - Added tzdata/zoneinfo to server requirements for compatibility across versions of python and django
+    - Bumped the minimum version of django LTS from 3.2 to 4.2 (up to 5.2)
+    
+    UI
+    --
+    
+    - Added an auto refresh arrow at the top right, allowing automatic refreshes of the pages at the selected duration
+    - Clicking on the number of hosts for a playbook on the playbooks page should now correctly display the results
+      for each host of that playbook
+    
+    API client
+    ----------
+    
+    - Avoid using ARA_API_USERNAME and ARA_API_PASSWORD if they are set to
+      empty values
+    
+    Callback
+    --------
+    
+    - Added support for specifying 'all' to ARA_IGNORED_FACTS to prevent ara from recording any host facts
+    
+    New action plugin: ara_label
+    ----------------------------
+    
+    This new module provides the ability to manipulate ara's labels on playbooks.
+    Excerpt from the documentation:
+    ```
+    
+    - name: Add a static label to this playbook (the one that is running)
+      # Note: By default Ansible will run this task on every host.
+      # Consider the use case and declare 'run_once: true' when there is no need to
+      # run this task more than once.
+      # This might sound obvious but it avoids updating the same labels 100 times
+      # if there are 100 hosts, incurring a performance penalty needlessly.
+      run_once: true
+      ara_label:
+        state: present
+        labels:
+          - state:running
+    
+    - name: Add dynamically templated labels to this playbook
+      ara_label:
+        state: present
+        labels:
+          - "git:{{ lookup('git -C {{ playbook_dir }} rev-parse HEAD') }}"
+          - "os:{{ ansible_distribution }}-{{ ansible_distribution_version }}"
+    
+    - name: Add labels to a specific playbook
+      ara_label:
+        state: present
+        playbook_id: 1
+        labels:
+          - state:deployed
+    
+    - name: Remove labels from the running playbook (if they exist)
+      ara_label:
+        state: absent
+        labels:
+          - state:running
+    ```
+    
+    Maintenance
+    -----------
+    
+    - Completed migration from GitHub to Codeberg (links, CI jobs, etc.)
+    - Bumped CI and container images to Fedora 41
+    - Bumped CI to the latest versions of ansible (11) and ansible-core (2.18)
+    
+    Docs
+    ----
+    
+    - Stop using sphinx's get_html_theme_path since it's been deprecated
+    - Updated contributor documentation to mention Codeberg
+    - Included a high level overview of how CI jobs work and what they do
+    
+    Upgrade Notes
+    -------------
+    
+    - There are no known migrations, deprecations or backwards-incompatible changes in this release.
+    - ara 1.7.3 is expected to be the last release supporting python3.8.
+
 1.7.2 (2024-08-29)
 ##################
 
