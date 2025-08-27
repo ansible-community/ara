@@ -57,7 +57,7 @@
 
     # Note: conditions are used because the behavior changed between versions (from 2.12.0 until 2.12.5), see:
     # - https://github.com/ansible/ansible/commit/2c2a204dc66e0822003c9f2ea559bb1b2034b7e4
-    # - https://codeberg.org/ansible-community/ara/pull/386
+    # - https://codeberg.org/ansible-community/ara/pulls/386
     - name: Validate the files that have been saved with ansible-core <=2.12.5
       when:
         - ansible_version.full is version("2.12.0", ">=")

@@ -41,7 +41,7 @@ DEBUG = settings.get("DEBUG", False, "@bool")
 
 LOG_LEVEL = settings.get("LOG_LEVEL", "INFO")
 # default logger updated cf issue https://codeberg.org/ansible-community/ara/issues/228
-# and PR https://codeberg.org/ansible-community/ara/pull/367
+# and PR https://codeberg.org/ansible-community/ara/pulls/367
 LOGGING = settings.get(
     "LOGGING",
     {

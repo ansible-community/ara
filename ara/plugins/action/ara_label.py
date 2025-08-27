@@ -88,7 +88,7 @@ class ActionModule(ActionBase):
     TRANSFERS_FILES = False
     # Note: BYPASS_HOST_LOOP functions like a forced "run_once" on a task
     # We considered setting this as the default but decided against it for now.
-    # Discussion here: https://codeberg.org/ansible-community/ara/pull/274
+    # Discussion here: https://codeberg.org/ansible-community/ara/pulls/274
     # BYPASS_HOST_LOOP = True
     VALID_ARGS = frozenset(("state", "playbook_id", "labels"))
 
