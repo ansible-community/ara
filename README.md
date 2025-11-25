@@ -23,7 +23,7 @@ A [recorded demo](https://codeberg.org/ansible-community/ara/raw/branch/master/d
 
 ## How it works
 
-ARA Records Ansible results to SQLite, MySQL and PostgreSQL databases with a standard [callback plugin](https://docs.ansible.com/ansible/latest/plugins/callback.html).
+ARA Records Ansible results to SQLite, MySQL and PostgreSQL databases with a standard [callback plugin](https://docs.ansible.com/projects/ansible/latest/plugins/callback.html).
 
 This plugin gathers data as Ansible runs and sends it to a Django REST API server:
 
