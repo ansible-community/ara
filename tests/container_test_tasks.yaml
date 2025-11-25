@@ -13,7 +13,7 @@
     # Assuming running from checked out source
     # This is done here instead of the play vars because Zuul uses this var and passes it to the playbook as an inventory var
     # which has less precedence than play vars.
-    # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
+    # https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence
     _default_source: "{{ playbook_dir | dirname }}"
   command: "{{ ara_api_source | default(_default_source) }}/contrib/container-images/{{ item.script }} {{ item.name }}:{{ item.tag }}"
 

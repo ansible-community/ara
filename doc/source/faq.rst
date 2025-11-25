@@ -20,7 +20,7 @@ send an event and you can react to it with a callback.
 You could use a callback to do things like print additional details or, in the
 case of ARA, record the playbook run data in a database.
 
-.. _Ansible Callbacks: https://docs.ansible.com/ansible/dev_guide/developing_plugins.html
+.. _Ansible Callbacks: https://docs.ansible.com/projects/ansible/latest/dev_guide/developing_plugins.html
 
 What versions of Ansible are supported ?
 ----------------------------------------
@@ -32,7 +32,7 @@ For example, if the latest version of Ansible is 2.9, then the latest release
 of ARA will support 2.9 as well as 2.8 and 2.7.
 
 For more information on Ansible's release and maintenance cycle, you can refer
-to the `Ansible documentation <https://docs.ansible.com/ansible/latest/reference_appendices/release_and_maintenance.html>`_.
+to the `Ansible documentation <https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html>`_.
 
 If you are using a release of Ansible that is no longer supported, it doesn't
 mean that ARA won't work but it will no longer be tested. We strongly encourage
