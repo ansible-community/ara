@@ -68,7 +68,7 @@
 
     - name: Search for the sleep command tasks
       vars:
-        play_id: "{{ play_query.results[0].id }}"
+        play_id: "{{ play_query.results[0].id | string }}"
       set_fact:
         sleep_tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=sleep&action=command&play=' + play_id) }}"
 

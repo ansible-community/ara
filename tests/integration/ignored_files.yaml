@@ -91,7 +91,7 @@
     - name: Validate the remainder of the files
       vars:
         # list view doesn't provide file content, get detailed view
-        _id: "{{ _ignored_task['results'][0]['id'] }}"
+        _id: "{{ _ignored_task['results'][0]['id'] | string }}"
         _with_content: "{{ lookup('ara_api', '/api/v1/files/' + _id) }}"
       assert:
         that:
