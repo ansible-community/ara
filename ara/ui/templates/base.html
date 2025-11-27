@@ -19,6 +19,8 @@
   <link id="pygments-dark-css" rel="stylesheet" href="{% static_url ara_pygments_dark %}" disabled>
   {% static 'css/pygments-light.css' as ara_pygments_light %}
   <link id="pygments-light-css" rel="stylesheet" href="{% static_url ara_pygments_light %}">
+  {% static 'css/bootstrap-icons.min.css' as ara_bootstrap_icons %}
+  <link id="bootstrap-icons-css" rel="stylesheet" href="{% static_url ara_bootstrap_icons %}">
 </head>
 <body>
 {% include "partials/about_modal.html" %}
@@ -103,8 +105,8 @@
 <!-- Begin page content -->
 {% static 'js/bootstrap.bundle.min.js' as bootstrap_js_url %}
 <script src="{% static_url bootstrap_js_url %}"></script>
-{% static 'js/theme.js' as theme_js_url %}
-<script src="{% static_url theme_js_url %}"></script>
+{% static 'js/ara.js' as ara_js_url %}
+<script src="{% static_url ara_js_url %}"></script>
 
 <main role="main">
   <div class="container-fluid">
@@ -112,8 +114,5 @@
     {% endblock body %}
   </div>
 </main>
-
-{% static 'js/auto-refresh.js' as auto_refresh_js_url %}
-<script src="{% static_url auto_refresh_js_url %}"></script>
 </body>
 </html>

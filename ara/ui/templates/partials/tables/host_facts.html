@@ -1,48 +1,638 @@
+{% load datetime_formatting %}
+{% load number_utils %}
 {% load pygments_highlights %}
-<div class="accordion" id="host_facts">
-  <div class="card">
-    <div class="card-header bg-body-tertiary" id="host_facts_card">
-      <button class="btn ara-card-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_host_facts" aria-expanded="true" aria-controls="collapse_host_facts">
-        <h4>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-            <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-          </svg>
-          Host facts: {{ host.name | truncatechars:150 }}
-        </h4>
-      </button>
+{% load host_interface %}
+
+<div class="card">
+    <div class="card-header bg-body-tertiary d-flex align-items-center py-2">
+        <h5 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-info-circle me-2" style="font-size: 1.1rem;"></i>
+            <span>Host facts: {{ host.name | truncatechars:150 }}</span>
+        </h5>
     </div>
-    <div id="collapse_host_facts" class="collapse show" aria-labelledby="host_facts_card" data-bs-parent="#host_facts" style="overflow-y: auto;">
-      <div class="card-body">
-        {% if host.facts.items %}
-        <div class="table-responsive">
-          <table class="table table-sm table-hover">
-            <thead>
-            <tr>
-              <th style="width:20%;">Fact</th>
-              <th style="width:80%;">Value</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for fact, value in host.facts.items %}
-              <tr>
-                <td id="{{ fact }}" data-label="{{ fact }}">
-                  <a href="#{{ fact }}">{{ fact }}</a>
-                </td>
-                {# Some facts are VERY LONG uninterrupted single lines (looking at you ansible_ssh_host_key_rsa_public) #}
-                <td data-label="Value" style="max-width:400px;">
-                  {{ value | format_data | safe }}
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
+    <div class="card-body p-3">
+        {% if not host.facts %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>No host facts were recorded for this host.</strong>
+            <p class="mb-0 mt-2">Host facts are recorded by ara when <code>gather_facts</code> is <code>True</code> or when the <code>ansible.builtin.setup</code> module is used.</p>
         </div>
         {% else %}
-        <p>No recorded host facts found.</p>
-        <p>Host facts are saved automatically when the <code>setup</code> module is used or when <code>gather_facts: true</code> is set.</p>
+        <div class="facts-grid">
+
+            <!-- System & Environment Section -->
+            {% if host.facts.ansible_uptime_seconds or host.facts.ansible_distribution or host.facts.ansible_kernel or host.facts.ansible_python.version or host.facts.ansible_user_id or host.facts.ansible_user_shell or host.facts.ansible_date_time.tz or host.facts.ansible_virtualization_type or host.facts.ansible_selinux or host.facts.ansible_bios_version %}
+            <div class="fact-section">
+                <div class="section-header">
+                    <i class="bi bi-gear-fill"></i>
+                    System & Environment
+                </div>
+                {% if host.facts.ansible_date_time.tz and host.facts.ansible_date_time.time %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-clock-history"></i>
+                        Local Time
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_date_time.date }} {{ host.facts.ansible_date_time.time }} ({{ host.facts.ansible_date_time.tz }})</div>
+                </div>
+                {% elif host.facts.ansible_date_time.tz %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-clock-history"></i>
+                        Timezone
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_date_time.tz }}</div>
+                </div>
+                {% elif host.facts.ansible_date_time.time %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-calendar-check"></i>
+                        Local Time
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_date_time.date }} {{ host.facts.ansible_date_time.time }}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_uptime_seconds %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-clock"></i>
+                        Uptime
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_uptime_seconds|duration_from_seconds }}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_loadavg %}
+                <!-- Load average thresholds scaled by CPU count: green < nproc, yellow < nproc*2, red >= nproc*2 -->
+                {% with nproc=host.facts.ansible_processor_nproc|default:1 %}
+                <div class="mt-2">
+                    <div class="metric-grid-label">Load Average</div>
+                    <div class="metric-grid">
+                        {% if host.facts.ansible_loadavg.1m %}
+                        <div class="metric-item">
+                            <div class="metric-label">1m</div>
+                            <div class="metric-value {% if host.facts.ansible_loadavg.1m >= nproc|add:nproc %}text-danger{% elif host.facts.ansible_loadavg.1m >= nproc %}text-warning{% else %}text-success{% endif %}">
+                                {{ host.facts.ansible_loadavg.1m|floatformat:2 }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if host.facts.ansible_loadavg.5m %}
+                        <div class="metric-item">
+                            <div class="metric-label">5m</div>
+                            <div class="metric-value {% if host.facts.ansible_loadavg.5m >= nproc|add:nproc %}text-danger{% elif host.facts.ansible_loadavg.5m >= nproc %}text-warning{% else %}text-success{% endif %}">
+                                {{ host.facts.ansible_loadavg.5m|floatformat:2 }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if host.facts.ansible_loadavg.15m %}
+                        <div class="metric-item">
+                            <div class="metric-label">15m</div>
+                            <div class="metric-value {% if host.facts.ansible_loadavg.15m >= nproc|add:nproc %}text-danger{% elif host.facts.ansible_loadavg.15m >= nproc %}text-warning{% else %}text-success{% endif %}">
+                                {{ host.facts.ansible_loadavg.15m|floatformat:2 }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+                {% endif %}
+
+                {% if host.facts.ansible_distribution %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-laptop"></i>
+                        OS
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_distribution }}{% if host.facts.ansible_distribution_version %} {{ host.facts.ansible_distribution_version }}{% endif %}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_kernel %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-terminal"></i>
+                        Kernel
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_kernel }}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_python.version %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-code-slash"></i>
+                        Python
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_python.version.major }}.{{ host.facts.ansible_python.version.minor }}.{{ host.facts.ansible_python.version.micro }}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_user_id %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-person-fill"></i>
+                        User
+                    </div>
+                    <div class="fact-value">
+                        {{ host.facts.ansible_user_id }}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_user_id|escapejs }}')" title="Copy user" aria-label="Copy user">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_user_shell %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-terminal-fill"></i>
+                        Shell
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_user_shell }}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_virtualization_type or host.facts.ansible_selinux or host.facts.ansible_bios_version %}
+                <div class="divider"></div>
+                {% endif %}
+
+                {% if host.facts.ansible_virtualization_type %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-cloud"></i>
+                        Virtualization
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_virtualization_type }}{% if host.facts.ansible_virtualization_role %} ({{ host.facts.ansible_virtualization_role }}){% endif %}</div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_selinux %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-shield-lock"></i>
+                        SELinux
+                    </div>
+                    <div class="fact-value">
+                        <span class="{% if host.facts.ansible_selinux.status == 'enabled' %}text-success{% else %}text-warning{% endif %}">
+                            {{ host.facts.ansible_selinux.status|title }}
+                        </span>
+                        {% if host.facts.ansible_selinux.mode %}({{ host.facts.ansible_selinux.mode }}){% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_bios_version %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-motherboard"></i>
+                        BIOS
+                    </div>
+                    <div class="fact-value">{{ host.facts.ansible_bios_version }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Processor, Memory & Storage Section -->
+            {% if host.facts.ansible_processor.2 or host.facts.ansible_processor_cores or host.facts.ansible_processor_nproc or host.facts.ansible_memory_mb.real or host.facts.ansible_memory_mb.swap or host.facts.ansible_mounts %}
+            <div class="fact-section">
+                <div class="section-header">
+                    <i class="bi bi-cpu-fill"></i>
+                    Processor
+                </div>
+
+                <!-- Processor -->
+                {% if host.facts.ansible_processor.2 or host.facts.ansible_processor_cores or host.facts.ansible_processor_nproc %}
+                <div class="mb-3">
+                    {% if host.facts.ansible_processor.2 %}
+                    <div class="fact-value mb-2" style="font-size: 0.8125rem; text-align: left;">{{ host.facts.ansible_processor.2|truncatechars:60 }}</div>
+                    {% endif %}
+                    <div class="d-flex gap-3">
+                        {% if host.facts.ansible_processor_cores %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fact-label">
+                                <i class="bi bi-circle-fill"></i>
+                                Cores
+                            </span>
+                            <span class="fact-value">{{ host.facts.ansible_processor_cores }}</span>
+                        </div>
+                        {% endif %}
+                        {% if host.facts.ansible_processor_nproc %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fact-label">
+                                <i class="bi bi-cpu"></i>
+                                Threads
+                            </span>
+                            <span class="fact-value">{{ host.facts.ansible_processor_nproc }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Memory -->
+                {% if host.facts.ansible_memory_mb.real or host.facts.ansible_memory_mb.swap %}
+                {% if host.facts.ansible_memory_mb.real %}
+                <div class="section-header">
+                    <i class="bi bi-memory"></i>
+                    Memory
+                </div>
+                <div class="storage-item">
+                    <div class="storage-header">
+                        <div>
+                            <div class="storage-path">RAM Usage</div>
+                        </div>
+                        <div class="storage-stats">
+                            <div class="storage-usage">{{ host.facts.ansible_memory_mb.real.used|default:0 }} MB / {{ host.facts.ansible_memory_mb.real.total|default:0 }} MB</div>
+                            {% if host.facts.ansible_memory_mb.real.used and host.facts.ansible_memory_mb.real.total %}
+                            {% with ram_pct=host.facts.ansible_memory_mb.real.used|percentage:host.facts.ansible_memory_mb.real.total %}
+                            <div class="storage-free">{{ ram_pct|floatformat:1 }}% used</div>
+                            {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if host.facts.ansible_memory_mb.real.used and host.facts.ansible_memory_mb.real.total %}
+                    {% with ram_pct=host.facts.ansible_memory_mb.real.used|percentage:host.facts.ansible_memory_mb.real.total %}
+                    <div class="progress" role="progressbar" aria-label="RAM usage" aria-valuenow="{{ ram_pct|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar {% if ram_pct >= 90 %}bg-danger{% elif ram_pct >= 75 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width: {{ ram_pct }}%">
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_memory_mb.swap and host.facts.ansible_memory_mb.swap.total > 0 %}
+                <div class="storage-item">
+                    <div class="storage-header">
+                        <div>
+                            <div class="storage-path">Swap Usage</div>
+                        </div>
+                        <div class="storage-stats">
+                            <div class="storage-usage">{{ host.facts.ansible_memory_mb.swap.used|default:0 }} MB / {{ host.facts.ansible_memory_mb.swap.total|default:0 }} MB</div>
+                            {% if host.facts.ansible_memory_mb.swap.used and host.facts.ansible_memory_mb.swap.total %}
+                            {% with swap_pct=host.facts.ansible_memory_mb.swap.used|percentage:host.facts.ansible_memory_mb.swap.total %}
+                            <div class="storage-free">{{ swap_pct|floatformat:1 }}% used</div>
+                            {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if host.facts.ansible_memory_mb.swap.used and host.facts.ansible_memory_mb.swap.total %}
+                    {% with swap_pct=host.facts.ansible_memory_mb.swap.used|percentage:host.facts.ansible_memory_mb.swap.total %}
+                    <div class="progress" role="progressbar" aria-label="Swap usage" aria-valuenow="{{ swap_pct|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar {% if swap_pct >= 90 %}bg-danger{% elif swap_pct >= 75 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width: {{ swap_pct }}%">
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <!-- Storage -->
+                {% if host.facts.ansible_mounts %}
+                <div class="section-header">
+                    <i class="bi bi-hdd"></i>
+                    Storage
+                </div>
+
+                {% for mount in host.facts.ansible_mounts %}
+                {% if mount.size_total > 0 %}
+                <div class="storage-item">
+                    <div class="storage-header">
+                        <div>
+                            <div class="storage-path">{{ mount.mount }}</div>
+                            <div class="storage-device">{{ mount.device }} ({{ mount.fstype }})</div>
+                        </div>
+                        <div class="storage-stats">
+                            {% with used=mount.size_total|subtract:mount.size_available %}
+                            {% with pct=used|percentage:mount.size_total %}
+                            <div class="storage-usage">{{ pct|floatformat:1 }}% used</div>
+                            {% endwith %}
+                            {% endwith %}
+                            <div class="storage-free">{{ mount.size_available|filesizeformat }} free</div>
+                        </div>
+                    </div>
+                    {% with used=mount.size_total|subtract:mount.size_available %}
+                    {% with pct=used|percentage:mount.size_total %}
+                    <div class="progress" role="progressbar" aria-label="Storage usage for {{ mount.mount }}" aria-valuenow="{{ pct|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar {% if pct >= 90 %}bg-danger{% elif pct >= 75 %}bg-warning{% else %}bg-success{% endif %}"
+                             style="width: {{ pct }}%">
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endwith %}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Network Section -->
+            {% if host.facts.ansible_default_ipv4 or host.facts.ansible_default_ipv6 or host.facts.ansible_hostname or host.facts.ansible_dns or host.facts.ansible_interfaces %}
+            <div class="fact-section">
+                <div class="section-header">
+                    <i class="bi bi-ethernet"></i>
+                    Network
+                </div>
+
+                {% if host.facts.ansible_hostname %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-pc-display"></i>
+                        Hostname
+                    </div>
+                    <div class="fact-value">
+                        {{ host.facts.ansible_hostname }}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_hostname|escapejs }}')" title="Copy hostname" aria-label="Copy hostname">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_fqdn %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-globe"></i>
+                        FQDN
+                    </div>
+                    <div class="fact-value">
+                        {{ host.facts.ansible_fqdn }}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_fqdn|escapejs }}')" title="Copy FQDN" aria-label="Copy FQDN">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if host.facts.ansible_dns.nameservers %}
+                <div class="fact-row">
+                    <div class="fact-label">
+                        <i class="bi bi-router"></i>
+                        DNS
+                    </div>
+                    <div class="fact-value">
+                        <div class="dns-list">
+                            {% for nameserver in host.facts.ansible_dns.nameservers %}
+                            <div class="dns-item">
+                                {{ nameserver }}
+                                <button class="copy-btn" onclick="copyToClipboard('{{ nameserver|escapejs }}')" title="Copy DNS" aria-label="Copy DNS server {{ nameserver }}">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Network Interfaces -->
+                {% if host.facts.ansible_interfaces or host.facts.ansible_default_ipv4.interface or host.facts.ansible_default_ipv6.interface %}
+                <div class="subsection-header">Network Interfaces</div>
+                <div id="networkInterfaces">
+                    <!-- Primary Interface -->
+                    {% if host.facts.ansible_default_ipv4.interface %}
+                    <div class="interface-item">
+                        <div class="interface-header">
+                            <div class="interface-name">
+                                {{ host.facts.ansible_default_ipv4.interface }}
+                                <span class="interface-type physical">Primary</span>
+                            </div>
+                            <span class="interface-status up">UP</span>
+                        </div>
+                        <div class="interface-details">
+                            {% if host.facts.ansible_default_ipv4.address %}
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>IPv4:</span>
+                                <span class="d-flex align-items-center gap-2">
+                                    {{ host.facts.ansible_default_ipv4.address }}{% if host.facts.ansible_default_ipv4.netmask %}/{{ host.facts.ansible_default_ipv4.netmask }}{% endif %}
+                                    <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_default_ipv4.address|escapejs }}')" title="Copy IP" aria-label="Copy IP address">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if host.facts.ansible_default_ipv4.macaddress %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>MAC:</span>
+                                <span class="d-flex align-items-center gap-2">
+                                    {{ host.facts.ansible_default_ipv4.macaddress }}
+                                    <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_default_ipv4.macaddress|escapejs }}')" title="Copy MAC" aria-label="Copy MAC address">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if host.facts.ansible_default_ipv4.gateway %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Gateway:</span>
+                                <span>{{ host.facts.ansible_default_ipv4.gateway }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Secondary Interface (if IPv6 uses different interface) -->
+                    {% if host.facts.ansible_default_ipv6.interface and host.facts.ansible_default_ipv6.interface != host.facts.ansible_default_ipv4.interface %}
+                    <div class="interface-item">
+                        <div class="interface-header">
+                            <div class="interface-name">
+                                {{ host.facts.ansible_default_ipv6.interface }}
+                                <span class="interface-type physical">IPv6 Primary</span>
+                            </div>
+                            <span class="interface-status up">UP</span>
+                        </div>
+                        <div class="interface-details">
+                            {% if host.facts.ansible_default_ipv6.address %}
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span>IPv6:</span>
+                                <span class="d-flex align-items-center gap-2">
+                                    {{ host.facts.ansible_default_ipv6.address }}{% if host.facts.ansible_default_ipv6.prefix %}/{{ host.facts.ansible_default_ipv6.prefix }}{% endif %}
+                                    <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_default_ipv6.address|escapejs }}')" title="Copy IPv6" aria-label="Copy IPv6 address">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if host.facts.ansible_default_ipv6.macaddress %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>MAC:</span>
+                                <span class="d-flex align-items-center gap-2">
+                                    {{ host.facts.ansible_default_ipv6.macaddress }}
+                                    <button class="copy-btn" onclick="copyToClipboard('{{ host.facts.ansible_default_ipv6.macaddress|escapejs }}')" title="Copy MAC" aria-label="Copy MAC address">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Collapse for remaining interfaces -->
+                    {% if host.facts.ansible_interfaces %}
+                    <div class="collapse" id="allInterfaces">
+                        {% for interface in host.facts.ansible_interfaces %}
+                        {% if interface != host.facts.ansible_default_ipv4.interface and interface != host.facts.ansible_default_ipv6.interface %}
+                        {% with interface_data=host.facts|host_interface:interface %}
+                        {% if interface_data %}
+                        <div class="interface-item">
+                            <div class="interface-header">
+                                <div class="interface-name">
+                                    {{ interface }}
+                                    {% if 'bridge' in interface or 'br' in interface %}
+                                    <span class="interface-type bridge">Bridge</span>
+                                    {% elif 'veth' in interface or 'tun' in interface or 'tap' in interface %}
+                                    <span class="interface-type virtual">Virtual</span>
+                                    {% elif 'lo' == interface %}
+                                    <span class="interface-type loopback">Loopback</span>
+                                    {% else %}
+                                    <span class="interface-type physical">Physical</span>
+                                    {% endif %}
+                                </div>
+                                <span class="interface-status {% if interface_data.active %}up{% else %}down{% endif %}">
+                                    {% if interface_data.active %}UP{% else %}DOWN{% endif %}
+                                </span>
+                            </div>
+                            {% if interface_data.active %}
+                            <div class="interface-details">
+                                {% if interface_data.ipv4 %}
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span>IPv4:</span>
+                                    <span class="d-flex align-items-center gap-2">
+                                        {{ interface_data.ipv4.address }}{% if interface_data.ipv4.netmask %}/{{ interface_data.ipv4.netmask }}{% endif %}
+                                        <button class="copy-btn" onclick="copyToClipboard('{{ interface_data.ipv4.address|escapejs }}')" title="Copy IP" aria-label="Copy IP address">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                {% endif %}
+                                {% if interface_data.ipv6 %}
+                                {% for ipv6 in interface_data.ipv6 %}
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span>IPv6:</span>
+                                    <span class="d-flex align-items-center gap-2">
+                                        {{ ipv6.address }}{% if ipv6.prefix %}/{{ ipv6.prefix }}{% endif %}
+                                        <button class="copy-btn" onclick="copyToClipboard('{{ ipv6.address|escapejs }}')" title="Copy IPv6" aria-label="Copy IPv6 address">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% if interface_data.macaddress %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>MAC:</span>
+                                    <span class="d-flex align-items-center gap-2">
+                                        {{ interface_data.macaddress }}
+                                        <button class="copy-btn" onclick="copyToClipboard('{{ interface_data.macaddress|escapejs }}')" title="Copy MAC" aria-label="Copy MAC address">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if host.facts.ansible_interfaces|length > 2 %}
+                    <div class="text-center mt-2">
+                        <a class="expand-interfaces" data-bs-toggle="collapse" href="#allInterfaces" role="button" aria-expanded="false" aria-controls="allInterfaces">
+                            <i class="bi bi-chevron-right" id="interfaceExpandIcon"></i>
+                            Total interfaces: {{ host.facts.ansible_interfaces|length }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Expand All Facts Section -->
+        <div class="text-center mt-3">
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#allFactsCollapse" aria-expanded="false" aria-controls="allFactsCollapse">
+                <i class="bi bi-chevron-down" id="expandIcon"></i>
+                <span class="ms-2">Show All Facts</span>
+            </button>
+        </div>
+
+        <div class="collapse mt-3" id="allFactsCollapse">
+            <div class="card">
+                <div class="card-header bg-body-tertiary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">All Host Facts</h6>
+                        <div class="input-group" style="width: 300px;">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control form-control-sm" id="factSearch" placeholder="Search facts..." autocomplete="off">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" id="clearSearch" title="Clear search">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="sticky-top bg-body-secondary">
+                                <tr>
+                                    <th style="width: 30%;">Fact</th>
+                                    <th style="width: 70%;">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="factsTableBody">
+                                {% for fact, value in host.facts.items %}
+                                <tr class="fact-row-item" data-fact-name="{{ fact|lower }}">
+                                    <td class="fact-name">
+                                        <a href="#{{ fact }}" id="{{ fact }}" class="text-decoration-none">
+                                            <code class="text-primary">{{ fact }}</code>
+                                        </a>
+                                    </td>
+                                    <td class="fact-raw-value" style="word-break: break-all; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.8125rem;">
+                                        {{ value | format_data | safe }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noResults" class="text-center py-4 text-muted" style="display: none;">
+                        <i class="bi bi-search"></i>
+                        <p class="mb-0 mt-2">No facts match your search</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap Toast for Copy Feedback -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="copyToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Copied to clipboard!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
         {% endif %}
-      </div>
     </div>
-  </div>
 </div>
