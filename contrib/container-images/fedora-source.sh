@@ -14,7 +14,7 @@ python3 setup.py sdist
 sdist=$(ls dist/ara-*.tar.gz)
 popd
 
-build=$(buildah from quay.io/fedora/fedora:41)
+build=$(buildah from quay.io/fedora/fedora:43)
 
 # Ensure everything is up to date and install requirements
 buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-wheel postgresql libpq mariadb-connector-c"
@@ -24,7 +24,7 @@ buildah run "${build}" -- dnf install -y ${DEV_DEPENDENCIES}
 
 # Install ara from source with API server extras for dependencies (django & django-rest-framework)
 # including database backend libraries and gunicorn
-buildah run --volume ${SOURCE_DIR}:/usr/local/src/ara:z "${build}" -- python3 -m pip install "/usr/local/src/ara/${sdist}[server,postgresql,mysql]" gunicorn
+buildah run --volume ${SOURCE_DIR}:/usr/local/src/ara "${build}" -- python3 -m pip install "/usr/local/src/ara/${sdist}[server,postgresql,mysql]" gunicorn
 
 # Remove development dependencies and clean up
 buildah run "${build}" -- /bin/bash -c "dnf remove -y ${DEV_DEPENDENCIES} && dnf autoremove -y && dnf clean all && python3 -m pip cache purge"

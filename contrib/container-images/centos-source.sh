@@ -5,7 +5,7 @@ DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-connector-c-devel"
 
 # Builds an ARA API server container image from checked out source on CentOS Stream 9.
 # Figure out source directory relative to the contrib/container-images directory
-SCRIPT_DIR=$(cd `dirname $0` && pwd -P)
+SCRIPT_DIR=$(cd $(dirname $0) && pwd -P)
 SOURCE_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd -P)
 
 # Clone the source to a temporary directory and generate an sdist tarball we can install from

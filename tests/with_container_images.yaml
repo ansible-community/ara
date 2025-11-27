@@ -13,19 +13,19 @@
     images:
       # These are in chronological order of release so that we don't end up
       # running SQL migrations backwards during the tests.
-      - tag: fedora41-source-latest
+      - tag: fedora43-source-latest
         script: fedora-source.sh
         name: localhost/ara-api
       - tag: centos9-source-latest
         script: centos-source.sh
         name: localhost/ara-api
-      - tag: fedora41-pypi-latest
+      - tag: fedora43-pypi-latest
         script: fedora-pypi.sh
         name: localhost/ara-api
       - tag: centos9-pypi-latest
         script: centos-pypi.sh
         name: localhost/ara-api
-      - tag: fedora41-distribution-latest
+      - tag: fedora43-distribution-latest
         script: fedora-distribution.sh
         name: localhost/ara-api
   tasks:
