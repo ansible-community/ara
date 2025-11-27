@@ -553,3 +553,100 @@
 [data-bs-theme="dark"] .fact-row-highlighted {
     background-color: rgba(var(--bs-primary-rgb), 0.15) !important;
 }
+
+/* File tree styles */
+.filetree {
+  font-family: var(--bs-font-sans-serif);
+  font-size: 0.9rem;
+}
+
+.filetree ul {
+  list-style: none;
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.filetree > ul {
+  padding-left: 0;
+}
+
+.filetree-item {
+  display: flex;
+  align-items: center;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.filetree-toggle {
+  cursor: pointer;
+}
+
+.filetree-toggle:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.filetree-link {
+  color: var(--bs-link-color);
+  text-decoration: none;
+}
+
+.filetree-link:hover {
+  text-decoration: underline;
+}
+
+.filetree-file .filetree-item:hover {
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* Icon visibility based on collapse state */
+.filetree-icon-collapsed,
+.filetree-folder-closed {
+  display: none;
+}
+
+.filetree-icon-expanded,
+.filetree-folder-open {
+  display: inline;
+}
+
+/* When collapsed: show collapsed icons, hide expanded icons */
+.filetree-toggle.collapsed .filetree-icon-collapsed,
+.filetree-toggle.collapsed .filetree-folder-closed {
+  display: inline;
+}
+
+.filetree-toggle.collapsed .filetree-icon-expanded,
+.filetree-toggle.collapsed .filetree-folder-open {
+  display: none;
+}
+
+/* Indentation lines (optional - comment out if not desired) */
+.filetree-children {
+  position: relative;
+}
+
+.filetree-children::before {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  top: 0;
+  bottom: 0.5rem;
+  width: 1px;
+  background-color: var(--bs-border-color);
+}
+
+.filetree li {
+  position: relative;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .filetree {
+    font-size: 0.8rem;
+  }
+  .filetree ul {
+    padding-left: 1rem;
+  }
+}

@@ -1,26 +1,27 @@
 {% load truncatepath %}
 {% load static_url %}
+{% load filetree %}
+
 <div class="accordion" id="files">
   <div class="card">
     <div class="card-header bg-body-tertiary" id="files_card">
       <button class="btn ara-card-collapse" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_files" aria-expanded="false" aria-controls="collapse_files">
         <h4>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">
-            <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>
-          </svg>
+          <i class="bi bi-files"></i>
           Files
         </h4>
       </button>
     </div>
-    <div id="collapse_files" class="collapse show" aria-labelledby="files_card" data-bs-parent="#files" style="max-height: 275px; overflow-y: auto;">
+    <div id="collapse_files" class="collapse show" aria-labelledby="files_card" data-bs-parent="#files" style="max-height: 400px; overflow-y: auto;">
       <div class="card-body">
         {% if playbook.items.files %}
-          <ul>
-            {% for file in files %}
-              {% url 'ui:file' file.id as file_url %}
-              <li><a href="{% static_url file_url %}" title="{{ file.path }}">{{ file.path | truncatepath:70 }}</a></li>
-            {% endfor %}
-          </ul>
+          <div class="filetree" id="filetree-{{ playbook.id }}">
+            <ul>
+              {% with tree=files|as_filetree %}
+                {% include "partials/filetree_node.html" with nodes=tree %}
+              {% endwith %}
+            </ul>
+          </div>
         {% else %}
           <p>No recorded files found.</p>
           <p>The playbook might have been interrupted or is in progress.</p>
@@ -29,3 +30,27 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  {% if playbook.items.files %}
+  const treeContainer = document.getElementById('filetree-{{ playbook.id }}');
+
+  // Keep toggle button state in sync with collapse state
+  treeContainer.querySelectorAll('.filetree-children.collapse').forEach(function(collapseEl) {
+    collapseEl.addEventListener('show.bs.collapse', function() {
+      const toggle = this.previousElementSibling;
+      if (toggle && toggle.classList.contains('filetree-toggle')) {
+        toggle.classList.remove('collapsed');
+      }
+    });
+    collapseEl.addEventListener('hide.bs.collapse', function() {
+      const toggle = this.previousElementSibling;
+      if (toggle && toggle.classList.contains('filetree-toggle')) {
+        toggle.classList.add('collapsed');
+      }
+    });
+  });
+  {% endif %}
+});
+</script>

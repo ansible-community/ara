@@ -1,0 +1,37 @@
+{% load static_url %}
+
+{% for node in nodes %}
+  {% if node.is_file %}
+    {# Render file as a leaf node #}
+    <li class="filetree-file">
+      <span class="filetree-item">
+        <i class="bi bi-file-code text-primary me-1"></i>
+        {% url 'ui:file' node.file_id as file_url %}
+        <a href="{% static_url file_url %}" title="{{ node.path }}" class="filetree-link">{{ node.name }}</a>
+      </span>
+    </li>
+  {% else %}
+    {# Render directory with collapsible children #}
+    {% with collapse_id=node.path|slugify %}
+    <li class="filetree-dir">
+      <span class="filetree-item filetree-toggle"
+            data-bs-toggle="collapse"
+            data-bs-target="#dir-{{ collapse_id }}"
+            aria-expanded="true"
+            aria-controls="dir-{{ collapse_id }}"
+            role="button">
+        <i class="bi bi-chevron-down filetree-icon-expanded me-1"></i>
+        <i class="bi bi-chevron-right filetree-icon-collapsed me-1"></i>
+        <i class="bi bi-folder2-open text-warning filetree-folder-open me-1"></i>
+        <i class="bi bi-folder2 text-warning filetree-folder-closed me-1"></i>
+        <span class="filetree-dirname">{{ node.name }}</span>
+      </span>
+      {% if node.children %}
+      <ul class="filetree-children collapse show" id="dir-{{ collapse_id }}">
+        {% include "partials/filetree_node.html" with nodes=node.children %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endwith %}
+  {% endif %}
+{% endfor %}
