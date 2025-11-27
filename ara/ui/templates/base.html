@@ -21,6 +21,25 @@
   <link id="pygments-light-css" rel="stylesheet" href="{% static_url ara_pygments_light %}">
   {% static 'css/bootstrap-icons.min.css' as ara_bootstrap_icons %}
   <link id="bootstrap-icons-css" rel="stylesheet" href="{% static_url ara_bootstrap_icons %}">
+  <!-- This needs to run here to prevent the UI from flashing between themes when using light mode -->
+  <!-- https://codeberg.org/ansible-community/ara/issues/545 -->
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme');
+      if (!theme) {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+
+      var pygmentsDark = document.getElementById('pygments-dark-css');
+      var pygmentsLight = document.getElementById('pygments-light-css');
+      if (theme === 'light') {
+        if (pygmentsDark) pygmentsDark.disabled = true;
+      } else {
+        if (pygmentsLight) pygmentsLight.disabled = true;
+      }
+    })();
+  </script>
 </head>
 <body>
 {% include "partials/about_modal.html" %}
