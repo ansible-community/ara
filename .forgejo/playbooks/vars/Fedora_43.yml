@@ -1,3 +1,4 @@
+# User/group to let the tests run largely unprivileged
 ci_user: fedora
 ci_group: fedora
 
@@ -5,8 +6,10 @@ ci_group: fedora
 ci_requirements:
   - git
   - python3
+  - python3-packaging
+  - python3-devel
   - python3-pip
   - python3-wheel
 
 # Name of the image for the VM in OpenStack
-os_image: fedora-42
+os_image: fedora-43

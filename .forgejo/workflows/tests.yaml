@@ -84,4 +84,4 @@ jobs:
           pip install openstacksdk
           ansible-playbook -vv .forgejo/playbooks/test-container-images.yml \
             -e ara_api_source=${{ github.workspace }} \
-            -e ci_image=Debian_12
+            -e ci_image=Debian_13
