@@ -60,11 +60,11 @@
       block:
         - name: Find the first test task
           set_fact:
-            tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test1&playbook=' + playbook_id) }}"
+            _tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test1&playbook=' + playbook_id) }}"
 
         - name: Find the first test task result
           vars:
-            task_id: "{{ tasks.results[0].id | string }}"
+            task_id: "{{ _tasks.results[0].id | string }}"
           set_fact:
             results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
 
@@ -89,11 +89,11 @@
       block:
         - name: Find the second test task
           set_fact:
-            tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test2&playbook=' + playbook_id) }}"
+            _tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test2&playbook=' + playbook_id) }}"
 
         - name: Find the second test task result
           vars:
-            task_id: "{{ tasks.results[0].id | string }}"
+            task_id: "{{ _tasks.results[0].id | string }}"
           set_fact:
             results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
 
@@ -119,11 +119,11 @@
       block:
         - name: Find the third test task
           set_fact:
-            tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test3&playbook=' + playbook_id) }}"
+            _tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test3&playbook=' + playbook_id) }}"
 
         - name: Find the third test task result
           vars:
-            task_id: "{{ tasks.results[0].id | string }}"
+            task_id: "{{ _tasks.results[0].id | string }}"
           set_fact:
             results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
 
@@ -154,11 +154,11 @@
       block:
         - name: Find the fourth test task
           set_fact:
-            tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test4&playbook=' + playbook_id) }}"
+            _tasks: "{{ lookup('ara_api', '/api/v1/tasks?name=test4&playbook=' + playbook_id) }}"
 
         - name: Find the fourth test task result
           vars:
-            task_id: "{{ tasks.results[0].id | string }}"
+            task_id: "{{ _tasks.results[0].id | string }}"
           set_fact:
             results: "{{ lookup('ara_api', '/api/v1/results?task=' + task_id) }}"
 

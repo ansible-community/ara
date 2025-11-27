@@ -21,7 +21,7 @@
     - name: Recover data from ARA
       set_fact:
         playbook: "{{ lookup('ara_api', '/api/v1/playbooks/' + playbook_id) }}"
-        tasks: "{{ lookup('ara_api', '/api/v1/tasks?playbook=' + playbook_id) }}"
+        _tasks: "{{ lookup('ara_api', '/api/v1/tasks?playbook=' + playbook_id) }}"
         results: "{{ lookup('ara_api', '/api/v1/results?playbook=' + playbook_id) }}"
         hosts: "{{ lookup('ara_api', '/api/v1/hosts?playbook=' + playbook_id) }}"
 
