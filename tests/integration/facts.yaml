@@ -81,7 +81,7 @@
     - name: check that facts are stored
       assert:
         that:
-          - '{{ item }}["host"]["facts"].keys() | length > 0'
+          - vars[item]['host']['facts'].keys() | length > 0
         success_msg: facts are stored for {{ item }}
         fail_msg: facts are not stored for {{ item }}
       loop:
