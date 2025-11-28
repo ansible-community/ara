@@ -1,0 +1,135 @@
+{% load static_url %}
+{% load truncatepath %}
+{% load filetree %}
+
+<div class="card ara-details-card">
+  <div class="card-body">
+    <div class="ara-details-grid">
+      <!-- Hosts Section -->
+      <div class="ara-details-section ara-details-section-hosts">
+        <div class="ara-details-section-title">
+          <i class="bi bi-hdd-rack"></i>
+          Hosts
+          {% if playbook.items.hosts %}
+          <span class="ara-details-count">{{ playbook.items.hosts }}</span>
+          {% endif %}
+        </div>
+        <div class="ara-details-content">
+          {% if playbook.items.hosts %}
+            <div class="ara-hosts-list">
+              {% for host in hosts %}
+                {% url 'ui:host' host.id as host_url %}
+                <div class="ara-host-item">
+                  <a href="{% static_url host_url %}" class="ara-host-link">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    <span class="ara-host-name">{{ host.name | truncatechars:50 }}</span>
+                  </a>
+                  <div class="ara-host-status">
+                    {% if host.ok %}
+                    <a role="button" class="btn btn-success btn-sm ara-result-status-badge" title="Tasks with status: ok" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=ok#results"{% endif %}>
+                      {{ host.ok }}
+                    </a>
+                    {% endif %}
+                    {% if host.changed %}
+                    <a role="button" class="btn btn-warning btn-sm ara-result-status-badge" title="Tasks with status: changed" {% if not static_generation %}href="{% url 'ui:host' host.id %}?changed=True#results"{% endif %}>
+                      {{ host.changed }}
+                    </a>
+                    {% endif %}
+                    {% if host.failed or host.unreachable %}
+                    <a role="button" class="btn btn-danger btn-sm ara-result-status-badge" title="Tasks with status: failed/unreachable" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=failed&status=unreachable#results"{% endif %}>
+                      {{ host.failed|add:host.unreachable }}
+                    </a>
+                    {% endif %}
+                    {% if host.skipped %}
+                    <a role="button" class="btn btn-info btn-sm ara-result-status-badge" title="Tasks with status: skipped" {% if not static_generation %}href="{% url 'ui:host' host.id %}?status=skipped#results"{% endif %}>
+                      {{ host.skipped }}
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="ara-details-empty">No recorded hosts found.</p>
+            <p class="ara-details-hint">The playbook might have been interrupted or is in progress.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Files Section -->
+      <div class="ara-details-section ara-details-section-files">
+        <div class="ara-details-section-title">
+          <i class="bi bi-files"></i>
+          Files
+          {% if playbook.items.files %}
+          <span class="ara-details-count">{{ playbook.items.files }}</span>
+          {% endif %}
+        </div>
+        <div class="ara-details-content">
+          {% if playbook.items.files %}
+            <div class="filetree" id="filetree-{{ playbook.id }}">
+              <ul>
+                {% with tree=files|as_filetree %}
+                  {% include "partials/filetree_node.html" with nodes=tree %}
+                {% endwith %}
+              </ul>
+            </div>
+          {% else %}
+            <p class="ara-details-empty">No recorded files found.</p>
+            <p class="ara-details-hint">The playbook might have been interrupted or is in progress.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Records Section -->
+      <div class="ara-details-section ara-details-section-records">
+        <div class="ara-details-section-title">
+          <i class="bi bi-record-circle"></i>
+          Records
+          {% if playbook.items.records %}
+          <span class="ara-details-count">{{ playbook.items.records }}</span>
+          {% endif %}
+        </div>
+        <div class="ara-details-content">
+          {% if playbook.items.records %}
+            <ul class="ara-records-list">
+              {% for record in records %}
+                {% url 'ui:record' record.id as record_url %}
+                <li><a href="{% static_url record_url %}">{{ record.key }}</a></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="ara-details-empty">No saved records found.</p>
+            <p class="ara-details-hint">
+              Learn more about saving key/values with <code>ara_record</code> in the <a href="https://ara.readthedocs.io" target="_blank">documentation</a>.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if playbook.items.files %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const treeContainer = document.getElementById('filetree-{{ playbook.id }}');
+  if (treeContainer) {
+    treeContainer.querySelectorAll('.filetree-children.collapse').forEach(function(collapseEl) {
+      collapseEl.addEventListener('show.bs.collapse', function() {
+        const toggle = this.previousElementSibling;
+        if (toggle && toggle.classList.contains('filetree-toggle')) {
+          toggle.classList.remove('collapsed');
+        }
+      });
+      collapseEl.addEventListener('hide.bs.collapse', function() {
+        const toggle = this.previousElementSibling;
+        if (toggle && toggle.classList.contains('filetree-toggle')) {
+          toggle.classList.add('collapsed');
+        }
+      });
+    });
+  }
+});
+</script>
+{% endif %}
