@@ -1,10 +1,28 @@
 # Copyright (c) 2022 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+import uuid
+
 from django.db import models
 from django.utils import timezone
 
 from ara.setup import ara_version
+
+
+# uuidfield migrated to native uuid in mariadb
+# was prevously a char(32) column
+# https://codeberg.org/ansible-community/ara/issues/617
+class Char32UUIDField(models.UUIDField):
+    def db_type(self, connection):
+        return "char(32)"
+
+    def get_db_prep_value(self, value, connection, prepared=False):
+        value = super().get_db_prep_value(value, connection, prepared)
+        if value is not None:
+            if isinstance(value, str):
+                value = uuid.UUID(value)
+            value = value.hex
+        return value
 
 
 class Base(models.Model):
@@ -171,7 +189,7 @@ class Play(Duration):
     STATUS = ((UNKNOWN, "unknown"), (RUNNING, "running"), (COMPLETED, "completed"), (EXPIRED, "expired"))
 
     name = models.CharField(max_length=255, blank=True, null=True)
-    uuid = models.UUIDField()
+    uuid = Char32UUIDField()
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
 
@@ -202,7 +220,7 @@ class Task(Duration):
     )
 
     name = models.TextField(blank=True, null=True)
-    uuid = models.UUIDField(null=True)
+    uuid = Char32UUIDField(null=True)
     action = models.TextField()
     lineno = models.IntegerField()
     tags = models.BinaryField(max_length=(2**32) - 1)
