@@ -82,13 +82,10 @@ class AraHttpClient:
         else:
             response = func(url, **kwargs)
 
-        if response.status_code >= 500:
-            self.log.error(f"Failed to {method} on {url}: {kwargs}")
-
         self.log.debug(f"HTTP {response.status_code}: {method} on {url}")
 
-        if response.status_code not in [200, 201, 204]:
-            self.log.error(f"Failed to {method} on {url}: {kwargs}")
+        if response.status_code >= 400 or response.status_code not in [200, 201, 204]:
+            self.log.error(f"{response.status_code} | Failed to {method} on {url}: {kwargs}")
 
         if response.status_code == 204:
             return response
