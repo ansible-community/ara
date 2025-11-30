@@ -4,7 +4,7 @@
 
 - name: Assert playbook properties
   hosts: localhost
-  gather_facts: yes
+  gather_facts: true
   vars:
     ara_playbook_name: ARA self tests
     ara_playbook_labels:
@@ -32,13 +32,16 @@
           ara {{ playbook.client_version }} (client) and {{ playbook.server_version }} (server)
 
     - name: Assert playbook properties
+      vars:
+        _controller: "{{ lookup('env', 'ARA_RECORD_CONTROLLER_NAME', default=lookup('pipe', 'hostname')) }}"
+        _user: "{{ lookup('env', 'ARA_RECORD_USER_NAME', default=ansible_facts['user_id']) }}"
       assert:
         that:
           - playbook.name == 'ARA self tests'
           - "playbook.labels | selectattr('name', 'search', 'lookup-tests') | list | length == 1"
           - playbook.ansible_version == ansible_version.full
-          - playbook.controller == lookup('pipe', 'hostname')
-          - playbook.user == ansible_facts['user_id']
+          - playbook.controller == _controller
+          - playbook.user == _user
           - playbook_dir in playbook.path
           - "'tests/integration/lookups.yaml' in playbook.path"
 
