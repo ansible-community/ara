@@ -163,7 +163,7 @@
 
 /* Fact sections */
 .fact-section {
-  background: rgba(var(--bs-secondary-rgb), 0.02);
+  background: var(--bs-tertiary-bg);
   border-radius: 0.375rem;
   padding: 0.75rem;
   margin-bottom: 0.75rem;
