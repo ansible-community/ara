@@ -46,6 +46,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        # Fetch all tags and refs so we can use pbr to determine version from a git checkout
+        with:
+          fetch-depth: 0
 
       - name: Run ansible integration tests
         shell: bash
@@ -67,6 +70,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        # Fetch all tags and refs so we can use pbr to determine version from a git checkout
+        with:
+          fetch-depth: 0
 
       - name: Run container tests on a new VM
         shell: bash
