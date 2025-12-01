@@ -59,7 +59,7 @@ or as environment variables:
 Recording ad-hoc commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to record `ad-hoc commands <https://docs.ansible.com/ansible/latest/user_guide/intro_adhoc.html>`_ in
+It is possible to record `ad-hoc commands <https://docs.ansible.com/projects/ansible/latest/user_guide/intro_adhoc.html>`_ in
 addition to playbooks since ara 1.4.1 and Ansible 2.9.7.
 
 Ad-hoc command recording can be enabled by setting to ``true`` the ``ANSIBLE_LOAD_CALLBACK_PLUGINS`` environment
