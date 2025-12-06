@@ -13,12 +13,20 @@ from ara.setup import ara_version
 # was prevously a char(32) column
 # https://codeberg.org/ansible-community/ara/issues/617
 class Char32UUIDField(models.UUIDField):
+    """
+    UUIDField that uses char(32) on MariaDB for compatibility with
+    databases created before Django 5.0. Other backends use their default.
+    """
+
     def db_type(self, connection):
-        return "char(32)"
+        if connection.vendor == "mysql":
+            return "char(32)"
+        # PostgreSQL, SQLite use default behavior
+        return super().db_type(connection)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         value = super().get_db_prep_value(value, connection, prepared)
-        if value is not None:
+        if value is not None and connection.vendor == "mysql":
             if isinstance(value, str):
                 value = uuid.UUID(value)
             value = value.hex
