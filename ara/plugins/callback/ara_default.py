@@ -329,6 +329,9 @@ class CallbackModule(CallbackBase):
         self.task_cache = {}
         self.delegation_cache = {}
         self.warned_about_host_length = []
+        self.deprecations = {}
+        self.exceptions = []
+        self.warnings = []
 
         self.set_handler(signal.SIGINT)
         self.set_handler(signal.SIGTERM)
@@ -655,19 +658,28 @@ class CallbackModule(CallbackBase):
             self.task_threads = None
 
         if self.task is not None:
+            task_uuid = self.task["uuid"]
+
             # If there is one or more failures across results for this task,
             # the status of the task has already been set to failed
-            task_uuid = self.task["uuid"]
             if self.task_cache[task_uuid]["status"] == "failed":
                 task_status = "failed"
             else:
                 task_status = "completed"
-
             ended = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
             self.task_cache[task_uuid] = self.client.patch(
-                "/api/v1/tasks/%s" % self.task["id"], status=task_status, ended=ended
+                "/api/v1/tasks/%s" % self.task["id"],
+                status=task_status,
+                ended=ended,
+                deprecations=self._dedupe_deprecations(self.deprecations),
+                exceptions=list(set(self.exceptions)),
+                warnings=list(set(self.warnings)),
             )
             self.task = None
+            self.deprecations = {}
+            self.exceptions = []
+            self.warnings = []
 
     def _end_play(self):
         if self.play is not None:
@@ -869,8 +881,22 @@ class CallbackModule(CallbackBase):
             ignore_errors=ignore_errors,
         )
 
+        # Update host facts if gather_facts: true
         if self.task["action"] in ANSIBLE_SETUP_MODULES and "ansible_facts" in results:
             self.client.patch("/api/v1/hosts/%s" % host["id"], facts=results["ansible_facts"])
+
+        # Update task deprecations/exceptions/warnings
+        # Note: the ansible field is "exception" but ara pluralizes it
+        if "deprecations" in results:
+            # deprecations are supplied as a dict
+            self.deprecations = results["deprecations"]
+        if "exception" in results:
+            # exceptions are supplied as a string
+            self.exceptions.append(results["exception"])
+        if "warnings" in results:
+            # warnings are supplied as a list
+            for warning in results["warnings"]:
+                self.warnings.append(warning)
 
     def _load_stats(self, stats):
         hosts = sorted(stats.processed.keys())
@@ -930,3 +956,22 @@ class CallbackModule(CallbackBase):
             pass
 
         return user
+
+    def _dedupe_deprecations(self, deprecations):
+        """
+        Return a list with unique deprecation entries.
+        This is because deprecations are supplied as dicts so we must walk through them.
+        """
+        seen = set()
+        uniq = []
+        for dep in deprecations:
+            # Use a tuple of the fields that define uniqueness.
+            key = (
+                dep.get("collection_name"),
+                dep.get("msg"),
+                dep.get("version"),
+            )
+            if key not in seen:
+                seen.add(key)
+                uniq.append(dep)
+        return uniq

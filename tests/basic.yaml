@@ -148,6 +148,7 @@
       set_fact:
         _env:
           ANSIBLE_CONFIG: "{{ ara_api_root_dir }}/server/ansible.cfg"
+          ANSIBLE_DISPLAY_TRACEBACK: always
           ARA_DEBUG: "{{ ara_api_debug }}"
           ARA_LOG_LEVEL: "{{ ara_api_log_level }}"
           ARA_BASE_DIR: "{{ ara_api_root_dir }}/server"
@@ -228,6 +229,9 @@
           environment:
             ARA_IGNORED_FACTS: all
           command: "ansible-playbook -vvv {{ _test_root }}/ignored_facts.yaml"
+
+        - name: Run notes tests for deprecations, exceptions and warnings
+          command: "ansible-playbook -vvv {{ _test_root }}/notes.yaml"
 
         - name: Generate static report
           command: ara-manage generate {{ ara_api_root_dir }}/server/static

@@ -234,6 +234,9 @@ class Task(Duration):
     tags = models.BinaryField(max_length=(2**32) - 1)
     handler = models.BooleanField()
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
+    warnings = models.JSONField(default=list)
+    deprecations = models.JSONField(default=list)
+    exceptions = models.JSONField(default=list)
 
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="tasks")
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="tasks")

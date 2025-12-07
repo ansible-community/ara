@@ -116,6 +116,27 @@
   text-align: center;
 }
 
+.multiple-pill-column {
+  width: 50px;
+  min-width: 50px;
+  max-width: 75px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.popover.popover {
+  max-width: 700px !important;
+}
+
+.popover .popover-body {
+  white-space: pre-wrap;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
 /*
  * Auto-refresh styling
 */

@@ -1,0 +1,58 @@
+<script>
+  // Tooltips
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+  // Popovers with hover that allows interaction with content
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  popoverTriggerList.forEach(function (el) {
+    var popover = new bootstrap.Popover(el, {
+      html: true,
+      sanitize: false,
+      trigger: 'manual'
+    });
+
+    var hideTimeout;
+    var isOverTrigger = false;
+    var isOverPopover = false;
+
+    function showPopover() {
+      clearTimeout(hideTimeout);
+      popover.show();
+    }
+
+    function hidePopoverWithDelay() {
+      hideTimeout = setTimeout(function () {
+        if (!isOverTrigger && !isOverPopover) {
+          popover.hide();
+        }
+      }, 100);
+    }
+
+    el.addEventListener('mouseenter', function () {
+      isOverTrigger = true;
+      showPopover();
+    });
+
+    el.addEventListener('mouseleave', function () {
+      isOverTrigger = false;
+      hidePopoverWithDelay();
+    });
+
+    // Use event delegation to handle popover hover
+    el.addEventListener('shown.bs.popover', function () {
+      var popoverEl = document.querySelector('.popover');
+      if (popoverEl) {
+        popoverEl.addEventListener('mouseenter', function () {
+          isOverPopover = true;
+          clearTimeout(hideTimeout);
+        });
+
+        popoverEl.addEventListener('mouseleave', function () {
+          isOverPopover = false;
+          hidePopoverWithDelay();
+        });
+      }
+    });
+  });
+</script>

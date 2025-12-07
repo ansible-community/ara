@@ -2,6 +2,8 @@
 {% load datetime_formatting %}
 {% load truncatepath %}
 {% load static_url %}
+{% load pygments_highlights %}
+{% load exception_escape %}
 
 <div class="table-responsive">
   <table class="table table-sm table-hover" id="tasks">
@@ -21,6 +23,7 @@
         <th title="Path and line number to the task">Task path</th>
         <th title="Name or path of this task's playbook">Playbook name (or path)</th>
         <th class="single-pill-column" title="Tags">Tags</th>
+        <th class="multiple-pill-column" title="Deprecations, exceptions, warnings">Notes</th>
       </tr>
     </thead>
     <tbody>
@@ -88,6 +91,39 @@
           <span class="btn btn-secondary btn-sm d-inline-flex justify-content-center align-items-center ara-result-status-badge" {% if task.tags %}data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" data-bs-title="{% include 'partials/tags_list.html' with tags=task.tags %}{% endif %}">
             {{ task.tags | length }}
           </span>
+        </td>
+
+        <td class="multiple-pill-column">
+          {% url 'ui:playbook' task.playbook.id as playbook_url %}
+          {% if task.deprecations %}
+            <a href="{% static_url playbook_url %}?task={{ task.id }}#results"
+              class="badge rounded-pill bg-info text-dark me-1"
+              data-bs-toggle="popover"
+              title="Deprecations"
+              data-bs-content="{{ task.deprecations|format_data }}">
+              {{ task.deprecations|length }}
+            </a>
+          {% endif %}
+
+          {% if task.exceptions %}
+            <a href="{% static_url playbook_url %}?task={{ task.id }}#results"
+              class="badge rounded-pill bg-danger me-1"
+              data-bs-toggle="popover"
+              title="Exceptions"
+              data-bs-content="{% for exc in task.exceptions %}{{ exc|escape_for_exception }}{% if not forloop.last %}<hr>{% endif %}{% endfor %}">
+              {{ task.exceptions|length }}
+            </a>
+          {% endif %}
+
+          {% if task.warnings %}
+            <a href="{% static_url playbook_url %}?task={{ task.id }}#results"
+              class="badge rounded-pill bg-warning text-dark me-1"
+              data-bs-toggle="popover"
+              title="Warnings"
+              data-bs-content="{{ task.warnings|join:'<hr>' }}">
+              {{ task.warnings|length }}
+            </a>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}

@@ -229,6 +229,9 @@ class ListTaskSerializer(ItemCountSerializer, TaskPathSerializer):
 
     tags = ara_fields.CompressedObjectField(read_only=True)
     play = serializers.PrimaryKeyRelatedField(read_only=True)
+    deprecations = serializers.JSONField(read_only=True)
+    exceptions = serializers.JSONField(read_only=True)
+    warnings = serializers.JSONField(read_only=True)
 
 
 class ListHostSerializer(serializers.ModelSerializer):

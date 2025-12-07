@@ -1,0 +1,33 @@
+{% load pygments_highlights %}
+{% load exception_escape %}
+<td class="multiple-pill-column">
+  {% if task.deprecations %}
+    <a href='{% url "ui:result" result.id %}#deprecations'
+      class="badge rounded-pill bg-info text-dark me-1"
+      data-bs-toggle="popover"
+      title="Deprecations"
+      data-bs-content="{{ task.deprecations|format_data }}">
+      {{ task.deprecations|length }}
+    </a>
+  {% endif %}
+
+  {% if task.exceptions %}
+    <a href='{% url "ui:result" result.id %}#exception'
+      class="badge rounded-pill bg-danger me-1"
+      data-bs-toggle="popover"
+      title="Exceptions"
+      data-bs-content="{% for exc in task.exceptions %}{{ exc|escape_for_exception }}{% if not forloop.last %}<hr>{% endif %}{% endfor %}">
+      {{ task.exceptions|length }}
+    </a>
+  {% endif %}
+
+  {% if task.warnings %}
+    <a href='{% url "ui:result" result.id %}#warnings'
+      class="badge rounded-pill bg-warning text-dark me-1"
+      data-bs-toggle="popover"
+      title="Warnings"
+      data-bs-content="{{ task.warnings|join:'<hr>' }}">
+      {{ task.warnings|length }}
+    </a>
+  {% endif %}
+</td>

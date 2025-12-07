@@ -37,6 +37,7 @@
                   <th>Action</th>
                   <th>Task</th>
                   <th class="single-pill-column">Tags</th>
+                  <th class="multiple-pill-column" title="Deprecations, exceptions, warnings">Notes</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,6 +103,8 @@
                       {{ result.task.tags | length }}
                     </span>
                   </td>
+
+                  {% include "partials/task_notes.html" with task=result.task %}
                 </tr>
               {% endfor %}
               </tbody>

@@ -1,0 +1,41 @@
+- name: Test deprecations, warnings and exceptions
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Retrieve the current playbook so we can get the ID
+      ara_playbook:
+      register: playbook_query
+
+    - name: Save the playbook id so we can re-use it easily
+      set_fact:
+        playbook_id: "{{ playbook_query.playbook.id | string }}"
+
+    - name: Generate an exception
+      command: "python3 -c 'raise'"
+      ignore_errors: true
+
+    - name: Validate that the exception was recorded
+      vars:
+        _task_query: "{{ lookup('ara_api', '/api/v1/tasks?name=Generate&playbook=' + playbook_id) }}"
+      assert:
+        that:
+          - _task_query['results'][0]['exceptions'] | length == 1
+          - "'Traceback (most recent call last)' in _task_query['results'][0]['exceptions'][0]"
+
+    # Until 2.24, anyway
+    # [DEPRECATION WARNING]: The internal "vars" dictionary is deprecated. This feature will be removed from ansible-core version 2.24.
+    - name: Do something deprecated
+      debug:
+        msg: "{{ vars.keys() | length }} variables found"
+
+    - name: Validate that deprecation was recorded
+      vars:
+        _task_query: "{{ lookup('ara_api' , '/api/v1/tasks?name=Deprecated&playbook=' + playbook_id) }}"
+      assert:
+        that:
+          - _task_query['results'][0]['deprecations'] | length == 1
+          - _task_query['results'][0]['deprecations'][0]['collection_name'] == 'ansible.builtin'
+          - _task_query['results'][0]['deprecations'][0]['deprecator']['resolved_name'] == 'ansible.builtin'
+          - _task_query['results'][0]['deprecations'][0]['version'] == '2.24'
+
+# TODO: Find out a reliable way to raise a warning and test that
