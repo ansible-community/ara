@@ -617,3 +617,105 @@ class TaskNotesTestCase(APITestCase):
         self.assertEqual([], task_updated.warnings)
         self.assertEqual([], task_updated.deprecations)
         self.assertEqual([], task_updated.exceptions)
+
+    def test_filter_tasks_by_deprecations_gt(self):
+        """deprecations_count__gt=0 should return only tasks with deprecations."""
+        # An ordinary task
+        factories.TaskFactory(name="ordinary")
+        # A task with deprecations
+        task = factories.TaskFactory(name="deprecated", deprecations=TASK_DEPRECATIONS)
+
+        resp = self.client.get("/api/v1/tasks?deprecations_count__gt=0")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task with a deprecation
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_exceptions_gt(self):
+        """exceptions_count__gt=0 should return only tasks with exceptions."""
+        # An ordinary task
+        factories.TaskFactory(name="ordinary")
+        # A task with exceptions
+        task = factories.TaskFactory(name="excepted", exceptions=TASK_EXCEPTIONS)
+
+        resp = self.client.get("/api/v1/tasks?exceptions_count__gt=0")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task with an exception
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_warnings_gt(self):
+        """warnings_count__gt=0 should return only tasks with warnings."""
+        # An ordinary task
+        factories.TaskFactory(name="ordinary")
+        # A task with warnings
+        task = factories.TaskFactory(name="warned", warnings=TASK_WARNINGS)
+
+        resp = self.client.get("/api/v1/tasks?warnings_count__gt=0")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task with a warning
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_deprecations_lt(self):
+        """deprecations_count__lt=1 shouldn't return tasks with deprecations."""
+        # An ordinary task
+        task = factories.TaskFactory(name="ordinary")
+        # A task with deprecations
+        factories.TaskFactory(name="deprecated", deprecations=TASK_DEPRECATIONS)
+
+        resp = self.client.get("/api/v1/tasks?deprecations_count__lt=1")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task without a deprecation
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_exceptions_lt(self):
+        """exceptions_count__lt=1 shouldn't return tasks with exceptions."""
+        # An ordinary task
+        task = factories.TaskFactory(name="ordinary")
+        # A task with exceptions
+        factories.TaskFactory(name="excepted", exceptions=TASK_EXCEPTIONS)
+
+        resp = self.client.get("/api/v1/tasks?exceptions_count__lt=1")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task without an exception
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_warnings_lt(self):
+        """warnings_count__lt=1 shouldn't return tasks with warnings."""
+        # An ordinary task
+        task = factories.TaskFactory(name="ordinary")
+        # A task with warnings
+        factories.TaskFactory(name="warned", warnings=TASK_WARNINGS)
+
+        resp = self.client.get("/api/v1/tasks?warnings_count__lt=1")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task without a warning
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)
+
+    def test_filter_tasks_by_multiple_counts(self):
+        """Combination filters (e.g. warnings & exceptions) should AND together."""
+        # Task with both warning and exception
+        task = factories.TaskFactory(
+            name="mixed",
+            exceptions=TASK_EXCEPTIONS,
+            warnings=TASK_WARNINGS,
+        )
+        # Pure warning task should be excluded by the “exceptions” part
+        factories.TaskFactory(name="only_warn", warnings=TASK_WARNINGS)
+
+        resp = self.client.get("/api/v1/tasks?warnings_count__gt=0&exceptions_count__gt=0")
+        self.assertEqual(200, resp.status_code)
+        ids = {r["id"] for r in resp.data["results"]}
+        # We should only have the task with the exception
+        self.assertEqual(len(ids), 1)
+        self.assertIn(task.id, ids)

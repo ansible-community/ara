@@ -3,6 +3,8 @@
 
 import django_filters
 from django.db import models as django_models
+from django.db.models import Value
+from django.db.models.functions import Coalesce
 
 from ara.api import models as ara_models
 
@@ -106,6 +108,13 @@ class TaskFilter(DateFilter):
     lineno = django_filters.CharFilter(field_name="lineno", lookup_expr="exact")
     handler = django_filters.BooleanFilter(field_name="handler", lookup_expr="exact")
 
+    exceptions_count__gt = django_filters.NumberFilter(method="filter_exceptions_count_gt")
+    exceptions_count__lt = django_filters.NumberFilter(method="filter_exceptions_count_lt")
+    deprecations_count__gt = django_filters.NumberFilter(method="filter_deprecations_count_gt")
+    deprecations_count__lt = django_filters.NumberFilter(method="filter_deprecations_count_lt")
+    warnings_count__gt = django_filters.NumberFilter(method="filter_warnings_count_gt")
+    warnings_count__lt = django_filters.NumberFilter(method="filter_warnings_count_lt")
+
     # fmt: off
     order = django_filters.OrderingFilter(
         fields=(
@@ -118,6 +127,36 @@ class TaskFilter(DateFilter):
         )
     )
     # fmt: on
+
+    def filter_exceptions_count_gt(self, queryset, name, value):
+        return queryset.annotate(exceptions_count=Coalesce(ara_models.JsonLength("exceptions"), Value(0))).filter(
+            exceptions_count__gt=value
+        )
+
+    def filter_exceptions_count_lt(self, queryset, name, value):
+        return queryset.annotate(exceptions_count=Coalesce(ara_models.JsonLength("exceptions"), Value(0))).filter(
+            exceptions_count__lt=value
+        )
+
+    def filter_deprecations_count_gt(self, queryset, name, value):
+        return queryset.annotate(deprecations_count=Coalesce(ara_models.JsonLength("deprecations"), Value(0))).filter(
+            deprecations_count__gt=value
+        )
+
+    def filter_deprecations_count_lt(self, queryset, name, value):
+        return queryset.annotate(deprecations_count=Coalesce(ara_models.JsonLength("deprecations"), Value(0))).filter(
+            deprecations_count__lt=value
+        )
+
+    def filter_warnings_count_gt(self, queryset, name, value):
+        return queryset.annotate(warnings_count=Coalesce(ara_models.JsonLength("warnings"), Value(0))).filter(
+            warnings_count__gt=value
+        )
+
+    def filter_warnings_count_lt(self, queryset, name, value):
+        return queryset.annotate(warnings_count=Coalesce(ara_models.JsonLength("warnings"), Value(0))).filter(
+            warnings_count__lt=value
+        )
 
 
 class HostFilter(BaseFilter):

@@ -4,6 +4,7 @@
 import uuid
 
 from django.db import models
+from django.db.models import Func, IntegerField
 from django.utils import timezone
 
 from ara.setup import ara_version
@@ -31,6 +32,25 @@ class Char32UUIDField(models.UUIDField):
                 value = uuid.UUID(value)
             value = value.hex
         return value
+
+
+class JsonLength(Func):
+    """
+    Use native DB functions to count the number of items in a json list.
+    """
+
+    output_field = IntegerField()
+
+    def as_postgresql(self, compiler, connection):
+        return self.as_sql(
+            compiler, connection, function="jsonb_array_length", template="%(function)s(%(expressions)s)"
+        )
+
+    def as_mysql(self, compiler, connection):
+        return self.as_sql(compiler, connection, function="JSON_LENGTH", template="%(function)s(%(expressions)s)")
+
+    def as_sqlite(self, compiler, connection):
+        return self.as_sql(compiler, connection, function="json_array_length", template="%(function)s(%(expressions)s)")
 
 
 class Base(models.Model):

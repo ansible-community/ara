@@ -3,7 +3,7 @@
 <td class="multiple-pill-column">
   {% if task.deprecations %}
     <a href='{% url "ui:result" result.id %}#deprecations'
-      class="badge rounded-pill bg-info text-dark me-1"
+      class="badge rounded-pill bg-secondary text-dark me-1"
       data-bs-toggle="popover"
       title="Deprecations"
       data-bs-content="{{ task.deprecations|format_data }}">

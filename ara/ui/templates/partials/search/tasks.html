@@ -97,6 +97,32 @@
           </div>
           <br />
 
+          <!-- task notes (deprecations, exceptions, warnings) -->
+          <div class="row g-2">
+            <div class="col-md">
+              <label {% if request.GET.deprecations_count__gt or request.GET.exceptions_count__gt or request.GET.warnings_count__gt %}style="font-weight:bold;"{% endif %}>With: </label>
+              <div class="form-check form-check-inline text-secondary">
+                <input class="form-check-input" type="checkbox" id="has_deprecations" value="0" name="deprecations_count__gt" {% if request.GET.deprecations_count__gt %}checked{% endif %}>
+                <label class="form-check-label" for="has_deprecations">
+                  <i class="bi bi-info-circle"></i> deprecations
+                </label>
+              </div>
+              <div class="form-check form-check-inline text-danger">
+                <input class="form-check-input" type="checkbox" id="has_exceptions" value="0" name="exceptions_count__gt" {% if request.GET.exceptions_count__gt %}checked{% endif %}>
+                <label class="form-check-label" for="has_exceptions">
+                  <i class="bi bi-x-circle"></i> exceptions
+                </label>
+              </div>
+              <div class="form-check form-check-inline text-warning">
+                <input class="form-check-input" type="checkbox" id="has_warnings" value="0" name="warnings_count__gt" {% if request.GET.warnings_count__gt %}checked{% endif %}>
+                <label class="form-check-label" for="has_warnings">
+                  <i class="bi bi-exclamation-triangle"></i> warnings
+                </label>
+              </div>
+            </div>
+          </div>
+          <br />
+
           <!-- submit and filter by date -->
           <div class="row g-2">
             <div class="col-md">

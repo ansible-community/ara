@@ -61,6 +61,45 @@ class TaskList(Lister):
             default=None,
             help=("List tasks matching a specific action/ansible module (ex: 'debug', 'package', 'set_fact')"),
         )
+        deprecations = parser.add_mutually_exclusive_group()
+        deprecations.add_argument(
+            "--with-deprecations",
+            action="store_true",
+            default=False,
+            help=("Return tasks with deprecations")
+        )
+        deprecations.add_argument(
+            "--without-deprecations",
+            action="store_true",
+            default=False,
+            help=("Don't return tasks with deprecations")
+        )
+        exceptions = parser.add_mutually_exclusive_group()
+        exceptions.add_argument(
+            "--with-exceptions",
+            action="store_true",
+            default=False,
+            help=("Return tasks with exceptions")
+        )
+        exceptions.add_argument(
+            "--without-exceptions",
+            action="store_true",
+            default=False,
+            help=("Don't return tasks with exceptions")
+        )
+        warnings = parser.add_mutually_exclusive_group()
+        warnings.add_argument(
+            "--with-warnings",
+            action="store_true",
+            default=False,
+            help=("Return tasks with warnings")
+        )
+        warnings.add_argument(
+            "--without-warnings",
+            action="store_true",
+            default=False,
+            help=("Don't return tasks with warnings")
+        )
         parser.add_argument(
             "--long",
             action="store_true",
@@ -127,6 +166,19 @@ class TaskList(Lister):
         if args.action is not None:
             query["action"] = args.action
 
+        if args.with_deprecations:
+            query["deprecations_count__gt"] = 0
+        if args.without_deprecations:
+            query["deprecations_count__lt"] = 1
+        if args.with_exceptions:
+            query["exceptions_count__gt"] = 0
+        if args.without_exceptions:
+            query["exceptions_count__lt"] = 1
+        if args.with_warnings:
+            query["warnings_count__gt"] = 0
+        if args.without_warnings:
+            query["warnings_count__lt"] = 1
+
         query["order"] = args.order
         query["limit"] = args.limit
 
@@ -152,6 +204,9 @@ class TaskList(Lister):
                 "id",
                 "uuid",
                 "status",
+                "deprecations",
+                "exceptions",
+                "warnings",
                 "results",
                 "action",
                 "name",
@@ -239,6 +294,9 @@ class TaskShow(ShowOne):
             "duration",
             "tags",
             "handler",
+            "deprecations",
+            "exceptions",
+            "warnings",
         )
         return (columns, ([task[column] for column in columns]))
 

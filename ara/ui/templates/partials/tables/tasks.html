@@ -97,7 +97,7 @@
           {% url 'ui:playbook' task.playbook.id as playbook_url %}
           {% if task.deprecations %}
             <a href="{% static_url playbook_url %}?task={{ task.id }}#results"
-              class="badge rounded-pill bg-info text-dark me-1"
+              class="badge rounded-pill bg-secondary text-dark me-1"
               data-bs-toggle="popover"
               title="Deprecations"
               data-bs-content="{{ task.deprecations|format_data }}">
