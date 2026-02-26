@@ -5,6 +5,68 @@
 Changelog and release notes
 ***************************
 
+1.7.5 (2026-02-23)
+##################
+
+https://codeberg.org/ansible-community/ara/releases/tag/1.7.5
+
+.. code-block:: text
+
+    1.7.5 fixes an issue with database migrations, modernizes its python
+    installation and includes native support for Ansible deprecations,
+    warnings and exceptions.
+    
+    Changes since 1.7.4:
+    https://codeberg.org/ansible-community/ara/compare/1.7.4...1.7.5
+    
+    Ansible deprecations, warnings, exceptions
+    ------------------------------------------
+    
+    ansible-core 2.19 introduced deprecations, warnings and exceptions directly
+    in the task results recorded by ara.
+    When recording new playbooks, ara 1.7.5 extracts them from the task results
+    and attaches them to the tasks directly.
+    
+    Exposed under /api/v1/tasks, they are also available in the UI under a new
+    column called "notes" when browsing playbook results.
+    
+    Database
+    --------
+    
+    ara 1.7.4 introduced database migrations to address Django 5.2 support with
+    MySQL/MariaDB.
+    
+    The migration wasn't scoped explicitly to the MySQL backend and caused issues
+    with PostgreSQL.
+    
+    This is now fixed.
+    
+    Packaging
+    ---------
+    
+    ara historically used OpenStack's pbr with a setup.py and setup.cfg for
+    packaging, installation and versioning.
+    
+    Since then, pyproject.toml has emerged as the modern way to package
+    python software.
+    
+    With special thanks to Adrien Banlin (sohorx), ara has completed migration
+    to pyproject.toml.
+    
+    Upgrade notes
+    -------------
+    
+    The version of ara used to record playbooks should be the same one as the
+    server. Update the version of ara and restart the server if one is running.
+    
+    Then, SQL migrations must be run to fix an issue introduced in 1.7.4 and in
+    order to add support for recording deprecations, warnings and exceptions.
+    
+    As always, take a backup of the database and run ``ara-manage migrate`` after
+    updating ara where the server runs from.
+    
+    ara 1.7.5 is expected to be the last version to support python3.8.
+
 1.7.4 (2025-12-01)
 ##################
 
