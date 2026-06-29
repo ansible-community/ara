@@ -35,8 +35,9 @@
     - name: Get some facts
       setup:
         gather_subset:
-          - '!all'
-          - '!any'
+          - "!all"
+          - "!any"
+          - "!env"
           - kernel
           - python
 
@@ -47,10 +48,6 @@
           - "'kernel_version' in ansible_facts"
           - "'python' in ansible_facts"
           - "'python_version' in ansible_facts"
-
-    - name: Print facts for assertion
-      debug:
-        msg: "{{ ansible_facts }}"
 
     - name: Assert that facts have not been saved
       vars:
