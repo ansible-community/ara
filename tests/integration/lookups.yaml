@@ -89,19 +89,19 @@
     # failed is a new status for a task, validate that it actually works
     - name: Find the task with the ignored errors and validate the status
       vars:
-        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=ignore_errors&playbook=' + playbook_id ) }}"
+        _found: "{{ lookup('ara_api', '/api/v1/tasks?name=ignore_errors&playbook=' + playbook_id ) }}"
       assert:
         that:
-          - _task['results'][0]['name'] == 'Fail something with ignore_errors'
-          - _task['results'][0]['status'] == 'completed'
+          - _found['results'][0]['name'] == 'Fail something with ignore_errors'
+          - _found['results'][0]['status'] == 'completed'
 
     - name: Find the task with the failure and validate the status
       vars:
-        _task: "{{ lookup('ara_api', '/api/v1/tasks?name=generate&playbook=' + playbook_id ) }}"
+        _found: "{{ lookup('ara_api', '/api/v1/tasks?name=generate&playbook=' + playbook_id ) }}"
       assert:
         that:
-          - _task['results'][0]['name'] == 'Generate a failure that will be rescued'
-          - _task['results'][0]['status'] == 'failed'
+          - _found['results'][0]['name'] == 'Generate a failure that will be rescued'
+          - _found['results'][0]['status'] == 'failed'
 
     #####
     # Examples taken from docs on Ansible plugins and use cases
