@@ -42,8 +42,21 @@ class ItemCountSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_items(obj):
+        # Counting each relationship with its own .count() call is fine for a single
+        # object but becomes an N+1 query problem when serializing a list: every
+        # object issues one query per relationship. Views that serialize many objects
+        # should annotate each count on the queryset as "annotated_<type>_count" (see
+        # the with_item_counts() queryset methods in ara.api.models) so the values are
+        # computed in a single query. When such an annotation is present we use it and
+        # avoid a database round-trip; otherwise we fall back to .count() so callers
+        # that did not annotate keep working unchanged.
         types = ["plays", "tasks", "results", "hosts", "files", "records"]
-        items = {item: getattr(obj, item).count() for item in types if hasattr(obj, item)}
+        items = {}
+        for item in types:
+            if not hasattr(obj, item):
+                continue
+            annotated = getattr(obj, "annotated_%s_count" % item, None)
+            items[item] = annotated if annotated is not None else getattr(obj, item).count()
         return items
 
 
