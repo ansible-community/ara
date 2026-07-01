@@ -24,10 +24,15 @@ class PlaybookViewSet(viewsets.ModelViewSet):
     filterset_class = filters.PlaybookFilter
 
     def get_queryset(self):
+        queryset = models.Playbook.objects.all()
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Playbook.objects.filter(status__in=statuses).order_by("-id")
-        return models.Playbook.objects.all().order_by("-id")
+            queryset = queryset.filter(status__in=statuses)
+        # Only the list and detail representations expose relationship counts and
+        # labels; annotating/prefetching for create/update/destroy would be wasted work.
+        if self.action in ("list", "retrieve"):
+            queryset = queryset.with_item_counts()
+        return queryset.order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":

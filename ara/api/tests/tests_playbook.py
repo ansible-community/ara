@@ -3,6 +3,8 @@
 
 import datetime
 
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
 from rest_framework.test import APITestCase
@@ -331,3 +333,76 @@ class PlaybookTestCase(APITestCase):
         request = self.client.get("/api/v1/playbooks?label=%s" % "test-label")
         self.assertEqual(1, len(request.data["results"]))
         self.assertEqual(request.data["results"][0]["labels"][0]["name"], "test-label")
+
+    @staticmethod
+    def _populate_playbook(playbook):
+        """
+        Attach one of each related object to a playbook for item-count testing.
+
+        file= is passed to TaskFactory on purpose: its default file SubFactory would
+        otherwise build a File with its own playbook SubFactory and create a stray
+        playbook, which would skew both the counts and the query-count assertions.
+        """
+        play = factories.PlayFactory(playbook=playbook)
+        file_content = factories.FileContentFactory()
+        task_file = factories.FileFactory(playbook=playbook, path="/tasks-%s.yml" % playbook.id, content=file_content)
+        host = factories.HostFactory(playbook=playbook, name="host-%s" % playbook.id)
+        task = factories.TaskFactory(playbook=playbook, play=play, file=task_file)
+        factories.ResultFactory(playbook=playbook, play=play, task=task, host=host)
+        factories.ResultFactory(playbook=playbook, play=play, task=task, host=host)
+        factories.RecordFactory(playbook=playbook, key="record-%s" % playbook.id)
+        playbook.labels.add(factories.LabelFactory(name="label-%s" % playbook.id))
+        return playbook
+
+    def _expected_items(self, playbook):
+        return {
+            "plays": playbook.plays.count(),
+            "tasks": playbook.tasks.count(),
+            "results": playbook.results.count(),
+            "hosts": playbook.hosts.count(),
+            "files": playbook.files.count(),
+            "records": playbook.records.count(),
+        }
+
+    def test_playbook_list_items_match_counts(self):
+        # A fully populated playbook and a bare one (every relationship empty)
+        populated = self._populate_playbook(factories.PlaybookFactory())
+        empty = factories.PlaybookFactory()
+
+        request = self.client.get("/api/v1/playbooks")
+        self.assertEqual(200, request.status_code)
+        items_by_id = {row["id"]: row["items"] for row in request.data["results"]}
+
+        self.assertEqual(items_by_id[populated.id], self._expected_items(populated))
+        # Empty relationships must be reported as 0 (Coalesce), not omitted or null
+        self.assertEqual(
+            items_by_id[empty.id],
+            {"plays": 0, "tasks": 0, "results": 0, "hosts": 0, "files": 0, "records": 0},
+        )
+
+    def test_playbook_detail_items_match_counts(self):
+        playbook = self._populate_playbook(factories.PlaybookFactory())
+        request = self.client.get("/api/v1/playbooks/%s" % playbook.id)
+        self.assertEqual(200, request.status_code)
+        self.assertEqual(request.data["items"], self._expected_items(playbook))
+
+    def test_playbook_list_has_no_n_plus_one_queries(self):
+        # Serializing the list must take a constant number of queries no matter how many
+        # playbooks are returned. If it scaled with the number of playbooks, each extra
+        # playbook would add its own per-relationship count queries -- the N+1 problem
+        # from issue #534 that this test guards against.
+        self._populate_playbook(factories.PlaybookFactory())
+        with CaptureQueriesContext(connection) as one_playbook:
+            self.assertEqual(200, self.client.get("/api/v1/playbooks").status_code)
+
+        self._populate_playbook(factories.PlaybookFactory())
+        with CaptureQueriesContext(connection) as two_playbooks:
+            request = self.client.get("/api/v1/playbooks")
+        self.assertEqual(2, request.data["count"])
+
+        self.assertEqual(
+            len(one_playbook.captured_queries),
+            len(two_playbooks.captured_queries),
+            "Query count grew with the number of playbooks (N+1 regression):\n%s"
+            % "\n".join(query["sql"] for query in two_playbooks.captured_queries),
+        )

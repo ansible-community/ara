@@ -4,7 +4,8 @@
 import uuid
 
 from django.db import models
-from django.db.models import Func, IntegerField
+from django.db.models import Count, Func, IntegerField, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from ara.setup import ara_version
@@ -106,6 +107,54 @@ class Label(Base):
         return "<Label %s: %s>" % (self.id, self.name)
 
 
+def _related_count(related_model, fk_field="playbook"):
+    """
+    Build a correlated subquery that counts related_model rows pointing back to the
+    outer row through fk_field.
+
+    Each relationship is counted with its own independent subquery rather than with
+    several JOINs and a GROUP BY. Joining multiple reverse relationships in a single
+    query multiplies their rows together (a "fan-out") and inflates every count.
+    Independent subqueries avoid that entirely. The construct is plain SQL and behaves
+    identically on SQLite, MySQL/MariaDB and PostgreSQL. Coalesce reports 0 (instead of
+    NULL) when a relationship has no rows, which keeps the annotated value usable and
+    lets serializers tell "annotated as zero" apart from "not annotated at all".
+    """
+    subquery = (
+        related_model.objects.filter(**{fk_field: OuterRef("pk")})
+        .order_by()
+        .values(fk_field)
+        .annotate(count=Count("pk"))
+        .values("count")
+    )
+    return Coalesce(Subquery(subquery, output_field=IntegerField()), Value(0))
+
+
+class PlaybookQuerySet(models.QuerySet):
+    def with_item_counts(self):
+        """
+        Annotate each playbook with the number of related plays, tasks, results, hosts,
+        files and records, and prefetch its labels.
+
+        The item-count serializers (ara.api.serializers.ItemCountSerializer) then report
+        these counts and the labels straight from the queryset instead of issuing a
+        separate query per relationship per playbook. That is the N+1 problem behind the
+        slow playbook list page (issue #534): with this applied the whole list is served
+        in a constant number of queries regardless of how many playbooks are returned.
+
+        The related models are referenced by name here but resolved when the method runs
+        (they are defined further down this module), so the forward references are fine.
+        """
+        return self.annotate(
+            annotated_plays_count=_related_count(Play),
+            annotated_tasks_count=_related_count(Task),
+            annotated_results_count=_related_count(Result),
+            annotated_hosts_count=_related_count(Host),
+            annotated_files_count=_related_count(File),
+            annotated_records_count=_related_count(Record),
+        ).prefetch_related("labels")
+
+
 class Playbook(Duration):
     """
     An entry in the 'playbooks' table represents a single execution of the
@@ -141,6 +190,8 @@ class Playbook(Duration):
     labels = models.ManyToManyField(Label)
     controller = models.CharField(max_length=255, null=True, default="localhost")
     user = models.CharField(max_length=255, null=True)
+
+    objects = PlaybookQuerySet.as_manager()
 
     def __str__(self):
         return "<Playbook %s>" % self.id
