@@ -3,6 +3,8 @@
 
 import datetime
 
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
 from rest_framework.test import APITestCase
@@ -189,3 +191,50 @@ class PlayTestCase(APITestCase):
         play = factories.PlayFactory()
         request = self.client.get("/api/v1/plays/%s" % play.id)
         self.assertIn("inventory", request.data["playbook"]["arguments"])
+
+    @staticmethod
+    def _populate_play(play):
+        # file= is passed to TaskFactory so its default file SubFactory does not build a
+        # File with its own playbook SubFactory and create a stray playbook, which would
+        # skew the query-count assertion below.
+        file_content = factories.FileContentFactory()
+        task_file = factories.FileFactory(playbook=play.playbook, path="/p%s.yml" % play.id, content=file_content)
+        host = factories.HostFactory(playbook=play.playbook, name="host-%s" % play.id)
+        task = factories.TaskFactory(playbook=play.playbook, play=play, file=task_file)
+        factories.ResultFactory(playbook=play.playbook, play=play, task=task, host=host)
+        factories.ResultFactory(playbook=play.playbook, play=play, task=task, host=host)
+        return play
+
+    def test_play_list_items_match_counts(self):
+        populated = self._populate_play(factories.PlayFactory())
+        empty = factories.PlayFactory()
+
+        request = self.client.get("/api/v1/plays")
+        self.assertEqual(200, request.status_code)
+        items_by_id = {row["id"]: row["items"] for row in request.data["results"]}
+
+        self.assertEqual(
+            items_by_id[populated.id],
+            {"tasks": populated.tasks.count(), "results": populated.results.count()},
+        )
+        # Empty relationships must be reported as 0 (Coalesce), not omitted or null
+        self.assertEqual(items_by_id[empty.id], {"tasks": 0, "results": 0})
+
+    def test_play_list_has_no_n_plus_one_queries(self):
+        # Serializing the play list must take a constant number of queries no matter how
+        # many plays are returned (see issue #534).
+        self._populate_play(factories.PlayFactory())
+        with CaptureQueriesContext(connection) as one_play:
+            self.assertEqual(200, self.client.get("/api/v1/plays").status_code)
+
+        self._populate_play(factories.PlayFactory())
+        with CaptureQueriesContext(connection) as two_plays:
+            request = self.client.get("/api/v1/plays")
+        self.assertEqual(2, request.data["count"])
+
+        self.assertEqual(
+            len(one_play.captured_queries),
+            len(two_plays.captured_queries),
+            "Query count grew with the number of plays (N+1 regression):\n%s"
+            % "\n".join(query["sql"] for query in two_plays.captured_queries),
+        )

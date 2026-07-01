@@ -69,10 +69,14 @@ class PlayViewSet(viewsets.ModelViewSet):
     filterset_class = filters.PlayFilter
 
     def get_queryset(self):
+        queryset = models.Play.objects.all()
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Play.objects.filter(status__in=statuses).order_by("-id")
-        return models.Play.objects.all().order_by("-id")
+            queryset = queryset.filter(status__in=statuses)
+        # Only the list and detail representations expose relationship counts.
+        if self.action in ("list", "retrieve"):
+            queryset = queryset.with_item_counts()
+        return queryset.order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -88,10 +92,14 @@ class TaskViewSet(viewsets.ModelViewSet):
     filterset_class = filters.TaskFilter
 
     def get_queryset(self):
+        queryset = models.Task.objects.all()
         statuses = self.request.GET.getlist("status")
         if statuses:
-            return models.Task.objects.filter(status__in=statuses).order_by("-id")
-        return models.Task.objects.all().order_by("-id")
+            queryset = queryset.filter(status__in=statuses)
+        # Only the list and detail representations expose relationship counts.
+        if self.action in ("list", "retrieve"):
+            queryset = queryset.with_item_counts()
+        return queryset.order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":

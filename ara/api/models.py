@@ -251,6 +251,19 @@ class Record(Base):
         return "<Record %s:%s>" % (self.id, self.key)
 
 
+class PlayQuerySet(models.QuerySet):
+    def with_item_counts(self):
+        """
+        Annotate each play with the number of related tasks and results so the item-count
+        serializers can report them without issuing a query per relationship per play.
+        (See #534)
+        """
+        return self.annotate(
+            annotated_tasks_count=_related_count(Task, "play"),
+            annotated_results_count=_related_count(Result, "play"),
+        )
+
+
 class Play(Duration):
     """
     Data about Ansible plays.
@@ -272,8 +285,25 @@ class Play(Duration):
     status = models.CharField(max_length=25, choices=STATUS, default=UNKNOWN)
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="plays")
 
+    objects = PlayQuerySet.as_manager()
+
     def __str__(self):
         return "<Play %s:%s>" % (self.id, self.name)
+
+
+class TaskQuerySet(models.QuerySet):
+    def with_item_counts(self):
+        """
+        Annotate each task with the number of related results, and select_related its
+        file, so the task list can be serialized without a query per task.
+        (See #534)
+
+        The results count feeds ItemCountSerializer.get_items (see also _related_count);
+        select_related("file") covers the task list's "path" field, which reads
+        task.file.path (see ara.api.serializers.TaskPathSerializer) and would otherwise
+        fetch the file one task at a time.
+        """
+        return self.select_related("file").annotate(annotated_results_count=_related_count(Result, "task"))
 
 
 class Task(Duration):
@@ -312,6 +342,8 @@ class Task(Duration):
     play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="tasks")
     file = models.ForeignKey(File, on_delete=models.CASCADE, related_name="tasks")
     playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="tasks")
+
+    objects = TaskQuerySet.as_manager()
 
     def __str__(self):
         return "<Task %s:%s>" % (self.name, self.id)
