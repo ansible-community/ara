@@ -25,9 +25,6 @@ class PlaybookViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = models.Playbook.objects.all()
-        statuses = self.request.GET.getlist("status")
-        if statuses:
-            queryset = queryset.filter(status__in=statuses)
         # Only the list and detail representations expose relationship counts and
         # labels; annotating/prefetching for create/update/destroy would be wasted work.
         if self.action in ("list", "retrieve"):
@@ -70,9 +67,6 @@ class PlayViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = models.Play.objects.all()
-        statuses = self.request.GET.getlist("status")
-        if statuses:
-            queryset = queryset.filter(status__in=statuses)
         # Only the list and detail representations expose relationship counts.
         if self.action in ("list", "retrieve"):
             queryset = queryset.with_item_counts()
@@ -93,9 +87,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = models.Task.objects.all()
-        statuses = self.request.GET.getlist("status")
-        if statuses:
-            queryset = queryset.filter(status__in=statuses)
         # Only the list and detail representations expose relationship counts.
         if self.action in ("list", "retrieve"):
             queryset = queryset.with_item_counts()
@@ -151,13 +142,8 @@ class LatestHostViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ResultViewSet(viewsets.ModelViewSet):
+    queryset = models.Result.objects.all().order_by("-id")
     filterset_class = filters.ResultFilter
-
-    def get_queryset(self):
-        statuses = self.request.GET.getlist("status")
-        if statuses:
-            return models.Result.objects.filter(status__in=statuses).order_by("-id")
-        return models.Result.objects.all().order_by("-id")
 
     def get_serializer_class(self):
         if self.action == "list":
