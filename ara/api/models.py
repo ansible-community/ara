@@ -164,6 +164,13 @@ class Playbook(Duration):
 
     class Meta:
         db_table = "playbooks"
+        # status: the common status filter (UI, CLI, exporter per-status counts).
+        # started / updated: the two timestamps list views sort by. `ara playbook
+        indexes = [
+            models.Index(fields=["status"], name="playbooks_status_idx"),
+            models.Index(fields=["started"], name="playbooks_started_idx"),
+            models.Index(fields=["updated"], name="playbooks_updated_idx"),
+        ]
 
     # A playbook in ARA can be running (in progress), completed (succeeded) or failed.
     UNKNOWN = "unknown"
@@ -272,6 +279,12 @@ class Play(Duration):
 
     class Meta:
         db_table = "plays"
+        # started / updated: `ara play list` and API/CLI time filters sort by
+        # these, like the other Duration models.
+        indexes = [
+            models.Index(fields=["started"], name="plays_started_idx"),
+            models.Index(fields=["updated"], name="plays_updated_idx"),
+        ]
 
     # A play in ARA can be running (in progress) or completed (regardless of success or failure)
     UNKNOWN = "unknown"
@@ -311,6 +324,15 @@ class Task(Duration):
 
     class Meta:
         db_table = "tasks"
+        # status: the UI/CLI status filter and the exporter's per-status counts,
+        # on a large table.
+        # started / updated: the timestamps `ara task list` and the Tasks UI sort
+        # by. Big table, so the scan-plus-sort this replaces is expensive.
+        indexes = [
+            models.Index(fields=["status"], name="tasks_status_idx"),
+            models.Index(fields=["started"], name="tasks_started_idx"),
+            models.Index(fields=["updated"], name="tasks_updated_idx"),
+        ]
 
     # Possible statuses for a task
     # A failed task is expected to have at least one failed result
@@ -357,6 +379,13 @@ class Host(Base):
     class Meta:
         db_table = "hosts"
         unique_together = ("name", "playbook")
+        # updated: `ara host list` and the Hosts UI sort by -updated, and the
+        # exporter reads the most recently updated host records
+        # (hosts?order=-updated) for its per-hostname breakdown. Host has no
+        # `started` column (it is a Base model, not a Duration one).
+        indexes = [
+            models.Index(fields=["updated"], name="hosts_updated_idx"),
+        ]
 
     name = models.CharField(max_length=255)
     facts = models.BinaryField(max_length=(2**32) - 1)
@@ -402,6 +431,24 @@ class Result(Duration):
 
     class Meta:
         db_table = "results"
+        # (status, changed) / (status, ignore_errors): ara derives the status it
+        # displays from these column pairs (ok+changed becomes "changed",
+        # failed+ignore_errors becomes "ignored"), so the hottest filters on the
+        # largest table pair status with one of the two booleans.
+        # started / updated: the timestamps the global results list and
+        # `ara result list` sort by. Results is one of the largest tables, so
+        # this is where the scan-plus-sort hurt most.
+        # (playbook, started) / (host, started): the UI renders a playbook's or a
+        # host's results ordered by -started; these composites serve the FK
+        # filter and the -started ordering together for those report pages.
+        indexes = [
+            models.Index(fields=["status", "changed"], name="results_status_changed_idx"),
+            models.Index(fields=["status", "ignore_errors"], name="results_status_ignore_idx"),
+            models.Index(fields=["started"], name="results_started_idx"),
+            models.Index(fields=["updated"], name="results_updated_idx"),
+            models.Index(fields=["playbook", "started"], name="results_playbook_started_idx"),
+            models.Index(fields=["host", "started"], name="results_host_started_idx"),
+        ]
 
     # Ansible statuses
     OK = "ok"
