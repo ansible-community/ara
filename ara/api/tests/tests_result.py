@@ -3,6 +3,8 @@
 
 import datetime
 
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
 from rest_framework.test import APITestCase
@@ -262,6 +264,27 @@ class ResultTestCase(APITestCase):
         self.assertEqual(2, len(results))
         self.assertEqual(failed_result.status, results[1]["status"])
         self.assertEqual(skipped_result.status, results[0]["status"])
+
+    def test_status_filtered_result_list_has_no_distinct(self):
+        # The status filter must not apply DISTINCT to the results queryset: it
+        # is a scalar column, so DISTINCT can never deduplicate anything, but it
+        # wraps the pagination COUNT in a materialized subquery. The prometheus
+        # exporter counts results by status and the two derived-status booleans
+        # on every refresh, and this shape was whole seconds per count on a
+        # production-sized MariaDB (see the matching task-side test).
+        factories.ResultFactory(status="ok", changed=False)
+        factories.ResultFactory(status="ok", changed=True)
+
+        with CaptureQueriesContext(connection) as context:
+            request = self.client.get("/api/v1/results?status=ok&changed=false&limit=1")
+        self.assertEqual(1, request.data["count"])
+
+        for query in context.captured_queries:
+            self.assertNotIn(
+                "DISTINCT",
+                query["sql"].upper(),
+                "The status filter must not apply DISTINCT to a scalar column: %s" % query["sql"],
+            )
 
     def test_result_status_serializer(self):
         ok = factories.ResultFactory(status="ok")

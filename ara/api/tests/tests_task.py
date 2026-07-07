@@ -368,6 +368,48 @@ class TaskTestCase(APITestCase):
             % "\n".join(query["sql"] for query in two_tasks.captured_queries),
         )
 
+    def test_status_filtered_task_list_has_cheap_queries(self):
+        # Filtering the task list by status must not degrade the query shapes
+        #   - no SELECT DISTINCT: the status filter used to inherit
+        #     MultipleChoiceFilter's distinct=True, which can never deduplicate a
+        #     scalar column but forces the database to materialize the entire
+        #     matching set (and to compute the per-row count annotations for
+        #     every row) even for a small LIMIT.
+        #   - the pagination COUNT must not drag the relationship-count
+        #     annotations along: without DISTINCT in the way, Django strips
+        #     unused annotations from .count().
+        factories.TaskFactory(status="completed")
+        factories.TaskFactory(status="running")
+
+        with CaptureQueriesContext(connection) as context:
+            request = self.client.get("/api/v1/tasks?status=completed&limit=1")
+        self.assertEqual(1, request.data["count"])
+
+        for query in context.captured_queries:
+            self.assertNotIn(
+                "DISTINCT",
+                query["sql"].upper(),
+                "The status filter must not apply DISTINCT to a scalar column: %s" % query["sql"],
+            )
+        count_queries = [q["sql"] for q in context.captured_queries if "COUNT(*)" in q["sql"].upper()]
+        self.assertTrue(count_queries, "Expected a pagination count query")
+        for sql in count_queries:
+            self.assertNotIn(
+                "annotated_results_count",
+                sql,
+                "The pagination count must not compute per-row annotations: %s" % sql,
+            )
+
+    def test_status_filter_is_case_sensitive_exact(self):
+        # The status filter validates against the model's choices, which are the
+        # exact lowercase strings the server writes, so anything else is rejected
+        # before it reaches the database. This documents that the iexact lookup
+        # the filter used to declare was unreachable (and let it be replaced with
+        # the plain, indexable exact lookup).
+        factories.TaskFactory(status="completed")
+        request = self.client.get("/api/v1/tasks?status=COMPLETED")
+        self.assertEqual(400, request.status_code)
+
 
 class TaskNotesTestCase(APITestCase):
     """Tests for task deprecations, exceptions, and warnings fields."""

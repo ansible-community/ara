@@ -52,8 +52,24 @@ class PlaybookFilter(DateFilter):
     controller = django_filters.CharFilter(field_name="controller", lookup_expr="icontains")
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     path = django_filters.CharFilter(field_name="path", lookup_expr="icontains")
+    # Notes on the status filter, which is on the hottest query paths (the UI and
+    # CLI status filters and the prometheus exporter's per-status counts). The
+    # same reasoning applies to the status filters further down this module:
+    #   - distinct=False: MultipleChoiceFilter defaults to distinct=True, which is
+    #     meant for to-many relationship filters where a row can match more than
+    #     once. status is a scalar column on the model itself, so DISTINCT can
+    #     never deduplicate anything here: it only forces the database to
+    #     materialize the whole matching set (temp tables on MySQL/MariaDB),
+    #     turns ORDER BY pk LIMIT n into a full scan when annotations are present
+    #     (DISTINCT applies to the entire select list, so every row's annotations
+    #     must be computed first), and prevents Django from stripping unused
+    #     annotations out of .count(), which is what pagination runs.
+    #   - exact lookup (the default) instead of iexact: the choices validation
+    #     already rejects anything but these exact lowercase strings before the
+    #     filter runs, so iexact was unreachable flexibility that cost an
+    #     unindexable predicate (LIKE on MySQL/MariaDB, UPPER() on PostgreSQL).
     status = django_filters.MultipleChoiceFilter(
-        field_name="status", choices=ara_models.Playbook.STATUS, lookup_expr="iexact"
+        field_name="status", choices=ara_models.Playbook.STATUS, distinct=False
     )
     label = django_filters.CharFilter(field_name="labels", lookup_expr="name__iexact")
 
@@ -74,9 +90,8 @@ class PlaybookFilter(DateFilter):
 class PlayFilter(DateFilter):
     playbook = django_filters.NumberFilter(field_name="playbook__id", lookup_expr="exact")
     uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
-    status = django_filters.MultipleChoiceFilter(
-        field_name="status", choices=ara_models.Play.STATUS, lookup_expr="iexact"
-    )
+    # distinct=False and the default exact lookup: see the note on PlaybookFilter.status.
+    status = django_filters.MultipleChoiceFilter(field_name="status", choices=ara_models.Play.STATUS, distinct=False)
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     # fmt: off
@@ -98,9 +113,8 @@ class TaskFilter(DateFilter):
     playbook_name = django_filters.CharFilter(field_name="playbook__name", lookup_expr="icontains")
     playbook_path = django_filters.CharFilter(field_name="playbook__path", lookup_expr="icontains")
     play = django_filters.NumberFilter(field_name="play__id", lookup_expr="exact")
-    status = django_filters.MultipleChoiceFilter(
-        field_name="status", choices=ara_models.Task.STATUS, lookup_expr="iexact"
-    )
+    # distinct=False and the default exact lookup: see the note on PlaybookFilter.status.
+    status = django_filters.MultipleChoiceFilter(field_name="status", choices=ara_models.Task.STATUS, distinct=False)
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     uuid = django_filters.UUIDFilter(field_name="uuid", lookup_expr="exact")
     action = django_filters.CharFilter(field_name="action", lookup_expr="iexact")
@@ -241,9 +255,8 @@ class ResultFilter(DateFilter):
     host_name = django_filters.CharFilter(field_name="host__name", lookup_expr="iexact")
     delegated_to = django_filters.NumberFilter(field_name="delegated_to__id", lookup_expr="exact")
     changed = django_filters.BooleanFilter(field_name="changed", lookup_expr="exact")
-    status = django_filters.MultipleChoiceFilter(
-        field_name="status", choices=ara_models.Result.STATUS, lookup_expr="iexact"
-    )
+    # distinct=False and the default exact lookup: see the note on PlaybookFilter.status.
+    status = django_filters.MultipleChoiceFilter(field_name="status", choices=ara_models.Result.STATUS, distinct=False)
     ignore_errors = django_filters.BooleanFilter(field_name="ignore_errors", lookup_expr="exact")
 
     # fmt: off
