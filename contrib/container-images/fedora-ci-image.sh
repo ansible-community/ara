@@ -6,7 +6,7 @@
 build=$(buildah from quay.io/fedora/fedora:44)
 
 # Ensure everything is up to date and install requirements
-buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y gcc git awk hostname nodejs nodejs20 tox which python3 python3-build python3-packaging python3-devel python3-pip python3-wheel"
+buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y gcc git awk hostname nodejs nodejs20 tox which diff python3 python3-build python3-packaging python3-devel python3-pip python3-wheel"
 
 # Commit this container to an image name
 buildah commit "${build}" "${1:-$USER/fedora-ci-image}"
