@@ -11,7 +11,7 @@ buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y ara ara-
 
 # Set up the container to execute SQL migrations and run the API server with gunicorn
 buildah config --env ARA_BASE_DIR=/opt/ara "${build}"
-buildah config --cmd "bash -c '/usr/bin/ara-manage migrate && /usr/bin/gunicorn-3 --workers=4 --access-logfile - --bind 0.0.0.0:8000 ara.server.wsgi'" "${build}"
+buildah config --cmd "bash -c '/usr/bin/ara-manage migrate && /usr/bin/gunicorn-3 --workers=4 --threads=4 --worker-class gthread --access-logfile - --bind 0.0.0.0:8000 ara.server.wsgi'" "${build}"
 buildah config --port 8000 "${build}"
 
 # Commit this container to an image name
