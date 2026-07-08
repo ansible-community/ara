@@ -1,0 +1,29 @@
+# Minimal example Prometheus configuration for scraping the ara exporter.
+#
+# Start the exporter next to (or anywhere that can reach) your ara instance:
+#
+#   pip install ara[prometheus]
+#   ara prometheus                       # offline client, reads the local ara database
+#   # or against a remote ara API server:
+#   ara prometheus --client http --server https://ara.example.org
+#
+# The exporter listens on :8001/metrics by default.
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+rule_files:
+  - ara-alerts.yml
+
+# Wire up Alertmanager so the rules in ara-alerts.yml can notify you.
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['localhost:9093']
+
+scrape_configs:
+  - job_name: ara
+    static_configs:
+      # Replace with wherever the exporter is listening, relative to Prometheus.
+      - targets: ['localhost:8001']

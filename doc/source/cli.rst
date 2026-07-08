@@ -474,6 +474,38 @@ Examples:
     # Aggregate metrics by task file rather than action
     ara task metrics --aggregate path
 
+ara prometheus
+--------------
+
+Runs a `Prometheus <https://prometheus.io/>`_ exporter that exposes metrics
+about recorded playbooks, tasks, results and hosts for Prometheus to scrape.
+
+.. note::
+
+    This command requires the ``prometheus_client`` python package, for example
+    with ``pip install ara[prometheus]``.
+
+See :ref:`prometheus:Ansible metrics with Prometheus` for the full guide,
+including the list of metrics, a Grafana dashboard and example alerting rules.
+
+.. command-output:: ara prometheus --help
+
+Examples:
+
+.. code-block:: bash
+
+    # Expose metrics from the local ara database on http://0.0.0.0:8001/metrics
+    ara prometheus
+
+    # Expose metrics from a remote ara API server
+    ARA_API_CLIENT=http ARA_API_SERVER=https://ara.example.org ara prometheus
+
+    # Listen on a different address and port
+    ara prometheus --prometheus-address 127.0.0.1 --prometheus-port 9100
+
+    # Consider more recent playbooks for the controller and ansible_version breakdowns
+    ara prometheus --playbook-limit 5000
+
 CLI: ara-manage (django API server)
 ===================================
 

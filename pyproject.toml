@@ -45,6 +45,7 @@ ara-manage = "ara.server.__main__:main"
 
 [project.entry-points."ara.cli"]
 expire = "ara.cli.expire:ExpireObjects"
+prometheus = "ara.cli.prometheus:PrometheusExporter"
 "playbook list" = "ara.cli.playbook:PlaybookList"
 "playbook show" = "ara.cli.playbook:PlaybookShow"
 "playbook delete" = "ara.cli.playbook:PlaybookDelete"
@@ -95,6 +96,9 @@ postgresql = [
 ]
 mysql = [
     "mysqlclient",
+]
+prometheus = [
+    "prometheus-client",
 ]
 
 [tool.setuptools]

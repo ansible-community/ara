@@ -1,0 +1,191 @@
+# Prometheus alerting rules for the ara prometheus exporter.
+#
+# Load this from your prometheus.yml, for example:
+#
+#   rule_files:
+#     - /etc/prometheus/ara-alerts.yml
+#
+# These rules assume the exporter is scraped under a job named "ara" (see the
+# scrape config example in doc/source/prometheus.rst). Alerts fire in Prometheus
+# and are routed to Alertmanager for notification (email, Slack, PagerDuty, ...).
+#
+# A note on semantics: the ara_* counts are *gauges* representing the number of
+# rows currently in ara's database. To measure "how much new activity happened
+# in the last window" we therefore use delta() rather than increase(): delta()
+# is the gauge-appropriate function and returns the plain first-to-last
+# difference over the range. increase() is only correct for counters -- on a
+# gauge it treats any decrease (for example when a prune/expiry job removes old
+# rows) as a counter reset and adds it back, which would produce spurious
+# positive spikes and false alerts right after a prune. The one genuine counter
+# here, ara_scrape_errors_total, still uses increase().
+#
+# New playbook runs only add rows and pruning only removes *old* rows, so within
+# a short window delta() reliably reflects newly recorded activity.
+
+groups:
+  - name: ara.exporter
+    rules:
+      - alert: AraExporterDown
+        expr: up{job="ara"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ara prometheus exporter is down"
+          description: "Prometheus has not been able to scrape the ara exporter (job=ara) for 5 minutes."
+
+      - alert: AraApiUnreachable
+        expr: ara_up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ara API is unreachable from the exporter"
+          description: "The exporter is up but could not query the ara API on its last refreshes for 5 minutes."
+
+      - alert: AraMetricsStale
+        # With background refresh enabled the exporter serves the last good data
+        # if a refresh fails; this catches the cache getting too old (refreshes
+        # persistently failing). Tune the threshold to a few refresh intervals.
+        expr: ara_metrics_age_seconds > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ara metrics are stale"
+          description: "The ara exporter has not successfully refreshed from the API in over 5 minutes; served metrics are stale."
+
+      - alert: AraScrapeErrors
+        expr: increase(ara_scrape_errors_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ara exporter is failing to collect metrics"
+          description: "{{ $value | printf \"%.0f\" }} refresh(es) failed to collect from the ara API in the last 15 minutes."
+
+  - name: ara.failures
+    rules:
+      # New failed task results are the most direct signal that something an
+      # Ansible run touched is broken. delta() over a short window catches newly
+      # recorded failures regardless of how much history exists. Note that
+      # ara_results{status="failed"} now counts *real* failures only: results
+      # that failed with ignore_errors are reported under status="ignored" and
+      # deliberately do not fire this alert.
+      - alert: AraResultFailures
+        expr: delta(ara_results{status="failed"}[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "New Ansible task failures recorded by ara"
+          description: "{{ $value | printf \"%.0f\" }} task result(s) failed in the last 15 minutes."
+
+      - alert: AraPlaybookFailures
+        expr: delta(ara_playbooks{status="failed"}[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "New failed Ansible playbooks recorded by ara"
+          description: "{{ $value | printf \"%.0f\" }} playbook(s) ended in a failed status in the last 15 minutes."
+
+      # Per-controller failures, useful for routing to the right team. The label
+      # is carried through so Alertmanager can route on {{ $labels.controller }}.
+      # This uses the monotonic ara_recorded_playbooks_by_controller_total
+      # counter with increase(), so it is exact: the windowed
+      # ara_playbooks_by_controller gauge would undercount here when the recent
+      # window is saturated and one controller dominates (see contrib/prometheus/README.rst).
+      - alert: AraPlaybookFailuresByController
+        expr: increase(ara_recorded_playbooks_by_controller_total{status="failed"}[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Failed playbooks from controller {{ $labels.controller }}"
+          description: "{{ $value | printf \"%.0f\" }} playbook(s) from {{ $labels.controller }} failed in the last 15 minutes."
+
+      # Sustained high failure ratio across recent playbook activity. delta() is
+      # clamped at 0 so a prune (which can make delta negative) can never distort
+      # the ratio; the guard keeps it from firing on tiny volumes.
+      - alert: AraHighPlaybookFailureRatio
+        expr: |
+          (
+            sum(clamp_min(delta(ara_playbooks{status="failed"}[1h]), 0))
+            /
+            clamp_min(sum(clamp_min(delta(ara_playbooks{status=~"completed|failed"}[1h]), 0)), 1)
+          ) > 0.5
+          and
+          sum(clamp_min(delta(ara_playbooks{status=~"completed|failed"}[1h]), 0)) >= 5
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "More than half of recent Ansible playbooks are failing"
+          description: "Over 50% of playbooks that finished in the last hour failed (at least 5 finished)."
+
+  - name: ara.performance
+    rules:
+      # A playbook in the recent window took far longer than expected. Uses the
+      # exact-max gauge; tune 3600 (1h) to above your longest healthy playbook.
+      # Disabled-by-default feel: raise the threshold if long runs are normal.
+      - alert: AraSlowPlaybook
+        expr: ara_playbook_duration_seconds_max > 3600
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "A recent Ansible playbook ran longer than an hour"
+          description: "The slowest playbook in the recent window took {{ $value | printf \"%.0f\" }}s. Check the duration percentiles panel and analyze_performance for the culprit."
+
+  - name: ara.reachability
+    rules:
+      # Unreachable results are the direct, whole-database signal that Ansible
+      # could not reach a host. (An earlier AraUnreachableHosts rule counted host
+      # records with an unreachable result via the ara_hosts_unreachable roll-up;
+      # that roll-up was removed as redundant, and this result-level alert is the
+      # more direct signal anyway.)
+      - alert: AraUnreachableResults
+        expr: delta(ara_results{status="unreachable"}[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Ansible reported unreachable hosts"
+          description: "{{ $value | printf \"%.0f\" }} unreachable result(s) recorded in the last 15 minutes."
+
+  - name: ara.activity
+    rules:
+      # "Is automation still running?" watchdog. If you run Ansible on a
+      # schedule, a long stretch with no new playbooks may itself be a problem.
+      # This uses the ara_last_playbook_started_timestamp_seconds gauge (unix
+      # start time of the most recent playbook), so it is exact and immune to
+      # pruning. Tune 86400 (24h) to comfortably longer than your busiest
+      # schedule.
+      #
+      # (The previous version, delta(ara_playbooks[6h]) <= 0, was evaluated per
+      # status series and fired permanently: the always-zero unknown series has
+      # delta 0, and a quiet-but-healthy day leaves other statuses at delta 0
+      # too, so <= 0 was always true for some series.)
+      - alert: AraNoRecentPlaybooks
+        expr: time() - ara_last_playbook_started_timestamp_seconds > 86400
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No new Ansible playbooks recorded in 24h"
+          description: "ara has not recorded a new playbook in over 24 hours. Is the automation that feeds it still running?"
+
+      # A playbook stuck in the running state never transitions to failed, so no
+      # failure alert fires for it. ara's `ara playbook expire` command is the
+      # intended cleanup; this catches a run that has been running far longer
+      # than any real playbook should before expiry runs. Tune 21600 (6h) to
+      # above your longest legitimate playbook.
+      - alert: AraStuckRunningPlaybook
+        expr: time() - ara_running_playbook_oldest_started_timestamp_seconds > 21600
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "An Ansible playbook has been running for too long"
+          description: "The oldest playbook still in the running state started over 6 hours ago; it may be stuck (crashed controller or lost callback). Consider running `ara playbook expire`."

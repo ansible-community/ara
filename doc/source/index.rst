@@ -19,6 +19,7 @@ Table of Contents
     API: Distributed sqlite backend <distributed-sqlite-backend>
     API: Server container images <container-images>
     CLI: ara and ara-manage <cli>
+    Prometheus metrics and alerting <prometheus>
     Contributing to ARA <contributing>
     Frequently asked questions <faq>
     Troubleshooting <troubleshooting>
