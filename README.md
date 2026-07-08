@@ -140,6 +140,9 @@ Contributions to the project are welcome and appreciated !
 
 Get started with the [contributor's documentation](https://ara.readthedocs.io/en/latest/contributing.html).
 
+ara is a non-commercial project but it still incurs expenses like hosting, development, maintenance, testing & CI.
+If ara has been helpful or useful to you, consider ordering stickers or leaving a tip: https://ko-fi.com/rfc2549
+
 ## Authors
 
 Code contributions to the project can be viewed from the git log or on [Codeberg](https://codeberg.org/ansible-community/ara/activity/contributors).
@@ -149,7 +152,7 @@ The ara parrot logo was designed and contributed by [Jason E. Rist](https://code
 ## Copyright
 
 ```
-Copyright (c) 2025 The ARA Records Ansible authors
+Copyright (c) 2026 The ARA Records Ansible authors
 
 ARA Records Ansible is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

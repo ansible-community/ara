@@ -1,3 +1,5 @@
+{% load static %}
+{% load static_url %}
 <!-- About ara modal -->
 <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -9,8 +11,15 @@
       <div class="modal-body">
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <p>ARA Records Ansible and makes it easier to understand and troubleshoot.<br>It is another recursive acronym with a focus on simplicity.</p>
+            <p>ARA Records Ansible and makes it easier to understand and troubleshoot.
+            {% static 'images/ara.png' as ara_url %}
+            <img src="{% static_url ara_url %}" alt="ARA Records Ansible">
+            <br>It is another recursive acronym with a focus on simplicity.</p>
             <p>ara is a free and open source project under the GPLv3 license.</p>
+
+            <p>ara is a non-commercial project but it still incurs expenses like hosting, development, maintenance, testing & CI.
+            If ara has been helpful or useful to you, consider ordering stickers or leaving a tip:
+            <a href="https://ko-fi.com/rfc2549" target="_blank">https://ko-fi.com/rfc2549</a></p>
           </li>
           <li class="list-group-item">Code: <a href="https://codeberg.org/ansible-community/ara" target="_blank">https://codeberg.org/ansible-community/ara</a></li>
           <li class="list-group-item">Website: <a href="https://ara.recordsansible.org" target="_blank">https://ara.recordsansible.org</a></li>

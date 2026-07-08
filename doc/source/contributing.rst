@@ -13,6 +13,9 @@ They can be in the form of documentation, feedback and comments, suggestions and
 ideas, issues and bug reports, or just helping out other users in the
 `chat rooms <https://ara.recordsansible.org/community/>`_.
 
+If you would like to contribute financially: ara is a non-commercial project but it still incurs expenses like hosting, development, maintenance, testing & CI.
+If ara has been helpful or useful to you, consider ordering stickers or leaving a tip: https://ko-fi.com/rfc2549
+
 Code contributions
 ------------------
 
