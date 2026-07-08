@@ -45,6 +45,29 @@ banner bandit
 time bandit -r "${LINTING_TARGETS[@]}" --skip B303,B324
 ret+=$?
 
+# The Grafana dashboard is generated from _generate_dashboard.py, which is the
+# source of truth; contrib/grafana/ara-dashboard.json is its committed output.
+# Regenerate it and fail if it drifted (someone changed the generator without
+# committing the regenerated json), then validate every PromQL expression and
+# metric name in the dashboard. Both scripts write/read paths relative to the
+# project root, so run them from there. The staleness check restores the
+# committed json afterwards so the linter never leaves the tree dirty.
+banner "grafana dashboard"
+pushd "${PROJECT_ROOT}" >/dev/null
+committed=$(mktemp)
+cp contrib/grafana/ara-dashboard.json "${committed}"
+python3 contrib/grafana/_generate_dashboard.py
+if ! diff -u "${committed}" contrib/grafana/ara-dashboard.json; then
+    echo "contrib/grafana/ara-dashboard.json is out of date;"
+    echo "run 'python3 contrib/grafana/_generate_dashboard.py' and commit the result."
+    ret+=1
+fi
+cp "${committed}" contrib/grafana/ara-dashboard.json
+rm -f "${committed}"
+time python3 contrib/grafana/_validate_dashboard.py
+ret+=$?
+popd >/dev/null
+
 if [ $ret -gt 0 ]
 then
   echo

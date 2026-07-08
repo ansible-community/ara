@@ -5,5 +5,7 @@ flake8
 flake8-pyproject
 black
 isort
+# used by tests/linters.sh to validate contrib/grafana/ara-dashboard.json
+promql-parser
 
 # requirements for docs are in doc/requirements.txt
