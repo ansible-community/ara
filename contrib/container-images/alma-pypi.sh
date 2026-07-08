@@ -1,10 +1,13 @@
 #!/bin/bash -x
-# Copyright (c) 2022 The ARA Records Ansible authors
+# Copyright (c) 2026 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-DEV_DEPENDENCIES="gcc python3-devel postgresql-devel mariadb-connector-c-devel"
+DEV_DEPENDENCIES="gcc python3-devel postgresql-devel postgresql-server-devel mariadb-connector-c-devel"
 
-# Builds an ARA API server container image using the latest PyPi packages on CentOS Stream 9.
-build=$(buildah from quay.io/centos/centos:stream9)
+# Builds an ARA API server container image using the latest PyPi packages on Alma 10.
+# CentOS/RHEL 10 no longer supports older hardware
+# Use Alma 10 for x86_64_v2 compatibility
+# See: https://codeberg.org/ansible-community/ara-collection/issues/83
+build=$(buildah from --platform=linux/amd64/v2 quay.io/almalinuxorg/almalinux:10)
 
 # Ensure everything is up to date and install requirements
 buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-pip-wheel postgresql libpq mariadb-connector-c"

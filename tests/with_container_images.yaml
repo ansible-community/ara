@@ -16,14 +16,14 @@
       - tag: fedora43-source-latest
         script: fedora-source.sh
         name: localhost/ara-api
-      - tag: centos9-source-latest
-        script: centos-source.sh
+      - tag: alma10-source-latest
+        script: alma-source.sh
         name: localhost/ara-api
       - tag: fedora43-pypi-latest
         script: fedora-pypi.sh
         name: localhost/ara-api
-      - tag: centos9-pypi-latest
-        script: centos-pypi.sh
+      - tag: alma10-pypi-latest
+        script: alma-pypi.sh
         name: localhost/ara-api
       - tag: fedora43-distribution-latest
         script: fedora-distribution.sh
