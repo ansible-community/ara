@@ -8,15 +8,15 @@
     destination: "{{ destination_repository | default('docker.io/recordsansible/ara-api') }}"
     images:
       # These images are meant to be provided by the "with_container_images.yaml" playbook
-      - tag: fedora43-source-latest
+      - tag: fedora44-source-latest
         name: localhost/ara-api
       - tag: alma10-source-latest
         name: localhost/ara-api
-      - tag: fedora43-pypi-latest
+      - tag: fedora44-pypi-latest
         name: localhost/ara-api
       - tag: alma10-pypi-latest
         name: localhost/ara-api
-      - tag: fedora43-distribution-latest
+      - tag: fedora44-distribution-latest
         name: localhost/ara-api
   tasks:
     - name: List built container images

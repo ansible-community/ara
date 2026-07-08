@@ -1,9 +1,9 @@
 #!/bin/bash -x
-# Copyright (c) 2025 The ARA Records Ansible authors
+# Copyright (c) 2026 The ARA Records Ansible authors
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 DEV_DEPENDENCIES="gcc python3-devel postgresql-devel libpq-devel mariadb-devel"
 
-# Builds an ARA API server container image from checked out source on Fedora 40.
+# Builds an ARA API server container image from checked out source on Fedora 44.
 # Figure out source directory relative to the contrib/container-images directory
 SCRIPT_DIR=$(cd $(dirname $0) && pwd -P)
 SOURCE_DIR=$(cd "${SCRIPT_DIR}/../.." && pwd -P)
@@ -14,7 +14,7 @@ python3 -m build --sdist
 sdist=$(ls dist/ara-*.tar.gz)
 popd
 
-build=$(buildah from quay.io/fedora/fedora:43)
+build=$(buildah from quay.io/fedora/fedora:44)
 
 # Ensure everything is up to date and install requirements
 buildah run "${build}" -- /bin/bash -c "dnf update -y && dnf install -y which python3-pip python3-wheel postgresql libpq mariadb-connector-c"
