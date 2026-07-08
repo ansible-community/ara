@@ -35,7 +35,7 @@ options:
         default: text
 
 requirements:
-    - "python >= 3.5"
+    - "python >= 3.10"
     - "ara >= 1.0.0"
 """
 

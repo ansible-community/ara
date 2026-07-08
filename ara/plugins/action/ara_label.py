@@ -30,7 +30,7 @@ options:
         default: present
 
 requirements:
-    - "python >= 3.8"
+    - "python >= 3.10"
     - "ara >= 1.7.3"
 """
 

@@ -22,7 +22,7 @@ options:
         required: false
 
 requirements:
-    - "python >= 3.5"
+    - "python >= 3.10"
     - "ara >= 1.4.0"
 """
 
