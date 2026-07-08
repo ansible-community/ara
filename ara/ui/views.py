@@ -262,6 +262,7 @@ class Host(generics.RetrieveAPIView):
 
     queryset = models.Host.objects.all()
     renderer_classes = [TemplateHTMLRenderer]
+    pagination_class = LimitOffsetPaginationWithLinks
     template_name = "host.html"
 
     def get(self, request, *args, **kwargs):
