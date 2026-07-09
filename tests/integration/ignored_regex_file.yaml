@@ -1,0 +1,4 @@
+---
+- name: A task included from the ignored_files.yaml playbook for regex matching
+  debug:
+    msg: hello regex world

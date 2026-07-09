@@ -117,6 +117,7 @@
 
     - name: Run ignored_files tests
       environment:
+        ARA_IGNORED_FILES: ".ansible/tmp,ignored_task_file.yaml,regex:ig.*_regex_file\\.ya?ml$"
         ANSIBLE_VAULT_PASSWORD_FILE: "{{ _test_root }}/vault_password_file"
       command: "ansible-playbook -vvv {{ _test_root }}/ignored_files.yaml"
 

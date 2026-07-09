@@ -140,7 +140,7 @@
           api_client = {{ lookup('env', 'ARA_API_CLIENT', default='offline') }}
           api_server = {{ lookup('env', 'ARA_API_SERVER', default='http://127.0.0.1:8000') }}
           callback_threads = {{ lookup('env', 'ARA_CALLBACK_THREADS', default='1') }}
-          ignored_files = .ansible/tmp,ignored_task_file.yaml
+          ignored_files = .ansible/tmp,ignored_task_file.yaml,regex:ig.*_regex_file\.ya?ml$
           default_labels = {{ lookup('env', 'ARA_DEFAULT_LABELS', default='basic-tests') }}
         dest: "{{ ara_api_root_dir }}/server/ansible.cfg"
 

@@ -8,6 +8,7 @@ import getpass
 import json
 import logging
 import os
+import re
 import signal
 import socket
 import sys
@@ -183,6 +184,8 @@ options:
   ignored_files:
     description:
       - List of file path patterns that will not be saved by ARA
+      - Entries are matched as substrings by default
+      - Values prefixed with 'regex:' are treated as Python regular expressions and matched with re.search
       - Note that the default pattern ('.ansible/tmp') gets dynamically set to the value of ANSIBLE_LOCAL_TEMP
       - The configuration for ANSIBLE_LOCAL_TEMP is typically ~/.ansible/tmp unless it is changed.
     type: list
@@ -314,6 +317,7 @@ class CallbackModule(CallbackBase):
         self.ignored_facts = []
         self.ignored_arguments = []
         self.ignored_files = []
+        self.ignored_file_patterns = []
         self.localhost_as_hostname = None
         self.localhost_as_hostname_format = None
 
@@ -380,6 +384,8 @@ class CallbackModule(CallbackBase):
                 self.ignored_files[index] = tmpdir_config
                 break
 
+        self._compile_ignored_file_patterns()
+
         client = self.get_option("api_client")
         endpoint = self.get_option("api_server")
         timeout = self.get_option("api_timeout")
@@ -420,6 +426,31 @@ class CallbackModule(CallbackBase):
             threads.submit(func, *args, **kwargs)
         else:
             func(*args, **kwargs)
+
+    def _compile_ignored_file_patterns(self):
+        self.ignored_file_patterns = []
+        for pattern in self.ignored_files:
+            if pattern.startswith("regex:"):
+                regex_pattern = pattern[len("regex:"):]
+                try:
+                    compiled_pattern = re.compile(regex_pattern)
+                    self.ignored_file_patterns.append((pattern, None, compiled_pattern))
+                except re.error as e:
+                    self.log.warning(
+                        "Invalid regex in ignored_files (%s): %s. Pattern will be ignored." % (pattern, str(e))
+                    )
+            else:
+                self.ignored_file_patterns.append((pattern, pattern, None))
+
+    def _match_ignored_file_pattern(self, path):
+        for raw_pattern, substring_pattern, regex_pattern in self.ignored_file_patterns:
+            if substring_pattern is not None and substring_pattern in path:
+                return raw_pattern
+
+            if regex_pattern is not None and regex_pattern.search(path):
+                return raw_pattern
+
+        return None
 
     def v2_playbook_on_start(self, playbook):
         self.log.debug("v2_playbook_on_start")
@@ -530,15 +561,14 @@ class CallbackModule(CallbackBase):
         for path in play._loader._FILE_CACHE.keys():
             # The cache can be pre-populated with files that aren't relevant to the playbook report
             # If there are matches that should be ignored here, don't record them at all
-            ignored = False
-            for ignored_file_pattern in self.ignored_files:
-                if ignored_file_pattern in path:
-                    self.log.debug(f"Ignoring file {path}, matched pattern: {ignored_file_pattern}")
-                    ignored = True
-                    break
+            ignored_file_pattern = self._match_ignored_file_pattern(path)
+            ignored = ignored_file_pattern is not None
 
-            if not ignored:
-                self._submit_thread("global", self._get_or_create_file, path)
+            if ignored:
+                self.log.debug(f"Ignoring file {path}, matched pattern: {ignored_file_pattern}")
+                continue
+
+            self._submit_thread("global", self._get_or_create_file, path)
 
         # Note: ansible-runner suffixes play UUIDs when running in serial so 34cff6f4-9f8e-6137-3461-000000000005 can
         # end up being 34cff6f4-9f8e-6137-3461-000000000005_2. Remove anything beyond standard 36 character UUIDs.
@@ -727,11 +757,12 @@ class CallbackModule(CallbackBase):
     def _get_or_create_file(self, path, content=None):
         if path not in self.file_cache:
             self.log.debug("File not in cache, getting or creating: %s" % path)
-            for ignored_file_pattern in self.ignored_files:
-                if ignored_file_pattern in path:
-                    # The file must be created because there will be things referring to it
-                    self.log.debug(f"Censoring file {path}, matched pattern: {ignored_file_pattern}")
-                    content = "Not saved by ARA as configured by 'ignored_files'"
+            ignored_file_pattern = self._match_ignored_file_pattern(path)
+            if ignored_file_pattern is not None:
+                # The file must be created because there will be things referring to it
+                self.log.debug(f"Censoring file {path}, matched pattern: {ignored_file_pattern}")
+                content = "Not saved by ARA as configured by 'ignored_files'"
+
             if content is None:
                 try:
                     with open(path) as fd:

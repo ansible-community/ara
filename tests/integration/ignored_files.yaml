@@ -3,7 +3,7 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 # Note: expects the following to be set:
-#   export ARA_IGNORED_FILES=".ansible/tmp,ignored_task_file.yaml"
+#   export ARA_IGNORED_FILES=".ansible/tmp,ignored_task_file.yaml,regex:ig.*_regex_file\\.ya?ml$"
 #   export ANSIBLE_VAULT_PASSWORD_FILE=./vault_password_file
 #   export ANSIBLE_CALLBACK_PLUGINS=$(python3 -m ara.setup.callback_plugins)
 #   export ANSIBLE_ACTION_PLUGINS=$(python3 -m ara.setup.action_plugins)
@@ -25,6 +25,9 @@
 
     - name: Include task from another file
       include_tasks: ignored_task_file.yaml
+
+    - name: Include task from another file matched by regex
+      include_tasks: ignored_regex_file.yaml
 
     # These will be printed in clear text, even if they are coming from an encrypted file or string.
     # Use "no_log: true" on tasks with potentially sensitive output to prevent ara from recording them from the task results.
@@ -53,6 +56,7 @@
         _verysecret: "{{ lookup('ara_api', '/api/v1/files?path=verysecret&playbook=' + _playbook_id) }}"
         _testing: "{{ lookup('ara_api', '/api/v1/files?path=testing&playbook=' + _playbook_id) }}"
         _ignored_task: "{{ lookup('ara_api', '/api/v1/files?path=ignored_task_file&playbook=' + _playbook_id) }}"
+        _ignored_regex_task: "{{ lookup('ara_api', '/api/v1/files?path=ignored_regex_file&playbook=' + _playbook_id) }}"
         _tmpdir: "{{ lookup('ara_api', '/api/v1/files?path=.ansible/tmp&playbook=' + _playbook_id) }}"
 
     # Note: conditions are used because the behavior changed between versions (from 2.12.0 until 2.12.5), see:
@@ -92,7 +96,9 @@
       vars:
         # list view doesn't provide file content, get detailed view
         _id: "{{ _ignored_task['results'][0]['id'] | string }}"
+        _regex_id: "{{ _ignored_regex_task['results'][0]['id'] | string }}"
         _with_content: "{{ lookup('ara_api', '/api/v1/files/' + _id) }}"
+        _regex_with_content: "{{ lookup('ara_api', '/api/v1/files/' + _regex_id) }}"
       assert:
         that:
           # Variable files included via include_vars are not currently recorded by ara
@@ -100,6 +106,8 @@
           # Playbook, role or task files must be recorded (to maintain relationships between objects) but they must be censored
           - _ignored_task['count'] == 1
           - _with_content['content'] == "Not saved by ARA as configured by 'ignored_files'"
+          - _ignored_regex_task['count'] == 1
+          - _regex_with_content['content'] == "Not saved by ARA as configured by 'ignored_files'"
 
     # TODO: Find out whether we should explicitly save vars_files and adjust accordingly moving forward
     # Some vars_files are seemingly no longer being picked up after ansible-core 2.17
