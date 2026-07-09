@@ -84,7 +84,7 @@ required here):
     ara prometheus
 
 Then point Prometheus at it (a ready-to-use example is in
-``contrib/prometheus/prometheus.yml``):
+`contrib/prometheus/prometheus.yml <https://codeberg.org/ansible-community/ara/src/branch/master/contrib/prometheus/prometheus.yml>`_:
 
 .. code-block:: yaml
 
@@ -274,8 +274,8 @@ Alerting
 --------
 
 Example Prometheus alerting rules are provided in
-``contrib/prometheus/ara-alerts.yml`` and cover the cases most relevant to
-production monitoring:
+`contrib/prometheus/ara-alerts.yml <https://codeberg.org/ansible-community/ara/src/branch/master/contrib/prometheus/ara-alerts.yml>`_
+and cover the cases most relevant to production monitoring:
 
 - the exporter being down, unable to reach ara, or serving stale metrics
   (refreshes persistently failing),

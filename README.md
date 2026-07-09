@@ -10,7 +10,7 @@ It is another recursive acronym with a focus on simplicity.
 
 ara provides Ansible reporting by recording ``ansible`` and ``ansible-playbook`` commands regardless of how and where they run:
 
-- from most Linux distributions and even on Mac OS (as long as ``python >= 3.8`` is available)
+- from most Linux distributions and even on Mac OS (as long as ``python >= 3.10`` is available)
 - from tools that run Ansible like ansible-(pull|test|runner|navigator), AWX & Automation Controller (Tower), Molecule and Semaphore
 - from a terminal, a script or by hand
 - from a laptop, desktop, server, virtual machine, container or execution environment
@@ -31,7 +31,7 @@ This plugin gathers data as Ansible runs and sends it to a Django REST API serve
 
 ## Requirements
 
-- Any recent Linux distribution or Mac OS with python >=3.8 available
+- Any recent Linux distribution or Mac OS with python >=3.10 available
 - The ara package (containing the Ansible plugins) must be installed for the same python interpreter as Ansible itself
 
 ## Getting started

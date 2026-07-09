@@ -41,7 +41,7 @@ Requirements
 ------------
 
 - A running ARA API server (see `Getting Started <https://codeberg.org/ansible-community/ara#getting-started>`_)
-- Python >= 3.8
+- Python >= 3.10
 - The ``httpx`` and ``mcp`` packages
 
 Installation
